@@ -66,6 +66,14 @@ struct AccountSettingsView: View {
                                 ),
                                 in: 1...365
                             )
+                            DatePicker(
+                                "Prochain rapport",
+                                selection: Binding(
+                                    get: { reportSettings.nextDueDate ?? .now },
+                                    set: { updateCustomNextDueDate($0) }
+                                ),
+                                displayedComponents: [.date, .hourAndMinute]
+                            )
                         }
                     }
                     NavigationLink("Historique des rapports") {
@@ -100,17 +108,19 @@ struct AccountSettingsView: View {
     }
 
     private func updatePeriodicity(_ periodicity: ReportPeriodicity) {
-        let updated = appServices.reportSettingsService.updatePeriodicity(
-            periodicity, customIntervalDays: nil, in: modelContext
-        )
+        let updated = appServices.reportSettingsService.updatePeriodicity(periodicity, in: modelContext)
         reportSettings = updated
         rescheduleNotification(for: updated)
     }
 
     private func updateCustomInterval(_ days: Int) {
-        let updated = appServices.reportSettingsService.updatePeriodicity(
-            .custom, customIntervalDays: days, in: modelContext
-        )
+        let updated = appServices.reportSettingsService.updateCustomInterval(days: days, in: modelContext)
+        reportSettings = updated
+        rescheduleNotification(for: updated)
+    }
+
+    private func updateCustomNextDueDate(_ date: Date) {
+        let updated = appServices.reportSettingsService.updateCustomNextDueDate(date, in: modelContext)
         reportSettings = updated
         rescheduleNotification(for: updated)
     }
