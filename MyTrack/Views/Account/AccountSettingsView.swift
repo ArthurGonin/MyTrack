@@ -12,6 +12,8 @@ struct AccountSettingsView: View {
     @Environment(\.dismiss) private var dismiss
     @State private var isPermissionDeniedAlertPresented = false
     @State private var reportSettings: ReportSettings?
+    // TODO: remplacer par l'App Store ID réel une fois l'app publiée sur App Store Connect.
+    private let appStoreID = "TODO_APP_STORE_ID"
 
     private var viewModel: RecordTripViewModel {
         RecordTripViewModel(
@@ -81,6 +83,15 @@ struct AccountSettingsView: View {
                     }
                 } footer: {
                     Text("Génère automatiquement un rapport PDF des trajets à la fréquence choisie.")
+                }
+                Section {
+                    Button {
+                        if let url = URL(string: "itms-apps://itunes.apple.com/app/id\(appStoreID)?action=write-review") {
+                            UIApplication.shared.open(url)
+                        }
+                    } label: {
+                        Label("Laisser un avis", systemImage: "star.bubble")
+                    }
                 }
             }
             .navigationTitle("Réglages")
