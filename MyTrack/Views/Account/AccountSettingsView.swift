@@ -152,6 +152,7 @@ struct AccountSettingsView: View {
     }
 
     private func deleteAccount() {
+        reportSettings = nil
         appServices.eraseAllData(in: modelContext)
         dismiss()
     }
