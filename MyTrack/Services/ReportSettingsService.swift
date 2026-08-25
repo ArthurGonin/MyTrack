@@ -19,22 +19,43 @@ final class ReportSettingsService {
         return settings
     }
 
+    /// Switches the active periodicity. For `.custom`, the interval and the next due date
+    /// are chosen separately by the user (see `updateCustomInterval` and
+    /// `updateCustomNextDueDate`), so this only seeds a default next due date the first
+    /// time `.custom` is selected — it never overwrites a date the user already picked.
     @discardableResult
-    func updatePeriodicity(
-        _ periodicity: ReportPeriodicity,
-        customIntervalDays: Int?,
-        in context: ModelContext
-    ) -> ReportSettings {
+    func updatePeriodicity(_ periodicity: ReportPeriodicity, in context: ModelContext) -> ReportSettings {
         let settings = currentSettings(in: context)
+        let periodicityChanged = settings.periodicity != periodicity
         settings.periodicity = periodicity
-        if let customIntervalDays {
-            settings.customIntervalDays = customIntervalDays
+        if periodicity != .custom || periodicityChanged {
+            settings.nextDueDate = ReportPeriodBoundary.nextDueDate(
+                after: .now,
+                periodicity: periodicity,
+                customIntervalDays: settings.customIntervalDays
+            )
         }
-        settings.nextDueDate = ReportPeriodBoundary.nextDueDate(
-            after: .now,
-            periodicity: periodicity,
-            customIntervalDays: settings.customIntervalDays
-        )
+        try? context.save()
+        return settings
+    }
+
+    /// Sets how often a custom-schedule report repeats, without touching the next due
+    /// date the user picked.
+    @discardableResult
+    func updateCustomInterval(days: Int, in context: ModelContext) -> ReportSettings {
+        let settings = currentSettings(in: context)
+        settings.periodicity = .custom
+        settings.customIntervalDays = max(1, days)
+        try? context.save()
+        return settings
+    }
+
+    /// Sets the exact date/time of the next custom-schedule report, as chosen by the user.
+    @discardableResult
+    func updateCustomNextDueDate(_ date: Date, in context: ModelContext) -> ReportSettings {
+        let settings = currentSettings(in: context)
+        settings.periodicity = .custom
+        settings.nextDueDate = date
         try? context.save()
         return settings
     }
