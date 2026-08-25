@@ -29,7 +29,10 @@ struct TripRouteMapView: View {
                     description: Text("Aucun point GPS n'a été enregistré pour ce trajet.")
                 )
             } else {
-                Map(position: $cameraPosition, interactionModes: .all) {
+                // Non-interactive: this map sits inside TripDetailView's List, and a
+                // pannable/zoomable Map would capture drag gestures meant for the
+                // List's own scrolling, making the rest of the screen unreachable.
+                Map(position: $cameraPosition, interactionModes: []) {
                     if coordinates.count >= 2 {
                         MapPolyline(coordinates: coordinates)
                             .stroke(.blue, style: StrokeStyle(lineWidth: 4, lineCap: .round, lineJoin: .round))
