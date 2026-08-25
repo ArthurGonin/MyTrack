@@ -49,6 +49,7 @@ struct TripListView: View {
             .navigationDestination(for: Trip.self) { trip in
                 TripDetailView(trip: trip)
             }
+            .accountToolbar()
         }
     }
 }
@@ -76,6 +77,11 @@ private struct TripRow: View {
 }
 
 #Preview {
-    TripListView()
-        .modelContainer(for: [Trip.self, Vehicle.self], inMemory: true)
+    let container = try! ModelContainer(
+        for: Trip.self, Vehicle.self, UserProfile.self,
+        configurations: ModelConfiguration(isStoredInMemoryOnly: true)
+    )
+    return TripListView()
+        .environment(AppServices(modelContext: container.mainContext))
+        .modelContainer(container)
 }

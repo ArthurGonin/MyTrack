@@ -37,7 +37,7 @@ struct RootTabView: View {
 
 #Preview {
     let container = try! ModelContainer(
-        for: Trip.self, Vehicle.self,
+        for: Trip.self, Vehicle.self, UserProfile.self,
         configurations: ModelConfiguration(isStoredInMemoryOnly: true)
     )
     return RootTabView()

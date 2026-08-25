@@ -51,19 +51,6 @@ struct RecordTripView: View {
                 }
                 .buttonStyle(.borderedProminent)
                 .tint(viewModel.isRecording ? .red : .accentColor)
-
-                Toggle("Détection automatique", isOn: Binding(
-                    get: { viewModel.isAutoDetectionEnabled },
-                    set: { isOn in
-                        if isOn {
-                            if viewModel.enableAutoDetection() == .permissionDenied {
-                                isPermissionDeniedAlertPresented = true
-                            }
-                        } else {
-                            viewModel.disableAutoDetection()
-                        }
-                    }
-                ))
             }
             .padding()
             .toolbar {
@@ -88,6 +75,7 @@ struct RecordTripView: View {
                     }
                 }
             }
+            .accountToolbar()
             .alert("Localisation refusée", isPresented: $isPermissionDeniedAlertPresented) {
                 Button("Réglages") {
                     if let url = URL(string: UIApplication.openSettingsURLString) {
@@ -113,7 +101,7 @@ struct RecordTripView: View {
 
 #Preview {
     let container = try! ModelContainer(
-        for: Trip.self, Vehicle.self,
+        for: Trip.self, Vehicle.self, UserProfile.self,
         configurations: ModelConfiguration(isStoredInMemoryOnly: true)
     )
     return RecordTripView()

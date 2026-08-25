@@ -14,7 +14,7 @@ struct MyTrackApp: App {
     @State private var appServices: AppServices
 
     init() {
-        let container = try! ModelContainer(for: Trip.self, Vehicle.self)
+        let container = try! ModelContainer(for: Trip.self, Vehicle.self, UserProfile.self)
         modelContainer = container
         _appServices = State(initialValue: AppServices(modelContext: container.mainContext))
     }
