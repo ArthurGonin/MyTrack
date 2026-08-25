@@ -20,6 +20,7 @@ struct TripListView: View {
     }
 
     private let viewModel = TripListViewModel()
+    @State private var isPresentingExport = false
 
     var body: some View {
         NavigationStack {
@@ -48,6 +49,18 @@ struct TripListView: View {
             .navigationTitle("Trajets")
             .navigationDestination(for: Trip.self) { trip in
                 TripDetailView(trip: trip)
+            }
+            .toolbar {
+                ToolbarItem(placement: .primaryAction) {
+                    Button {
+                        isPresentingExport = true
+                    } label: {
+                        Image(systemName: "square.and.arrow.up")
+                    }
+                }
+            }
+            .sheet(isPresented: $isPresentingExport) {
+                ReportExportView()
             }
             .accountToolbar()
         }
@@ -78,7 +91,7 @@ private struct TripRow: View {
 
 #Preview {
     let container = try! ModelContainer(
-        for: Trip.self, Vehicle.self, UserProfile.self,
+        for: Trip.self, Vehicle.self, UserProfile.self, ReportSettings.self, GeneratedReport.self,
         configurations: ModelConfiguration(isStoredInMemoryOnly: true)
     )
     return TripListView()

@@ -16,4 +16,12 @@ extension Trip {
         guard minutes >= 60 else { return "\(minutes) min" }
         return String(format: "%dh%02d", minutes / 60, minutes % 60)
     }
+
+    var formattedStartDate: String {
+        startDate.formatted(date: .abbreviated, time: .shortened)
+    }
+
+    var formattedSource: String {
+        source == .automatic ? "Automatique" : "Manuel"
+    }
 }

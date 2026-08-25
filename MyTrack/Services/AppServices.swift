@@ -17,6 +17,8 @@ import Observation
 final class AppServices {
     let vehicleService = VehicleService()
     let userProfileService = UserProfileService()
+    let reportSettingsService = ReportSettingsService()
+    let reportGenerationService = ReportGenerationService()
     let locationService = LocationService()
     let motionActivityService = MotionActivityService()
     let notificationService: NotificationService
