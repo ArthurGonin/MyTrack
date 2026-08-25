@@ -32,6 +32,11 @@ struct TripDetailView: View {
                 LabeledContent("Source", value: trip.source == .automatic ? "Automatique" : "Manuel")
                 LabeledContent("Points GPS", value: "\(trip.routePoints.count)")
             }
+            Section("Itinéraire") {
+                TripRouteMapView(routePoints: trip.routePoints)
+                    .frame(height: 260)
+                    .listRowInsets(EdgeInsets())
+            }
         }
         .navigationTitle("Détail du trajet")
         .sheet(isPresented: $isPresentingVehiclePicker) {
@@ -53,6 +58,12 @@ struct TripDetailView: View {
     let trip = Trip(startDate: .now.addingTimeInterval(-1800), source: .manual, vehicle: vehicle)
     trip.endDate = .now
     trip.distanceMeters = 12500
+    trip.routePoints = [
+        RoutePoint(latitude: 48.8584, longitude: 2.2945, timestamp: .now.addingTimeInterval(-1800)),
+        RoutePoint(latitude: 48.8620, longitude: 2.3050, timestamp: .now.addingTimeInterval(-1200)),
+        RoutePoint(latitude: 48.8670, longitude: 2.3170, timestamp: .now.addingTimeInterval(-600)),
+        RoutePoint(latitude: 48.8710, longitude: 2.3280, timestamp: .now)
+    ]
     container.mainContext.insert(trip)
     return NavigationStack {
         TripDetailView(trip: trip)
