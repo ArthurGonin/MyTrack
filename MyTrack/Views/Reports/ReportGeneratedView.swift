@@ -3,15 +3,18 @@
 //  MyTrack
 //
 //  Small confirmation sheet shown right after a manual export finishes,
-//  offering an immediate share via the native share sheet.
+//  opening the PDF directly in-app via QuickLook.
 //
 
 import SwiftUI
+import QuickLook
 
 struct ReportGeneratedView: View {
     let report: GeneratedReport
     let fileURL: URL
     let onDone: () -> Void
+
+    @State private var previewURL: URL?
 
     var body: some View {
         NavigationStack {
@@ -23,10 +26,6 @@ struct ReportGeneratedView: View {
                     .font(.title2.weight(.semibold))
                 Text("\(report.tripCount) trajet\(report.tripCount > 1 ? "s" : "")")
                     .foregroundStyle(.secondary)
-                ShareLink(item: fileURL) {
-                    Label("Partager", systemImage: "square.and.arrow.up")
-                }
-                .buttonStyle(.borderedProminent)
             }
             .padding()
             .toolbar {
@@ -34,6 +33,8 @@ struct ReportGeneratedView: View {
                     Button("Terminé") { onDone() }
                 }
             }
+            .onAppear { previewURL = fileURL }
+            .quickLookPreview($previewURL)
         }
     }
 }
