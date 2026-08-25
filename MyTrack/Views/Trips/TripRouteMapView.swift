@@ -10,6 +10,7 @@ struct TripRouteMapView: View {
     let routePoints: [RoutePoint]
 
     @State private var cameraPosition: MapCameraPosition
+    @State private var isInteracting = false
 
     init(routePoints: [RoutePoint]) {
         self.routePoints = routePoints
@@ -29,26 +30,56 @@ struct TripRouteMapView: View {
                     description: Text("Aucun point GPS n'a été enregistré pour ce trajet.")
                 )
             } else {
-                // Non-interactive: this map sits inside TripDetailView's List, and a
-                // pannable/zoomable Map would capture drag gestures meant for the
-                // List's own scrolling, making the rest of the screen unreachable.
-                Map(position: $cameraPosition, interactionModes: []) {
-                    if coordinates.count >= 2 {
-                        MapPolyline(coordinates: coordinates)
-                            .stroke(.blue, style: StrokeStyle(lineWidth: 4, lineCap: .round, lineJoin: .round))
-                    }
-                    if let start = coordinates.first {
-                        Marker("Départ", systemImage: "flag.circle.fill", coordinate: start)
-                            .tint(.green)
-                    }
-                    if coordinates.count >= 2, let end = coordinates.last {
-                        Marker("Arrivée", systemImage: "flag.checkered.circle.fill", coordinate: end)
-                            .tint(.red)
-                    }
-                }
+                map
             }
         }
         .clipShape(.rect(cornerRadius: 10))
+    }
+
+    // This map lives inside TripDetailView's scrollable List. A fully interactive
+    // Map's own pan gesture competes with the List's scroll gesture and can make
+    // the rest of the screen unreachable, so the map only claims pan/zoom once the
+    // user explicitly taps it — until then, drags pass through and the page
+    // scrolls normally.
+    private var map: some View {
+        ZStack(alignment: .topTrailing) {
+            Map(position: $cameraPosition, interactionModes: isInteracting ? .all : []) {
+                if coordinates.count >= 2 {
+                    MapPolyline(coordinates: coordinates)
+                        .stroke(.blue, style: StrokeStyle(lineWidth: 4, lineCap: .round, lineJoin: .round))
+                }
+                if let start = coordinates.first {
+                    Marker("Départ", systemImage: "flag.circle.fill", coordinate: start)
+                        .tint(.green)
+                }
+                if coordinates.count >= 2, let end = coordinates.last {
+                    Marker("Arrivée", systemImage: "flag.checkered.circle.fill", coordinate: end)
+                        .tint(.red)
+                }
+            }
+            .onTapGesture {
+                if !isInteracting { isInteracting = true }
+            }
+
+            if isInteracting {
+                Button {
+                    isInteracting = false
+                } label: {
+                    Image(systemName: "checkmark.circle.fill")
+                        .symbolRenderingMode(.palette)
+                        .foregroundStyle(.white, .blue)
+                        .font(.title2)
+                }
+                .padding(8)
+            } else {
+                Label("Toucher pour interagir", systemImage: "hand.tap")
+                    .font(.caption2)
+                    .padding(.horizontal, 8)
+                    .padding(.vertical, 4)
+                    .background(.thinMaterial, in: Capsule())
+                    .padding(8)
+            }
+        }
     }
 
     /// Frames the whole route with padding, from a plain min/max lat/lon bounding
