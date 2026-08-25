@@ -2,6 +2,12 @@
 
 App iOS (SwiftUI) qui enregistre automatiquement les trajets en voiture : détection de conduite, tracking GPS, association à un véhicule, et confirmation manuelle des trajets détectés.
 
+## Règles de travail (IMPORTANT)
+
+- **Ne jamais merger de branche soi-même**, même en mode auto/autonome — toujours demander confirmation à l'utilisateur avant tout `git merge` (ou équivalent) vers `main`.
+- **Design toujours natif Apple, autant que possible.** Utiliser les composants et matériaux SwiftUI/UIKit standards plutôt que des styles custom — par exemple **Liquid Glass** pour les boutons et surfaces plutôt qu'un style maison, les contrôles système natifs (boutons, listes, navigation) plutôt que des équivalents recréés à la main.
+- **Icônes = SF Symbols uniquement.** Quand on demande d'ajouter une icône, toujours utiliser un symbole SF Symbols (`Image(systemName:)`), jamais une image custom. Si l'utilisateur donne le nom exact du symbole, l'utiliser tel quel dans le code (`systemName: "nom.exact"`) sans le remplacer par autre chose.
+
 ## Stack
 
 - Swift / SwiftUI, cible iOS.
