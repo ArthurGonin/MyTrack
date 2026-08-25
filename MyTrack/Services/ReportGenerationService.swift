@@ -12,6 +12,18 @@ import SwiftData
 
 final class ReportGenerationService {
     private let reportsDirectoryName = "Reports"
+    private let userProfileService: UserProfileService
+
+    private static let fileNameDateFormatter: DateFormatter = {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "dd-MM-yyyy_HH-mm-ss"
+        formatter.locale = Locale(identifier: "en_US_POSIX")
+        return formatter
+    }()
+
+    init(userProfileService: UserProfileService) {
+        self.userProfileService = userProfileService
+    }
 
     @discardableResult
     func generateReport(
@@ -21,15 +33,17 @@ final class ReportGenerationService {
         source: ReportSource,
         in context: ModelContext
     ) throws -> GeneratedReport {
+        let generatedAt = Date.now
         let pdfData = TripReportPDFRenderer.render(
             trips: trips,
             periodStart: periodStart,
             periodEnd: periodEnd,
-            generatedAt: .now
+            generatedAt: generatedAt
         )
 
         let directory = try reportsDirectory()
-        let fileName = "report-\(UUID().uuidString).pdf"
+        let profile = userProfileService.currentProfile(in: context)
+        let fileName = uniqueFileName(for: profile, generatedAt: generatedAt, in: directory)
         try pdfData.write(to: directory.appendingPathComponent(fileName), options: .atomic)
 
         let report = GeneratedReport(
@@ -54,6 +68,27 @@ final class ReportGenerationService {
         try? FileManager.default.removeItem(at: fileURL(for: report))
         context.delete(report)
         try? context.save()
+    }
+
+    /// Builds a file name like "PrenomNom_25-08-2026_14-30-05.pdf" from the user's
+    /// profile and the generation date, appending "-2", "-3", ... on the rare
+    /// same-second collision so a report never silently overwrites another.
+    private func uniqueFileName(for profile: UserProfile, generatedAt: Date, in directory: URL) -> String {
+        let rawName = (profile.firstName + profile.lastName)
+            .trimmingCharacters(in: .whitespacesAndNewlines)
+            .replacingOccurrences(of: "/", with: "-")
+            .replacingOccurrences(of: ":", with: "-")
+        let name = rawName.isEmpty ? "Rapport" : rawName
+        let timestamp = Self.fileNameDateFormatter.string(from: generatedAt)
+        let baseName = "\(name)_\(timestamp)"
+
+        var fileName = "\(baseName).pdf"
+        var suffix = 2
+        while FileManager.default.fileExists(atPath: directory.appendingPathComponent(fileName).path) {
+            fileName = "\(baseName)-\(suffix).pdf"
+            suffix += 1
+        }
+        return fileName
     }
 
     private func reportsDirectory() throws -> URL {

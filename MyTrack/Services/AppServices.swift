@@ -18,14 +18,15 @@ final class AppServices {
     let vehicleService = VehicleService()
     let userProfileService = UserProfileService()
     let reportSettingsService = ReportSettingsService()
-    let reportGenerationService = ReportGenerationService()
     let locationService = LocationService()
     let motionActivityService = MotionActivityService()
+    let reportGenerationService: ReportGenerationService
     let notificationService: NotificationService
     let tripRecorder: TripRecorder
     let drivingDetector: DrivingDetector
 
     init(modelContext: ModelContext) {
+        reportGenerationService = ReportGenerationService(userProfileService: userProfileService)
         notificationService = NotificationService(modelContext: modelContext)
         tripRecorder = TripRecorder(locationService: locationService, modelContext: modelContext)
         drivingDetector = DrivingDetector(
