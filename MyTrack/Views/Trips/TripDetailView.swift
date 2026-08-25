@@ -26,7 +26,12 @@ struct TripDetailView: View {
                 Button {
                     isPresentingVehiclePicker = true
                 } label: {
-                    LabeledContent("Véhicule", value: trip.vehicle?.name ?? "Aucun véhicule")
+                    HStack {
+                        LabeledContent("Véhicule", value: trip.vehicle?.name ?? "Aucun véhicule")
+                        Image(systemName: "pencil")
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                    }
                 }
                 .buttonStyle(.plain)
                 LabeledContent("Source", value: trip.source == .automatic ? "Automatique" : "Manuel")
