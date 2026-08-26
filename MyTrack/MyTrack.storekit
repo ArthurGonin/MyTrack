@@ -1,13 +1,65 @@
 {
-  "identifier" : "9E9C1F4A-9B0A-4F1A-9C0E-9B7B2E9E7B3A",
-  "nonRenewingSubscriptions" : [],
-  "products" : [],
+  "appPolicies" : {
+    "eula" : "",
+    "policies" : [
+
+    ]
+  },
+  "identifier" : "9E9C1F4A",
+  "nonRenewingSubscriptions" : [
+
+  ],
+  "products" : [
+
+  ],
   "settings" : {
-    "_applicationInternalID" : "0",
-    "_developerTeamID" : "0",
-    "_lastSynchronizedDate" : 0,
+    "_askToBuyEnabled" : false,
+    "_billingGracePeriodEnabled" : false,
+    "_billingIssuesEnabled" : false,
+    "_disableDialogs" : false,
+    "_failTransactionsEnabled" : false,
     "_locale" : "fr_FR",
-    "_storefront" : "FRA"
+    "_renewalBillingIssuesEnabled" : false,
+    "_storefront" : "FRA",
+    "_storeKitErrors" : [
+      {
+        "enabled" : false,
+        "name" : "Load Products"
+      },
+      {
+        "enabled" : false,
+        "name" : "Purchase"
+      },
+      {
+        "enabled" : false,
+        "name" : "Verification"
+      },
+      {
+        "enabled" : false,
+        "name" : "App Store Sync"
+      },
+      {
+        "enabled" : false,
+        "name" : "Subscription Status"
+      },
+      {
+        "enabled" : false,
+        "name" : "App Transaction"
+      },
+      {
+        "enabled" : false,
+        "name" : "Manage Subscriptions Sheet"
+      },
+      {
+        "enabled" : false,
+        "name" : "Refund Request Sheet"
+      },
+      {
+        "enabled" : false,
+        "name" : "Offer Code Redeem Sheet"
+      }
+    ],
+    "_timeRate" : 0
   },
   "subscriptionGroups" : [
     {
@@ -15,29 +67,45 @@
       "localizations" : [
         {
           "description" : "",
-          "locale" : "en_US",
-          "name" : "MyTrack Premium"
+          "displayName" : "MyTrack Premium",
+          "locale" : "en_US"
         },
         {
           "description" : "",
-          "locale" : "fr_FR",
-          "name" : "MyTrack Premium"
+          "displayName" : "MyTrack Premium",
+          "locale" : "fr_FR"
         }
       ],
       "name" : "MyTrack Premium",
       "subscriptions" : [
         {
-          "adHocOffers" : [],
-          "codeOffers" : [],
+          "adHocOffers" : [
+
+          ],
+          "billingPlans" : [
+            {
+              "billingPlanType" : "BILLED_UPFRONT",
+              "commitmentDisplayPrice" : "24.99",
+              "displayPrice" : "24.99",
+              "internalID" : "6740000103",
+              "isEnabled" : true
+            }
+          ],
+          "codeOffers" : [
+
+          ],
           "displayPrice" : "24.99",
           "familyShareable" : false,
           "groupNumber" : 1,
           "internalID" : "6740000101",
-          "introductoryOffer" : {
-            "internalID" : "6740000102",
-            "paymentMode" : "free",
-            "subscriptionPeriod" : "P1W"
-          },
+          "introductoryOffers" : [
+            {
+              "internalID" : "6740000102",
+              "numberOfPeriods" : 1,
+              "paymentMode" : "free",
+              "subscriptionPeriod" : "P1W"
+            }
+          ],
           "localizations" : [
             {
               "description" : "Full access to MyTrack",
@@ -54,16 +122,34 @@
           "recurringSubscriptionPeriod" : "P1Y",
           "referenceName" : "MyTrack Annual",
           "subscriptionGroupID" : "6740000001",
-          "type" : "RecurringSubscription"
+          "type" : "RecurringSubscription",
+          "winbackOffers" : [
+
+          ]
         },
         {
-          "adHocOffers" : [],
-          "codeOffers" : [],
+          "adHocOffers" : [
+
+          ],
+          "billingPlans" : [
+            {
+              "billingPlanType" : "BILLED_UPFRONT",
+              "commitmentDisplayPrice" : "2.99",
+              "displayPrice" : "2.99",
+              "internalID" : "6740000202",
+              "isEnabled" : true
+            }
+          ],
+          "codeOffers" : [
+
+          ],
           "displayPrice" : "2.99",
           "familyShareable" : false,
-          "groupNumber" : 1,
+          "groupNumber" : 2,
           "internalID" : "6740000201",
-          "introductoryOffer" : null,
+          "introductoryOffers" : [
+
+          ],
           "localizations" : [
             {
               "description" : "Full access to MyTrack",
@@ -80,13 +166,16 @@
           "recurringSubscriptionPeriod" : "P1M",
           "referenceName" : "MyTrack Monthly",
           "subscriptionGroupID" : "6740000001",
-          "type" : "RecurringSubscription"
+          "type" : "RecurringSubscription",
+          "winbackOffers" : [
+
+          ]
         }
       ]
     }
   ],
   "version" : {
-    "major" : 3,
+    "major" : 5,
     "minor" : 0
   }
 }
