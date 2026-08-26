@@ -47,7 +47,7 @@ struct RecordTripView: View {
 
                 Button(viewModel.isRecording ? "Arrêter" : "Démarrer") {
                     if viewModel.isRecording {
-                        viewModel.stopManualRecording()
+                        viewModel.stopManualRecording(in: modelContext)
                     } else if viewModel.startManualRecording(in: modelContext) == .permissionDenied {
                         isPermissionDeniedAlertPresented = true
                     }

@@ -42,8 +42,21 @@ struct RecordTripViewModel {
         }
     }
 
-    func stopManualRecording() {
-        tripRecorder.finalize(endDate: .now)
+    /// Ends the recording in progress, whichever mode started it.
+    ///
+    /// Stopping a trip by hand from inside the app is itself the confirmation:
+    /// the user plainly knows this trip exists, so asking again would only hide
+    /// it from the trip list — which shows confirmed trips only — until they
+    /// answered a notification that this path never sends.
+    func stopManualRecording(in context: ModelContext) {
+        // An automatically detected trip that has already stopped moving ends
+        // where the driving ended, not now.
+        let endDate = drivingDetector.ownedTripDrivingStoppedAt ?? .now
+        guard let trip = tripRecorder.finalize(endDate: endDate) else { return }
+
+        trip.confirmationStatus = .confirmed
+        context.saveOrLog()
+        drivingDetector.forgetOwnedTrip()
     }
 
     enum AutoDetectionEnableResult {

@@ -99,6 +99,22 @@ final class DrivingDetector {
         resetState()
     }
 
+    /// The moment driving actually stopped for the trip this detector owns, if
+    /// it has stopped but isn't finalized yet. Lets a stop triggered from the
+    /// app end the trip where the driving ended, rather than padding it with
+    /// the minutes spent parked inside the stop-confirmation window.
+    var ownedTripDrivingStoppedAt: Date? {
+        recordingStartedAt == nil ? nil : stopCandidateSince
+    }
+
+    /// Call when the trip this detector started was ended from somewhere else —
+    /// the user tapping Stop in the app. Without it the leftover state would
+    /// later attach itself to a trip the user starts by hand, and finalize that
+    /// one behind their back.
+    func forgetOwnedTrip() {
+        resetState()
+    }
+
     /// Arms monitoring only when it can actually work. Without "Always" the app
     /// is never woken to see driving start, and without a motion coprocessor no
     /// activity sample is ever delivered — in both cases starting would leave
