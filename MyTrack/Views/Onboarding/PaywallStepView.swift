@@ -194,12 +194,12 @@ struct PaywallStepView: View {
     }
 
     private var annualSubtitle: String {
-        guard let annualProduct else { return "puis 24,99 $ / an" }
+        guard let annualProduct else { return "puis 24,99 € / an" }
         return "puis \(annualProduct.displayPrice) / an"
     }
 
     private var monthlyTitle: String {
-        guard let monthlyProduct else { return "2,99 $ / mois" }
+        guard let monthlyProduct else { return "2,99 € / mois" }
         return "\(monthlyProduct.displayPrice) / mois"
     }
 
@@ -207,7 +207,9 @@ struct PaywallStepView: View {
         let count = period.value
         switch period.unit {
         case .day: return "\(count) jour\(count > 1 ? "s" : "") gratuit\(count > 1 ? "s" : "")"
-        case .week: return "\(count) semaine\(count > 1 ? "s" : "") gratuite\(count > 1 ? "s" : "")"
+        // Spelled out in days so the real product reads the same as the
+        // fallback copy above ("7 jours gratuits"), not "1 semaine gratuite".
+        case .week: return "\(count * 7) jours gratuits"
         case .month: return "\(count) mois gratuit\(count > 1 ? "s" : "")"
         case .year: return "\(count) an\(count > 1 ? "s" : "") gratuit\(count > 1 ? "s" : "")"
         @unknown default: return "Essai gratuit"
