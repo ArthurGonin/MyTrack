@@ -109,6 +109,7 @@ final class DrivingDetector {
     func disable() {
         isEnabled = false
         UserDefaults.standard.set(false, forKey: Self.preferenceKey)
+        isEscalatingToAlways = false
         stopMonitoring()
         resetState()
     }
