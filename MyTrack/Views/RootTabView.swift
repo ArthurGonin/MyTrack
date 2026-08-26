@@ -43,16 +43,14 @@ struct RootTabView: View {
             .badge(unopenedReportCount)
         }
         .onAppear {
-            let descriptor = FetchDescriptor<Trip>()
-            let hasPendingTrips = ((try? modelContext.fetch(descriptor)) ?? [])
-                .contains { $0.confirmationStatus == .pendingConfirmation }
             if hasPendingTrips {
                 isPendingReviewPresented = true
             }
             // A notification tapped on a cold launch is handled by the delegate
-            // before this view is ever on screen, so the flag has to be checked
-            // here too and not only in onChange.
+            // before this view is ever on screen, so the flags have to be
+            // checked here too and not only in onChange.
             openReportsTabIfRequested()
+            presentPendingReviewIfRequested()
             // Deliberately a plain Task rather than .task: report generation
             // must not be cancelled by leaving the tab, or a PDF could be
             // written with no matching record ever created for it.
@@ -67,6 +65,9 @@ struct RootTabView: View {
         .onChange(of: appServices.notificationService.shouldOpenReportsTab) { _, _ in
             openReportsTabIfRequested()
         }
+        .onChange(of: appServices.notificationService.shouldOpenPendingTripsReview) { _, _ in
+            presentPendingReviewIfRequested()
+        }
         // A report coming due while the app merely sits in the background used
         // to wait for the next cold launch — which on a daily-use app can be
         // weeks away. The user would tap "your report is ready", land on the
@@ -76,7 +77,27 @@ struct RootTabView: View {
         .onChange(of: scenePhase) { _, newPhase in
             guard newPhase == .active else { return }
             Task { await generatePeriodicReportsIfDue() }
+            // Motion & Fitness can be granted from the Settings app, which
+            // CoreMotion reports to nobody. Coming back is the only moment the
+            // app can notice, and start watching for drives at last.
+            appServices.drivingDetector.refresh()
         }
+    }
+
+    private var hasPendingTrips: Bool {
+        let descriptor = FetchDescriptor<Trip>()
+        return ((try? modelContext.fetch(descriptor)) ?? [])
+            .contains { $0.confirmationStatus == .pendingConfirmation }
+    }
+
+    /// Opens the review screen after the user taps a "did you make this trip?"
+    /// notification. Checked against the trips actually waiting: the tapped
+    /// trip may already have been resolved from the notification's own
+    /// actions, and a review screen with nothing to review only traps them.
+    private func presentPendingReviewIfRequested() {
+        guard appServices.notificationService.shouldOpenPendingTripsReview else { return }
+        appServices.notificationService.shouldOpenPendingTripsReview = false
+        isPendingReviewPresented = hasPendingTrips
     }
 
     /// Brings the user to the Rapports tab after they tap a "your report is
@@ -128,8 +149,7 @@ struct RootTabView: View {
         let descriptor = FetchDescriptor<Trip>(
             predicate: #Predicate { $0.startDate >= periodStart && $0.startDate < periodEnd }
         )
-        var tripsInPeriod = ((try? modelContext.fetch(descriptor)) ?? [])
-            .filter { $0.confirmationStatus == .confirmed }
+        var tripsInPeriod = (try? modelContext.fetch(descriptor)) ?? []
         if !profile.vehicles.isEmpty {
             let vehicleIDs = Set(profile.vehicles.map(\.persistentModelID))
             tripsInPeriod = tripsInPeriod.filter { trip in
@@ -137,15 +157,21 @@ struct RootTabView: View {
                 return vehicleIDs.contains(vehicle.persistentModelID)
             }
         }
+        let confirmedTrips = tripsInPeriod.filter { $0.confirmationStatus == .confirmed }
+        // Trips still awaiting an answer can't be counted, but their absence
+        // has to be visible: the report is a document of record, and this
+        // period is never generated again once nextDueDate moves on.
+        let pendingTripCount = tripsInPeriod.filter { $0.confirmationStatus == .pendingConfirmation }.count
 
         do {
             _ = try await appServices.reportGenerationService.generateReport(
-                trips: tripsInPeriod,
+                trips: confirmedTrips,
                 periodStart: periodStart,
                 periodEnd: periodEnd,
                 source: .periodic,
                 profileName: profile.name,
                 includedVehicles: profile.vehicles,
+                pendingTripCount: pendingTripCount,
                 in: modelContext
             )
         } catch {

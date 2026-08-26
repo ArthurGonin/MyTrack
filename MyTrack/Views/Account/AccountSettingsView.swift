@@ -63,8 +63,16 @@ struct AccountSettingsView: View {
                             }
                         }
                     ))
+
+                    if isAutoDetectionBlockedByPermission {
+                        Button("Ouvrir les Réglages") {
+                            if let url = URL(string: UIApplication.openSettingsURLString) {
+                                UIApplication.shared.open(url)
+                            }
+                        }
+                    }
                 } footer: {
-                    Text("Détecte automatiquement tes trajets en voiture.")
+                    Text(autoDetectionFooter)
                 }
 
                 Section {
@@ -141,6 +149,34 @@ struct AccountSettingsView: View {
             } message: {
                 Text("Tes données n'ont pas pu être entièrement supprimées. Réessaie.")
             }
+        }
+    }
+
+    /// The toggle records what the user asked for; this says what is actually
+    /// happening. Without it the setting could sit there reading "on" while
+    /// monitoring refused to arm for want of a permission — and no trip would
+    /// ever be detected.
+    private var autoDetectionFooter: String {
+        switch appServices.drivingDetector.status {
+        case .off:
+            return "Détecte automatiquement tes trajets en voiture."
+        case .running:
+            return "Tes trajets en voiture sont détectés automatiquement."
+        case .needsAlwaysLocation:
+            return "Inactif : le suivi automatique a besoin de l'accès à la position réglé sur « Toujours » pour que l'app soit réveillée au début d'un trajet."
+        case .needsMotionAccess:
+            return "Inactif : le suivi automatique a besoin de l'accès à Motion et forme pour reconnaître la conduite."
+        case .unsupportedDevice:
+            return "Cet appareil ne mesure pas l'activité de mouvement : le suivi automatique ne peut pas fonctionner ici."
+        }
+    }
+
+    /// Only the two permission cases are worth a shortcut — an unsupported
+    /// device has nothing to grant.
+    private var isAutoDetectionBlockedByPermission: Bool {
+        switch appServices.drivingDetector.status {
+        case .needsAlwaysLocation, .needsMotionAccess: return true
+        case .off, .running, .unsupportedDevice: return false
         }
     }
 

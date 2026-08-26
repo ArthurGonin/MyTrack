@@ -34,13 +34,18 @@ nonisolated enum TripReportPDFRenderer {
 
     /// `rows` are expected already sorted by date — they're snapshotted in
     /// order by ReportGenerationService.
+    /// `pendingTripCount` is how many trips fall in the period but are still
+    /// awaiting confirmation, and are therefore absent from `rows`. Stated on
+    /// the document rather than dropped in silence: a mileage total that is
+    /// quietly short is worse than one that says what it left out.
     static func render(
         rows: [TripReportRow],
         periodStart: Date,
         periodEnd: Date,
         generatedAt: Date,
         distanceUnit: DistanceUnit,
-        vehicleNames: [String] = []
+        vehicleNames: [String] = [],
+        pendingTripCount: Int = 0
     ) -> Data {
         let bounds = CGRect(x: 0, y: 0, width: pageWidth, height: pageHeight)
         let renderer = UIGraphicsPDFRenderer(bounds: bounds, format: UIGraphicsPDFRendererFormat())
@@ -49,7 +54,8 @@ nonisolated enum TripReportPDFRenderer {
             context.beginPage()
             var y = drawFirstPageHeader(
                 periodStart: periodStart, periodEnd: periodEnd, generatedAt: generatedAt,
-                rows: rows, distanceUnit: distanceUnit, vehicleNames: vehicleNames
+                rows: rows, distanceUnit: distanceUnit, vehicleNames: vehicleNames,
+                pendingTripCount: pendingTripCount
             )
             y = drawTableHeader(at: y)
 
@@ -70,7 +76,7 @@ nonisolated enum TripReportPDFRenderer {
 
     private static func drawFirstPageHeader(
         periodStart: Date, periodEnd: Date, generatedAt: Date, rows: [TripReportRow],
-        distanceUnit: DistanceUnit, vehicleNames: [String]
+        distanceUnit: DistanceUnit, vehicleNames: [String], pendingTripCount: Int
     ) -> CGFloat {
         var y = margin
 
@@ -105,7 +111,22 @@ nonisolated enum TripReportPDFRenderer {
             at: CGPoint(x: margin, y: y),
             withAttributes: [.font: UIFont.boldSystemFont(ofSize: 13)]
         )
-        y += 28
+        y += 20
+
+        if pendingTripCount > 0 {
+            let warning = pendingTripCount > 1
+                ? "\(pendingTripCount) trajets de cette période sont encore en attente de confirmation : ils ne sont pas comptés ci-dessus."
+                : "1 trajet de cette période est encore en attente de confirmation : il n'est pas compté ci-dessus."
+            warning.draw(
+                in: CGRect(x: margin, y: y, width: pageWidth - 2 * margin, height: 26),
+                withAttributes: [
+                    .font: UIFont.systemFont(ofSize: 10),
+                    .foregroundColor: UIColor(red: 0.60, green: 0.32, blue: 0.02, alpha: 1),
+                ]
+            )
+            y += 18
+        }
+        y += 8
 
         return y
     }

@@ -36,11 +36,35 @@ struct ReportExportView: View {
     private var confirmedTrips: [Trip] {
         allTrips
             .filter { $0.confirmationStatus == .confirmed }
-            .filter { trip in
-                guard !selectedVehicleIDs.isEmpty else { return true }
-                guard let vehicle = trip.vehicle else { return false }
-                return selectedVehicleIDs.contains(vehicle.persistentModelID)
-            }
+            .filter(matchesSelectedVehicles)
+    }
+
+    /// Trips inside the chosen window that can't be included because they're
+    /// still awaiting confirmation. Counted only for the date-range mode: a
+    /// manual selection can only ever pick from confirmed trips, so nothing is
+    /// being left out behind the user's back there.
+    private var pendingTripCount: Int {
+        guard mode == .dateRange else { return 0 }
+        return allTrips
+            .filter { $0.confirmationStatus == .pendingConfirmation }
+            .filter(matchesSelectedVehicles)
+            .filter { $0.startDate >= dateRangeStart && $0.startDate < dateRangeEnd }
+            .count
+    }
+
+    private func matchesSelectedVehicles(_ trip: Trip) -> Bool {
+        guard !selectedVehicleIDs.isEmpty else { return true }
+        guard let vehicle = trip.vehicle else { return false }
+        return selectedVehicleIDs.contains(vehicle.persistentModelID)
+    }
+
+    private var dateRangeFooter: String {
+        let count = tripsToExport.count
+        var text = "\(count) trajet\(count > 1 ? "s" : "") sur cette période."
+        if pendingTripCount > 0 {
+            text += " \(pendingTripCount) autre\(pendingTripCount > 1 ? "s" : "") en attente de confirmation, non inclus."
+        }
+        return text
     }
 
     private var includedVehicles: [Vehicle] {
@@ -103,7 +127,7 @@ struct ReportExportView: View {
                         DatePicker("Début", selection: $startDate, displayedComponents: .date)
                         DatePicker("Fin", selection: $endDate, displayedComponents: .date)
                     } footer: {
-                        Text("\(tripsToExport.count) trajet\(tripsToExport.count > 1 ? "s" : "") sur cette période.")
+                        Text(dateRangeFooter)
                     }
                 case .manualSelection:
                     Section {
@@ -202,6 +226,7 @@ struct ReportExportView: View {
         let vehicles = includedVehicles
         let start = periodStart
         let end = periodEnd
+        let pending = pendingTripCount
 
         Task {
             do {
@@ -211,6 +236,7 @@ struct ReportExportView: View {
                     periodEnd: end,
                     source: .manual,
                     includedVehicles: vehicles,
+                    pendingTripCount: pending,
                     in: modelContext
                 )
             } catch {

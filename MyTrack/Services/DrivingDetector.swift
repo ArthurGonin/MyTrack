@@ -24,6 +24,24 @@ import CoreMotion
 import SwiftData
 import Observation
 
+/// Why automatic detection is or isn't actually running. `isEnabled` alone
+/// only records that the user asked for it — monitoring can still be
+/// impossible, and saying so is the difference between a setting that works
+/// and one that lies.
+enum DrivingDetectionStatus: Equatable {
+    /// The user hasn't asked for automatic detection.
+    case off
+    /// Asked for, and actually watching.
+    case running
+    /// Asked for, but "Always" location isn't granted — the app is then never
+    /// woken to see a drive start.
+    case needsAlwaysLocation
+    /// Asked for, but Motion & Fitness isn't granted.
+    case needsMotionAccess
+    /// No motion coprocessor: no activity sample will ever be delivered.
+    case unsupportedDevice
+}
+
 @Observable
 final class DrivingDetector {
     private let motionActivityService: MotionActivityService
@@ -34,6 +52,13 @@ final class DrivingDetector {
     private let modelContext: ModelContext
 
     private(set) var isEnabled: Bool
+
+    /// What detection is really doing, as opposed to what the preference says.
+    /// Read by the settings screen so the toggle can't claim to be on while
+    /// nothing is watching. Cached rather than computed on demand so SwiftUI
+    /// re-renders when it moves: two of its inputs are CoreMotion statics that
+    /// no observation can see change.
+    private(set) var status: DrivingDetectionStatus = .off
 
     /// Set only while *this* detector owns the trip being recorded, so a trip
     /// the user started by hand is never silently finalized — nor notified
@@ -56,6 +81,11 @@ final class DrivingDetector {
     /// authorization-change callback for escalateToAlwaysIfNeeded to react to.
     private var escalationTimeoutTask: Task<Void, Never>?
     private static let escalationTimeout: Duration = .seconds(10)
+
+    /// How far back to look for a drive already under way when monitoring
+    /// arms. Long enough to catch a trip that began before the app was woken,
+    /// short enough that the reading still describes now.
+    private static let recentActivityLookback: TimeInterval = 300
 
     private static let startValidationWindow: TimeInterval = 60
     private static let stopConfirmationWindow: TimeInterval = 300
@@ -86,16 +116,14 @@ final class DrivingDetector {
         // rather than trusting the status seen at launch.
         locationService.onAuthorizationChange = { [weak self] _ in
             self?.escalateToAlwaysIfNeeded()
-            self?.startMonitoringIfPossible()
+            self?.refresh()
         }
 
         // Re-arms monitoring on every fresh process start — normal relaunch
         // after a force-quit, or a background relaunch triggered by a
         // significant location change — since isEnabled always starts false
         // in a brand new instance otherwise.
-        if isEnabled {
-            startMonitoringIfPossible()
-        }
+        refresh()
     }
 
     func enable() {
@@ -105,7 +133,7 @@ final class DrivingDetector {
         isEscalatingToAlways = true
         lastEscalationRequestStatus = nil
         escalateToAlwaysIfNeeded()
-        startMonitoringIfPossible()
+        refresh()
     }
 
     /// Stops watching motion activity. A trip already in progress is left
@@ -118,6 +146,7 @@ final class DrivingDetector {
         escalationTimeoutTask?.cancel()
         stopMonitoring()
         resetState()
+        status = currentStatus
     }
 
     /// Waits until the "Always" escalation started by enable() has settled —
@@ -185,34 +214,72 @@ final class DrivingDetector {
         }
     }
 
-    /// Arms monitoring only when it can actually work. Without "Always" the app
-    /// is never woken to see driving start, and without a motion coprocessor no
-    /// activity sample is ever delivered — in both cases starting would leave
-    /// the toggle looking active while recording nothing.
+    /// Recomputes `status` and arms monitoring if that has become possible.
+    ///
+    /// Must be called when the app returns to the foreground: Motion & Fitness
+    /// can be granted from the Settings app, and CoreMotion reports that to
+    /// nobody — without this, the user grants access, comes back, and finds a
+    /// toggle still claiming to be blocked while nothing watches.
+    func refresh() {
+        status = currentStatus
+        startMonitoringIfPossible()
+    }
+
+    private var currentStatus: DrivingDetectionStatus {
+        guard isEnabled else { return .off }
+        guard motionActivityService.isAvailable else { return .unsupportedDevice }
+        guard locationService.authorizationStatus == .authorizedAlways else { return .needsAlwaysLocation }
+        guard motionActivityService.isAuthorized else { return .needsMotionAccess }
+        return .running
+    }
+
+    /// Arms monitoring only when it can actually work — see `status`.
     private func startMonitoringIfPossible() {
-        guard isEnabled, !isMonitoring else { return }
-        guard locationService.authorizationStatus == .authorizedAlways else {
-            AppLog.recording.notice("Auto-detection is on but \"Always\" location isn't granted — monitoring stays off.")
+        guard !isMonitoring else { return }
+
+        switch status {
+        case .off:
             return
-        }
-        guard motionActivityService.isAvailable else {
+        case .unsupportedDevice:
             AppLog.recording.notice("Motion activity is unavailable on this device — auto-detection can't run.")
             return
-        }
-        // Never let arming monitoring be what asks for Motion & Fitness:
-        // startActivityUpdates raises the prompt on its own, so a cold start
-        // with the preference still on would show it straight away, outside
-        // the onboarding step that is meant to introduce it. Asking is done
-        // explicitly, and only there.
-        guard motionActivityService.isAuthorized else {
+        case .needsAlwaysLocation:
+            AppLog.recording.notice("Auto-detection is on but \"Always\" location isn't granted — monitoring stays off.")
+            return
+        case .needsMotionAccess:
+            // Never let arming monitoring be what asks for Motion & Fitness:
+            // startActivityUpdates raises the prompt on its own, so a cold
+            // start with the preference still on would show it straight away,
+            // outside the onboarding step that is meant to introduce it.
+            // Asking is done explicitly, and only there.
             AppLog.recording.notice("Motion & Fitness isn't granted — monitoring stays off rather than prompting from here.")
             return
+        case .running:
+            break
         }
 
         isMonitoring = true
         locationService.startSignificantLocationMonitoring()
         motionActivityService.startMonitoring { [weak self] activity in
             self?.handle(activity)
+        }
+        catchUpWithDrivingAlreadyUnderWay()
+    }
+
+    /// Core Motion delivers only changes from the moment monitoring arms, so a
+    /// drive already in progress produces nothing until it ends. This is the
+    /// path that catches it — most importantly when a significant location
+    /// change has just relaunched the app mid-journey, which is exactly the
+    /// case automatic detection exists to cover.
+    private func catchUpWithDrivingAlreadyUnderWay() {
+        Task { [weak self] in
+            guard let self else { return }
+            guard await motionActivityService.isAutomotiveNow(lookingBack: Self.recentActivityLookback) else { return }
+            // Conditions can have changed while the query was in flight.
+            guard isEnabled, isMonitoring, !tripRecorder.isRecording else { return }
+            AppLog.recording.notice("Picking up a drive that was already under way when monitoring armed.")
+            clearPendingDecision()
+            startProvisionalTrip()
         }
     }
 

@@ -36,6 +36,13 @@ final class NotificationService: NSObject, UNUserNotificationCenterDelegate {
     /// generated once the app is opened.
     var shouldOpenReportsTab = false
 
+    /// Raised when the user taps a trip-confirmation notification itself rather
+    /// than one of its Yes/No actions. Consumed — and reset — by RootTabView.
+    /// Without it that tap did nothing at all on a running app: the review
+    /// screen is otherwise only ever presented at launch, so a detected trip
+    /// could sit unconfirmed with nothing left pointing at it.
+    var shouldOpenPendingTripsReview = false
+
     init(modelContext: ModelContext, unitSettingsService: UnitSettingsService) {
         self.modelContext = modelContext
         self.unitSettingsService = unitSettingsService
@@ -162,10 +169,17 @@ final class NotificationService: NSObject, UNUserNotificationCenterDelegate {
             return
         }
 
-        guard
-            let idString = userInfo[Self.tripIDKey] as? String,
-            let trip = trip(withID: idString)
-        else { return }
+        guard let idString = userInfo[Self.tripIDKey] as? String else { return }
+
+        // Handled before the trip is looked up: opening the review screen is
+        // still the right answer when this particular trip has since been
+        // resolved elsewhere, since others may well be waiting.
+        if response.actionIdentifier == UNNotificationDefaultActionIdentifier {
+            shouldOpenPendingTripsReview = true
+            return
+        }
+
+        guard let trip = trip(withID: idString) else { return }
 
         switch response.actionIdentifier {
         case Self.confirmActionIdentifier:

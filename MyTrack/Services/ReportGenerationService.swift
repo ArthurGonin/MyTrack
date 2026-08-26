@@ -40,6 +40,7 @@ final class ReportGenerationService {
         source: ReportSource,
         profileName: String? = nil,
         includedVehicles: [Vehicle] = [],
+        pendingTripCount: Int = 0,
         in context: ModelContext
     ) async throws -> GeneratedReport {
         let generatedAt = Date.now
@@ -65,7 +66,8 @@ final class ReportGenerationService {
                 periodEnd: periodEnd,
                 generatedAt: generatedAt,
                 distanceUnit: distanceUnit,
-                vehicleNames: includedVehicleNames
+                vehicleNames: includedVehicleNames,
+                pendingTripCount: pendingTripCount
             )
             try pdfData.write(to: fileURL, options: .atomic)
         }.value
