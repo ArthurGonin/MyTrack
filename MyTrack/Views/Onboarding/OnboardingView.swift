@@ -17,6 +17,7 @@ private enum OnboardingStep: Int, CaseIterable {
     case name
     case vehicle
     case autoDetection
+    case paywall
 }
 
 struct OnboardingView: View {
@@ -29,6 +30,7 @@ struct OnboardingView: View {
     @State private var licensePlate = ""
     @State private var isPermissionDeniedAlertPresented = false
     @State private var isRequestingAutoDetectionPermissions = false
+    @State private var selectedPricingPlan: PricingPlan = .annual
 
     private var currentStep: OnboardingStep {
         OnboardingStep.allCases[currentStepIndex]
@@ -43,8 +45,20 @@ struct OnboardingView: View {
                 && !lastName.trimmingCharacters(in: .whitespaces).isEmpty
         case .vehicle:
             return !vehicleName.trimmingCharacters(in: .whitespaces).isEmpty
-        case .autoDetection:
+        case .autoDetection, .paywall:
             return true
+        }
+    }
+
+    /// Steps with their own action button (auto-detection's yes/no,
+    /// the paywall's "J'y vais") hide the shared bottom button instead of
+    /// using it, since a single "Continuer" wouldn't fit what they need.
+    private var showsGenericContinueButton: Bool {
+        switch currentStep {
+        case .welcome, .name, .vehicle:
+            return true
+        case .autoDetection, .paywall:
+            return false
         }
     }
 
@@ -52,7 +66,7 @@ struct OnboardingView: View {
         VStack(spacing: 24) {
             stepContent(for: currentStep)
 
-            if currentStep != .autoDetection {
+            if showsGenericContinueButton {
                 Button("Continuer") {
                     currentStepIndex += 1
                 }
@@ -87,9 +101,11 @@ struct OnboardingView: View {
         case .autoDetection:
             AutoDetectionStepView(
                 isRequestingPermissions: isRequestingAutoDetectionPermissions,
-                onEnable: enableAutoDetectionAndFinish,
-                onSkip: finish
+                onEnable: enableAutoDetectionAndContinue,
+                onSkip: { currentStepIndex += 1 }
             )
+        case .paywall:
+            PaywallStepView(selectedPlan: $selectedPricingPlan, onContinue: finish)
         }
     }
 
@@ -98,7 +114,7 @@ struct OnboardingView: View {
     /// long as any of those prompts is still awaiting an answer. Moves on
     /// only once the whole chain has settled, whatever the outcome, rather
     /// than racing ahead of the system dialogs.
-    private func enableAutoDetectionAndFinish() {
+    private func enableAutoDetectionAndContinue() {
         switch appServices.locationService.authorizationStatus {
         case .denied, .restricted:
             isPermissionDeniedAlertPresented = true
@@ -109,7 +125,7 @@ struct OnboardingView: View {
                 appServices.drivingDetector.enable()
                 await appServices.drivingDetector.waitForAuthorizationSettled()
                 isRequestingAutoDetectionPermissions = false
-                finish()
+                currentStepIndex += 1
             }
         }
     }
@@ -133,6 +149,9 @@ struct OnboardingView: View {
         // tied to the auto-detection step, since more steps may still follow
         // it and notifications are also used for report-ready alerts.
         appServices.notificationService.requestAuthorization()
+
+        // TODO: hand off to the real purchase flow for selectedPricingPlan
+        // once it exists; for now "J'y vais" just completes onboarding.
         appServices.onboardingService.hasCompletedOnboarding = true
     }
 }
