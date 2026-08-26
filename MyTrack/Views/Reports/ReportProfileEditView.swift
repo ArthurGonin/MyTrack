@@ -37,6 +37,11 @@ struct ReportProfileEditView: View {
                         Text(label(for: periodicity)).tag(periodicity)
                     }
                 }
+                if profile.periodicity != .none, profile.periodicity != .custom, let nextDueDate = profile.nextDueDate {
+                    Text("Le prochain rapport sera envoyé le \(nextDueDate.formatted(date: .long, time: .omitted))")
+                        .font(.footnote)
+                        .foregroundStyle(.secondary)
+                }
                 if profile.periodicity == .custom {
                     Stepper(
                         "Tous les \(profile.customIntervalDays) jours",
