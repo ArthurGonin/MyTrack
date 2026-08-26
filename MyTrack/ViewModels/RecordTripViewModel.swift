@@ -35,7 +35,10 @@ struct RecordTripViewModel {
         default:
             let vehicle = vehicleService.selectedVehicle(in: context)
             tripRecorder.start(vehicle: vehicle, source: .manual)
-            return .started
+            // Recording refuses to start if authorization was revoked between
+            // the check above and now, leaving nothing recorded — surface that
+            // as a denial rather than showing a trip that isn't running.
+            return tripRecorder.isRecording ? .started : .permissionDenied
         }
     }
 

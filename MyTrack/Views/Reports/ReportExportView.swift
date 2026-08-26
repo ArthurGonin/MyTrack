@@ -8,6 +8,7 @@
 //
 
 import SwiftUI
+import OSLog
 import SwiftData
 
 struct ReportExportView: View {
@@ -30,6 +31,7 @@ struct ReportExportView: View {
     @State private var selectedVehicleIDs: Set<PersistentIdentifier> = []
     @State private var generatedReport: GeneratedReport?
     @State private var isGenerationFailedAlertPresented = false
+    @State private var isGenerating = false
 
     private var confirmedTrips: [Trip] {
         allTrips
@@ -48,10 +50,22 @@ struct ReportExportView: View {
     private var tripsToExport: [Trip] {
         switch mode {
         case .dateRange:
-            return confirmedTrips.filter { $0.startDate >= startDate && $0.startDate < endDate }
+            return confirmedTrips.filter { $0.startDate >= dateRangeStart && $0.startDate < dateRangeEnd }
         case .manualSelection:
             return confirmedTrips.filter { selectedTripIDs.contains($0.persistentModelID) }
         }
+    }
+
+    /// The pickers only offer days, so the range covers whole days. Using the
+    /// raw picker values would silently cut the end day off at whatever time of
+    /// day it happened to carry, dropping that afternoon's trips.
+    private var dateRangeStart: Date {
+        Calendar.current.startOfDay(for: startDate)
+    }
+
+    private var dateRangeEnd: Date {
+        let startOfEndDay = Calendar.current.startOfDay(for: endDate)
+        return Calendar.current.date(byAdding: .day, value: 1, to: startOfEndDay) ?? startOfEndDay
     }
 
     var body: some View {
@@ -109,8 +123,12 @@ struct ReportExportView: View {
                     Button("Annuler") { dismiss() }
                 }
                 ToolbarItem(placement: .confirmationAction) {
-                    Button("Générer") { generate() }
-                        .disabled(tripsToExport.isEmpty)
+                    if isGenerating {
+                        ProgressView()
+                    } else {
+                        Button("Générer") { generate() }
+                            .disabled(tripsToExport.isEmpty)
+                    }
                 }
             }
             .alert("Échec de la génération", isPresented: $isGenerationFailedAlertPresented) {
@@ -146,7 +164,7 @@ struct ReportExportView: View {
                         .foregroundStyle(.secondary)
                 }
                 Spacer()
-                Text(trip.formattedDistance)
+                Text(trip.formattedDistance(in: appServices.unitSettingsService.distanceUnit))
                     .foregroundStyle(.secondary)
                 Image(systemName: isSelected ? "checkmark.circle.fill" : "circle")
                     .foregroundStyle(isSelected ? Color.accentColor : Color.secondary)
@@ -177,30 +195,42 @@ struct ReportExportView: View {
     }
 
     private func generate() {
-        do {
-            generatedReport = try appServices.reportGenerationService.generateReport(
-                trips: tripsToExport,
-                periodStart: periodStart,
-                periodEnd: periodEnd,
-                source: .manual,
-                includedVehicles: includedVehicles,
-                in: modelContext
-            )
-        } catch {
-            isGenerationFailedAlertPresented = true
+        guard !isGenerating else { return }
+        isGenerating = true
+
+        let trips = tripsToExport
+        let vehicles = includedVehicles
+        let start = periodStart
+        let end = periodEnd
+
+        Task {
+            do {
+                generatedReport = try await appServices.reportGenerationService.generateReport(
+                    trips: trips,
+                    periodStart: start,
+                    periodEnd: end,
+                    source: .manual,
+                    includedVehicles: vehicles,
+                    in: modelContext
+                )
+            } catch {
+                AppLog.reports.error("Manual export failed: \(error.localizedDescription, privacy: .public)")
+                isGenerationFailedAlertPresented = true
+            }
+            isGenerating = false
         }
     }
 
     private var periodStart: Date {
         switch mode {
-        case .dateRange: return startDate
+        case .dateRange: return dateRangeStart
         case .manualSelection: return tripsToExport.map(\.startDate).min() ?? .now
         }
     }
 
     private var periodEnd: Date {
         switch mode {
-        case .dateRange: return endDate
+        case .dateRange: return dateRangeEnd
         case .manualSelection: return tripsToExport.map { $0.endDate ?? $0.startDate }.max() ?? .now
         }
     }

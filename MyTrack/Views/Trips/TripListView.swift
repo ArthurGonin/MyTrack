@@ -8,6 +8,7 @@ import SwiftData
 
 struct TripListView: View {
     @Environment(\.modelContext) private var modelContext
+    @Environment(AppServices.self) private var appServices
 
     // SwiftData's #Predicate macro doesn't support comparing enum-typed properties
     // directly (it can't build a key path to a plain enum case), so the confirmed-only
@@ -35,7 +36,7 @@ struct TripListView: View {
                     List {
                         ForEach(trips) { trip in
                             NavigationLink(value: trip) {
-                                TripRow(trip: trip)
+                                TripRow(trip: trip, distanceUnit: appServices.unitSettingsService.distanceUnit)
                             }
                         }
                         .onDelete { indexSet in
@@ -57,6 +58,7 @@ struct TripListView: View {
                     } label: {
                         Image(systemName: "square.and.arrow.up")
                     }
+                    .accessibilityLabel("Exporter un rapport")
                 }
             }
             .sheet(isPresented: $isPresentingExport) {
@@ -69,6 +71,7 @@ struct TripListView: View {
 
 private struct TripRow: View {
     let trip: Trip
+    let distanceUnit: DistanceUnit
 
     var body: some View {
         HStack {
@@ -80,7 +83,7 @@ private struct TripRow: View {
             }
             Spacer()
             VStack(alignment: .trailing) {
-                Text(trip.formattedDistance)
+                Text(trip.formattedDistance(in: distanceUnit))
                 Text(trip.formattedDuration)
                     .font(.caption)
                     .foregroundStyle(.secondary)

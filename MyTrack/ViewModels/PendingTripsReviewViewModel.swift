@@ -2,36 +2,23 @@
 //  PendingTripsReviewViewModel.swift
 //  MyTrack
 //
+//  Stateless like the other list view models: the pending trips themselves are
+//  read by the view through @Query, so the screen stays in step with the
+//  notification's Yes/No actions, which resolve the very same trips against
+//  SwiftData while this screen can be open.
+//
 
 import Foundation
 import SwiftData
-import Observation
 
-@Observable
-final class PendingTripsReviewViewModel {
-    private let modelContext: ModelContext
-    private(set) var pendingTrips: [Trip]
-
-    init(modelContext: ModelContext) {
-        self.modelContext = modelContext
-        let descriptor = FetchDescriptor<Trip>(sortBy: [SortDescriptor(\.startDate, order: .forward)])
-        let allTrips = (try? modelContext.fetch(descriptor)) ?? []
-        pendingTrips = allTrips.filter { $0.confirmationStatus == .pendingConfirmation }
-    }
-
-    var currentTrip: Trip? { pendingTrips.first }
-
-    func confirmCurrent() {
-        guard !pendingTrips.isEmpty else { return }
-        let trip = pendingTrips.removeFirst()
+struct PendingTripsReviewViewModel {
+    func confirm(_ trip: Trip, in context: ModelContext) {
         trip.confirmationStatus = .confirmed
-        try? modelContext.save()
+        context.saveOrLog()
     }
 
-    func discardCurrent() {
-        guard !pendingTrips.isEmpty else { return }
-        let trip = pendingTrips.removeFirst()
-        modelContext.delete(trip)
-        try? modelContext.save()
+    func discard(_ trip: Trip, in context: ModelContext) {
+        context.delete(trip)
+        context.saveOrLog()
     }
 }

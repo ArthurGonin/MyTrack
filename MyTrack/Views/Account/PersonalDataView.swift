@@ -2,6 +2,11 @@
 //  PersonalDataView.swift
 //  MyTrack
 //
+//  Edited through local state rather than bound straight to the UserProfile
+//  model: with a Save button on screen, typing must not already be committed
+//  to the shared model — leaving without saving has to actually discard, which
+//  binding to the @Model directly could not do.
+//
 
 import SwiftUI
 import SwiftData
@@ -10,38 +15,36 @@ struct PersonalDataView: View {
     @Environment(AppServices.self) private var appServices
     @Environment(\.modelContext) private var modelContext
     @Environment(\.dismiss) private var dismiss
+
     @State private var profile: UserProfile?
-    @State private var originalFirstName = ""
-    @State private var originalLastName = ""
-    @State private var originalEmail = ""
-    @State private var originalPhoneNumber = ""
+    @State private var firstName = ""
+    @State private var lastName = ""
+    @State private var email = ""
+    @State private var phoneNumber = ""
+    @State private var isSaveFailedAlertPresented = false
 
     private var isModified: Bool {
         guard let profile else { return false }
-        return profile.firstName != originalFirstName
-            || profile.lastName != originalLastName
-            || profile.email != originalEmail
-            || profile.phoneNumber != originalPhoneNumber
+        return firstName != profile.firstName
+            || lastName != profile.lastName
+            || email != profile.email
+            || phoneNumber != profile.phoneNumber
     }
 
     var body: some View {
         Form {
-            if let profile {
-                @Bindable var profile = profile
-
-                Section {
-                    TextField("Prénom", text: $profile.firstName)
-                    TextField("Nom", text: $profile.lastName)
-                }
-                Section {
-                    TextField("Adresse mail", text: $profile.email)
-                        .keyboardType(.emailAddress)
-                        .textContentType(.emailAddress)
-                        .autocapitalization(.none)
-                    TextField("Numéro de téléphone", text: $profile.phoneNumber)
-                        .keyboardType(.phonePad)
-                        .textContentType(.telephoneNumber)
-                }
+            Section {
+                TextField("Prénom", text: $firstName)
+                TextField("Nom", text: $lastName)
+            }
+            Section {
+                TextField("Adresse mail", text: $email)
+                    .keyboardType(.emailAddress)
+                    .textContentType(.emailAddress)
+                    .textInputAutocapitalization(.never)
+                TextField("Numéro de téléphone", text: $phoneNumber)
+                    .keyboardType(.phonePad)
+                    .textContentType(.telephoneNumber)
             }
         }
         .navigationTitle("Données personnelles")
@@ -53,25 +56,35 @@ struct PersonalDataView: View {
             }
         }
         .onAppear {
-            if profile == nil {
-                let currentProfile = appServices.userProfileService.currentProfile(in: modelContext)
-                profile = currentProfile
-                captureSnapshot(of: currentProfile)
-            }
+            guard profile == nil else { return }
+            let currentProfile = appServices.userProfileService.currentProfile(in: modelContext)
+            profile = currentProfile
+            firstName = currentProfile.firstName
+            lastName = currentProfile.lastName
+            email = currentProfile.email
+            phoneNumber = currentProfile.phoneNumber
         }
-    }
-
-    private func captureSnapshot(of profile: UserProfile) {
-        originalFirstName = profile.firstName
-        originalLastName = profile.lastName
-        originalEmail = profile.email
-        originalPhoneNumber = profile.phoneNumber
+        .alert("Enregistrement impossible", isPresented: $isSaveFailedAlertPresented) {
+            Button("OK", role: .cancel) {}
+        } message: {
+            Text("Tes informations n'ont pas pu être enregistrées. Réessaie.")
+        }
     }
 
     private func save() {
         guard let profile else { return }
-        try? modelContext.save()
-        captureSnapshot(of: profile)
+        profile.firstName = firstName
+        profile.lastName = lastName
+        profile.email = email
+        profile.phoneNumber = phoneNumber
+
+        // Deliberately not rolling back on failure: rollback discards every
+        // pending change in the shared context, which would throw away the
+        // route points of a trip being recorded in the background.
+        guard modelContext.saveOrLog() else {
+            isSaveFailedAlertPresented = true
+            return
+        }
         dismiss()
     }
 }

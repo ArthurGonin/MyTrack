@@ -13,28 +13,40 @@ import SwiftData
 struct PendingTripsReviewView: View {
     @Environment(\.modelContext) private var modelContext
     @Environment(\.dismiss) private var dismiss
-    @State private var viewModel: PendingTripsReviewViewModel?
+    @Environment(AppServices.self) private var appServices
+
+    // SwiftData's #Predicate macro can't compare an enum-typed property to a
+    // case, so the pending-only filter is applied in Swift. Reading them
+    // through @Query rather than a snapshot keeps this screen correct when the
+    // same trip is confirmed from the notification while it's open.
+    @Query(sort: \Trip.startDate, order: .forward) private var allTrips: [Trip]
+
+    private var pendingTrips: [Trip] {
+        allTrips.filter { $0.confirmationStatus == .pendingConfirmation }
+    }
+
+    private let viewModel = PendingTripsReviewViewModel()
 
     var body: some View {
         NavigationStack {
             Group {
-                if let trip = viewModel?.currentTrip {
+                if let trip = pendingTrips.first {
                     VStack(spacing: 16) {
                         Text(trip.startDate.formatted(date: .abbreviated, time: .shortened))
                             .foregroundStyle(.secondary)
-                        Text(trip.formattedDistance)
+                        Text(trip.formattedDistance(in: appServices.unitSettingsService.distanceUnit))
                             .font(.largeTitle)
                         Text(trip.formattedDuration)
                             .foregroundStyle(.secondary)
 
                         HStack(spacing: 16) {
                             Button("Non") {
-                                viewModel?.discardCurrent()
+                                viewModel.discard(trip, in: modelContext)
                             }
                             .buttonStyle(.bordered)
 
                             Button("Oui, enregistrer") {
-                                viewModel?.confirmCurrent()
+                                viewModel.confirm(trip, in: modelContext)
                             }
                             .buttonStyle(.borderedProminent)
                         }
@@ -47,13 +59,8 @@ struct PendingTripsReviewView: View {
             }
             .navigationTitle("Trajets en attente")
         }
-        .onAppear {
-            if viewModel == nil {
-                viewModel = PendingTripsReviewViewModel(modelContext: modelContext)
-            }
-        }
-        .onChange(of: viewModel?.pendingTrips.isEmpty) { _, isEmpty in
-            if isEmpty == true {
+        .onChange(of: pendingTrips.isEmpty) { _, isEmpty in
+            if isEmpty {
                 dismiss()
             }
         }
@@ -70,5 +77,6 @@ struct PendingTripsReviewView: View {
     trip.distanceMeters = 8300
     container.mainContext.insert(trip)
     return PendingTripsReviewView()
+        .environment(AppServices(modelContext: container.mainContext))
         .modelContainer(container)
 }

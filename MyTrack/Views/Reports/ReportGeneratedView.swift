@@ -11,7 +11,9 @@ import QuickLook
 
 struct ReportGeneratedView: View {
     let report: GeneratedReport
-    let fileURL: URL
+    /// Nil when the file's location can't be resolved — the sheet then just
+    /// confirms the report exists instead of failing to open a bogus path.
+    let fileURL: URL?
     let onDone: () -> Void
 
     @State private var previewURL: URL?

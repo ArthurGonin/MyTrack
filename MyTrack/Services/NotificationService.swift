@@ -11,6 +11,7 @@
 //
 
 import Foundation
+import OSLog
 import SwiftData
 import UserNotifications
 import Observation
@@ -19,6 +20,7 @@ import Observation
 final class NotificationService: NSObject, UNUserNotificationCenterDelegate {
     private let center = UNUserNotificationCenter.current()
     private let modelContext: ModelContext
+    private let unitSettingsService: UnitSettingsService
 
     private static let confirmCategoryIdentifier = "TRIP_CONFIRMATION"
     private static let confirmActionIdentifier = "TRIP_CONFIRM"
@@ -26,27 +28,39 @@ final class NotificationService: NSObject, UNUserNotificationCenterDelegate {
     private static let tripIDKey = "tripID"
     private static let reportReadyIdentifierPrefix = "REPORT_READY_"
 
-    init(modelContext: ModelContext) {
+    init(modelContext: ModelContext, unitSettingsService: UnitSettingsService) {
         self.modelContext = modelContext
+        self.unitSettingsService = unitSettingsService
         super.init()
         center.delegate = self
         registerCategory()
     }
 
     func requestAuthorization() {
-        center.requestAuthorization(options: [.alert, .sound]) { _, _ in }
+        center.requestAuthorization(options: [.alert, .sound]) { granted, error in
+            if let error {
+                AppLog.recording.error("Notification authorization failed: \(error.localizedDescription, privacy: .public)")
+            } else if !granted {
+                AppLog.recording.notice("Notifications denied — trips will only be confirmable from the in-app review screen.")
+            }
+        }
     }
 
     func scheduleTripConfirmationNotification(for trip: Trip) {
         let content = UNMutableNotificationContent()
         content.title = "Trajet terminé"
-        content.body = "\(trip.formattedDistance) en \(trip.formattedDuration). Enregistrer ce trajet ?"
+        let distance = trip.formattedDistance(in: unitSettingsService.distanceUnit)
+        content.body = "\(distance) en \(trip.formattedDuration). Enregistrer ce trajet ?"
         content.sound = .default
         content.categoryIdentifier = Self.confirmCategoryIdentifier
         content.userInfo = [Self.tripIDKey: trip.id.uuidString]
 
         let request = UNNotificationRequest(identifier: trip.id.uuidString, content: content, trigger: nil)
-        center.add(request)
+        center.add(request) { error in
+            if let error {
+                AppLog.recording.error("Trip confirmation notification failed: \(error.localizedDescription, privacy: .public)")
+            }
+        }
     }
 
     /// Schedules the "your periodic report is ready" nudge for `dueDate`. The report
@@ -66,7 +80,11 @@ final class NotificationService: NSObject, UNUserNotificationCenterDelegate {
         let components = Calendar.current.dateComponents([.year, .month, .day, .hour, .minute], from: dueDate)
         let trigger = UNCalendarNotificationTrigger(dateMatching: components, repeats: false)
         let request = UNNotificationRequest(identifier: identifier, content: content, trigger: trigger)
-        center.add(request)
+        center.add(request) { error in
+            if let error {
+                AppLog.reports.error("Report-ready notification failed: \(error.localizedDescription, privacy: .public)")
+            }
+        }
     }
 
     func cancelReportReadyNotification(profileID: UUID) {
@@ -136,10 +154,10 @@ final class NotificationService: NSObject, UNUserNotificationCenterDelegate {
         switch response.actionIdentifier {
         case Self.confirmActionIdentifier:
             trip.confirmationStatus = .confirmed
-            try? modelContext.save()
+            modelContext.saveOrLog()
         case Self.discardActionIdentifier:
             modelContext.delete(trip)
-            try? modelContext.save()
+            modelContext.saveOrLog()
         default:
             break
         }

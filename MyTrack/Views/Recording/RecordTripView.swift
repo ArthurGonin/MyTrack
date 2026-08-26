@@ -98,7 +98,11 @@ struct RecordTripView: View {
     }
 
     private func formattedDistance(_ meters: Double) -> String {
-        String(format: "%.2f km", meters / 1000)
+        TripFormatting.distance(
+            meters: meters,
+            unit: appServices.unitSettingsService.distanceUnit,
+            fractionDigits: 2
+        )
     }
 }
 

@@ -18,12 +18,11 @@ struct VehicleListViewModel {
             licensePlate: (trimmedPlate?.isEmpty ?? true) ? nil : trimmedPlate
         )
         context.insert(vehicle)
-        try? context.save()
+        context.saveOrLog()
     }
 
     func deleteVehicle(_ vehicle: Vehicle, in context: ModelContext) {
-        context.delete(vehicle)
-        try? context.save()
+        vehicleService.delete(vehicle, in: context)
     }
 
     func selectVehicle(_ vehicle: Vehicle, in context: ModelContext) {

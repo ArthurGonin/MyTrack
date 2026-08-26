@@ -14,9 +14,17 @@ struct AccountSettingsView: View {
 
     @State private var isPermissionDeniedAlertPresented = false
     @State private var isDeleteConfirmationPresented = false
+    @State private var isDeletionFailedAlertPresented = false
 
-    // TODO: remplacer par l'App Store ID réel une fois l'app publiée sur App Store Connect.
-    private let appStoreID = "TODO_APP_STORE_ID"
+    // TODO: renseigner l'App Store ID réel une fois l'app publiée sur App Store
+    // Connect. Tant qu'il vaut nil, la ligne « Laisser un avis » reste
+    // désactivée plutôt que d'ouvrir un lien mort.
+    private let appStoreID: String? = nil
+
+    private var appStoreReviewURL: URL? {
+        guard let appStoreID else { return nil }
+        return URL(string: "itms-apps://itunes.apple.com/app/id\(appStoreID)?action=write-review")
+    }
 
     private var viewModel: RecordTripViewModel {
         RecordTripViewModel(
@@ -29,7 +37,9 @@ struct AccountSettingsView: View {
     }
 
     var body: some View {
-        NavigationStack {
+        @Bindable var unitSettings = appServices.unitSettingsService
+
+        return NavigationStack {
             Form {
                 Section {
                     NavigationLink("Données personnelles") {
@@ -55,6 +65,18 @@ struct AccountSettingsView: View {
                 }
 
                 Section {
+                    Picker("Distance", selection: $unitSettings.distanceUnit) {
+                        ForEach(DistanceUnit.allCases) { unit in
+                            Text(unit.label).tag(unit)
+                        }
+                    }
+                    // Two options don't warrant pushing a whole screen.
+                    .pickerStyle(.menu)
+                } header: {
+                    Text("Unités")
+                }
+
+                Section {
                     NavigationLink("Rapport") {
                         ReportSettingsView()
                     }
@@ -62,12 +84,13 @@ struct AccountSettingsView: View {
 
                 Section {
                     Button {
-                        if let url = URL(string: "itms-apps://itunes.apple.com/app/id\(appStoreID)?action=write-review") {
-                            UIApplication.shared.open(url)
+                        if let appStoreReviewURL {
+                            UIApplication.shared.open(appStoreReviewURL)
                         }
                     } label: {
                         Label("Laisser un avis", systemImage: "star.bubble")
                     }
+                    .disabled(appStoreReviewURL == nil)
 
                     Button("Supprimer le compte", role: .destructive) {
                         isDeleteConfirmationPresented = true
@@ -98,10 +121,9 @@ struct AccountSettingsView: View {
             } message: {
                 Text("Autorise l'accès à la position dans Réglages pour activer le suivi automatique.")
             }
-            .confirmationDialog(
+            .alert(
                 "Supprimer le compte ?",
-                isPresented: $isDeleteConfirmationPresented,
-                titleVisibility: .visible
+                isPresented: $isDeleteConfirmationPresented
             ) {
                 Button("Supprimer", role: .destructive) {
                     deleteAccount()
@@ -109,13 +131,24 @@ struct AccountSettingsView: View {
 
                 Button("Annuler", role: .cancel) {}
             } message: {
-                Text("Tous tes trajets, véhicules et réglages seront supprimés définitivement.")
+                Text("Tous tes trajets, véhicules, rapports et réglages seront définitivement supprimés. Cette action est irréversible.")
+            }
+            .alert("Suppression incomplète", isPresented: $isDeletionFailedAlertPresented) {
+                Button("OK", role: .cancel) {}
+            } message: {
+                Text("Tes données n'ont pas pu être entièrement supprimées. Réessaie.")
             }
         }
     }
 
     private func deleteAccount() {
-        appServices.eraseAllData(in: modelContext)
+        // Only report success once the deletion actually reached the store:
+        // otherwise everything would come back at the next launch, after the
+        // user was told their account was gone.
+        guard appServices.eraseAllData(in: modelContext) else {
+            isDeletionFailedAlertPresented = true
+            return
+        }
         dismiss()
     }
 }

@@ -16,19 +16,19 @@ final class ReportProfileService {
     func createProfile(name: String, in context: ModelContext) -> ReportProfile {
         let profile = ReportProfile(name: name)
         context.insert(profile)
-        try? context.save()
+        context.saveOrLog()
         return profile
     }
 
     func deleteProfile(_ profile: ReportProfile, in context: ModelContext) {
         context.delete(profile)
-        try? context.save()
+        context.saveOrLog()
     }
 
     @discardableResult
     func updateName(_ name: String, for profile: ReportProfile, in context: ModelContext) -> ReportProfile {
         profile.name = name
-        try? context.save()
+        context.saveOrLog()
         return profile
     }
 
@@ -47,7 +47,7 @@ final class ReportProfileService {
                 customIntervalDays: profile.customIntervalDays
             )
         }
-        try? context.save()
+        context.saveOrLog()
         return profile
     }
 
@@ -57,7 +57,7 @@ final class ReportProfileService {
     func updateCustomInterval(days: Int, for profile: ReportProfile, in context: ModelContext) -> ReportProfile {
         profile.periodicity = .custom
         profile.customIntervalDays = max(1, days)
-        try? context.save()
+        context.saveOrLog()
         return profile
     }
 
@@ -66,14 +66,14 @@ final class ReportProfileService {
     func updateCustomNextDueDate(_ date: Date, for profile: ReportProfile, in context: ModelContext) -> ReportProfile {
         profile.periodicity = .custom
         profile.nextDueDate = date
-        try? context.save()
+        context.saveOrLog()
         return profile
     }
 
     @discardableResult
     func updateVehicles(_ vehicles: [Vehicle], for profile: ReportProfile, in context: ModelContext) -> ReportProfile {
         profile.vehicles = vehicles
-        try? context.save()
+        context.saveOrLog()
         return profile
     }
 
@@ -100,7 +100,7 @@ final class ReportProfileService {
             periodicity: profile.periodicity,
             customIntervalDays: profile.customIntervalDays
         )
-        try? context.save()
+        context.saveOrLog()
         return profile.nextDueDate
     }
 }

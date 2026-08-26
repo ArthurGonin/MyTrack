@@ -9,6 +9,7 @@
 //
 
 import Foundation
+import OSLog
 import CoreLocation
 import Observation
 
@@ -19,6 +20,11 @@ final class LocationService: NSObject, CLLocationManagerDelegate {
     private(set) var authorizationStatus: CLAuthorizationStatus
 
     var onLocationUpdate: ((CLLocation) -> Void)?
+
+    /// Fires whenever the system reports an authorization change, including the
+    /// initial one at launch. DrivingDetector uses it to arm (or stay off) as
+    /// soon as "Always" is granted or revoked from Settings.
+    var onAuthorizationChange: ((CLAuthorizationStatus) -> Void)?
 
     override init() {
         authorizationStatus = manager.authorizationStatus
@@ -34,7 +40,16 @@ final class LocationService: NSObject, CLLocationManagerDelegate {
         manager.requestAlwaysAuthorization()
     }
 
-    func startActiveTracking() {
+    /// Returns false when location isn't authorized, so the caller can avoid
+    /// recording a trip that could never receive a single point — authorization
+    /// can be revoked from Settings long after a recording path was set up.
+    @discardableResult
+    func startActiveTracking() -> Bool {
+        guard authorizationStatus == .authorizedAlways || authorizationStatus == .authorizedWhenInUse else {
+            AppLog.recording.error("GPS tracking not started: location isn't authorized.")
+            return false
+        }
+
         // Only request background continuation when we actually have "Always"
         // authorization — setting this true without it throws at runtime, and
         // it would otherwise reject perfectly valid When-In-Use manual trips.
@@ -44,6 +59,7 @@ final class LocationService: NSObject, CLLocationManagerDelegate {
         manager.distanceFilter = 10
         manager.pausesLocationUpdatesAutomatically = false
         manager.startUpdatingLocation()
+        return true
     }
 
     func stopActiveTracking() {
@@ -65,6 +81,11 @@ final class LocationService: NSObject, CLLocationManagerDelegate {
 
     func locationManagerDidChangeAuthorization(_ manager: CLLocationManager) {
         authorizationStatus = manager.authorizationStatus
+        onAuthorizationChange?(authorizationStatus)
+    }
+
+    func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
+        AppLog.recording.error("Location manager failed: \(error.localizedDescription, privacy: .public)")
     }
 
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {

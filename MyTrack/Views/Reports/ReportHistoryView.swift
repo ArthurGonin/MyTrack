@@ -60,7 +60,14 @@ struct ReportHistoryView: View {
                     HStack(spacing: 6) {
                         Text("\(report.tripCount) trajet\(report.tripCount > 1 ? "s" : "")")
                         Text("·")
-                        Text(String(format: "%.1f km", report.totalDistanceMeters / 1000))
+                        // Formatted live, so this follows the current setting —
+                        // while the PDF it opens keeps the unit it was made
+                        // with, being a frozen document. The two can therefore
+                        // disagree after a unit change; that's intended.
+                        Text(TripFormatting.distance(
+                            meters: report.totalDistanceMeters,
+                            unit: appServices.unitSettingsService.distanceUnit
+                        ))
                     }
                     .font(.caption)
                     .foregroundStyle(.secondary)

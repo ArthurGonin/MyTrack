@@ -8,11 +8,13 @@
 //
 
 import Foundation
+import OSLog
 import SwiftData
 
 final class ReportGenerationService {
     private let reportsDirectoryName = "Reports"
     private let userProfileService: UserProfileService
+    private let unitSettingsService: UnitSettingsService
 
     private static let fileNameDateFormatter: DateFormatter = {
         let formatter = DateFormatter()
@@ -21,10 +23,15 @@ final class ReportGenerationService {
         return formatter
     }()
 
-    init(userProfileService: UserProfileService) {
+    init(userProfileService: UserProfileService, unitSettingsService: UnitSettingsService) {
         self.userProfileService = userProfileService
+        self.unitSettingsService = unitSettingsService
     }
 
+    /// Rendering a long report — hundreds of rows across several pages — takes
+    /// long enough to drop frames, so the drawing and the file write happen off
+    /// the main thread. The trips are snapshotted into `TripReportRow` values
+    /// first, because SwiftData models can't be read from another thread.
     @discardableResult
     func generateReport(
         trips: [Trip],
@@ -34,28 +41,41 @@ final class ReportGenerationService {
         profileName: String? = nil,
         includedVehicles: [Vehicle] = [],
         in context: ModelContext
-    ) throws -> GeneratedReport {
+    ) async throws -> GeneratedReport {
         let generatedAt = Date.now
         let includedVehicleNames = includedVehicles.map(\.name)
-        let pdfData = TripReportPDFRenderer.render(
-            trips: trips,
-            periodStart: periodStart,
-            periodEnd: periodEnd,
-            generatedAt: generatedAt,
-            vehicleNames: includedVehicleNames
-        )
+        let totalDistanceMeters = trips.reduce(0) { $0 + $1.distanceMeters }
+        // Read once here, on the main actor: the PDF is a frozen document, so
+        // it keeps the unit in force when it was produced even if the user
+        // switches afterwards.
+        let distanceUnit = unitSettingsService.distanceUnit
+        let rows = trips
+            .sorted { $0.startDate < $1.startDate }
+            .map { TripReportRow(trip: $0, unit: distanceUnit) }
 
         let directory = try reportsDirectory()
         let userProfile = userProfileService.currentProfile(in: context)
         let fileName = uniqueFileName(for: userProfile, generatedAt: generatedAt, in: directory)
-        try pdfData.write(to: directory.appendingPathComponent(fileName), options: .atomic)
+        let fileURL = directory.appendingPathComponent(fileName)
+
+        try await Task.detached(priority: .userInitiated) {
+            let pdfData = TripReportPDFRenderer.render(
+                rows: rows,
+                periodStart: periodStart,
+                periodEnd: periodEnd,
+                generatedAt: generatedAt,
+                distanceUnit: distanceUnit,
+                vehicleNames: includedVehicleNames
+            )
+            try pdfData.write(to: fileURL, options: .atomic)
+        }.value
 
         let report = GeneratedReport(
             periodStart: periodStart,
             periodEnd: periodEnd,
             fileName: fileName,
-            tripCount: trips.count,
-            totalDistanceMeters: trips.reduce(0) { $0 + $1.distanceMeters },
+            tripCount: rows.count,
+            totalDistanceMeters: totalDistanceMeters,
             source: source,
             profileName: profileName,
             includedVehicleNames: includedVehicleNames
@@ -65,15 +85,25 @@ final class ReportGenerationService {
         return report
     }
 
-    func fileURL(for report: GeneratedReport) -> URL {
-        (try? reportsDirectory())?.appendingPathComponent(report.fileName)
-            ?? FileManager.default.temporaryDirectory.appendingPathComponent(report.fileName)
+    /// `nil` when the Documents directory can't be reached: the caller then has
+    /// nothing to open or delete, rather than being handed a path that was
+    /// never written to and failing later with "file not found".
+    func fileURL(for report: GeneratedReport) -> URL? {
+        guard let directory = try? reportsDirectory() else {
+            AppLog.reports.error("Reports directory unavailable — no URL for \(report.fileName, privacy: .public).")
+            return nil
+        }
+        return directory.appendingPathComponent(report.fileName)
     }
 
     func deleteReport(_ report: GeneratedReport, in context: ModelContext) {
-        try? FileManager.default.removeItem(at: fileURL(for: report))
+        if let url = fileURL(for: report) {
+            // A file that's already gone isn't worth reporting: the record is
+            // being removed either way.
+            try? FileManager.default.removeItem(at: url)
+        }
         context.delete(report)
-        try? context.save()
+        context.saveOrLog()
     }
 
     /// Builds a file name like "PrenomNom_25-08-2026_14-30-05.pdf" from the user's

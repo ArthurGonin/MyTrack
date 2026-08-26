@@ -26,6 +26,8 @@ struct AccountButton: View {
         }
         .buttonStyle(.plain)
         .glassEffect(.regular.interactive(), in: .circle)
+        // Without this VoiceOver just reads the initial letter.
+        .accessibilityLabel("Compte et réglages")
     }
 }
 

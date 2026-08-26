@@ -77,6 +77,7 @@ struct VehiclePickerView: View {
                     } label: {
                         Image(systemName: "plus")
                     }
+                    .accessibilityLabel("Ajouter un véhicule")
                 }
             }
             .sheet(isPresented: $isPresentingAddVehicle) {

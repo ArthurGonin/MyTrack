@@ -10,6 +10,7 @@ struct TripDetailView: View {
     let trip: Trip
 
     @Environment(\.modelContext) private var modelContext
+    @Environment(AppServices.self) private var appServices
     @State private var isPresentingVehiclePicker = false
 
     var body: some View {
@@ -20,7 +21,10 @@ struct TripDetailView: View {
                     LabeledContent("Fin", value: endDate.formatted(date: .abbreviated, time: .shortened))
                 }
                 LabeledContent("Durée", value: trip.formattedDuration)
-                LabeledContent("Distance", value: trip.formattedDistance)
+                LabeledContent(
+                    "Distance",
+                    value: trip.formattedDistance(in: appServices.unitSettingsService.distanceUnit)
+                )
             }
             Section("Détails") {
                 Button {
@@ -47,7 +51,7 @@ struct TripDetailView: View {
         .sheet(isPresented: $isPresentingVehiclePicker) {
             VehiclePickerView(selectedVehicle: trip.vehicle) { vehicle in
                 trip.vehicle = vehicle
-                try? modelContext.save()
+                modelContext.saveOrLog()
             }
         }
     }

@@ -18,6 +18,7 @@ final class AppServices {
     let vehicleService = VehicleService()
     let userProfileService = UserProfileService()
     let reportProfileService = ReportProfileService()
+    let unitSettingsService = UnitSettingsService()
     let locationService = LocationService()
     let motionActivityService = MotionActivityService()
     let reportGenerationService: ReportGenerationService
@@ -26,8 +27,14 @@ final class AppServices {
     let drivingDetector: DrivingDetector
 
     init(modelContext: ModelContext) {
-        reportGenerationService = ReportGenerationService(userProfileService: userProfileService)
-        notificationService = NotificationService(modelContext: modelContext)
+        reportGenerationService = ReportGenerationService(
+            userProfileService: userProfileService,
+            unitSettingsService: unitSettingsService
+        )
+        notificationService = NotificationService(
+            modelContext: modelContext,
+            unitSettingsService: unitSettingsService
+        )
         tripRecorder = TripRecorder(locationService: locationService, modelContext: modelContext)
         drivingDetector = DrivingDetector(
             motionActivityService: motionActivityService,
@@ -46,7 +53,13 @@ final class AppServices {
     /// the app comes back looking like a fresh install. `UserProfile` and
     /// `ReportSettings` aren't recreated here: their services fetch-or-create
     /// on next access, so deleting the existing rows is enough.
-    func eraseAllData(in context: ModelContext) {
+    ///
+    /// Returns whether the deletion actually reached the store. This is a
+    /// privacy promise, so a failed save must not be reported as done: the
+    /// deletes would look applied for the rest of the session and everything
+    /// would come back at the next launch.
+    @discardableResult
+    func eraseAllData(in context: ModelContext) -> Bool {
         if tripRecorder.isRecording {
             tripRecorder.discard()
         }
@@ -79,6 +92,6 @@ final class AppServices {
             }
         }
 
-        try? context.save()
+        return context.saveOrLog()
     }
 }

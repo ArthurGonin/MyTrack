@@ -29,6 +29,10 @@ final class TripRecorder {
     private static let checkpointInterval = 10
     private static let maxPlausibleSpeed: CLLocationSpeed = 60 // m/s (~216 km/h) — rejects GPS glitches
 
+    /// Whether the trip in progress has at least one accepted GPS point.
+    /// A trip that has none would be saved as an empty 0 km route.
+    var hasRecordedRoutePoints: Bool { lastAcceptedLocation != nil }
+
     init(locationService: LocationService, modelContext: ModelContext) {
         self.locationService = locationService
         self.modelContext = modelContext
@@ -59,15 +63,26 @@ final class TripRecorder {
                 trip.endLongitude = lastPoint.longitude
             }
         }
-        try? modelContext.save()
+        modelContext.saveOrLog()
     }
 
+    /// Starts recording, unless location isn't authorized — in which case no
+    /// Trip row is created at all, rather than leaving an empty one behind that
+    /// could never receive a single point. Callers check `isRecording` to know.
     func start(vehicle: Vehicle?, source: TripSource) {
         guard !isRecording else { return }
 
+        locationService.onLocationUpdate = { [weak self] location in
+            self?.handle(location)
+        }
+        guard locationService.startActiveTracking() else {
+            locationService.onLocationUpdate = nil
+            return
+        }
+
         let trip = Trip(startDate: .now, source: source, vehicle: vehicle)
         modelContext.insert(trip)
-        try? modelContext.save()
+        modelContext.saveOrLog()
 
         activeTrip = trip
         lastAcceptedLocation = nil
@@ -75,11 +90,6 @@ final class TripRecorder {
         currentDistanceMeters = 0
         currentStartDate = trip.startDate
         isRecording = true
-
-        locationService.onLocationUpdate = { [weak self] location in
-            self?.handle(location)
-        }
-        locationService.startActiveTracking()
     }
 
     /// Stops tracking and deletes the in-progress trip entirely — used when
@@ -89,7 +99,7 @@ final class TripRecorder {
         locationService.stopActiveTracking()
         locationService.onLocationUpdate = nil
         modelContext.delete(trip)
-        try? modelContext.save()
+        modelContext.saveOrLog()
         resetState()
     }
 
@@ -110,7 +120,7 @@ final class TripRecorder {
             trip.endLongitude = last.coordinate.longitude
         }
         trip.distanceMeters = currentDistanceMeters
-        try? modelContext.save()
+        modelContext.saveOrLog()
 
         resetState()
         return trip
@@ -129,10 +139,12 @@ final class TripRecorder {
         guard let trip = activeTrip else { return }
 
         if let last = lastAcceptedLocation {
+            // A point that isn't strictly newer than the last accepted one is a
+            // duplicate or an out-of-order delivery: it can't be speed-checked,
+            // so it's dropped rather than let through unchecked.
             let elapsed = location.timestamp.timeIntervalSince(last.timestamp)
-            if elapsed > 0, last.distance(from: location) / elapsed > Self.maxPlausibleSpeed {
-                return
-            }
+            guard elapsed > 0 else { return }
+            guard last.distance(from: location) / elapsed <= Self.maxPlausibleSpeed else { return }
         }
 
         if trip.startLatitude == nil {
@@ -157,7 +169,7 @@ final class TripRecorder {
         pointsSinceLastCheckpoint += 1
         if pointsSinceLastCheckpoint >= Self.checkpointInterval {
             pointsSinceLastCheckpoint = 0
-            try? modelContext.save()
+            modelContext.saveOrLog()
         }
     }
 }
