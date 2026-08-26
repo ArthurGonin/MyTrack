@@ -5,12 +5,19 @@
   "settings" : {
     "_applicationInternalID" : "0",
     "_developerTeamID" : "0",
-    "_lastSynchronizedDate" : 0
+    "_lastSynchronizedDate" : 0,
+    "_locale" : "fr_FR",
+    "_storefront" : "FRA"
   },
   "subscriptionGroups" : [
     {
       "id" : "6740000001",
       "localizations" : [
+        {
+          "description" : "",
+          "locale" : "en_US",
+          "name" : "MyTrack Premium"
+        },
         {
           "description" : "",
           "locale" : "fr_FR",
@@ -33,6 +40,11 @@
           },
           "localizations" : [
             {
+              "description" : "Full access to MyTrack",
+              "displayName" : "Annual",
+              "locale" : "en_US"
+            },
+            {
               "description" : "Accès complet à MyTrack",
               "displayName" : "Annuel",
               "locale" : "fr_FR"
@@ -53,6 +65,11 @@
           "internalID" : "6740000201",
           "introductoryOffer" : null,
           "localizations" : [
+            {
+              "description" : "Full access to MyTrack",
+              "displayName" : "Monthly",
+              "locale" : "en_US"
+            },
             {
               "description" : "Accès complet à MyTrack",
               "displayName" : "Mensuel",

@@ -15,6 +15,7 @@
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
 				Info.plist,
+				MyTrack.storekit,
 			);
 			target = 2792C3B0303DC54700B0CD26 /* MyTrack */;
 		};
