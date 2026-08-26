@@ -20,13 +20,17 @@ struct TripListView: View {
         allTrips.filter { $0.confirmationStatus == .confirmed }
     }
 
+    private var deletedTripsCount: Int {
+        allTrips.filter { $0.confirmationStatus == .deleted }.count
+    }
+
     private let viewModel = TripListViewModel()
     @State private var isPresentingExport = false
 
     var body: some View {
         NavigationStack {
             Group {
-                if trips.isEmpty {
+                if trips.isEmpty && deletedTripsCount == 0 {
                     ContentUnavailableView(
                         "Aucun trajet",
                         systemImage: "map",
@@ -34,14 +38,32 @@ struct TripListView: View {
                     )
                 } else {
                     List {
-                        ForEach(trips) { trip in
-                            NavigationLink(value: trip) {
-                                TripRow(trip: trip, distanceUnit: appServices.unitSettingsService.distanceUnit)
+                        if !trips.isEmpty {
+                            Section {
+                                ForEach(trips) { trip in
+                                    NavigationLink(value: trip) {
+                                        TripRow(trip: trip, distanceUnit: appServices.unitSettingsService.distanceUnit)
+                                    }
+                                }
+                                .onDelete { indexSet in
+                                    for index in indexSet {
+                                        viewModel.moveToTrash(trips[index], in: modelContext)
+                                    }
+                                }
                             }
                         }
-                        .onDelete { indexSet in
-                            for index in indexSet {
-                                viewModel.deleteTrip(trips[index], in: modelContext)
+                        Section {
+                            NavigationLink {
+                                DeletedTripsView()
+                            } label: {
+                                HStack {
+                                    Label("Trajets supprimés", systemImage: "trash")
+                                    Spacer()
+                                    if deletedTripsCount > 0 {
+                                        Text("\(deletedTripsCount)")
+                                            .foregroundStyle(.secondary)
+                                    }
+                                }
                             }
                         }
                     }
@@ -70,7 +92,7 @@ struct TripListView: View {
     }
 }
 
-private struct TripRow: View {
+struct TripRow: View {
     let trip: Trip
     let distanceUnit: DistanceUnit
 
