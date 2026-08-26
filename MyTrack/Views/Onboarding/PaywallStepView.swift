@@ -76,8 +76,6 @@ struct PaywallStepView: View {
                     Text("* Certaines apps concurrentes facturent en fonction du kilométrage parcouru.")
                         .font(.caption)
                         .foregroundStyle(.secondary)
-
-                    pricingOptions
                 }
             }
 
@@ -87,6 +85,13 @@ struct PaywallStepView: View {
             }
 
             VStack(spacing: 8) {
+                // Le tarif reste hors du ScrollView, avec le bouton d'achat :
+                // c'est ce sur quoi l'écran demande de se prononcer, donc ça ne
+                // doit jamais dépendre d'un défilement. Seul l'argumentaire
+                // défile.
+                pricingOptions
+                    .padding(.bottom, 4)
+
                 // maxWidth belongs on the label — on the button it only widens
                 // the surrounding frame and leaves the control hugging "J'y vais".
                 Button { purchase() } label: {
@@ -99,6 +104,8 @@ struct PaywallStepView: View {
                     .font(.footnote)
                     .buttonStyle(.plain)
                     .foregroundStyle(.secondary)
+
+                legalFooter
             }
             .disabled(isLoadingProducts || isPurchasing || isRestoring)
         }
@@ -135,6 +142,35 @@ struct PaywallStepView: View {
             } else {
                 isRestoreFailedAlertPresented = true
             }
+        }
+    }
+
+    /// Exigé par la règle App Review 3.1.2 : durée et reconduction annoncées
+    /// en clair, plus un lien vers les conditions d'utilisation et la
+    /// politique de confidentialité.
+    private var legalFooter: some View {
+        VStack(spacing: 6) {
+            Text("Renouvellement automatique, résiliable à tout moment depuis ton compte App Store. Sans résiliation au moins 24 h avant la fin de l'essai, l'abonnement devient payant.")
+                .multilineTextAlignment(.center)
+
+            HStack(spacing: 6) {
+                legalLink("Conditions d'utilisation", url: LegalLinks.termsOfUse)
+                Text("·")
+                legalLink("Confidentialité", url: LegalLinks.privacyPolicy)
+            }
+        }
+        .font(.caption2)
+        .foregroundStyle(.secondary)
+    }
+
+    /// Grisé tant que l'URL n'est pas renseignée dans `LegalLinks` : un lien
+    /// mort serait pire qu'un libellé inerte.
+    @ViewBuilder
+    private func legalLink(_ title: String, url: URL?) -> some View {
+        if let url {
+            Link(title, destination: url)
+        } else {
+            Text(title).foregroundStyle(.tertiary)
         }
     }
 
