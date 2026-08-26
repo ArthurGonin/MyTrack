@@ -9,11 +9,13 @@
 
 import SwiftData
 import SwiftUI
+import UIKit
 
 private enum OnboardingStep: Int, CaseIterable {
     case welcome
     case name
     case vehicle
+    case autoDetection
 }
 
 struct OnboardingView: View {
@@ -24,13 +26,10 @@ struct OnboardingView: View {
     @State private var lastName = ""
     @State private var vehicleName = ""
     @State private var licensePlate = ""
+    @State private var isPermissionDeniedAlertPresented = false
 
     private var currentStep: OnboardingStep {
         OnboardingStep.allCases[currentStepIndex]
-    }
-
-    private var isLastStep: Bool {
-        currentStepIndex == OnboardingStep.allCases.count - 1
     }
 
     private var canContinue: Bool {
@@ -42,26 +41,46 @@ struct OnboardingView: View {
                 && !lastName.trimmingCharacters(in: .whitespaces).isEmpty
         case .vehicle:
             return !vehicleName.trimmingCharacters(in: .whitespaces).isEmpty
+        case .autoDetection:
+            return true
         }
+    }
+
+    private var recordTripViewModel: RecordTripViewModel {
+        RecordTripViewModel(
+            tripRecorder: appServices.tripRecorder,
+            locationService: appServices.locationService,
+            vehicleService: appServices.vehicleService,
+            drivingDetector: appServices.drivingDetector,
+            notificationService: appServices.notificationService
+        )
     }
 
     var body: some View {
         VStack(spacing: 24) {
             stepContent(for: currentStep)
 
-            Button(isLastStep ? "Commencer" : "Continuer") {
-                if isLastStep {
-                    finish()
-                } else {
+            if currentStep != .autoDetection {
+                Button("Continuer") {
                     currentStepIndex += 1
                 }
+                .buttonStyle(.borderedProminent)
+                .controlSize(.large)
+                .disabled(!canContinue)
             }
-            .buttonStyle(.borderedProminent)
-            .controlSize(.large)
-            .disabled(!canContinue)
         }
         .padding()
         .appBackground()
+        .alert("Localisation refusée", isPresented: $isPermissionDeniedAlertPresented) {
+            Button("Réglages") {
+                if let url = URL(string: UIApplication.openSettingsURLString) {
+                    UIApplication.shared.open(url)
+                }
+            }
+            Button("Annuler", role: .cancel) {}
+        } message: {
+            Text("Autorise l'accès à la position dans Réglages pour activer le suivi automatique.")
+        }
     }
 
     @ViewBuilder
@@ -73,6 +92,21 @@ struct OnboardingView: View {
             NameStepView(firstName: $firstName, lastName: $lastName)
         case .vehicle:
             VehicleStepView(vehicleName: $vehicleName, licensePlate: $licensePlate)
+        case .autoDetection:
+            AutoDetectionStepView(onEnable: enableAutoDetectionAndFinish, onSkip: finish)
+        }
+    }
+
+    /// Requesting "Always" location can take two taps to fully grant (an
+    /// upgrade prompt after the first "When In Use" grant), same as the
+    /// toggle in Réglages — so onboarding finishes either way, and the user
+    /// can turn auto-detection on for good from there once granted.
+    private func enableAutoDetectionAndFinish() {
+        switch recordTripViewModel.enableAutoDetection() {
+        case .enabled, .permissionRequested:
+            finish()
+        case .permissionDenied:
+            isPermissionDeniedAlertPresented = true
         }
     }
 
