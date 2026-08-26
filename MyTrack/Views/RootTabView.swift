@@ -16,9 +16,11 @@ struct RootTabView: View {
 
     @Environment(\.modelContext) private var modelContext
     @Environment(AppServices.self) private var appServices
+    @Environment(\.scenePhase) private var scenePhase
     @Query private var allReports: [GeneratedReport]
     @State private var selectedTab: RootTab = .record
     @State private var isPendingReviewPresented = false
+    @State private var isGeneratingPeriodicReports = false
 
     /// Drives the badge on the Rapports tab. Filtered in Swift rather than in
     /// the query so the same `allReports` fetch stays reusable, and because the
@@ -65,6 +67,16 @@ struct RootTabView: View {
         .onChange(of: appServices.notificationService.shouldOpenReportsTab) { _, _ in
             openReportsTabIfRequested()
         }
+        // A report coming due while the app merely sits in the background used
+        // to wait for the next cold launch — which on a daily-use app can be
+        // weeks away. The user would tap "your report is ready", land on the
+        // Rapports tab and find nothing there. Launch can reach this too, on
+        // the .inactive -> .active transition, so it may run alongside the
+        // onAppear call; generatePeriodicReportsIfDue guards against that.
+        .onChange(of: scenePhase) { _, newPhase in
+            guard newPhase == .active else { return }
+            Task { await generatePeriodicReportsIfDue() }
+        }
     }
 
     /// Brings the user to the Rapports tab after they tap a "your report is
@@ -87,6 +99,14 @@ struct RootTabView: View {
     /// meanwhile. A profile that fails is left alone and simply retried next launch,
     /// without affecting the others.
     private func generatePeriodicReportsIfDue() async {
+        // Launch and the first foreground transition can both ask for this at
+        // once. Two runs racing on the same profile would each see the period
+        // as still due — nextDueDate only advances once generation finishes —
+        // and produce the same report twice.
+        guard !isGeneratingPeriodicReports else { return }
+        isGeneratingPeriodicReports = true
+        defer { isGeneratingPeriodicReports = false }
+
         for profile in appServices.reportProfileService.allProfiles(in: modelContext) {
             var generatedCount = 0
             while generatedCount < Self.maxCatchUpReportsPerProfile,

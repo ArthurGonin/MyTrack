@@ -49,12 +49,24 @@ struct PaywallStepView: View {
     let isLoadingProducts: Bool
     let isPurchasing: Bool
     let isRestoring: Bool
+    let hasAttemptedProductLoad: Bool
     let onPurchase: () async -> PurchaseOutcome
     let onRestore: () async -> Bool
+    let onRetryLoadProducts: () async -> Void
     let onContinue: () -> Void
 
     @State private var isPurchaseFailedAlertPresented = false
     @State private var isRestoreFailedAlertPresented = false
+    @State private var hasPurchaseFailed = false
+
+    /// Whether the store has had its chance and still can't sell anything here.
+    /// This screen is the only way into the app, so it must never trap someone
+    /// StoreKit simply can't serve — no network, a StoreKit outage, a device
+    /// that can't buy. A user who is merely undecided still has to choose:
+    /// this appears only once buying has actually proved impossible.
+    private var isStoreUnreachable: Bool {
+        (hasAttemptedProductLoad && products.isEmpty) || hasPurchaseFailed
+    }
 
     private var annualProduct: Product? {
         products.first { $0.id == PurchaseService.annualProductID }
@@ -105,12 +117,20 @@ struct PaywallStepView: View {
                     .buttonStyle(.plain)
                     .foregroundStyle(.secondary)
 
+                if isStoreUnreachable {
+                    Button("Continuer sans abonnement") { onContinue() }
+                        .font(.footnote)
+                        .buttonStyle(.plain)
+                        .foregroundStyle(.secondary)
+                }
+
                 legalFooter
 
                 #if DEBUG
-                // Debug-only: the paywall is otherwise a dead end, so any
-                // StoreKit hiccup would lock the rest of the app away while
-                // developing. Never compiled into a Release build.
+                // Debug-only shortcut past a working store, so developing
+                // doesn't require completing a purchase every time. The
+                // release build's own way out is the button above, which
+                // appears when buying has proved impossible.
                 Button("Ignorer (debug)") { onContinue() }
                     .font(.footnote)
                     .buttonStyle(.plain)
@@ -120,6 +140,12 @@ struct PaywallStepView: View {
             .disabled(isLoadingProducts || isPurchasing || isRestoring)
         }
         .padding()
+        // The one load attempt happens at launch; if it came back empty —
+        // no network at the time — this is the moment to try again, before
+        // concluding the store is out of reach.
+        .task {
+            if products.isEmpty { await onRetryLoadProducts() }
+        }
         .alert("Achat impossible", isPresented: $isPurchaseFailedAlertPresented) {
             Button("OK", role: .cancel) {}
         } message: {
@@ -140,6 +166,7 @@ struct PaywallStepView: View {
             case .userCancelled, .pending:
                 break
             case .failed:
+                hasPurchaseFailed = true
                 isPurchaseFailedAlertPresented = true
             }
         }
@@ -317,8 +344,10 @@ private struct PricingOptionCard: View {
         isLoadingProducts: false,
         isPurchasing: false,
         isRestoring: false,
+        hasAttemptedProductLoad: true,
         onPurchase: { .success },
         onRestore: { false },
+        onRetryLoadProducts: {},
         onContinue: {}
     )
     .appBackground()

@@ -42,6 +42,13 @@ final class PurchaseService {
     private(set) var isPurchasing = false
     private(set) var isRestoring = false
 
+    /// True once a load attempt has run to completion, whatever it produced.
+    /// Lets the paywall tell "the prices are still coming" apart from "this
+    /// device can't reach the store" — the difference between waiting and
+    /// offering a way past a screen that is otherwise the only door into the
+    /// app.
+    private(set) var hasAttemptedProductLoad = false
+
     /// True once a currently-entitled transaction exists for either
     /// product. Not consumed anywhere yet — see file header.
     private(set) var isSubscribed = false
@@ -71,11 +78,16 @@ final class PurchaseService {
     }
 
     /// No-op once products are loaded — called eagerly from init so pricing
-    /// is already there by the time onboarding reaches the paywall step.
+    /// is already there by the time onboarding reaches the paywall step, and
+    /// callable again to retry an attempt that came back empty (no network at
+    /// launch, StoreKit not ready yet).
     func loadProducts() async {
-        guard products.isEmpty else { return }
+        guard products.isEmpty, !isLoadingProducts else { return }
         isLoadingProducts = true
-        defer { isLoadingProducts = false }
+        defer {
+            isLoadingProducts = false
+            hasAttemptedProductLoad = true
+        }
         do {
             let loaded = try await Product.products(for: Self.orderedProductIDs)
             products = loaded.sorted { lhs, rhs in

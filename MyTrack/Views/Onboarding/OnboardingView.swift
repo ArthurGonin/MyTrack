@@ -155,8 +155,10 @@ struct OnboardingView: View {
                 isLoadingProducts: appServices.purchaseService.isLoadingProducts,
                 isPurchasing: appServices.purchaseService.isPurchasing,
                 isRestoring: appServices.purchaseService.isRestoring,
+                hasAttemptedProductLoad: appServices.purchaseService.hasAttemptedProductLoad,
                 onPurchase: purchaseSelectedPlan,
                 onRestore: restoreAndCheckSubscribed,
+                onRetryLoadProducts: { await appServices.purchaseService.loadProducts() },
                 onContinue: finish
             )
             // Someone who is already entitled — reinstalling, or coming from
