@@ -106,6 +106,16 @@ struct PaywallStepView: View {
                     .foregroundStyle(.secondary)
 
                 legalFooter
+
+                #if DEBUG
+                // Debug-only: the paywall is otherwise a dead end, so any
+                // StoreKit hiccup would lock the rest of the app away while
+                // developing. Never compiled into a Release build.
+                Button("Ignorer (debug)") { onContinue() }
+                    .font(.footnote)
+                    .buttonStyle(.plain)
+                    .foregroundStyle(.tertiary)
+                #endif
             }
             .disabled(isLoadingProducts || isPurchasing || isRestoring)
         }
