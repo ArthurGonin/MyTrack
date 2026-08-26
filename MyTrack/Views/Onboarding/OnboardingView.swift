@@ -159,6 +159,15 @@ struct OnboardingView: View {
                 onRestore: restoreAndCheckSubscribed,
                 onContinue: finish
             )
+            // Someone who is already entitled — reinstalling, or coming from
+            // another device — must not be asked to pay a second time, so the
+            // paywall closes itself as soon as StoreKit confirms the
+            // entitlement (which may land after the step is already on screen).
+            .task(id: appServices.purchaseService.isSubscribed) {
+                if appServices.purchaseService.isSubscribed {
+                    finish()
+                }
+            }
         }
     }
 
@@ -192,7 +201,12 @@ struct OnboardingView: View {
         }
     }
 
+    /// Idempotent: a successful purchase both returns `.success` and flips
+    /// `isSubscribed`, so two callers can reach this in the same run loop —
+    /// without the guard that would insert the vehicle twice.
     private func finish() {
+        guard !appServices.onboardingService.hasCompletedOnboarding else { return }
+
         let profile = appServices.userProfileService.currentProfile(in: modelContext)
         profile.firstName = firstName.trimmingCharacters(in: .whitespaces)
         profile.lastName = lastName.trimmingCharacters(in: .whitespaces)
