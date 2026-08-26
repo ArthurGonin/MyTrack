@@ -74,8 +74,14 @@ struct MyTrackApp: App {
 
     var body: some Scene {
         WindowGroup {
-            RootTabView()
-                .environment(appServices)
+            Group {
+                if appServices.onboardingService.hasCompletedOnboarding {
+                    RootTabView()
+                } else {
+                    OnboardingView()
+                }
+            }
+            .environment(appServices)
         }
         .modelContainer(modelContainer)
     }

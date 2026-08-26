@@ -19,6 +19,7 @@ final class AppServices {
     let userProfileService = UserProfileService()
     let reportProfileService = ReportProfileService()
     let unitSettingsService = UnitSettingsService()
+    let onboardingService = OnboardingService()
     let locationService = LocationService()
     let motionActivityService = MotionActivityService()
     let reportGenerationService: ReportGenerationService
@@ -72,6 +73,8 @@ final class AppServices {
         }
         drivingDetector.disable()
         notificationService.cancelAllNotifications()
+        onboardingService.resetToDefaults()
+        unitSettingsService.distanceUnit = .kilometers
 
         if let reports = try? context.fetch(FetchDescriptor<GeneratedReport>()) {
             for report in reports {
