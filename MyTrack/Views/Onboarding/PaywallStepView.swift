@@ -198,22 +198,27 @@ struct PaywallStepView: View {
         }
     }
 
+    /// Les deux cartes partagent un GlassEffectContainer pour que leurs
+    /// matériaux se fondent l'un dans l'autre au lieu d'être deux surfaces de
+    /// verre indépendantes posées côte à côte.
     private var pricingOptions: some View {
-        HStack(spacing: 12) {
-            PricingOptionCard(
-                isSelected: selectedPlan == .annual,
-                title: annualTitle,
-                subtitle: annualSubtitle
-            ) {
-                selectedPlan = .annual
-            }
+        GlassEffectContainer(spacing: 12) {
+            HStack(spacing: 12) {
+                PricingOptionCard(
+                    isSelected: selectedPlan == .annual,
+                    title: annualTitle,
+                    subtitle: annualSubtitle
+                ) {
+                    selectedPlan = .annual
+                }
 
-            PricingOptionCard(
-                isSelected: selectedPlan == .monthly,
-                title: monthlyTitle,
-                subtitle: nil
-            ) {
-                selectedPlan = .monthly
+                PricingOptionCard(
+                    isSelected: selectedPlan == .monthly,
+                    title: monthlyTitle,
+                    subtitle: nil
+                ) {
+                    selectedPlan = .monthly
+                }
             }
         }
     }
@@ -276,23 +281,22 @@ private struct PricingOptionCard: View {
             VStack(spacing: 4) {
                 Text(title)
                     .font(.headline)
+                    .foregroundStyle(isSelected ? Color.white : .primary)
                 Text(subtitle ?? " ")
                     .font(.footnote)
-                    .foregroundStyle(.secondary)
+                    .foregroundStyle(isSelected ? Color.white.opacity(0.85) : .secondary)
                     .opacity(subtitle == nil ? 0 : 1)
             }
             .frame(maxWidth: .infinity)
             .padding(.vertical, 16)
-            .background(
-                RoundedRectangle(cornerRadius: 14)
-                    .fill(isSelected ? Color.accentColor.opacity(0.15) : Color(uiColor: .secondarySystemBackground))
-            )
-            .overlay(
-                RoundedRectangle(cornerRadius: 14)
-                    .strokeBorder(isSelected ? Color.accentColor : .clear, lineWidth: 2)
-            )
         }
         .buttonStyle(.plain)
+        // La sélection se lit au matériau lui-même — verre teinté à l'accent
+        // contre verre neutre — plutôt qu'à un liseré dessiné par-dessus.
+        .glassEffect(
+            isSelected ? .regular.tint(.accentColor).interactive() : .regular.interactive(),
+            in: .rect(cornerRadius: 14)
+        )
     }
 }
 
