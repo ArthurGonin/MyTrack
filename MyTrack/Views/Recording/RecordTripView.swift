@@ -40,6 +40,9 @@ struct RecordTripView: View {
                                 .monospacedDigit()
                         }
                     }
+
+                    LiveTripMapView()
+                        .frame(maxWidth: .infinity, maxHeight: .infinity)
                 }
 
                 Button(viewModel.isRecording ? "Arrêter" : "Démarrer") {
