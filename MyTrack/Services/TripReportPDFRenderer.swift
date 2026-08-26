@@ -30,14 +30,23 @@ enum TripReportPDFRenderer {
         Column(title: "Source", x: margin + 440, width: pageWidth - margin - (margin + 440)),
     ]
 
-    static func render(trips: [Trip], periodStart: Date, periodEnd: Date, generatedAt: Date) -> Data {
+    static func render(
+        trips: [Trip],
+        periodStart: Date,
+        periodEnd: Date,
+        generatedAt: Date,
+        vehicleNames: [String] = []
+    ) -> Data {
         let bounds = CGRect(x: 0, y: 0, width: pageWidth, height: pageHeight)
         let renderer = UIGraphicsPDFRenderer(bounds: bounds, format: UIGraphicsPDFRendererFormat())
         let sortedTrips = trips.sorted { $0.startDate < $1.startDate }
 
         return renderer.pdfData { context in
             context.beginPage()
-            var y = drawFirstPageHeader(periodStart: periodStart, periodEnd: periodEnd, generatedAt: generatedAt, trips: sortedTrips)
+            var y = drawFirstPageHeader(
+                periodStart: periodStart, periodEnd: periodEnd, generatedAt: generatedAt,
+                trips: sortedTrips, vehicleNames: vehicleNames
+            )
             y = drawTableHeader(at: y)
 
             if sortedTrips.isEmpty {
@@ -55,7 +64,9 @@ enum TripReportPDFRenderer {
         }
     }
 
-    private static func drawFirstPageHeader(periodStart: Date, periodEnd: Date, generatedAt: Date, trips: [Trip]) -> CGFloat {
+    private static func drawFirstPageHeader(
+        periodStart: Date, periodEnd: Date, generatedAt: Date, trips: [Trip], vehicleNames: [String]
+    ) -> CGFloat {
         var y = margin
 
         "Rapport de trajets".draw(
@@ -71,7 +82,14 @@ enum TripReportPDFRenderer {
 
         "Généré le \(formattedDateTime(generatedAt))"
             .draw(at: CGPoint(x: margin, y: y), withAttributes: bodyAttributes)
-        y += 24
+        y += 16
+
+        if !vehicleNames.isEmpty {
+            "Véhicules : \(vehicleNames.joined(separator: ", "))"
+                .draw(at: CGPoint(x: margin, y: y), withAttributes: bodyAttributes)
+            y += 16
+        }
+        y += 8
 
         let totalDistanceMeters = trips.reduce(0) { $0 + $1.distanceMeters }
         let totalDuration = trips.reduce(0.0) { $0 + ($1.endDate ?? Date()).timeIntervalSince($1.startDate) }

@@ -31,19 +31,23 @@ final class ReportGenerationService {
         periodStart: Date,
         periodEnd: Date,
         source: ReportSource,
+        profileName: String? = nil,
+        includedVehicles: [Vehicle] = [],
         in context: ModelContext
     ) throws -> GeneratedReport {
         let generatedAt = Date.now
+        let includedVehicleNames = includedVehicles.map(\.name)
         let pdfData = TripReportPDFRenderer.render(
             trips: trips,
             periodStart: periodStart,
             periodEnd: periodEnd,
-            generatedAt: generatedAt
+            generatedAt: generatedAt,
+            vehicleNames: includedVehicleNames
         )
 
         let directory = try reportsDirectory()
-        let profile = userProfileService.currentProfile(in: context)
-        let fileName = uniqueFileName(for: profile, generatedAt: generatedAt, in: directory)
+        let userProfile = userProfileService.currentProfile(in: context)
+        let fileName = uniqueFileName(for: userProfile, generatedAt: generatedAt, in: directory)
         try pdfData.write(to: directory.appendingPathComponent(fileName), options: .atomic)
 
         let report = GeneratedReport(
@@ -52,7 +56,9 @@ final class ReportGenerationService {
             fileName: fileName,
             tripCount: trips.count,
             totalDistanceMeters: trips.reduce(0) { $0 + $1.distanceMeters },
-            source: source
+            source: source,
+            profileName: profileName,
+            includedVehicleNames: includedVehicleNames
         )
         context.insert(report)
         try context.save()

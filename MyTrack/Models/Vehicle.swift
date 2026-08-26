@@ -15,6 +15,9 @@ final class Vehicle {
     @Relationship(deleteRule: .nullify, inverse: \Trip.vehicle)
     var trips: [Trip]? = []
 
+    @Relationship(inverse: \ReportProfile.vehicles)
+    var reportProfiles: [ReportProfile]? = []
+
     init(name: String, licensePlate: String? = nil, isSelected: Bool = false) {
         self.name = name
         self.licensePlate = licensePlate

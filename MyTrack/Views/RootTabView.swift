@@ -29,52 +29,67 @@ struct RootTabView: View {
             if hasPendingTrips {
                 isPendingReviewPresented = true
             }
-            generatePeriodicReportIfDue()
+            generatePeriodicReportsIfDue()
         }
         .sheet(isPresented: $isPendingReviewPresented) {
             PendingTripsReviewView()
         }
     }
 
-    /// If a periodic report is due (per ReportSettings.nextDueDate), generates it from
-    /// the confirmed trips in that period and reschedules the "report ready" notification.
-    /// On failure, nextDueDate is left untouched so the check simply retries next launch.
-    private func generatePeriodicReportIfDue() {
-        let settings = appServices.reportSettingsService.currentSettings(in: modelContext)
-        guard let period = appServices.reportSettingsService.periodDueForGeneration(settings: settings, now: .now) else {
-            return
-        }
-
-        let periodStart = period.periodStart
-        let periodEnd = period.periodEnd
-        let descriptor = FetchDescriptor<Trip>(
-            predicate: #Predicate { $0.startDate >= periodStart && $0.startDate < periodEnd }
-        )
-        let tripsInPeriod = ((try? modelContext.fetch(descriptor)) ?? [])
-            .filter { $0.confirmationStatus == .confirmed }
-
-        do {
-            try appServices.reportGenerationService.generateReport(
-                trips: tripsInPeriod,
-                periodStart: periodStart,
-                periodEnd: periodEnd,
-                source: .periodic,
-                in: modelContext
-            )
-            if let newDueDate = appServices.reportSettingsService.advanceAfterGeneration(
-                settings: settings, generatedThrough: periodEnd, in: modelContext
-            ) {
-                appServices.notificationService.scheduleReportReadyNotification(for: newDueDate)
+    /// Checks every periodic report profile independently: for each one that's due (per
+    /// its own `nextDueDate`), generates it from the confirmed trips in that period —
+    /// filtered to the profile's vehicles, if any are set — and reschedules that
+    /// profile's own "report ready" notification. On failure, a profile's `nextDueDate`
+    /// is left untouched so it simply retries next launch, without affecting the others.
+    private func generatePeriodicReportsIfDue() {
+        let profiles = appServices.reportProfileService.allProfiles(in: modelContext)
+        for profile in profiles {
+            guard let period = appServices.reportProfileService.periodDueForGeneration(profile: profile, now: .now) else {
+                continue
             }
-        } catch {
-            // Left nextDueDate untouched on purpose — retried on next launch.
+
+            let periodStart = period.periodStart
+            let periodEnd = period.periodEnd
+            let descriptor = FetchDescriptor<Trip>(
+                predicate: #Predicate { $0.startDate >= periodStart && $0.startDate < periodEnd }
+            )
+            var tripsInPeriod = ((try? modelContext.fetch(descriptor)) ?? [])
+                .filter { $0.confirmationStatus == .confirmed }
+            if !profile.vehicles.isEmpty {
+                let vehicleIDs = Set(profile.vehicles.map(\.persistentModelID))
+                tripsInPeriod = tripsInPeriod.filter { trip in
+                    guard let vehicle = trip.vehicle else { return false }
+                    return vehicleIDs.contains(vehicle.persistentModelID)
+                }
+            }
+
+            do {
+                try appServices.reportGenerationService.generateReport(
+                    trips: tripsInPeriod,
+                    periodStart: periodStart,
+                    periodEnd: periodEnd,
+                    source: .periodic,
+                    profileName: profile.name,
+                    includedVehicles: profile.vehicles,
+                    in: modelContext
+                )
+                if let newDueDate = appServices.reportProfileService.advanceAfterGeneration(
+                    profile: profile, generatedThrough: periodEnd, in: modelContext
+                ) {
+                    appServices.notificationService.scheduleReportReadyNotification(
+                        for: newDueDate, profileID: profile.id, profileName: profile.name
+                    )
+                }
+            } catch {
+                // Left nextDueDate untouched on purpose — retried on next launch.
+            }
         }
     }
 }
 
 #Preview {
     let container = try! ModelContainer(
-        for: Trip.self, Vehicle.self, UserProfile.self, ReportSettings.self, GeneratedReport.self,
+        for: Trip.self, Vehicle.self, UserProfile.self, ReportProfile.self, GeneratedReport.self,
         configurations: ModelConfiguration(isStoredInMemoryOnly: true)
     )
     return RootTabView()

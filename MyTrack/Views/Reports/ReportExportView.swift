@@ -21,16 +21,28 @@ struct ReportExportView: View {
     @Environment(\.dismiss) private var dismiss
 
     @Query(sort: \Trip.startDate, order: .reverse) private var allTrips: [Trip]
+    @Query(sort: \Vehicle.name) private var allVehicles: [Vehicle]
 
     @State private var mode: ExportMode = .dateRange
     @State private var startDate = Calendar.current.date(byAdding: .month, value: -1, to: .now) ?? .now
     @State private var endDate = Date.now
     @State private var selectedTripIDs: Set<PersistentIdentifier> = []
+    @State private var selectedVehicleIDs: Set<PersistentIdentifier> = []
     @State private var generatedReport: GeneratedReport?
     @State private var isGenerationFailedAlertPresented = false
 
     private var confirmedTrips: [Trip] {
-        allTrips.filter { $0.confirmationStatus == .confirmed }
+        allTrips
+            .filter { $0.confirmationStatus == .confirmed }
+            .filter { trip in
+                guard !selectedVehicleIDs.isEmpty else { return true }
+                guard let vehicle = trip.vehicle else { return false }
+                return selectedVehicleIDs.contains(vehicle.persistentModelID)
+            }
+    }
+
+    private var includedVehicles: [Vehicle] {
+        allVehicles.filter { selectedVehicleIDs.contains($0.persistentModelID) }
     }
 
     private var tripsToExport: [Trip] {
@@ -52,6 +64,24 @@ struct ReportExportView: View {
                 }
                 .pickerStyle(.segmented)
                 .listRowSeparator(.hidden)
+
+                if !allVehicles.isEmpty {
+                    Section {
+                        vehicleSelectionRow(named: "Tous les véhicules", isSelected: selectedVehicleIDs.isEmpty) {
+                            selectedVehicleIDs.removeAll()
+                        }
+                        ForEach(allVehicles) { vehicle in
+                            vehicleSelectionRow(
+                                named: vehicle.name,
+                                isSelected: selectedVehicleIDs.contains(vehicle.persistentModelID)
+                            ) {
+                                toggleVehicle(vehicle)
+                            }
+                        }
+                    } header: {
+                        Text("Véhicules")
+                    }
+                }
 
                 switch mode {
                 case .dateRange:
@@ -125,6 +155,27 @@ struct ReportExportView: View {
         .buttonStyle(.plain)
     }
 
+    private func vehicleSelectionRow(named name: String, isSelected: Bool, action: @escaping () -> Void) -> some View {
+        Button(action: action) {
+            HStack {
+                Text(name)
+                    .foregroundStyle(.primary)
+                Spacer()
+                Image(systemName: isSelected ? "checkmark.circle.fill" : "circle")
+                    .foregroundStyle(isSelected ? Color.accentColor : Color.secondary)
+            }
+        }
+        .buttonStyle(.plain)
+    }
+
+    private func toggleVehicle(_ vehicle: Vehicle) {
+        if selectedVehicleIDs.contains(vehicle.persistentModelID) {
+            selectedVehicleIDs.remove(vehicle.persistentModelID)
+        } else {
+            selectedVehicleIDs.insert(vehicle.persistentModelID)
+        }
+    }
+
     private func generate() {
         do {
             generatedReport = try appServices.reportGenerationService.generateReport(
@@ -132,6 +183,7 @@ struct ReportExportView: View {
                 periodStart: periodStart,
                 periodEnd: periodEnd,
                 source: .manual,
+                includedVehicles: includedVehicles,
                 in: modelContext
             )
         } catch {
@@ -156,7 +208,7 @@ struct ReportExportView: View {
 
 #Preview {
     let container = try! ModelContainer(
-        for: Trip.self, Vehicle.self, UserProfile.self, ReportSettings.self, GeneratedReport.self,
+        for: Trip.self, Vehicle.self, UserProfile.self, ReportProfile.self, GeneratedReport.self,
         configurations: ModelConfiguration(isStoredInMemoryOnly: true)
     )
     return ReportExportView()

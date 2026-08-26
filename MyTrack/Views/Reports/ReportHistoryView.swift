@@ -49,6 +49,10 @@ struct ReportHistoryView: View {
         } label: {
             HStack {
                 VStack(alignment: .leading, spacing: 2) {
+                    if let profileName = report.profileName {
+                        Text(profileName)
+                            .font(.subheadline.weight(.medium))
+                    }
                     Text(
                         "\(report.periodStart.formatted(date: .abbreviated, time: .omitted)) – "
                         + report.periodEnd.formatted(date: .abbreviated, time: .omitted)
@@ -58,6 +62,13 @@ struct ReportHistoryView: View {
                         Text("·")
                         Text(String(format: "%.1f km", report.totalDistanceMeters / 1000))
                     }
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+                    Text(
+                        report.includedVehicleNames.isEmpty
+                            ? "Tous les véhicules"
+                            : report.includedVehicleNames.joined(separator: ", ")
+                    )
                     .font(.caption)
                     .foregroundStyle(.secondary)
                 }
@@ -71,7 +82,7 @@ struct ReportHistoryView: View {
 
 #Preview {
     let container = try! ModelContainer(
-        for: Trip.self, Vehicle.self, UserProfile.self, ReportSettings.self, GeneratedReport.self,
+        for: Trip.self, Vehicle.self, UserProfile.self, ReportProfile.self, GeneratedReport.self,
         configurations: ModelConfiguration(isStoredInMemoryOnly: true)
     )
     return NavigationStack {

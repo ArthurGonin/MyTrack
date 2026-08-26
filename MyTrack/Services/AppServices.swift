@@ -17,7 +17,7 @@ import Observation
 final class AppServices {
     let vehicleService = VehicleService()
     let userProfileService = UserProfileService()
-    let reportSettingsService = ReportSettingsService()
+    let reportProfileService = ReportProfileService()
     let locationService = LocationService()
     let motionActivityService = MotionActivityService()
     let reportGenerationService: ReportGenerationService
@@ -73,9 +73,9 @@ final class AppServices {
                 context.delete(profile)
             }
         }
-        if let settings = try? context.fetch(FetchDescriptor<ReportSettings>()) {
-            for setting in settings {
-                context.delete(setting)
+        if let profiles = try? context.fetch(FetchDescriptor<ReportProfile>()) {
+            for profile in profiles {
+                context.delete(profile)
             }
         }
 

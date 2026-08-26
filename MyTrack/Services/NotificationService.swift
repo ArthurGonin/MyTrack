@@ -24,7 +24,7 @@ final class NotificationService: NSObject, UNUserNotificationCenterDelegate {
     private static let confirmActionIdentifier = "TRIP_CONFIRM"
     private static let discardActionIdentifier = "TRIP_DISCARD"
     private static let tripIDKey = "tripID"
-    private static let reportReadyIdentifier = "REPORT_READY"
+    private static let reportReadyIdentifierPrefix = "REPORT_READY_"
 
     init(modelContext: ModelContext) {
         self.modelContext = modelContext
@@ -52,22 +52,29 @@ final class NotificationService: NSObject, UNUserNotificationCenterDelegate {
     /// Schedules the "your periodic report is ready" nudge for `dueDate`. The report
     /// itself isn't generated in the background — this just prompts the user to open
     /// the app, where the actual generation happens on next launch (see RootTabView).
-    func scheduleReportReadyNotification(for dueDate: Date) {
-        center.removePendingNotificationRequests(withIdentifiers: [Self.reportReadyIdentifier])
+    /// Identified per-profile so several periodic report profiles can each have their
+    /// own pending notification without cancelling one another.
+    func scheduleReportReadyNotification(for dueDate: Date, profileID: UUID, profileName: String) {
+        let identifier = reportReadyIdentifier(for: profileID)
+        center.removePendingNotificationRequests(withIdentifiers: [identifier])
 
         let content = UNMutableNotificationContent()
         content.title = "Votre rapport est prêt"
-        content.body = "Ouvre MyTrack pour consulter ton rapport de trajets."
+        content.body = "Le rapport « \(profileName) » est prêt dans MyTrack."
         content.sound = .default
 
         let components = Calendar.current.dateComponents([.year, .month, .day, .hour, .minute], from: dueDate)
         let trigger = UNCalendarNotificationTrigger(dateMatching: components, repeats: false)
-        let request = UNNotificationRequest(identifier: Self.reportReadyIdentifier, content: content, trigger: trigger)
+        let request = UNNotificationRequest(identifier: identifier, content: content, trigger: trigger)
         center.add(request)
     }
 
-    func cancelReportReadyNotification() {
-        center.removePendingNotificationRequests(withIdentifiers: [Self.reportReadyIdentifier])
+    func cancelReportReadyNotification(profileID: UUID) {
+        center.removePendingNotificationRequests(withIdentifiers: [reportReadyIdentifier(for: profileID)])
+    }
+
+    private func reportReadyIdentifier(for profileID: UUID) -> String {
+        Self.reportReadyIdentifierPrefix + profileID.uuidString
     }
 
     func cancelAllNotifications() {

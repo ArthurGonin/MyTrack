@@ -5,14 +5,16 @@
 
 import SwiftUI
 import SwiftData
+import UIKit
 
 struct AccountSettingsView: View {
     @Environment(AppServices.self) private var appServices
     @Environment(\.modelContext) private var modelContext
     @Environment(\.dismiss) private var dismiss
+
     @State private var isPermissionDeniedAlertPresented = false
     @State private var isDeleteConfirmationPresented = false
-    @State private var reportSettings: ReportSettings?
+
     // TODO: remplacer par l'App Store ID réel une fois l'app publiée sur App Store Connect.
     private let appStoreID = "TODO_APP_STORE_ID"
 
@@ -34,6 +36,7 @@ struct AccountSettingsView: View {
                         PersonalDataView()
                     }
                 }
+
                 Section {
                     Toggle("Suivi automatique", isOn: Binding(
                         get: { viewModel.isAutoDetectionEnabled },
@@ -50,71 +53,47 @@ struct AccountSettingsView: View {
                 } footer: {
                     Text("Détecte automatiquement tes trajets en voiture.")
                 }
+
                 Section {
-                    if let reportSettings {
-                        Picker("Fréquence des rapports", selection: Binding(
-                            get: { reportSettings.periodicity },
-                            set: { updatePeriodicity($0) }
-                        )) {
-                            ForEach(ReportPeriodicity.allCases, id: \.self) { periodicity in
-                                Text(label(for: periodicity)).tag(periodicity)
-                            }
-                        }
-                        if reportSettings.periodicity == .custom {
-                            Stepper(
-                                "Tous les \(reportSettings.customIntervalDays) jours",
-                                value: Binding(
-                                    get: { reportSettings.customIntervalDays },
-                                    set: { updateCustomInterval($0) }
-                                ),
-                                in: 1...365
-                            )
-                            DatePicker(
-                                "Prochain rapport",
-                                selection: Binding(
-                                    get: { reportSettings.nextDueDate ?? .now },
-                                    set: { updateCustomNextDueDate($0) }
-                                ),
-                                displayedComponents: [.date, .hourAndMinute]
-                            )
-                        }
+                    NavigationLink("Rapport") {
+                        ReportSettingsView()
                     }
-                    NavigationLink("Historique des rapports") {
-                        ReportHistoryView()
+                }
+
+                Section {
+                    Button {
+                        if let url = URL(string: "itms-apps://itunes.apple.com/app/id\(appStoreID)?action=write-review") {
+                            UIApplication.shared.open(url)
+                        }
+                    } label: {
+                        Label("Laisser un avis", systemImage: "star.bubble")
+                    }
+
+                    Button("Supprimer le compte", role: .destructive) {
+                        isDeleteConfirmationPresented = true
                     }
                 } footer: {
-                    Text("Génère automatiquement un rapport PDF des trajets à la fréquence choisie.")
-                }
-                Section {
-                    Section {
-                        Button {
-                            if let url = URL(string: "itms-apps://itunes.apple.com/app/id\(appStoreID)?action=write-review") {
-                                UIApplication.shared.open(url)
-                            }
-                        } label: {
-                            Label("Laisser un avis", systemImage: "star.bubble")
-                        }
-
-                        Button("Supprimer le compte", role: .destructive) {
-                            isDeleteConfirmationPresented = true
-                        }
-                    } footer: {
-                        Text("Supprime définitivement tous tes trajets, véhicules et réglages. Cette action est irréversible.")
-                    }
+                    Text("Supprime définitivement tous tes trajets, véhicules et réglages. Cette action est irréversible.")
                 }
             }
             .navigationTitle("Réglages")
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
-                    Button("Fermer") { dismiss() }
+                    Button("Fermer") {
+                        dismiss()
+                    }
                 }
             }
-            .alert("Localisation refusée", isPresented: $isPermissionDeniedAlertPresented) {
+            .alert(
+                "Localisation refusée",
+                isPresented: $isPermissionDeniedAlertPresented
+            ) {
                 Button("Réglages") {
                     if let url = URL(string: UIApplication.openSettingsURLString) {
                         UIApplication.shared.open(url)
                     }
                 }
+
                 Button("Annuler", role: .cancel) {}
             } message: {
                 Text("Autorise l'accès à la position dans Réglages pour activer le suivi automatique.")
@@ -124,67 +103,29 @@ struct AccountSettingsView: View {
                 isPresented: $isDeleteConfirmationPresented,
                 titleVisibility: .visible
             ) {
-                Button("Supprimer", role: .destructive) { deleteAccount() }
+                Button("Supprimer", role: .destructive) {
+                    deleteAccount()
+                }
+
                 Button("Annuler", role: .cancel) {}
             } message: {
                 Text("Tous tes trajets, véhicules et réglages seront supprimés définitivement.")
             }
-            .onAppear {
-                if reportSettings == nil {
-                    reportSettings = appServices.reportSettingsService.currentSettings(in: modelContext)
-                }
-            }
-        }
-    }
-
-    private func updatePeriodicity(_ periodicity: ReportPeriodicity) {
-        let updated = appServices.reportSettingsService.updatePeriodicity(periodicity, in: modelContext)
-        reportSettings = updated
-        rescheduleNotification(for: updated)
-    }
-
-    private func updateCustomInterval(_ days: Int) {
-        let updated = appServices.reportSettingsService.updateCustomInterval(days: days, in: modelContext)
-        reportSettings = updated
-        rescheduleNotification(for: updated)
-    }
-
-    private func updateCustomNextDueDate(_ date: Date) {
-        let updated = appServices.reportSettingsService.updateCustomNextDueDate(date, in: modelContext)
-        reportSettings = updated
-        rescheduleNotification(for: updated)
-    }
-
-    private func rescheduleNotification(for settings: ReportSettings) {
-        if let nextDueDate = settings.nextDueDate {
-            appServices.notificationService.scheduleReportReadyNotification(for: nextDueDate)
-        } else {
-            appServices.notificationService.cancelReportReadyNotification()
         }
     }
 
     private func deleteAccount() {
-        reportSettings = nil
         appServices.eraseAllData(in: modelContext)
         dismiss()
-    }
-
-    private func label(for periodicity: ReportPeriodicity) -> String {
-        switch periodicity {
-        case .none: return "Désactivé"
-        case .monthly: return "Mensuel"
-        case .quarterly: return "Trimestriel"
-        case .yearly: return "Annuel"
-        case .custom: return "Personnalisé"
-        }
     }
 }
 
 #Preview {
     let container = try! ModelContainer(
-        for: Trip.self, Vehicle.self, UserProfile.self, ReportSettings.self, GeneratedReport.self,
+        for: Trip.self, Vehicle.self, UserProfile.self, ReportProfile.self, GeneratedReport.self,
         configurations: ModelConfiguration(isStoredInMemoryOnly: true)
     )
+
     return AccountSettingsView()
         .environment(AppServices(modelContext: container.mainContext))
         .modelContainer(container)

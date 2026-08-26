@@ -21,6 +21,8 @@ final class GeneratedReport {
     var tripCount: Int
     var totalDistanceMeters: Double
     var source: ReportSource
+    var profileName: String?
+    var includedVehicleNames: [String]
 
     init(
         periodStart: Date,
@@ -28,7 +30,9 @@ final class GeneratedReport {
         fileName: String,
         tripCount: Int,
         totalDistanceMeters: Double,
-        source: ReportSource
+        source: ReportSource,
+        profileName: String? = nil,
+        includedVehicleNames: [String] = []
     ) {
         self.id = UUID()
         self.createdAt = .now
@@ -38,5 +42,7 @@ final class GeneratedReport {
         self.tripCount = tripCount
         self.totalDistanceMeters = totalDistanceMeters
         self.source = source
+        self.profileName = profileName
+        self.includedVehicleNames = includedVehicleNames
     }
 }
