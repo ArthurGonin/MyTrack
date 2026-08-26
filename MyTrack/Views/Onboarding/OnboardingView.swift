@@ -64,6 +64,11 @@ struct OnboardingView: View {
 
     var body: some View {
         VStack(spacing: 24) {
+            OnboardingProgressBar(
+                stepCount: OnboardingStep.allCases.count,
+                currentIndex: currentStepIndex
+            )
+
             stepContent(for: currentStep)
 
             if showsGenericContinueButton {
