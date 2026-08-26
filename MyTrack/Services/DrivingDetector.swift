@@ -158,8 +158,16 @@ final class DrivingDetector {
         case .notDetermined, .authorizedWhenInUse:
             guard lastEscalationRequestStatus != status else { return }
             lastEscalationRequestStatus = status
-            locationService.requestAlwaysAuthorization()
             armEscalationTimeout()
+            // Calling requestAlwaysAuthorization() synchronously from inside
+            // the very authorization-change callback that just reported the
+            // previous grant is unreliable — CoreLocation can silently drop
+            // it and never show the upgrade prompt. A short delay lets it
+            // settle first.
+            Task { [weak self] in
+                try? await Task.sleep(for: .milliseconds(500))
+                self?.locationService.requestAlwaysAuthorization()
+            }
         default:
             // Reached "Always", or the user declined outright — either way
             // there is nothing left to escalate toward.
