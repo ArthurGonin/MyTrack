@@ -14,6 +14,15 @@ final class MotionActivityService {
     /// where automatic detection can't be exercised at all.
     var isAvailable: Bool { CMMotionActivityManager.isActivityAvailable() }
 
+    /// Whether the user has already granted Motion & Fitness access.
+    ///
+    /// Worth checking before arming monitoring, because startActivityUpdates
+    /// raises the system prompt as a side effect: without this, the app asks
+    /// for motion access at whatever moment monitoring happens to start —
+    /// a cold launch, for instance — instead of at the point in onboarding
+    /// where the user asked for automatic tracking.
+    var isAuthorized: Bool { CMMotionActivityManager.authorizationStatus() == .authorized }
+
     /// Triggers the Motion & Fitness system prompt (if not already determined)
     /// and waits for the user's answer. CoreMotion has no dedicated "request
     /// authorization" API with a completion, so this queries a negligible

@@ -13,6 +13,7 @@ struct RecordTripViewModel {
     let vehicleService: VehicleService
     let drivingDetector: DrivingDetector
     let notificationService: NotificationService
+    let motionActivityService: MotionActivityService
 
     var isRecording: Bool { tripRecorder.isRecording }
     var currentDistanceMeters: Double { tripRecorder.currentDistanceMeters }
@@ -68,19 +69,21 @@ struct RecordTripViewModel {
     /// Turns auto-detection on and requests notification permission. Location
     /// itself is handled by DrivingDetector.enable(), which chains through
     /// whichever system prompts are still needed to reach "Always" on its own.
-    func enableAutoDetection() -> AutoDetectionEnableResult {
-        switch locationService.authorizationStatus {
-        case .denied, .restricted:
+    ///
+    /// Motion & Fitness is asked for here, up front, because monitoring now
+    /// refuses to start without it — and because leaving it to
+    /// startActivityUpdates would raise the prompt on some later launch
+    /// rather than on the tap that asked for automatic tracking.
+    func enableAutoDetection() async -> AutoDetectionEnableResult {
+        let status = locationService.authorizationStatus
+        guard status != .denied, status != .restricted else {
             return .permissionDenied
-        case .authorizedAlways:
-            drivingDetector.enable()
-            notificationService.requestAuthorization()
-            return .enabled
-        default:
-            drivingDetector.enable()
-            notificationService.requestAuthorization()
-            return .permissionRequested
         }
+
+        await motionActivityService.requestAuthorization()
+        drivingDetector.enable()
+        notificationService.requestAuthorization()
+        return status == .authorizedAlways ? .enabled : .permissionRequested
     }
 
     func disableAutoDetection() {

@@ -199,6 +199,15 @@ final class DrivingDetector {
             AppLog.recording.notice("Motion activity is unavailable on this device — auto-detection can't run.")
             return
         }
+        // Never let arming monitoring be what asks for Motion & Fitness:
+        // startActivityUpdates raises the prompt on its own, so a cold start
+        // with the preference still on would show it straight away, outside
+        // the onboarding step that is meant to introduce it. Asking is done
+        // explicitly, and only there.
+        guard motionActivityService.isAuthorized else {
+            AppLog.recording.notice("Motion & Fitness isn't granted — monitoring stays off rather than prompting from here.")
+            return
+        }
 
         isMonitoring = true
         locationService.startSignificantLocationMonitoring()

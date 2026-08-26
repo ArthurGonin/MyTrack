@@ -38,7 +38,8 @@ struct AccountSettingsView: View {
             locationService: appServices.locationService,
             vehicleService: appServices.vehicleService,
             drivingDetector: appServices.drivingDetector,
-            notificationService: appServices.notificationService
+            notificationService: appServices.notificationService,
+            motionActivityService: appServices.motionActivityService
         )
     }
 
@@ -58,8 +59,10 @@ struct AccountSettingsView: View {
                         get: { viewModel.isAutoDetectionEnabled },
                         set: { isOn in
                             if isOn {
-                                if viewModel.enableAutoDetection() == .permissionDenied {
-                                    isPermissionDeniedAlertPresented = true
+                                Task {
+                                    if await viewModel.enableAutoDetection() == .permissionDenied {
+                                        isPermissionDeniedAlertPresented = true
+                                    }
                                 }
                             } else {
                                 viewModel.disableAutoDetection()
