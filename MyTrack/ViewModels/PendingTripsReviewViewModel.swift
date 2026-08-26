@@ -18,7 +18,7 @@ struct PendingTripsReviewViewModel {
     }
 
     func discard(_ trip: Trip, in context: ModelContext) {
-        context.delete(trip)
+        trip.confirmationStatus = .deleted
         context.saveOrLog()
     }
 }

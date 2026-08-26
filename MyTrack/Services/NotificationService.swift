@@ -156,7 +156,7 @@ final class NotificationService: NSObject, UNUserNotificationCenterDelegate {
             trip.confirmationStatus = .confirmed
             modelContext.saveOrLog()
         case Self.discardActionIdentifier:
-            modelContext.delete(trip)
+            trip.confirmationStatus = .deleted
             modelContext.saveOrLog()
         default:
             break

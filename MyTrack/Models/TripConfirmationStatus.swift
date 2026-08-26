@@ -8,4 +8,5 @@ import Foundation
 enum TripConfirmationStatus: String, Codable {
     case pendingConfirmation
     case confirmed
+    case deleted
 }
