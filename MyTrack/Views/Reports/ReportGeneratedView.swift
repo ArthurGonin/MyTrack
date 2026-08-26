@@ -7,6 +7,7 @@
 //
 
 import SwiftUI
+import SwiftData
 import QuickLook
 
 struct ReportGeneratedView: View {
@@ -15,6 +16,9 @@ struct ReportGeneratedView: View {
     /// confirms the report exists instead of failing to open a bogus path.
     let fileURL: URL?
     let onDone: () -> Void
+
+    @Environment(AppServices.self) private var appServices
+    @Environment(\.modelContext) private var modelContext
 
     @State private var previewURL: URL?
 
@@ -35,13 +39,23 @@ struct ReportGeneratedView: View {
                     Button("Terminé") { onDone() }
                 }
             }
-            .onAppear { previewURL = fileURL }
+            .onAppear {
+                previewURL = fileURL
+                // The user is being shown the PDF right now, so it mustn't
+                // then turn up unopened — with a red dot and a tab badge — in
+                // the reports list they land back on.
+                appServices.reportGenerationService.markOpened(report, in: modelContext)
+            }
             .quickLookPreview($previewURL)
         }
     }
 }
 
 #Preview {
+    let container = try! ModelContainer(
+        for: Trip.self, Vehicle.self, UserProfile.self, ReportProfile.self, GeneratedReport.self,
+        configurations: ModelConfiguration(isStoredInMemoryOnly: true)
+    )
     let report = GeneratedReport(
         periodStart: .now.addingTimeInterval(-86400 * 30),
         periodEnd: .now,
@@ -50,5 +64,8 @@ struct ReportGeneratedView: View {
         totalDistanceMeters: 240_000,
         source: .manual
     )
+    container.mainContext.insert(report)
     return ReportGeneratedView(report: report, fileURL: URL(fileURLWithPath: "/tmp/preview.pdf"), onDone: {})
+        .environment(AppServices(modelContext: container.mainContext))
+        .modelContainer(container)
 }

@@ -26,7 +26,15 @@ final class NotificationService: NSObject, UNUserNotificationCenterDelegate {
     private static let confirmActionIdentifier = "TRIP_CONFIRM"
     private static let discardActionIdentifier = "TRIP_DISCARD"
     private static let tripIDKey = "tripID"
+    private static let reportReadyKey = "reportReady"
     private static let reportReadyIdentifierPrefix = "REPORT_READY_"
+
+    /// Raised when the user taps a "your report is ready" notification, so the
+    /// app can bring them to the Rapports tab. Consumed — and reset — by
+    /// RootTabView. The report itself isn't named here: at the time the
+    /// notification was scheduled it didn't exist yet, and it only gets
+    /// generated once the app is opened.
+    var shouldOpenReportsTab = false
 
     init(modelContext: ModelContext, unitSettingsService: UnitSettingsService) {
         self.modelContext = modelContext
@@ -76,6 +84,7 @@ final class NotificationService: NSObject, UNUserNotificationCenterDelegate {
         content.title = "Votre rapport est prêt"
         content.body = "Le rapport « \(profileName) » est prêt dans MyTrack."
         content.sound = .default
+        content.userInfo = [Self.reportReadyKey: true]
 
         let components = Calendar.current.dateComponents([.year, .month, .day, .hour, .minute], from: dueDate)
         let trigger = UNCalendarNotificationTrigger(dateMatching: components, repeats: false)
@@ -146,8 +155,15 @@ final class NotificationService: NSObject, UNUserNotificationCenterDelegate {
     ) {
         defer { completionHandler() }
 
+        let userInfo = response.notification.request.content.userInfo
+
+        if userInfo[Self.reportReadyKey] != nil {
+            shouldOpenReportsTab = true
+            return
+        }
+
         guard
-            let idString = response.notification.request.content.userInfo[Self.tripIDKey] as? String,
+            let idString = userInfo[Self.tripIDKey] as? String,
             let trip = trip(withID: idString)
         else { return }
 

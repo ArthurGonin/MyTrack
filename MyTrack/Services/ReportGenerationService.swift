@@ -96,6 +96,14 @@ final class ReportGenerationService {
         return directory.appendingPathComponent(report.fileName)
     }
 
+    /// Clears the report's unopened marker. Idempotent, so re-opening an old
+    /// report doesn't churn a save for nothing.
+    func markOpened(_ report: GeneratedReport, in context: ModelContext) {
+        guard report.openedAt == nil else { return }
+        report.openedAt = .now
+        context.saveOrLog()
+    }
+
     func deleteReport(_ report: GeneratedReport, in context: ModelContext) {
         if let url = fileURL(for: report) {
             // A file that's already gone isn't worth reporting: the record is

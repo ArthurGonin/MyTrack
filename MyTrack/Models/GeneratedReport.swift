@@ -23,6 +23,11 @@ final class GeneratedReport {
     var source: ReportSource
     var profileName: String?
     var includedVehicleNames: [String]
+    /// Nil until the user actually opens the PDF — what drives the red dot in
+    /// the reports list and the badge on the Rapports tab. A date rather than a
+    /// `Bool` so an existing store picks the property up as a plain optional,
+    /// with no migration plan needed.
+    var openedAt: Date?
 
     init(
         periodStart: Date,

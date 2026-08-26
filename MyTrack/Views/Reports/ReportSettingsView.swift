@@ -2,9 +2,10 @@
 //  ReportSettingsView.swift
 //  MyTrack
 //
-//  Reached from Account Settings ("Rapport"): the history of already
-//  generated reports, plus the list of periodic report profiles — each with
-//  its own frequency and vehicle filter.
+//  Reached from Account Settings: the list of periodic report profiles, each
+//  with its own frequency and vehicle filter. Only the configuration lives
+//  here — the reports these profiles produce show up in the Rapports tab,
+//  alongside the manual exports.
 //
 
 import SwiftUI
@@ -19,9 +20,6 @@ struct ReportSettingsView: View {
 
     var body: some View {
         Form {
-            Section {
-                NavigationLink("Historique des rapports", value: SettingsRoute.reportHistory(openingReportID: nil))
-            }
             Section {
                 if profiles.isEmpty {
                     ContentUnavailableView(
@@ -44,13 +42,11 @@ struct ReportSettingsView: View {
                 } label: {
                     Label("Configurer un nouveau rapport périodique", systemImage: "plus")
                 }
-            } header: {
-                Text("Rapports périodiques")
             } footer: {
-                Text("Génère automatiquement un rapport PDF par profil, à sa fréquence propre.")
+                Text("Génère automatiquement un rapport PDF par profil, à sa fréquence propre. Les rapports générés apparaissent dans l'onglet Rapports.")
             }
         }
-        .navigationTitle("Rapport")
+        .navigationTitle("Rapports périodiques")
         .navigationBarTitleDisplayMode(.inline)
         .navigationDestination(item: $newlyCreatedProfile) { profile in
             ReportProfileEditView(profile: profile)
