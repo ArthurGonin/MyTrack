@@ -23,8 +23,15 @@ final class AppServices {
     let motionActivityService = MotionActivityService()
     let reportGenerationService: ReportGenerationService
     let notificationService: NotificationService
+    let notificationInboxService = NotificationInboxService()
     let tripRecorder: TripRecorder
     let drivingDetector: DrivingDetector
+
+    /// Set when a report-ready notification is tapped in the bell inbox, so the
+    /// account settings sheet knows to deep-link straight to that report in the
+    /// history instead of opening on its default screen. Consumed once by
+    /// AccountToolbarModifier, which resets it back to nil.
+    var pendingReportToOpen: UUID?
 
     init(modelContext: ModelContext) {
         reportGenerationService = ReportGenerationService(
@@ -69,6 +76,11 @@ final class AppServices {
         if let reports = try? context.fetch(FetchDescriptor<GeneratedReport>()) {
             for report in reports {
                 reportGenerationService.deleteReport(report, in: context)
+            }
+        }
+        if let notifications = try? context.fetch(FetchDescriptor<AppNotification>()) {
+            for notification in notifications {
+                context.delete(notification)
             }
         }
         if let trips = try? context.fetch(FetchDescriptor<Trip>()) {

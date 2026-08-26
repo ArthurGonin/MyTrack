@@ -11,6 +11,7 @@ struct RootTabView: View {
     @Environment(\.modelContext) private var modelContext
     @Environment(AppServices.self) private var appServices
     @State private var isPendingReviewPresented = false
+    @State private var isNotificationReportPresented = false
 
     var body: some View {
         TabView {
@@ -37,6 +38,17 @@ struct RootTabView: View {
         }
         .sheet(isPresented: $isPendingReviewPresented) {
             PendingTripsReviewView()
+        }
+        // Handled once here, at the tab root, rather than in the per-tab
+        // account toolbar: TabView keeps both tabs alive, so a per-tab
+        // listener on `pendingReportToOpen` would fire twice and could try to
+        // present two settings sheets at once.
+        .onChange(of: appServices.pendingReportToOpen) { _, newValue in
+            isNotificationReportPresented = newValue != nil
+        }
+        .sheet(isPresented: $isNotificationReportPresented) {
+            AccountSettingsView(openingReportID: appServices.pendingReportToOpen)
+                .onDisappear { appServices.pendingReportToOpen = nil }
         }
     }
 
@@ -81,8 +93,9 @@ struct RootTabView: View {
             }
         }
 
+        let report: GeneratedReport
         do {
-            try await appServices.reportGenerationService.generateReport(
+            report = try await appServices.reportGenerationService.generateReport(
                 trips: tripsInPeriod,
                 periodStart: periodStart,
                 periodEnd: periodEnd,
@@ -98,6 +111,8 @@ struct RootTabView: View {
             return false
         }
 
+        appServices.notificationInboxService.addReportReadyNotification(for: report, in: modelContext)
+
         if let newDueDate = appServices.reportProfileService.advanceAfterGeneration(
             profile: profile, generatedThrough: periodEnd, in: modelContext
         ) {
@@ -111,7 +126,7 @@ struct RootTabView: View {
 
 #Preview {
     let container = try! ModelContainer(
-        for: Trip.self, Vehicle.self, UserProfile.self, ReportProfile.self, GeneratedReport.self,
+        for: Trip.self, Vehicle.self, UserProfile.self, ReportProfile.self, GeneratedReport.self, AppNotification.self,
         configurations: ModelConfiguration(isStoredInMemoryOnly: true)
     )
     return RootTabView()

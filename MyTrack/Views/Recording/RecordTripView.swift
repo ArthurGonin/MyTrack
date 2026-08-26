@@ -77,6 +77,9 @@ struct RecordTripView: View {
                         .foregroundStyle(.primary)
                     }
                 }
+                ToolbarItem(placement: .topBarTrailing) {
+                    NotificationBellButton()
+                }
             }
             .accountToolbar()
             .alert("Localisation refusée", isPresented: $isPermissionDeniedAlertPresented) {
@@ -108,7 +111,7 @@ struct RecordTripView: View {
 
 #Preview {
     let container = try! ModelContainer(
-        for: Trip.self, Vehicle.self, UserProfile.self,
+        for: Trip.self, Vehicle.self, UserProfile.self, AppNotification.self,
         configurations: ModelConfiguration(isStoredInMemoryOnly: true)
     )
     return RecordTripView()

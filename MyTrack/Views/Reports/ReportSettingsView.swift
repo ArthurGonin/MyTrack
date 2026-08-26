@@ -20,9 +20,7 @@ struct ReportSettingsView: View {
     var body: some View {
         Form {
             Section {
-                NavigationLink("Historique des rapports") {
-                    ReportHistoryView()
-                }
+                NavigationLink("Historique des rapports", value: SettingsRoute.reportHistory(openingReportID: nil))
             }
             Section {
                 if profiles.isEmpty {
