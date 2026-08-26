@@ -18,11 +18,28 @@ struct OnboardingProgressBar: View {
         HStack(spacing: 6) {
             ForEach(0..<stepCount, id: \.self) { index in
                 Capsule()
-                    .fill(index <= currentIndex ? Color.accentColor : Color.primary.opacity(0.12))
+                    .fill(Color.primary.opacity(0.12))
                     .frame(height: 4)
+                    .overlay(alignment: .leading) {
+                        GeometryReader { proxy in
+                            Capsule()
+                                .fill(Color.accentColor)
+                                .frame(width: proxy.size.width * fillFraction(for: index))
+                        }
+                    }
             }
         }
         .animation(.easeInOut(duration: 0.25), value: currentIndex)
+    }
+
+    /// Vraiment le motif « Stories » : les étapes déjà franchies sont pleines,
+    /// celle en cours est à moitié remplie, les suivantes sont vides. Compter
+    /// l'étape courante comme franchie affichait une barre pleine à 100 % sur
+    /// la paywall — qui se lit « c'est terminé » alors qu'il reste à répondre.
+    private func fillFraction(for index: Int) -> CGFloat {
+        if index < currentIndex { return 1 }
+        if index == currentIndex { return 0.5 }
+        return 0
     }
 }
 
