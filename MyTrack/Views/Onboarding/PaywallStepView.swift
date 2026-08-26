@@ -87,10 +87,13 @@ struct PaywallStepView: View {
             }
 
             VStack(spacing: 8) {
-                Button("J'y vais") { purchase() }
-                    .buttonStyle(.borderedProminent)
-                    .controlSize(.large)
-                    .frame(maxWidth: .infinity)
+                // maxWidth belongs on the label — on the button it only widens
+                // the surrounding frame and leaves the control hugging "J'y vais".
+                Button { purchase() } label: {
+                    Text("J'y vais").frame(maxWidth: .infinity)
+                }
+                .buttonStyle(.borderedProminent)
+                .controlSize(.large)
 
                 Button("Restaurer les achats") { restore() }
                     .font(.footnote)

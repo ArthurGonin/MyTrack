@@ -32,15 +32,21 @@ struct AutoDetectionStepView: View {
             }
 
             VStack(spacing: 12) {
-                Button("Oui, activer") { onEnable() }
-                    .buttonStyle(.borderedProminent)
-                    .controlSize(.large)
-                    .frame(maxWidth: .infinity)
+                // maxWidth goes on the label, not the button: applied to the
+                // button it only widens the frame around it, leaving the
+                // control itself hugging its title — which is why the two
+                // buttons used to render at two different widths.
+                Button { onEnable() } label: {
+                    Text("Oui, activer").frame(maxWidth: .infinity)
+                }
+                .buttonStyle(.borderedProminent)
+                .controlSize(.large)
 
-                Button("Non, peut-être plus tard") { onSkip() }
-                    .buttonStyle(.bordered)
-                    .controlSize(.large)
-                    .frame(maxWidth: .infinity)
+                Button { onSkip() } label: {
+                    Text("Non, peut-être plus tard").frame(maxWidth: .infinity)
+                }
+                .buttonStyle(.bordered)
+                .controlSize(.large)
             }
             .disabled(isRequestingPermissions)
         }

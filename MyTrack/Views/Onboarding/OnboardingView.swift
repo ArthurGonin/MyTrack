@@ -92,8 +92,10 @@ struct OnboardingView: View {
             stepContent(for: currentStep)
 
             if showsGenericContinueButton {
-                Button("Continuer") {
+                Button {
                     currentStepIndex += 1
+                } label: {
+                    Text("Continuer").frame(maxWidth: .infinity)
                 }
                 .buttonStyle(.borderedProminent)
                 .controlSize(.large)
