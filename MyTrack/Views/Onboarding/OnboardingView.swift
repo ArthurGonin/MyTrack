@@ -74,50 +74,61 @@ struct OnboardingView: View {
     }
 
     var body: some View {
-        NavigationStack {
-            VStack(spacing: 24) {
+        VStack(spacing: 24) {
+            VStack(spacing: 12) {
                 OnboardingProgressBar(
                     stepCount: OnboardingStep.allCases.count,
                     currentIndex: currentStepIndex
                 )
 
-                stepContent(for: currentStep)
-
-                if showsGenericContinueButton {
-                    Button("Continuer") {
-                        currentStepIndex += 1
-                    }
-                    .buttonStyle(.borderedProminent)
-                    .controlSize(.large)
-                    .disabled(!canContinue)
-                }
-            }
-            .padding()
-            .appBackground()
-            .toolbar {
-                if currentStepIndex > 0 {
-                    ToolbarItem(placement: .topBarLeading) {
-                        Button {
-                            currentStepIndex -= 1
-                        } label: {
-                            Image(systemName: "chevron.backward")
-                        }
+                HStack {
+                    backButton
+                        .opacity(currentStepIndex > 0 ? 1 : 0)
                         .disabled(!canGoBack)
-                        .accessibilityLabel("Retour")
-                    }
+                    Spacer()
                 }
             }
-            .alert("Localisation refusée", isPresented: $isPermissionDeniedAlertPresented) {
-                Button("Réglages") {
-                    if let url = URL(string: UIApplication.openSettingsURLString) {
-                        UIApplication.shared.open(url)
-                    }
+
+            stepContent(for: currentStep)
+
+            if showsGenericContinueButton {
+                Button("Continuer") {
+                    currentStepIndex += 1
                 }
-                Button("Annuler", role: .cancel) {}
-            } message: {
-                Text("Autorise l'accès à la position dans Réglages pour activer le suivi automatique.")
+                .buttonStyle(.borderedProminent)
+                .controlSize(.large)
+                .disabled(!canContinue)
             }
         }
+        .padding()
+        .appBackground()
+        .alert("Localisation refusée", isPresented: $isPermissionDeniedAlertPresented) {
+            Button("Réglages") {
+                if let url = URL(string: UIApplication.openSettingsURLString) {
+                    UIApplication.shared.open(url)
+                }
+            }
+            Button("Annuler", role: .cancel) {}
+        } message: {
+            Text("Autorise l'accès à la position dans Réglages pour activer le suivi automatique.")
+        }
+    }
+
+    /// Sized to match AccountButton's glass bubble (28pt content + 6pt
+    /// padding) so the two floating glass controls in the app read as the
+    /// same control, not two different sizes.
+    private var backButton: some View {
+        Button {
+            currentStepIndex -= 1
+        } label: {
+            Image(systemName: "chevron.backward")
+                .font(.body.weight(.semibold))
+                .frame(width: 28, height: 28)
+                .padding(6)
+        }
+        .buttonStyle(.plain)
+        .glassEffect(.regular.interactive(), in: .circle)
+        .accessibilityLabel("Retour")
     }
 
     @ViewBuilder
