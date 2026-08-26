@@ -81,7 +81,7 @@ struct TripListView: View {
                     } label: {
                         Image(systemName: "square.and.arrow.up")
                     }
-                    .accessibilityLabel("Exporter un rapport")
+                    .accessibilityLabel("Créer un nouveau rapport")
                 }
             }
             .sheet(isPresented: $isPresentingExport) {

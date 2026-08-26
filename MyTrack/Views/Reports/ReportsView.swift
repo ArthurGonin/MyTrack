@@ -29,7 +29,7 @@ struct ReportsView: View {
                     } description: {
                         Text("Les rapports générés apparaîtront ici, du plus récent au plus ancien.")
                     } actions: {
-                        Button("Exporter un rapport") { isPresentingExport = true }
+                        Button("Créer un nouveau rapport") { isPresentingExport = true }
                     }
                 } else {
                     List {
@@ -54,7 +54,7 @@ struct ReportsView: View {
                     } label: {
                         Image(systemName: "plus")
                     }
-                    .accessibilityLabel("Exporter un rapport")
+                    .accessibilityLabel("Créer un nouveau rapport")
                 }
             }
             .sheet(isPresented: $isPresentingExport) {
