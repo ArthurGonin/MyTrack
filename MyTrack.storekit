@@ -10,7 +10,13 @@
   "subscriptionGroups" : [
     {
       "id" : "6740000001",
-      "localizations" : [],
+      "localizations" : [
+        {
+          "description" : "",
+          "locale" : "fr_FR",
+          "name" : "MyTrack Premium"
+        }
+      ],
       "name" : "MyTrack Premium",
       "subscriptions" : [
         {

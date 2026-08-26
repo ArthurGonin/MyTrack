@@ -74,43 +74,49 @@ struct OnboardingView: View {
     }
 
     var body: some View {
-        VStack(spacing: 24) {
-            VStack(spacing: 12) {
-                HStack {
-                    backButton
-                        .opacity(currentStepIndex > 0 ? 1 : 0)
-                        .disabled(!canGoBack)
-                    Spacer()
-                }
-
+        NavigationStack {
+            VStack(spacing: 24) {
                 OnboardingProgressBar(
                     stepCount: OnboardingStep.allCases.count,
                     currentIndex: currentStepIndex
                 )
-            }
 
-            stepContent(for: currentStep)
+                stepContent(for: currentStep)
 
-            if showsGenericContinueButton {
-                Button("Continuer") {
-                    currentStepIndex += 1
-                }
-                .buttonStyle(.borderedProminent)
-                .controlSize(.large)
-                .disabled(!canContinue)
-            }
-        }
-        .padding()
-        .appBackground()
-        .alert("Localisation refusée", isPresented: $isPermissionDeniedAlertPresented) {
-            Button("Réglages") {
-                if let url = URL(string: UIApplication.openSettingsURLString) {
-                    UIApplication.shared.open(url)
+                if showsGenericContinueButton {
+                    Button("Continuer") {
+                        currentStepIndex += 1
+                    }
+                    .buttonStyle(.borderedProminent)
+                    .controlSize(.large)
+                    .disabled(!canContinue)
                 }
             }
-            Button("Annuler", role: .cancel) {}
-        } message: {
-            Text("Autorise l'accès à la position dans Réglages pour activer le suivi automatique.")
+            .padding()
+            .appBackground()
+            .toolbar {
+                if currentStepIndex > 0 {
+                    ToolbarItem(placement: .topBarLeading) {
+                        Button {
+                            currentStepIndex -= 1
+                        } label: {
+                            Image(systemName: "chevron.backward")
+                        }
+                        .disabled(!canGoBack)
+                        .accessibilityLabel("Retour")
+                    }
+                }
+            }
+            .alert("Localisation refusée", isPresented: $isPermissionDeniedAlertPresented) {
+                Button("Réglages") {
+                    if let url = URL(string: UIApplication.openSettingsURLString) {
+                        UIApplication.shared.open(url)
+                    }
+                }
+                Button("Annuler", role: .cancel) {}
+            } message: {
+                Text("Autorise l'accès à la position dans Réglages pour activer le suivi automatique.")
+            }
         }
     }
 
@@ -141,19 +147,6 @@ struct OnboardingView: View {
                 onContinue: finish
             )
         }
-    }
-
-    private var backButton: some View {
-        Button {
-            currentStepIndex -= 1
-        } label: {
-            Image(systemName: "chevron.backward")
-                .font(.body.weight(.semibold))
-                .frame(width: 20, height: 20)
-        }
-        .buttonStyle(.plain)
-        .glassEffect(.regular.interactive(), in: .circle)
-        .accessibilityLabel("Retour")
     }
 
     private func purchaseSelectedPlan() async -> PurchaseOutcome {
