@@ -12,6 +12,10 @@ import SwiftData
 import QuickLook
 
 struct ReportHistoryView: View {
+    /// Opens straight to this report's preview on appear — set when reached
+    /// from a report-ready notification tap.
+    var openingReportID: UUID? = nil
+
     @Environment(AppServices.self) private var appServices
     @Environment(\.modelContext) private var modelContext
     @Query(sort: \GeneratedReport.createdAt, order: .reverse) private var reports: [GeneratedReport]
@@ -41,6 +45,13 @@ struct ReportHistoryView: View {
             }
         }
         .navigationTitle("Rapports")
+        .task(id: openingReportID) {
+            guard
+                let openingReportID,
+                let report = reports.first(where: { $0.id == openingReportID })
+            else { return }
+            previewURL = appServices.reportGenerationService.fileURL(for: report)
+        }
     }
 
     private func reportRow(_ report: GeneratedReport) -> some View {

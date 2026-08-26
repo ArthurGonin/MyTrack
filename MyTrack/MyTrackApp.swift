@@ -15,7 +15,9 @@ struct MyTrackApp: App {
     @State private var appServices: AppServices
 
     init() {
-        let schema = Schema([Trip.self, Vehicle.self, UserProfile.self, ReportProfile.self, GeneratedReport.self])
+        let schema = Schema([
+            Trip.self, Vehicle.self, UserProfile.self, ReportProfile.self, GeneratedReport.self, AppNotification.self,
+        ])
         let container = Self.makeContainer(for: schema)
 
         modelContainer = container

@@ -8,10 +8,16 @@ import SwiftData
 import UIKit
 
 struct AccountSettingsView: View {
+    /// Set when opened from a report-ready notification tap, so the view
+    /// pushes straight to that report in the history instead of opening on
+    /// the root settings screen.
+    var openingReportID: UUID? = nil
+
     @Environment(AppServices.self) private var appServices
     @Environment(\.modelContext) private var modelContext
     @Environment(\.dismiss) private var dismiss
 
+    @State private var path = NavigationPath()
     @State private var isPermissionDeniedAlertPresented = false
     @State private var isDeleteConfirmationPresented = false
     @State private var isDeletionFailedAlertPresented = false
@@ -39,7 +45,7 @@ struct AccountSettingsView: View {
     var body: some View {
         @Bindable var unitSettings = appServices.unitSettingsService
 
-        return NavigationStack {
+        return NavigationStack(path: $path) {
             Form {
                 Section {
                     NavigationLink("Données personnelles") {
@@ -77,9 +83,7 @@ struct AccountSettingsView: View {
                 }
 
                 Section {
-                    NavigationLink("Rapport") {
-                        ReportSettingsView()
-                    }
+                    NavigationLink("Rapport", value: SettingsRoute.report)
                 }
 
                 Section {
@@ -100,11 +104,24 @@ struct AccountSettingsView: View {
                 }
             }
             .navigationTitle("Réglages")
+            .navigationDestination(for: SettingsRoute.self) { route in
+                switch route {
+                case .report:
+                    ReportSettingsView()
+                case .reportHistory(let openingReportID):
+                    ReportHistoryView(openingReportID: openingReportID)
+                }
+            }
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
                     Button("Fermer") {
                         dismiss()
                     }
+                }
+            }
+            .onAppear {
+                if let openingReportID {
+                    path = NavigationPath([SettingsRoute.report, SettingsRoute.reportHistory(openingReportID: openingReportID)])
                 }
             }
             .alert(
