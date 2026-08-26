@@ -51,6 +51,11 @@ final class DrivingDetector {
     /// into a repeated system prompt on every future cold start.
     private var isEscalatingToAlways = false
     private var lastEscalationRequestStatus: CLAuthorizationStatus?
+    /// Falls back after a prompt with no reply, since declining the upgrade
+    /// prompt (staying at "When In Use") doesn't always produce another
+    /// authorization-change callback for escalateToAlwaysIfNeeded to react to.
+    private var escalationTimeoutTask: Task<Void, Never>?
+    private static let escalationTimeout: Duration = .seconds(10)
 
     private static let startValidationWindow: TimeInterval = 60
     private static let stopConfirmationWindow: TimeInterval = 300
@@ -110,8 +115,19 @@ final class DrivingDetector {
         isEnabled = false
         UserDefaults.standard.set(false, forKey: Self.preferenceKey)
         isEscalatingToAlways = false
+        escalationTimeoutTask?.cancel()
         stopMonitoring()
         resetState()
+    }
+
+    /// Waits until the "Always" escalation started by enable() has settled —
+    /// granted, denied, or given up on after escalationTimeout with no
+    /// reply. Onboarding awaits this so it only moves on once the user has
+    /// actually answered every prompt, instead of racing ahead of them.
+    func waitForAuthorizationSettled() async {
+        while isEscalatingToAlways {
+            try? await Task.sleep(for: .milliseconds(200))
+        }
     }
 
     /// The moment driving actually stopped for the trip this detector owns, if
@@ -143,10 +159,21 @@ final class DrivingDetector {
             guard lastEscalationRequestStatus != status else { return }
             lastEscalationRequestStatus = status
             locationService.requestAlwaysAuthorization()
+            armEscalationTimeout()
         default:
             // Reached "Always", or the user declined outright — either way
             // there is nothing left to escalate toward.
             isEscalatingToAlways = false
+            escalationTimeoutTask?.cancel()
+        }
+    }
+
+    private func armEscalationTimeout() {
+        escalationTimeoutTask?.cancel()
+        escalationTimeoutTask = Task { [weak self] in
+            try? await Task.sleep(for: Self.escalationTimeout)
+            guard !Task.isCancelled else { return }
+            self?.isEscalatingToAlways = false
         }
     }
 

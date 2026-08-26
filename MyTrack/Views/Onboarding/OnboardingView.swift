@@ -28,6 +28,7 @@ struct OnboardingView: View {
     @State private var vehicleName = ""
     @State private var licensePlate = ""
     @State private var isPermissionDeniedAlertPresented = false
+    @State private var isRequestingAutoDetectionPermissions = false
 
     private var currentStep: OnboardingStep {
         OnboardingStep.allCases[currentStepIndex]
@@ -84,21 +85,32 @@ struct OnboardingView: View {
         case .vehicle:
             VehicleStepView(vehicleName: $vehicleName, licensePlate: $licensePlate)
         case .autoDetection:
-            AutoDetectionStepView(onEnable: enableAutoDetectionAndFinish, onSkip: finish)
+            AutoDetectionStepView(
+                isRequestingPermissions: isRequestingAutoDetectionPermissions,
+                onEnable: enableAutoDetectionAndFinish,
+                onSkip: finish
+            )
         }
     }
 
-    /// DrivingDetector.enable() chains through whichever system prompts are
-    /// still needed to reach "Always" location (and, once granted, motion)
-    /// on its own — so a single tap here is enough; onboarding doesn't need
-    /// to wait for the result before finishing.
+    /// Requests Motion first, then location (When In Use, then the Always
+    /// upgrade) — staying on this step, with both buttons disabled, for as
+    /// long as any of those prompts is still awaiting an answer. Moves on
+    /// only once the whole chain has settled, whatever the outcome, rather
+    /// than racing ahead of the system dialogs.
     private func enableAutoDetectionAndFinish() {
         switch appServices.locationService.authorizationStatus {
         case .denied, .restricted:
             isPermissionDeniedAlertPresented = true
         default:
-            appServices.drivingDetector.enable()
-            finish()
+            isRequestingAutoDetectionPermissions = true
+            Task {
+                await appServices.motionActivityService.requestAuthorization()
+                appServices.drivingDetector.enable()
+                await appServices.drivingDetector.waitForAuthorizationSettled()
+                isRequestingAutoDetectionPermissions = false
+                finish()
+            }
         }
     }
 

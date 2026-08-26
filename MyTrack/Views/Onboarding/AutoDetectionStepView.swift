@@ -10,6 +10,7 @@
 import SwiftUI
 
 struct AutoDetectionStepView: View {
+    let isRequestingPermissions: Bool
     let onEnable: () -> Void
     let onSkip: () -> Void
 
@@ -25,6 +26,11 @@ struct AutoDetectionStepView: View {
 
             Spacer()
 
+            if isRequestingPermissions {
+                ProgressView()
+                    .frame(maxWidth: .infinity)
+            }
+
             VStack(spacing: 12) {
                 Button("Oui, activer") { onEnable() }
                     .buttonStyle(.borderedProminent)
@@ -36,12 +42,13 @@ struct AutoDetectionStepView: View {
                     .controlSize(.large)
                     .frame(maxWidth: .infinity)
             }
+            .disabled(isRequestingPermissions)
         }
         .padding()
     }
 }
 
 #Preview {
-    AutoDetectionStepView(onEnable: {}, onSkip: {})
+    AutoDetectionStepView(isRequestingPermissions: false, onEnable: {}, onSkip: {})
         .appBackground()
 }
