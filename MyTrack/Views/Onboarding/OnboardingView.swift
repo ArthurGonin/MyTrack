@@ -12,11 +12,15 @@ import SwiftUI
 
 private enum OnboardingStep: Int, CaseIterable {
     case welcome
+    case name
 }
 
 struct OnboardingView: View {
     @Environment(AppServices.self) private var appServices
+    @Environment(\.modelContext) private var modelContext
     @State private var currentStepIndex = 0
+    @State private var firstName = ""
+    @State private var lastName = ""
 
     private var currentStep: OnboardingStep {
         OnboardingStep.allCases[currentStepIndex]
@@ -26,19 +30,30 @@ struct OnboardingView: View {
         currentStepIndex == OnboardingStep.allCases.count - 1
     }
 
+    private var canContinue: Bool {
+        switch currentStep {
+        case .welcome:
+            return true
+        case .name:
+            return !firstName.trimmingCharacters(in: .whitespaces).isEmpty
+                && !lastName.trimmingCharacters(in: .whitespaces).isEmpty
+        }
+    }
+
     var body: some View {
         VStack(spacing: 24) {
             stepContent(for: currentStep)
 
             Button(isLastStep ? "Commencer" : "Continuer") {
                 if isLastStep {
-                    appServices.onboardingService.hasCompletedOnboarding = true
+                    finish()
                 } else {
                     currentStepIndex += 1
                 }
             }
             .buttonStyle(.borderedProminent)
             .controlSize(.large)
+            .disabled(!canContinue)
         }
         .padding()
         .appBackground()
@@ -49,7 +64,18 @@ struct OnboardingView: View {
         switch step {
         case .welcome:
             WelcomeLanguageStepView(selectedLanguage: appServices.onboardingService.selectedLanguage)
+        case .name:
+            NameStepView(firstName: $firstName, lastName: $lastName)
         }
+    }
+
+    private func finish() {
+        let profile = appServices.userProfileService.currentProfile(in: modelContext)
+        profile.firstName = firstName.trimmingCharacters(in: .whitespaces)
+        profile.lastName = lastName.trimmingCharacters(in: .whitespaces)
+        modelContext.saveOrLog()
+
+        appServices.onboardingService.hasCompletedOnboarding = true
     }
 }
 
