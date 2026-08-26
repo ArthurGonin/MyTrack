@@ -63,12 +63,36 @@ struct OnboardingView: View {
         }
     }
 
+    /// Hidden (not just disabled) on the first step, and disabled while a
+    /// step's own async work is in flight — going back mid permission-request
+    /// or mid-purchase would leave that work racing an unrelated step.
+    private var canGoBack: Bool {
+        guard currentStepIndex > 0 else { return false }
+        if isRequestingAutoDetectionPermissions { return false }
+        if appServices.purchaseService.isPurchasing || appServices.purchaseService.isRestoring { return false }
+        return true
+    }
+
     var body: some View {
         VStack(spacing: 24) {
-            OnboardingProgressBar(
-                stepCount: OnboardingStep.allCases.count,
-                currentIndex: currentStepIndex
-            )
+            HStack(spacing: 12) {
+                Button {
+                    currentStepIndex -= 1
+                } label: {
+                    Image(systemName: "chevron.backward")
+                        .font(.body.weight(.semibold))
+                        .foregroundStyle(.secondary)
+                        .frame(width: 32, height: 32)
+                }
+                .buttonStyle(.plain)
+                .opacity(currentStepIndex > 0 ? 1 : 0)
+                .disabled(!canGoBack)
+
+                OnboardingProgressBar(
+                    stepCount: OnboardingStep.allCases.count,
+                    currentIndex: currentStepIndex
+                )
+            }
 
             stepContent(for: currentStep)
 

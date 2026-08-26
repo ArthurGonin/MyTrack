@@ -53,6 +53,7 @@ struct PaywallStepView: View {
     let onContinue: () -> Void
 
     @State private var isPurchaseFailedAlertPresented = false
+    @State private var isRestoreFailedAlertPresented = false
 
     private var annualProduct: Product? {
         products.first { $0.id == PurchaseService.annualProductID }
@@ -103,6 +104,11 @@ struct PaywallStepView: View {
         } message: {
             Text("L'achat n'a pas pu être finalisé. Réessaie plus tard.")
         }
+        .alert("Aucun abonnement trouvé", isPresented: $isRestoreFailedAlertPresented) {
+            Button("OK", role: .cancel) {}
+        } message: {
+            Text("Nous n'avons trouvé aucun abonnement actif à restaurer pour ce compte.")
+        }
     }
 
     private func purchase() {
@@ -122,6 +128,8 @@ struct PaywallStepView: View {
         Task {
             if await onRestore() {
                 onContinue()
+            } else {
+                isRestoreFailedAlertPresented = true
             }
         }
     }
