@@ -56,6 +56,7 @@ struct RecordTripView: View {
                 .tint(viewModel.isRecording ? .red : .accentColor)
             }
             .padding()
+            .appBackground()
             .toolbar {
                 ToolbarItem(placement: .principal) {
                     Button {

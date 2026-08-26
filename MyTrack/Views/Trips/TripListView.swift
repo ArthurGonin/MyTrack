@@ -47,6 +47,7 @@ struct TripListView: View {
                     }
                 }
             }
+            .appBackground()
             .navigationTitle("Trajets")
             .navigationDestination(for: Trip.self) { trip in
                 TripDetailView(trip: trip)
