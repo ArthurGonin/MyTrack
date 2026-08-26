@@ -7,6 +7,7 @@
 //  touching the navigation/button logic.
 //
 
+import CoreLocation
 import SwiftData
 import SwiftUI
 import UIKit
@@ -44,16 +45,6 @@ struct OnboardingView: View {
         case .autoDetection:
             return true
         }
-    }
-
-    private var recordTripViewModel: RecordTripViewModel {
-        RecordTripViewModel(
-            tripRecorder: appServices.tripRecorder,
-            locationService: appServices.locationService,
-            vehicleService: appServices.vehicleService,
-            drivingDetector: appServices.drivingDetector,
-            notificationService: appServices.notificationService
-        )
     }
 
     var body: some View {
@@ -97,16 +88,17 @@ struct OnboardingView: View {
         }
     }
 
-    /// Requesting "Always" location can take two taps to fully grant (an
-    /// upgrade prompt after the first "When In Use" grant), same as the
-    /// toggle in Réglages — so onboarding finishes either way, and the user
-    /// can turn auto-detection on for good from there once granted.
+    /// DrivingDetector.enable() chains through whichever system prompts are
+    /// still needed to reach "Always" location (and, once granted, motion)
+    /// on its own — so a single tap here is enough; onboarding doesn't need
+    /// to wait for the result before finishing.
     private func enableAutoDetectionAndFinish() {
-        switch recordTripViewModel.enableAutoDetection() {
-        case .enabled, .permissionRequested:
-            finish()
-        case .permissionDenied:
+        switch appServices.locationService.authorizationStatus {
+        case .denied, .restricted:
             isPermissionDeniedAlertPresented = true
+        default:
+            appServices.drivingDetector.enable()
+            finish()
         }
     }
 
@@ -125,6 +117,10 @@ struct OnboardingView: View {
 
         modelContext.saveOrLog()
 
+        // Requested here — once, at the true end of onboarding — rather than
+        // tied to the auto-detection step, since more steps may still follow
+        // it and notifications are also used for report-ready alerts.
+        appServices.notificationService.requestAuthorization()
         appServices.onboardingService.hasCompletedOnboarding = true
     }
 }

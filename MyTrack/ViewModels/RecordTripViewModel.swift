@@ -65,20 +65,19 @@ struct RecordTripViewModel {
         case permissionDenied
     }
 
-    /// Requests the "Always" location upgrade + notifications permission the
-    /// moment auto-detection is turned on, rather than during onboarding.
-    /// If permission isn't already granted, the user needs to flip the
-    /// toggle again after responding to the system prompt.
+    /// Turns auto-detection on and requests notification permission. Location
+    /// itself is handled by DrivingDetector.enable(), which chains through
+    /// whichever system prompts are still needed to reach "Always" on its own.
     func enableAutoDetection() -> AutoDetectionEnableResult {
         switch locationService.authorizationStatus {
-        case .authorizedAlways:
-            notificationService.requestAuthorization()
-            drivingDetector.enable()
-            return .enabled
         case .denied, .restricted:
             return .permissionDenied
+        case .authorizedAlways:
+            drivingDetector.enable()
+            notificationService.requestAuthorization()
+            return .enabled
         default:
-            locationService.requestAlwaysAuthorization()
+            drivingDetector.enable()
             notificationService.requestAuthorization()
             return .permissionRequested
         }

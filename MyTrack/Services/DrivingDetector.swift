@@ -19,6 +19,7 @@
 
 import Foundation
 import OSLog
+import CoreLocation
 import CoreMotion
 import SwiftData
 import Observation
@@ -41,6 +42,15 @@ final class DrivingDetector {
     private var stopCandidateSince: Date?
     private var pendingDecisionTask: Task<Void, Never>?
     private var isMonitoring = false
+
+    /// "Always" is only reachable in two steps — the initial When In Use-style
+    /// prompt, then a separate upgrade prompt once that's granted. Set for the
+    /// duration of one enable() call so both are chained automatically instead
+    /// of requiring the user to come back and enable again after each prompt.
+    /// Not re-armed on relaunch, so declining the upgrade once doesn't turn
+    /// into a repeated system prompt on every future cold start.
+    private var isEscalatingToAlways = false
+    private var lastEscalationRequestStatus: CLAuthorizationStatus?
 
     private static let startValidationWindow: TimeInterval = 60
     private static let stopConfirmationWindow: TimeInterval = 300
@@ -70,6 +80,7 @@ final class DrivingDetector {
         // app isn't running, so monitoring is re-evaluated on every change
         // rather than trusting the status seen at launch.
         locationService.onAuthorizationChange = { [weak self] _ in
+            self?.escalateToAlwaysIfNeeded()
             self?.startMonitoringIfPossible()
         }
 
@@ -86,6 +97,9 @@ final class DrivingDetector {
         guard !isEnabled else { return }
         isEnabled = true
         UserDefaults.standard.set(true, forKey: Self.preferenceKey)
+        isEscalatingToAlways = true
+        lastEscalationRequestStatus = nil
+        escalateToAlwaysIfNeeded()
         startMonitoringIfPossible()
     }
 
@@ -113,6 +127,26 @@ final class DrivingDetector {
     /// one behind their back.
     func forgetOwnedTrip() {
         resetState()
+    }
+
+    /// Chains the two system prompts needed to reach "Always" — see
+    /// isEscalatingToAlways — deduplicated per status so a re-delivered
+    /// authorization callback for the same status doesn't re-show a prompt
+    /// the user just answered.
+    private func escalateToAlwaysIfNeeded() {
+        guard isEscalatingToAlways else { return }
+        let status = locationService.authorizationStatus
+
+        switch status {
+        case .notDetermined, .authorizedWhenInUse:
+            guard lastEscalationRequestStatus != status else { return }
+            lastEscalationRequestStatus = status
+            locationService.requestAlwaysAuthorization()
+        default:
+            // Reached "Always", or the user declined outright — either way
+            // there is nothing left to escalate toward.
+            isEscalatingToAlways = false
+        }
     }
 
     /// Arms monitoring only when it can actually work. Without "Always" the app
