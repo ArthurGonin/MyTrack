@@ -83,6 +83,11 @@ struct ReportProfileEditView: View {
         }
         .navigationTitle(profile.name.isEmpty ? "Profil" : profile.name)
         .navigationBarTitleDisplayMode(.inline)
+        .toolbar {
+            ToolbarItem(placement: .confirmationAction) {
+                Button("OK") { dismiss() }
+            }
+        }
         .confirmationDialog(
             "Supprimer ce profil ?",
             isPresented: $isDeleteConfirmationPresented,
