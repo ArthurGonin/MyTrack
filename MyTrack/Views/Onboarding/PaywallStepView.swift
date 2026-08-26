@@ -113,7 +113,7 @@ struct PaywallStepView: View {
             PricingOptionCard(
                 isSelected: selectedPlan == .monthly,
                 title: "2,99 $ / mois",
-                subtitle: "Sans essai gratuit"
+                subtitle: nil
             ) {
                 selectedPlan = .monthly
             }
@@ -136,7 +136,7 @@ private struct ComparisonBadge: View {
 private struct PricingOptionCard: View {
     let isSelected: Bool
     let title: String
-    let subtitle: String
+    let subtitle: String?
     let action: () -> Void
 
     var body: some View {
@@ -144,9 +144,12 @@ private struct PricingOptionCard: View {
             VStack(spacing: 4) {
                 Text(title)
                     .font(.headline)
-                Text(subtitle)
+                // Reserves the same line height on both cards even when
+                // there's no subtitle, so they stay the same size side by side.
+                Text(subtitle ?? " ")
                     .font(.footnote)
                     .foregroundStyle(.secondary)
+                    .opacity(subtitle == nil ? 0 : 1)
             }
             .frame(maxWidth: .infinity)
             .padding(.vertical, 16)
