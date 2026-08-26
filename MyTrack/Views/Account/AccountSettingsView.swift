@@ -11,6 +11,7 @@ struct AccountSettingsView: View {
     @Environment(\.modelContext) private var modelContext
     @Environment(\.dismiss) private var dismiss
     @State private var isPermissionDeniedAlertPresented = false
+    @State private var isDeleteConfirmationPresented = false
     @State private var reportSettings: ReportSettings?
     // TODO: remplacer par l'App Store ID réel une fois l'app publiée sur App Store Connect.
     private let appStoreID = "TODO_APP_STORE_ID"
@@ -85,12 +86,20 @@ struct AccountSettingsView: View {
                     Text("Génère automatiquement un rapport PDF des trajets à la fréquence choisie.")
                 }
                 Section {
-                    Button {
-                        if let url = URL(string: "itms-apps://itunes.apple.com/app/id\(appStoreID)?action=write-review") {
-                            UIApplication.shared.open(url)
+                    Section {
+                        Button {
+                            if let url = URL(string: "itms-apps://itunes.apple.com/app/id\(appStoreID)?action=write-review") {
+                                UIApplication.shared.open(url)
+                            }
+                        } label: {
+                            Label("Laisser un avis", systemImage: "star.bubble")
                         }
-                    } label: {
-                        Label("Laisser un avis", systemImage: "star.bubble")
+
+                        Button("Supprimer le compte", role: .destructive) {
+                            isDeleteConfirmationPresented = true
+                        }
+                    } footer: {
+                        Text("Supprime définitivement tous tes trajets, véhicules et réglages. Cette action est irréversible.")
                     }
                 }
             }
@@ -109,6 +118,16 @@ struct AccountSettingsView: View {
                 Button("Annuler", role: .cancel) {}
             } message: {
                 Text("Autorise l'accès à la position dans Réglages pour activer le suivi automatique.")
+            }
+            .confirmationDialog(
+                "Supprimer le compte ?",
+                isPresented: $isDeleteConfirmationPresented,
+                titleVisibility: .visible
+            ) {
+                Button("Supprimer", role: .destructive) { deleteAccount() }
+                Button("Annuler", role: .cancel) {}
+            } message: {
+                Text("Tous tes trajets, véhicules et réglages seront supprimés définitivement.")
             }
             .onAppear {
                 if reportSettings == nil {
@@ -142,6 +161,12 @@ struct AccountSettingsView: View {
         } else {
             appServices.notificationService.cancelReportReadyNotification()
         }
+    }
+
+    private func deleteAccount() {
+        reportSettings = nil
+        appServices.eraseAllData(in: modelContext)
+        dismiss()
     }
 
     private func label(for periodicity: ReportPeriodicity) -> String {

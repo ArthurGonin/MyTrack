@@ -70,6 +70,11 @@ final class NotificationService: NSObject, UNUserNotificationCenterDelegate {
         center.removePendingNotificationRequests(withIdentifiers: [Self.reportReadyIdentifier])
     }
 
+    func cancelAllNotifications() {
+        center.removeAllPendingNotificationRequests()
+        center.removeAllDeliveredNotifications()
+    }
+
     private func registerCategory() {
         let confirmAction = UNNotificationAction(
             identifier: Self.confirmActionIdentifier,
