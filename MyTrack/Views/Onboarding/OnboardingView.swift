@@ -8,6 +8,7 @@
 //
 
 import CoreLocation
+import StoreKit
 import SwiftData
 import SwiftUI
 import UIKit
@@ -110,8 +111,25 @@ struct OnboardingView: View {
                 onSkip: { currentStepIndex += 1 }
             )
         case .paywall:
-            PaywallStepView(selectedPlan: $selectedPricingPlan, onContinue: finish)
+            PaywallStepView(
+                selectedPlan: $selectedPricingPlan,
+                products: appServices.purchaseService.products,
+                isPurchasing: appServices.purchaseService.isPurchasing,
+                isRestoring: appServices.purchaseService.isRestoring,
+                onPurchase: purchaseSelectedPlan,
+                onRestore: restoreAndCheckSubscribed,
+                onContinue: finish
+            )
         }
+    }
+
+    private func purchaseSelectedPlan() async -> PurchaseOutcome {
+        await appServices.purchaseService.purchase(selectedPricingPlan)
+    }
+
+    private func restoreAndCheckSubscribed() async -> Bool {
+        await appServices.purchaseService.restorePurchases()
+        return appServices.purchaseService.isSubscribed
     }
 
     /// Requests Motion first, then location (When In Use, then the Always
@@ -155,8 +173,6 @@ struct OnboardingView: View {
         // it and notifications are also used for report-ready alerts.
         appServices.notificationService.requestAuthorization()
 
-        // TODO: hand off to the real purchase flow for selectedPricingPlan
-        // once it exists; for now "J'y vais" just completes onboarding.
         appServices.onboardingService.hasCompletedOnboarding = true
     }
 }

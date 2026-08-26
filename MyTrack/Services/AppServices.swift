@@ -25,6 +25,7 @@ final class AppServices {
     let reportGenerationService: ReportGenerationService
     let notificationService: NotificationService
     let notificationInboxService = NotificationInboxService()
+    let purchaseService = PurchaseService()
     let tripRecorder: TripRecorder
     let drivingDetector: DrivingDetector
 

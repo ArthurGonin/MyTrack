@@ -3,12 +3,8 @@
 //  MyTrack
 //
 
+import StoreKit
 import SwiftUI
-
-enum PricingPlan: Equatable {
-    case annual
-    case monthly
-}
 
 private enum ComparisonRating {
     case yes
@@ -49,7 +45,22 @@ private let comparisonRows: [ComparisonRow] = [
 
 struct PaywallStepView: View {
     @Binding var selectedPlan: PricingPlan
+    let products: [Product]
+    let isPurchasing: Bool
+    let isRestoring: Bool
+    let onPurchase: () async -> PurchaseOutcome
+    let onRestore: () async -> Bool
     let onContinue: () -> Void
+
+    @State private var isPurchaseFailedAlertPresented = false
+
+    private var annualProduct: Product? {
+        products.first { $0.id == PurchaseService.annualProductID }
+    }
+
+    private var monthlyProduct: Product? {
+        products.first { $0.id == PurchaseService.monthlyProductID }
+    }
 
     var body: some View {
         VStack(spacing: 20) {
@@ -68,12 +79,51 @@ struct PaywallStepView: View {
                 }
             }
 
-            Button("J'y vais") { onContinue() }
-                .buttonStyle(.borderedProminent)
-                .controlSize(.large)
-                .frame(maxWidth: .infinity)
+            if isPurchasing || isRestoring {
+                ProgressView()
+                    .frame(maxWidth: .infinity)
+            }
+
+            VStack(spacing: 8) {
+                Button("J'y vais") { purchase() }
+                    .buttonStyle(.borderedProminent)
+                    .controlSize(.large)
+                    .frame(maxWidth: .infinity)
+
+                Button("Restaurer les achats") { restore() }
+                    .font(.footnote)
+                    .buttonStyle(.plain)
+                    .foregroundStyle(.secondary)
+            }
+            .disabled(isPurchasing || isRestoring)
         }
         .padding()
+        .alert("Achat impossible", isPresented: $isPurchaseFailedAlertPresented) {
+            Button("OK", role: .cancel) {}
+        } message: {
+            Text("L'achat n'a pas pu être finalisé. Réessaie plus tard.")
+        }
+    }
+
+    private func purchase() {
+        Task {
+            switch await onPurchase() {
+            case .success:
+                onContinue()
+            case .userCancelled, .pending:
+                break
+            case .failed:
+                isPurchaseFailedAlertPresented = true
+            }
+        }
+    }
+
+    private func restore() {
+        Task {
+            if await onRestore() {
+                onContinue()
+            }
+        }
     }
 
     private var comparisonTable: some View {
@@ -104,19 +154,51 @@ struct PaywallStepView: View {
         HStack(spacing: 12) {
             PricingOptionCard(
                 isSelected: selectedPlan == .annual,
-                title: "7 jours gratuits",
-                subtitle: "puis 24,99 $ / an"
+                title: annualTitle,
+                subtitle: annualSubtitle
             ) {
                 selectedPlan = .annual
             }
 
             PricingOptionCard(
                 isSelected: selectedPlan == .monthly,
-                title: "2,99 $ / mois",
+                title: monthlyTitle,
                 subtitle: nil
             ) {
                 selectedPlan = .monthly
             }
+        }
+    }
+
+    /// Falls back to the static copy whenever the product hasn't loaded yet
+    /// (first launch, before the fetch completes) or failed to load (no
+    /// StoreKit config wired up, no network) — the paywall must never show a
+    /// blank price.
+    private var annualTitle: String {
+        guard let offer = annualProduct?.subscription?.introductoryOffer, offer.paymentMode == .freeTrial else {
+            return "7 jours gratuits"
+        }
+        return freeTrialTitle(for: offer.period)
+    }
+
+    private var annualSubtitle: String {
+        guard let annualProduct else { return "puis 24,99 $ / an" }
+        return "puis \(annualProduct.displayPrice) / an"
+    }
+
+    private var monthlyTitle: String {
+        guard let monthlyProduct else { return "2,99 $ / mois" }
+        return "\(monthlyProduct.displayPrice) / mois"
+    }
+
+    private func freeTrialTitle(for period: Product.SubscriptionPeriod) -> String {
+        let count = period.value
+        switch period.unit {
+        case .day: return "\(count) jour\(count > 1 ? "s" : "") gratuit\(count > 1 ? "s" : "")"
+        case .week: return "\(count) semaine\(count > 1 ? "s" : "") gratuite\(count > 1 ? "s" : "")"
+        case .month: return "\(count) mois gratuit\(count > 1 ? "s" : "")"
+        case .year: return "\(count) an\(count > 1 ? "s" : "") gratuit\(count > 1 ? "s" : "")"
+        @unknown default: return "Essai gratuit"
         }
     }
 }
@@ -144,8 +226,6 @@ private struct PricingOptionCard: View {
             VStack(spacing: 4) {
                 Text(title)
                     .font(.headline)
-                // Reserves the same line height on both cards even when
-                // there's no subtitle, so they stay the same size side by side.
                 Text(subtitle ?? " ")
                     .font(.footnote)
                     .foregroundStyle(.secondary)
@@ -167,6 +247,14 @@ private struct PricingOptionCard: View {
 }
 
 #Preview {
-    PaywallStepView(selectedPlan: .constant(.annual), onContinue: {})
-        .appBackground()
+    PaywallStepView(
+        selectedPlan: .constant(.annual),
+        products: [],
+        isPurchasing: false,
+        isRestoring: false,
+        onPurchase: { .success },
+        onRestore: { false },
+        onContinue: {}
+    )
+    .appBackground()
 }

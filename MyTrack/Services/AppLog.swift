@@ -20,4 +20,6 @@ nonisolated enum AppLog {
     static let recording = Logger(subsystem: subsystem, category: "recording")
     /// Report generation and the PDF files on disk.
     static let reports = Logger(subsystem: subsystem, category: "reports")
+    /// StoreKit product loading, purchases, and entitlement state.
+    static let purchases = Logger(subsystem: subsystem, category: "purchases")
 }

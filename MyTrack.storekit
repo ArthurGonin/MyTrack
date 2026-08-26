@@ -1,0 +1,69 @@
+{
+  "identifier" : "9E9C1F4A-9B0A-4F1A-9C0E-9B7B2E9E7B3A",
+  "nonRenewingSubscriptions" : [],
+  "products" : [],
+  "settings" : {
+    "_applicationInternalID" : "0",
+    "_developerTeamID" : "0",
+    "_lastSynchronizedDate" : 0
+  },
+  "subscriptionGroups" : [
+    {
+      "id" : "6740000001",
+      "localizations" : [],
+      "name" : "MyTrack Premium",
+      "subscriptions" : [
+        {
+          "adHocOffers" : [],
+          "codeOffers" : [],
+          "displayPrice" : "24.99",
+          "familyShareable" : false,
+          "groupNumber" : 1,
+          "internalID" : "6740000101",
+          "introductoryOffer" : {
+            "internalID" : "6740000102",
+            "paymentMode" : "free",
+            "subscriptionPeriod" : "P1W"
+          },
+          "localizations" : [
+            {
+              "description" : "Accès complet à MyTrack",
+              "displayName" : "Annuel",
+              "locale" : "fr_FR"
+            }
+          ],
+          "productID" : "KiwiJuice.MyTrack.annual",
+          "recurringSubscriptionPeriod" : "P1Y",
+          "referenceName" : "MyTrack Annual",
+          "subscriptionGroupID" : "6740000001",
+          "type" : "RecurringSubscription"
+        },
+        {
+          "adHocOffers" : [],
+          "codeOffers" : [],
+          "displayPrice" : "2.99",
+          "familyShareable" : false,
+          "groupNumber" : 1,
+          "internalID" : "6740000201",
+          "introductoryOffer" : null,
+          "localizations" : [
+            {
+              "description" : "Accès complet à MyTrack",
+              "displayName" : "Mensuel",
+              "locale" : "fr_FR"
+            }
+          ],
+          "productID" : "KiwiJuice.MyTrack.monthly",
+          "recurringSubscriptionPeriod" : "P1M",
+          "referenceName" : "MyTrack Monthly",
+          "subscriptionGroupID" : "6740000001",
+          "type" : "RecurringSubscription"
+        }
+      ]
+    }
+  ],
+  "version" : {
+    "major" : 3,
+    "minor" : 0
+  }
+}
