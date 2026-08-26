@@ -13,6 +13,7 @@ import SwiftUI
 private enum OnboardingStep: Int, CaseIterable {
     case welcome
     case name
+    case vehicle
 }
 
 struct OnboardingView: View {
@@ -21,6 +22,8 @@ struct OnboardingView: View {
     @State private var currentStepIndex = 0
     @State private var firstName = ""
     @State private var lastName = ""
+    @State private var vehicleName = ""
+    @State private var licensePlate = ""
 
     private var currentStep: OnboardingStep {
         OnboardingStep.allCases[currentStepIndex]
@@ -37,6 +40,8 @@ struct OnboardingView: View {
         case .name:
             return !firstName.trimmingCharacters(in: .whitespaces).isEmpty
                 && !lastName.trimmingCharacters(in: .whitespaces).isEmpty
+        case .vehicle:
+            return !vehicleName.trimmingCharacters(in: .whitespaces).isEmpty
         }
     }
 
@@ -66,6 +71,8 @@ struct OnboardingView: View {
             WelcomeLanguageStepView(selectedLanguage: appServices.onboardingService.selectedLanguage)
         case .name:
             NameStepView(firstName: $firstName, lastName: $lastName)
+        case .vehicle:
+            VehicleStepView(vehicleName: $vehicleName, licensePlate: $licensePlate)
         }
     }
 
@@ -73,6 +80,15 @@ struct OnboardingView: View {
         let profile = appServices.userProfileService.currentProfile(in: modelContext)
         profile.firstName = firstName.trimmingCharacters(in: .whitespaces)
         profile.lastName = lastName.trimmingCharacters(in: .whitespaces)
+
+        let trimmedPlate = licensePlate.trimmingCharacters(in: .whitespaces)
+        let vehicle = Vehicle(
+            name: vehicleName.trimmingCharacters(in: .whitespaces),
+            licensePlate: trimmedPlate.isEmpty ? nil : trimmedPlate,
+            isSelected: true
+        )
+        modelContext.insert(vehicle)
+
         modelContext.saveOrLog()
 
         appServices.onboardingService.hasCompletedOnboarding = true
