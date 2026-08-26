@@ -30,7 +30,7 @@
       shouldUseLaunchSchemeArgsEnv = "YES"
       shouldAutocreateTestPlan = "YES">
       <StoreKitConfigurationFileReference
-         identifier = "../../../MyTrack/MyTrack.storekit">
+         identifier = "../../MyTrack/MyTrack.storekit">
       </StoreKitConfigurationFileReference>
    </TestAction>
    <LaunchAction
@@ -54,7 +54,7 @@
          </BuildableReference>
       </BuildableProductRunnable>
       <StoreKitConfigurationFileReference
-         identifier = "../../../MyTrack/MyTrack.storekit">
+         identifier = "../../MyTrack/MyTrack.storekit">
       </StoreKitConfigurationFileReference>
    </LaunchAction>
    <ProfileAction
