@@ -46,6 +46,7 @@ private let comparisonRows: [ComparisonRow] = [
 struct PaywallStepView: View {
     @Binding var selectedPlan: PricingPlan
     let products: [Product]
+    let isLoadingProducts: Bool
     let isPurchasing: Bool
     let isRestoring: Bool
     let onPurchase: () async -> PurchaseOutcome
@@ -80,7 +81,7 @@ struct PaywallStepView: View {
                 }
             }
 
-            if isPurchasing || isRestoring {
+            if isLoadingProducts || isPurchasing || isRestoring {
                 ProgressView()
                     .frame(maxWidth: .infinity)
             }
@@ -96,7 +97,7 @@ struct PaywallStepView: View {
                     .buttonStyle(.plain)
                     .foregroundStyle(.secondary)
             }
-            .disabled(isPurchasing || isRestoring)
+            .disabled(isLoadingProducts || isPurchasing || isRestoring)
         }
         .padding()
         .alert("Achat impossible", isPresented: $isPurchaseFailedAlertPresented) {
@@ -258,6 +259,7 @@ private struct PricingOptionCard: View {
     PaywallStepView(
         selectedPlan: .constant(.annual),
         products: [],
+        isLoadingProducts: false,
         isPurchasing: false,
         isRestoring: false,
         onPurchase: { .success },

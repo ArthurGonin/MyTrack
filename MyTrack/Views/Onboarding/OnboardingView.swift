@@ -75,18 +75,13 @@ struct OnboardingView: View {
 
     var body: some View {
         VStack(spacing: 24) {
-            HStack(spacing: 12) {
-                Button {
-                    currentStepIndex -= 1
-                } label: {
-                    Image(systemName: "chevron.backward")
-                        .font(.body.weight(.semibold))
-                        .foregroundStyle(.secondary)
-                        .frame(width: 32, height: 32)
+            VStack(spacing: 12) {
+                HStack {
+                    backButton
+                        .opacity(currentStepIndex > 0 ? 1 : 0)
+                        .disabled(!canGoBack)
+                    Spacer()
                 }
-                .buttonStyle(.plain)
-                .opacity(currentStepIndex > 0 ? 1 : 0)
-                .disabled(!canGoBack)
 
                 OnboardingProgressBar(
                     stepCount: OnboardingStep.allCases.count,
@@ -138,6 +133,7 @@ struct OnboardingView: View {
             PaywallStepView(
                 selectedPlan: $selectedPricingPlan,
                 products: appServices.purchaseService.products,
+                isLoadingProducts: appServices.purchaseService.isLoadingProducts,
                 isPurchasing: appServices.purchaseService.isPurchasing,
                 isRestoring: appServices.purchaseService.isRestoring,
                 onPurchase: purchaseSelectedPlan,
@@ -145,6 +141,19 @@ struct OnboardingView: View {
                 onContinue: finish
             )
         }
+    }
+
+    private var backButton: some View {
+        Button {
+            currentStepIndex -= 1
+        } label: {
+            Image(systemName: "chevron.backward")
+                .font(.body.weight(.semibold))
+                .frame(width: 20, height: 20)
+        }
+        .buttonStyle(.plain)
+        .glassEffect(.regular.interactive(), in: .circle)
+        .accessibilityLabel("Retour")
     }
 
     private func purchaseSelectedPlan() async -> PurchaseOutcome {
