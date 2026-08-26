@@ -18,7 +18,7 @@
     "_billingIssuesEnabled" : false,
     "_disableDialogs" : false,
     "_failTransactionsEnabled" : false,
-    "_locale" : "fr_FR",
+    "_locale" : "fr",
     "_renewalBillingIssuesEnabled" : false,
     "_storefront" : "FRA",
     "_storeKitErrors" : [
@@ -73,7 +73,7 @@
         {
           "description" : "",
           "displayName" : "MyTrack Premium",
-          "locale" : "fr_FR"
+          "locale" : "fr"
         }
       ],
       "name" : "MyTrack Premium",
@@ -98,8 +98,16 @@
           "familyShareable" : false,
           "groupNumber" : 1,
           "internalID" : "6740000101",
+          "introductoryOffer" : {
+            "billingPlanType" : "BILLED_UPFRONT",
+            "internalID" : "6740000102",
+            "numberOfPeriods" : 1,
+            "paymentMode" : "free",
+            "subscriptionPeriod" : "P1W"
+          },
           "introductoryOffers" : [
             {
+              "billingPlanType" : "BILLED_UPFRONT",
               "internalID" : "6740000102",
               "numberOfPeriods" : 1,
               "paymentMode" : "free",
@@ -115,7 +123,7 @@
             {
               "description" : "Accès complet à MyTrack",
               "displayName" : "Annuel",
-              "locale" : "fr_FR"
+              "locale" : "fr"
             }
           ],
           "productID" : "KiwiJuice.MyTrack.annual",
@@ -159,7 +167,7 @@
             {
               "description" : "Accès complet à MyTrack",
               "displayName" : "Mensuel",
-              "locale" : "fr_FR"
+              "locale" : "fr"
             }
           ],
           "productID" : "KiwiJuice.MyTrack.monthly",
