@@ -42,10 +42,6 @@ struct PaywallStepView: View {
     let onRestore: () async -> Bool
     let onRetryLoadProducts: () async -> Void
     let onContinue: () -> Void
-    /// Ce que fait « Ignorer (debug) » en plus de continuer : sans ça, un build
-    /// de développement qui saute la paywall atterrit dans une app où
-    /// l'enregistrement est bloqué.
-    let onDebugSkip: () -> Void
 
     @Environment(\.locale) private var locale
     @Environment(\.localizationBundle) private var localizationBundle
@@ -75,15 +71,21 @@ struct PaywallStepView: View {
     }
 
     var body: some View {
-        VStack(spacing: 20) {
+        VStack(spacing: 16) {
+            // Tout ce bloc doit tenir sans défiler : le tarif occupant le bas de
+            // l'écran, ce qui dépasse ici part sous lui et ne se voit plus —
+            // les avantages, précisément ce que la paywall a à défendre. D'où
+            // des tailles resserrées plutôt que confortables. Le ScrollView
+            // reste, mais comme filet pour les grandes tailles de texte et les
+            // petits écrans, pas comme mode de lecture normal.
             ScrollView {
-                VStack(alignment: .leading, spacing: 24) {
+                VStack(alignment: .leading, spacing: 18) {
                     Text("Pourquoi MyTrack")
-                        .font(.largeTitle.bold())
+                        .font(.title.bold())
 
                     ReviewQuoteCard(quote: reviewQuote)
 
-                    VStack(spacing: 14) {
+                    VStack(spacing: 12) {
                         ForEach(paywallFeatures) { feature in
                             HStack(spacing: 14) {
                                 Image(systemName: feature.symbolName)
@@ -136,20 +138,6 @@ struct PaywallStepView: View {
                 }
 
                 legalFooter
-
-                #if DEBUG
-                // Debug-only shortcut past a working store, so developing
-                // doesn't require completing a purchase every time. The
-                // release build's own way out is the button above, which
-                // appears when buying has proved impossible.
-                Button("Ignorer (debug)") {
-                    onDebugSkip()
-                    onContinue()
-                }
-                    .font(.footnote)
-                    .buttonStyle(.plain)
-                    .foregroundStyle(.tertiary)
-                #endif
             }
             .disabled(isLoadingProducts || isPurchasing || isRestoring)
         }
@@ -333,26 +321,26 @@ private struct ReviewQuoteCard: View {
     let quote: LocalizedStringKey
 
     var body: some View {
-        VStack(spacing: 14) {
+        VStack(spacing: 10) {
             HStack(spacing: 5) {
                 ForEach(0..<5, id: \.self) { _ in
                     Image(systemName: "star.fill")
                 }
             }
-            .font(.subheadline)
+            .font(.footnote)
             .foregroundStyle(.yellow)
             .accessibilityElement()
             .accessibilityLabel("5 étoiles sur 5")
 
             Text(quote)
-                .font(.title3.weight(.medium))
+                .font(.callout.weight(.medium))
                 .multilineTextAlignment(.center)
                 // Sans ça, une citation de trois lignes se fait tronquer par la
                 // hauteur que le ScrollView propose au lieu de la réclamer.
                 .fixedSize(horizontal: false, vertical: true)
         }
         .frame(maxWidth: .infinity)
-        .appCard(padding: 24)
+        .appCard(padding: 18)
     }
 }
 
@@ -407,36 +395,36 @@ private struct LifetimeOptionCard: View {
 
     var body: some View {
         Button(action: action) {
-            HStack(spacing: 14) {
-                VStack(alignment: .leading, spacing: 6) {
-                    badge
+            // Pas de coche ni de pastille : le remplissage à l'accent dit déjà
+            // laquelle des trois cartes est retenue, et un second indicateur du
+            // même état n'ajoute rien qu'un point de plus à regarder.
+            VStack(alignment: .leading, spacing: 6) {
+                badge
 
-                    Text(title)
-                        .font(.title3.bold())
-                        .foregroundStyle(foreground)
-                    Text(subtitle)
-                        .font(.footnote)
-                        .foregroundStyle(foreground.opacity(0.75))
-                }
-
-                Spacer()
-
-                Image(systemName: isSelected ? "checkmark.circle.fill" : "circle")
-                    .font(.title2)
-                    .foregroundStyle(isSelected ? onAccentColor : Color.secondary)
+                Text(title)
+                    .font(.title3.bold())
+                    .foregroundStyle(foreground)
+                Text(subtitle)
+                    .font(.footnote)
+                    .foregroundStyle(foreground.opacity(0.75))
             }
             .frame(maxWidth: .infinity, alignment: .leading)
             .padding(16)
         }
         .buttonStyle(.plain)
+        // Non retenue, la carte garde un gris très léger dans son verre — assez
+        // pour se détacher des deux abonnements au-dessus, pas assez pour se
+        // faire passer pour sélectionnée.
         .glassEffect(
-            isSelected ? .regular.tint(.accentColor).interactive() : .regular.interactive(),
+            isSelected
+                ? .regular.tint(.accentColor).interactive()
+                : .regular.tint(Color.primary.opacity(0.07)).interactive(),
             in: .rect(cornerRadius: 14)
         )
         .overlay {
             if !isSelected {
                 RoundedRectangle(cornerRadius: 14, style: .continuous)
-                    .strokeBorder(Color.accentColor.opacity(0.45), lineWidth: 1.5)
+                    .strokeBorder(Color.accentColor.opacity(0.3), lineWidth: 1.5)
             }
         }
     }
@@ -464,8 +452,7 @@ private struct LifetimeOptionCard: View {
         onPurchase: { .success },
         onRestore: { false },
         onRetryLoadProducts: {},
-        onContinue: {},
-        onDebugSkip: {}
+        onContinue: {}
     )
     .appBackground()
 }

@@ -134,21 +134,6 @@ final class PurchaseService {
     /// le disque et ce que dit StoreKit *est* la bascule.
     private static let lastKnownAccessKey = "hadRecordingAccess"
 
-    #if DEBUG
-    private static let debugBypassKey = "debugBypassesPaywall"
-
-    /// Ce que pose le bouton « Ignorer (debug) » de la paywall. Sans lui, un
-    /// build de développement qui saute l'onboarding se retrouve dans une app
-    /// où plus rien ne s'enregistre. Compilé hors du build de release.
-    private(set) var debugBypassesPaywall = UserDefaults.standard.bool(forKey: PurchaseService.debugBypassKey)
-
-    func grantDebugAccess() {
-        debugBypassesPaywall = true
-        UserDefaults.standard.set(true, forKey: Self.debugBypassKey)
-        applyAccessChange()
-    }
-    #endif
-
     /// Kept alive for the app's lifetime so it also reacts to entitlement
     /// changes it didn't cause directly this session.
     private var transactionUpdatesTask: Task<Void, Never>?
@@ -334,11 +319,7 @@ final class PurchaseService {
     /// entitlements, elle ne doit pas re-notifier une perte d'accès déjà
     /// annoncée.
     private func applyAccessChange() {
-        var hasAccess = hasEntitlement
-        #if DEBUG
-        hasAccess = hasAccess || debugBypassesPaywall
-        #endif
-
+        let hasAccess = hasEntitlement
         let hadAccess = canRecordTrips
         guard hadAccess != hasAccess else { return }
 

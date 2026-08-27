@@ -182,12 +182,7 @@ struct OnboardingView: View {
                 onPurchase: purchaseSelectedPlan,
                 onRestore: restoreAndCheckSubscribed,
                 onRetryLoadProducts: { await appServices.purchaseService.loadProducts() },
-                onContinue: finish,
-                onDebugSkip: {
-                    #if DEBUG
-                    appServices.purchaseService.grantDebugAccess()
-                    #endif
-                }
+                onContinue: finish
             )
             // Someone who is already entitled — reinstalling, or coming from
             // another device — must not be asked to pay a second time, so the
