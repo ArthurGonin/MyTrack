@@ -23,10 +23,18 @@ extension View {
     /// S'étend à tout l'écran même si le contenu (ex. un VStack sans Spacer)
     /// est plus petit, et masque le fond opaque propre à List/Form pour laisser
     /// voir le gris.
+    ///
+    /// Le `ignoresSafeArea()` porte sur le fond seul, pas sur le contenu : le
+    /// cadre ci-dessous s'arrête à la zone sûre, donc sans lui le gris
+    /// s'arrêterait sous la barre de navigation et au-dessus de la barre
+    /// d'onglets, laissant apparaître le blanc de la fenêtre — une bande en
+    /// haut, une autre en bas. Les deux barres sont en verre translucide : une
+    /// fois le gris peint dessous, ce sont elles qui le laissent voir, et le
+    /// contenu garde ses marges.
     func appBackground() -> some View {
         frame(maxWidth: .infinity, maxHeight: .infinity)
             .scrollContentBackground(.hidden)
-            .background(
+            .background {
                 Color(uiColor: .systemGroupedBackground)
                     .overlay(
                         LinearGradient(
@@ -35,6 +43,7 @@ extension View {
                             endPoint: .bottom
                         )
                     )
-            )
+                    .ignoresSafeArea()
+            }
     }
 }
