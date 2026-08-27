@@ -315,10 +315,24 @@ struct SubscriptionSettingsSection: View {
 
     /// Même règle que dans la paywall : tant que l'URL n'est pas renseignée
     /// dans `LegalLinks`, un libellé inerte vaut mieux qu'un lien mort.
+    ///
+    /// La flèche oblique annonce ce que la ligne fait vraiment : quitter l'app
+    /// pour le navigateur. Sans elle, la ligne ressemble à toutes celles qui
+    /// poussent un écran, et le départ vers Safari surprend.
     @ViewBuilder
     private func legalLink(_ title: LocalizedStringKey, url: URL?) -> some View {
         if let url {
-            Link(title, destination: url)
+            Link(destination: url) {
+                HStack {
+                    Text(title)
+                        .foregroundStyle(.primary)
+                    Spacer()
+                    Image(systemName: "arrow.up.right")
+                        .font(.footnote.weight(.semibold))
+                        .foregroundStyle(.secondary)
+                }
+                .contentShape(.rect)
+            }
         } else {
             Text(title).foregroundStyle(.tertiary)
         }

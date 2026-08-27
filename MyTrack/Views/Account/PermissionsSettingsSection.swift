@@ -63,7 +63,12 @@ struct PermissionsSettingsSection: View {
     private var locationState: PermissionState {
         switch appServices.locationService.authorizationStatus {
         case .authorizedAlways: .satisfied("Toujours")
-        case .authorizedWhenInUse: .askable("Pendant l'utilisation")
+        // Passe par les Réglages plutôt que par `requestAlwaysAuthorization()`.
+        // iOS ne propose ce passage à « Toujours » qu'une seule fois : qui l'a
+        // refusé une fois taperait ensuite sur une ligne qui n'ouvre plus rien,
+        // sans le moindre message. Or c'est précisément la ligne qu'on vient
+        // chercher pour réparer un refus.
+        case .authorizedWhenInUse: .blocked("Pendant l'utilisation")
         case .notDetermined: .askable("Autoriser")
         default: .blocked("Refusé")
         }
@@ -80,17 +85,22 @@ struct PermissionsSettingsSection: View {
 
     // MARK: - Actions
 
+    /// Demander n'a de sens qu'à la toute première fois. Ensuite, seuls les
+    /// Réglages d'iOS peuvent encore changer quoi que ce soit — y compris pour
+    /// monter de « Pendant l'utilisation » à « Toujours ».
+    ///
+    /// La fenêtre native de passage à « Toujours » n'est pas perdue pour
+    /// autant : c'est `DrivingDetector.enable()` qui la déclenche, au moment où
+    /// l'utilisateur active le suivi automatique. Cette section-ci répare, et
+    /// pour réparer il faut un chemin qui marche à tous les coups.
     private func requestLocation() {
-        switch appServices.locationService.authorizationStatus {
-        case .notDetermined:
-            // `LocationService` est observable : la ligne se met à jour toute
-            // seule quand la réponse arrive.
-            appServices.locationService.requestWhenInUseAuthorization()
-        case .authorizedWhenInUse:
-            appServices.locationService.requestAlwaysAuthorization()
-        default:
+        guard appServices.locationService.authorizationStatus == .notDetermined else {
             openSystemSettings()
+            return
         }
+        // `LocationService` est observable : la ligne se met à jour toute seule
+        // quand la réponse arrive.
+        appServices.locationService.requestWhenInUseAuthorization()
     }
 
     private func requestMotion() {
@@ -146,6 +156,17 @@ private enum PermissionState {
         case .satisfied, .unavailable: false
         }
     }
+
+    /// Vrai quand toucher la ligne fait *sortir* de l'app pour les Réglages
+    /// d'iOS, et non apparaître une fenêtre système par-dessus l'app.
+    ///
+    /// C'est ce qui décide de la flèche oblique : elle ne doit annoncer qu'un
+    /// vrai départ. Une ligne qui se contente de poser la question du système
+    /// ne quitte rien et n'en porte donc pas.
+    var opensSystemSettings: Bool {
+        if case .blocked = self { return true }
+        return false
+    }
 }
 
 private struct PermissionRow: View {
@@ -165,10 +186,10 @@ private struct PermissionRow: View {
                 // invitation à agir, avant même de lire le mot.
                 Text(state.value)
                     .foregroundStyle(state.isSatisfied ? AnyShapeStyle(.secondary) : AnyShapeStyle(Color.accentColor))
-                if state.isActionable {
-                    Image(systemName: "chevron.forward")
+                if state.opensSystemSettings {
+                    Image(systemName: "arrow.up.right")
                         .font(.footnote.weight(.semibold))
-                        .foregroundStyle(.tertiary)
+                        .foregroundStyle(.secondary)
                 }
             }
             // Sans ça, seul le texte est tapable : la ligne entière doit
