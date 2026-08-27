@@ -15,7 +15,7 @@ extension View {
             .scrollContentBackground(.hidden)
             .background(
                 LinearGradient(
-                    colors: [Color(uiColor: .systemBackground), Color(uiColor: .secondarySystemBackground)],
+                    colors: [Color(uiColor: .systemBackground), Color(uiColor: .systemGray4)],
                     startPoint: .top,
                     endPoint: .bottom
                 )
