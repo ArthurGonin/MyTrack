@@ -31,7 +31,7 @@ struct RootTabView: View {
 
     var body: some View {
         TabView(selection: $selectedTab) {
-            Tab("Enregistrer", systemImage: "record.circle", value: RootTab.record) {
+            Tab("Enregistrer", systemImage: "car.fill", value: RootTab.record) {
                 RecordTripView()
             }
             Tab("Trajets", systemImage: "list.bullet", value: RootTab.trips) {
