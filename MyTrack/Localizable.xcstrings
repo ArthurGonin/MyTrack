@@ -8,6 +8,7 @@
 
     },
     "* Certaines apps concurrentes facturent en fonction du kilométrage parcouru." : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -123,6 +124,46 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "%1$@ em %2$@. Guardar esta viagem?"
+          }
+        }
+      }
+    },
+    "%@, une seule fois — accès à vie" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@, einmalig — lebenslanger Zugang"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@, once — lifetime access"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@, pago único — acceso de por vida"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@, une seule fois — accès à vie"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@, una sola volta — accesso a vita"
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@, uma só vez — acesso vitalício"
           }
         }
       }
@@ -1263,6 +1304,46 @@
         }
       }
     },
+    "Accepter automatiquement" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Automatisch akzeptieren"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Accept automatically"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aceptar automáticamente"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Accepter automatiquement"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Accetta automaticamente"
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aceitar automaticamente"
+          }
+        }
+      }
+    },
     "Accès à vie activé" : {
       "localizations" : {
         "de" : {
@@ -1339,6 +1420,206 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Compra não concluída"
+          }
+        }
+      }
+    },
+    "Achat restauré" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kauf wiederhergestellt"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Purchase restored"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Compra restaurada"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Achat restauré"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Acquisto ripristinato"
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Compra restaurada"
+          }
+        }
+      }
+    },
+    "Achat unique" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Einmalkauf"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "One-time purchase"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Compra única"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Achat unique"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Acquisto unico"
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Compra única"
+          }
+        }
+      }
+    },
+    "achat unique, à vie" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Einmalkauf, lebenslang"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "one-time purchase, for life"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "compra única, de por vida"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "achat unique, à vie"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "acquisto unico, a vita"
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "compra única, para toda a vida"
+          }
+        }
+      }
+    },
+    "Achat unique. Accès à vie à MyTrack, sans abonnement ni reconduction." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Einmalkauf. Lebenslanger Zugang zu MyTrack, ohne Abo und ohne Verlängerung."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "One-time purchase. Lifetime access to MyTrack, with no subscription and no renewal."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Compra única. Acceso de por vida a MyTrack, sin suscripción ni renovación."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Achat unique. Accès à vie à MyTrack, sans abonnement ni reconduction."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Acquisto unico. Accesso a vita a MyTrack, senza abbonamento né rinnovo."
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Compra única. Acesso vitalício ao MyTrack, sem subscrição nem renovação."
+          }
+        }
+      }
+    },
+    "Acheter" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kaufen"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Buy"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Comprar"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Acheter"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Acquista"
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Comprar"
           }
         }
       }
@@ -2464,6 +2745,7 @@
       }
     },
     "Autres apps" : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -2979,6 +3261,86 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Configurar um novo relatório periódico"
+          }
+        }
+      }
+    },
+    "Confirmation des trajets" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Fahrtbestätigung"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Trip confirmation"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Confirmación de viajes"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Confirmation des trajets"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Conferma dei viaggi"
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Confirmação das viagens"
+          }
+        }
+      }
+    },
+    "Confirmer chaque trajet" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Jede Fahrt bestätigen"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Confirm each trip"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Confirmar cada viaje"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Confirmer chaque trajet"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Conferma ogni viaggio"
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Confirmar cada viagem"
           }
         }
       }
@@ -5144,6 +5506,46 @@
         }
       }
     },
+    "Les trajets détectés sont enregistrés automatiquement, sans confirmation." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Erkannte Fahrten werden automatisch gespeichert, ohne Bestätigung."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Detected trips are saved automatically, without confirmation."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Los viajes detectados se guardan automáticamente, sin confirmación."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Les trajets détectés sont enregistrés automatiquement, sans confirmation."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "I viaggi rilevati vengono salvati automaticamente, senza conferma."
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "As viagens detetadas são guardadas automaticamente, sem confirmação."
+          }
+        }
+      }
+    },
     "Les trajets enregistrés apparaîtront ici." : {
       "localizations" : {
         "de" : {
@@ -5340,6 +5742,46 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Manual"
+          }
+        }
+      }
+    },
+    "Me demander à chaque fois" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mich jedes Mal fragen"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ask me every time"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Preguntarme cada vez"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Me demander à chaque fois"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Chiedimi ogni volta"
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Perguntar-me sempre"
           }
         }
       }
@@ -5543,6 +5985,46 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "MyTrack pode detetar e registar as tuas viagens de carro automaticamente, sem que tenhas de pensar nisso."
+          }
+        }
+      }
+    },
+    "MyTrack te demande de confirmer chaque trajet détecté avant de l'enregistrer." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "MyTrack bittet dich, jede erkannte Fahrt zu bestätigen, bevor sie gespeichert wird."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "MyTrack asks you to confirm each detected trip before saving it."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "MyTrack te pide que confirmes cada viaje detectado antes de guardarlo."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "MyTrack te demande de confirmer chaque trajet détecté avant de l'enregistrer."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "MyTrack ti chiede di confermare ogni viaggio rilevato prima di salvarlo."
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "O MyTrack pede-te para confirmares cada viagem detetada antes de a guardar."
           }
         }
       }
@@ -6071,6 +6553,7 @@
       }
     },
     "Ouvrir les Réglages" : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -6106,6 +6589,46 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Abrir Definições"
+          }
+        }
+      }
+    },
+    "Paiement unique. Ni abonnement, ni reconduction." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Einmalige Zahlung. Kein Abo, keine Verlängerung."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "One-time payment. No subscription, no renewal."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pago único. Sin suscripción ni renovación."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Paiement unique. Ni abonnement, ni reconduction."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pagamento unico. Nessun abbonamento, nessun rinnovo."
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pagamento único. Sem subscrição nem renovação."
           }
         }
       }
@@ -6390,6 +6913,46 @@
         }
       }
     },
+    "plan.lifetime" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Einmalkauf"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "One-time purchase"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Compra única"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Achat unique"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Acquisto unico"
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Compra única"
+          }
+        }
+      }
+    },
     "plan.monthly" : {
       "localizations" : {
         "de" : {
@@ -6631,6 +7194,7 @@
       }
     },
     "Prix honnête*" : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -6826,6 +7390,46 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "depois %@/ano"
+          }
+        }
+      }
+    },
+    "Quand MyTrack détecte un trajet, veux-tu le confirmer avant qu'il soit enregistré, ou préfères-tu qu'il soit accepté automatiquement ?" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Wenn MyTrack eine Fahrt erkennt, möchtest du sie bestätigen, bevor sie gespeichert wird, oder soll sie automatisch übernommen werden?"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "When MyTrack detects a trip, do you want to confirm it before it's saved, or would you rather it be accepted automatically?"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cuando MyTrack detecta un viaje, ¿quieres confirmarlo antes de que se guarde, o prefieres que se acepte automáticamente?"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Quand MyTrack détecte un trajet, veux-tu le confirmer avant qu'il soit enregistré, ou préfères-tu qu'il soit accepté automatiquement ?"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Quando MyTrack rileva un viaggio, vuoi confermarlo prima che venga salvato, o preferisci che venga accettato automaticamente?"
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Quando o MyTrack deteta uma viagem, queres confirmá-la antes de ser guardada, ou preferes que seja aceite automaticamente?"
           }
         }
       }
@@ -7151,6 +7755,7 @@
       }
     },
     "Renouvellement automatique, résiliable à tout moment depuis ton compte App Store. Sans résiliation au moins 24 h avant la fin de l'essai, l'abonnement devient payant." : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -7471,6 +8076,7 @@
       }
     },
     "Sécurité des données" : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -8466,6 +9072,46 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "O teu acesso vitalício está garantido. A tua subscrição continua ativa e será renovada: cancela-a para não pagares duas vezes."
+          }
+        }
+      }
+    },
+    "Ton achat unique a été retrouvé sur ce compte App Store." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dein Einmalkauf wurde für dieses App-Store-Konto gefunden."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Your one-time purchase was found on this App Store account."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hemos encontrado tu compra única en esta cuenta de App Store."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ton achat unique a été retrouvé sur ce compte App Store."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Il tuo acquisto unico è stato trovato su questo account App Store."
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "A tua compra única foi encontrada nesta conta App Store."
           }
         }
       }
@@ -9531,646 +10177,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "O teu relatório está pronto"
-          }
-        }
-      }
-    },
-    "Confirmation des trajets" : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Fahrtbestätigung"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Trip confirmation"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Confirmación de viajes"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Confirmation des trajets"
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Conferma dei viaggi"
-          }
-        },
-        "pt" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Confirmação das viagens"
-          }
-        }
-      }
-    },
-    "Quand MyTrack détecte un trajet, veux-tu le confirmer avant qu'il soit enregistré, ou préfères-tu qu'il soit accepté automatiquement ?" : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Wenn MyTrack eine Fahrt erkennt, möchtest du sie bestätigen, bevor sie gespeichert wird, oder soll sie automatisch übernommen werden?"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "When MyTrack detects a trip, do you want to confirm it before it's saved, or would you rather it be accepted automatically?"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Cuando MyTrack detecta un viaje, ¿quieres confirmarlo antes de que se guarde, o prefieres que se acepte automáticamente?"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Quand MyTrack détecte un trajet, veux-tu le confirmer avant qu'il soit enregistré, ou préfères-tu qu'il soit accepté automatiquement ?"
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Quando MyTrack rileva un viaggio, vuoi confermarlo prima che venga salvato, o preferisci che venga accettato automaticamente?"
-          }
-        },
-        "pt" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Quando o MyTrack deteta uma viagem, queres confirmá-la antes de ser guardada, ou preferes que seja aceite automaticamente?"
-          }
-        }
-      }
-    },
-    "Me demander à chaque fois" : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Mich jedes Mal fragen"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Ask me every time"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Preguntarme cada vez"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Me demander à chaque fois"
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Chiedimi ogni volta"
-          }
-        },
-        "pt" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Perguntar-me sempre"
-          }
-        }
-      }
-    },
-    "Accepter automatiquement" : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Automatisch akzeptieren"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Accept automatically"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Aceptar automáticamente"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Accepter automatiquement"
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Accetta automaticamente"
-          }
-        },
-        "pt" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Aceitar automaticamente"
-          }
-        }
-      }
-    },
-    "Confirmer chaque trajet" : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Jede Fahrt bestätigen"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Confirm each trip"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Confirmar cada viaje"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Confirmer chaque trajet"
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Conferma ogni viaggio"
-          }
-        },
-        "pt" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Confirmar cada viagem"
-          }
-        }
-      }
-    },
-    "MyTrack te demande de confirmer chaque trajet détecté avant de l'enregistrer." : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "MyTrack bittet dich, jede erkannte Fahrt zu bestätigen, bevor sie gespeichert wird."
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "MyTrack asks you to confirm each detected trip before saving it."
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "MyTrack te pide que confirmes cada viaje detectado antes de guardarlo."
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "MyTrack te demande de confirmer chaque trajet détecté avant de l'enregistrer."
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "MyTrack ti chiede di confermare ogni viaggio rilevato prima di salvarlo."
-          }
-        },
-        "pt" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "O MyTrack pede-te para confirmares cada viagem detetada antes de a guardar."
-          }
-        }
-      }
-    },
-    "Les trajets détectés sont enregistrés automatiquement, sans confirmation." : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Erkannte Fahrten werden automatisch gespeichert, ohne Bestätigung."
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Detected trips are saved automatically, without confirmation."
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Los viajes detectados se guardan automáticamente, sin confirmación."
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Les trajets détectés sont enregistrés automatiquement, sans confirmation."
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "I viaggi rilevati vengono salvati automaticamente, senza conferma."
-          }
-        },
-        "pt" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "As viagens detetadas são guardadas automaticamente, sem confirmação."
-          }
-        }
-      }
-    },
-    "Achat unique" : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Einmalkauf"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "One-time purchase"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Compra única"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Achat unique"
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Acquisto unico"
-          }
-        },
-        "pt" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Compra única"
-          }
-        }
-      }
-    },
-    "Acheter" : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Kaufen"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Buy"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Comprar"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Acheter"
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Acquista"
-          }
-        },
-        "pt" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Comprar"
-          }
-        }
-      }
-    },
-    "%@, une seule fois — accès à vie" : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%@, einmalig — lebenslanger Zugang"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%@, once — lifetime access"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%@, pago único — acceso de por vida"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%@, une seule fois — accès à vie"
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%@, una sola volta — accesso a vita"
-          }
-        },
-        "pt" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%@, uma só vez — acesso vitalício"
-          }
-        }
-      }
-    },
-    "Achat restauré" : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Kauf wiederhergestellt"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Purchase restored"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Compra restaurada"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Achat restauré"
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Acquisto ripristinato"
-          }
-        },
-        "pt" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Compra restaurada"
-          }
-        }
-      }
-    },
-    "Ton achat unique a été retrouvé sur ce compte App Store." : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Dein Einmalkauf wurde für dieses App-Store-Konto gefunden."
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Your one-time purchase was found on this App Store account."
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Hemos encontrado tu compra única en esta cuenta de App Store."
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Ton achat unique a été retrouvé sur ce compte App Store."
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Il tuo acquisto unico è stato trovato su questo account App Store."
-          }
-        },
-        "pt" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "A tua compra única foi encontrada nesta conta App Store."
-          }
-        }
-      }
-    },
-    "plan.lifetime" : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Einmalkauf"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "One-time purchase"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Compra única"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Achat unique"
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Acquisto unico"
-          }
-        },
-        "pt" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Compra única"
-          }
-        }
-      }
-    },
-    "Achat unique. Accès à vie à MyTrack, sans abonnement ni reconduction." : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Einmalkauf. Lebenslanger Zugang zu MyTrack, ohne Abo und ohne Verlängerung."
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "One-time purchase. Lifetime access to MyTrack, with no subscription and no renewal."
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Compra única. Acceso de por vida a MyTrack, sin suscripción ni renovación."
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Achat unique. Accès à vie à MyTrack, sans abonnement ni reconduction."
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Acquisto unico. Accesso a vita a MyTrack, senza abbonamento né rinnovo."
-          }
-        },
-        "pt" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Compra única. Acesso vitalício ao MyTrack, sem subscrição nem renovação."
-          }
-        }
-      }
-    },
-    "Paiement unique. Ni abonnement, ni reconduction." : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Einmalige Zahlung. Kein Abo, keine Verlängerung."
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "One-time payment. No subscription, no renewal."
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Pago único. Sin suscripción ni renovación."
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Paiement unique. Ni abonnement, ni reconduction."
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Pagamento unico. Nessun abbonamento, nessun rinnovo."
-          }
-        },
-        "pt" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Pagamento único. Sem subscrição nem renovação."
-          }
-        }
-      }
-    },
-    "achat unique, à vie" : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Einmalkauf, lebenslang"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "one-time purchase, for life"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "compra única, de por vida"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "achat unique, à vie"
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "acquisto unico, a vita"
-          }
-        },
-        "pt" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "compra única, para toda a vida"
           }
         }
       }

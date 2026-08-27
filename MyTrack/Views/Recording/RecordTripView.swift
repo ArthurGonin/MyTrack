@@ -55,10 +55,17 @@ struct RecordTripView: View {
                     idleContent
                 } else {
                     subscriptionRequiredView
+                        .frame(maxHeight: .infinity)
                 }
             }
             .animation(.smooth(duration: 0.45), value: viewModel.isRecording)
-            .padding()
+            // Marge haute réduite : l'en-tête vient se loger juste sous la barre
+            // de navigation. Les 16 pt d'un `padding()` uniforme s'ajoutaient à
+            // la hauteur de cette barre — déjà haute, elle porte le sélecteur de
+            // véhicule sur deux lignes — et faisaient descendre le « Bon retour »
+            // bien plus bas que le haut de l'écran.
+            .padding([.horizontal, .bottom])
+            .padding(.top, 4)
             .appBackground()
             .toolbar {
                 ToolbarItem(placement: .principal) {
@@ -188,10 +195,15 @@ struct RecordTripView: View {
 
     /// Au repos, la voiture occupe le centre de l'écran et le bouton Démarrer
     /// se pose en bas, à portée de pouce.
+    ///
+    /// Le centrage se dit sur la carte elle-même plutôt qu'avec un `Spacer` de
+    /// part et d'autre. Le résultat est le même au pixel près — les deux
+    /// `Spacer` étaient symétriques, ils centraient donc déjà — mais l'intention
+    /// est écrite une fois, là où elle s'applique, au lieu d'être à déduire de
+    /// deux vues invisibles autour desquelles le `VStack` ajoutait encore son
+    /// espacement.
     @ViewBuilder
     private var idleContent: some View {
-        Spacer(minLength: 0)
-
         VStack(spacing: 18) {
             Image("CarIllustration")
                 .resizable()
@@ -209,9 +221,8 @@ struct RecordTripView: View {
         }
         .frame(maxWidth: .infinity)
         .appCard(padding: 24)
+        .frame(maxHeight: .infinity)
         .transition(.opacity.combined(with: .scale(scale: 0.94)))
-
-        Spacer(minLength: 0)
 
         Button { startRecording() } label: {
             Text("Démarrer").frame(maxWidth: .infinity)
