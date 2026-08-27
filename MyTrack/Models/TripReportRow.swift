@@ -8,6 +8,10 @@
 //  plain values instead — which is precisely what lets the drawing itself run
 //  off the main thread.
 //
+//  How the trip was recorded — auto-detected or entered by hand — is
+//  deliberately absent: it's an implementation detail of the app, not of the
+//  journey, and it told the report's reader nothing.
+//
 
 import Foundation
 
@@ -16,7 +20,6 @@ nonisolated struct TripReportRow: Sendable {
     let vehicleName: String
     let distance: String
     let duration: String
-    let source: String
     let distanceMeters: Double
     let durationSeconds: TimeInterval
 }
@@ -28,7 +31,6 @@ extension TripReportRow {
             vehicleName: trip.vehicle?.name ?? "—",
             distance: trip.formattedDistance(in: unit),
             duration: trip.formattedDuration,
-            source: trip.formattedSource,
             distanceMeters: trip.distanceMeters,
             durationSeconds: (trip.endDate ?? .now).timeIntervalSince(trip.startDate)
         )
