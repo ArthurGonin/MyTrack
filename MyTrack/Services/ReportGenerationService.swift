@@ -59,6 +59,7 @@ final class ReportGenerationService {
         // Même raison pour la langue que pour l'unité : le PDF est un document
         // figé, il garde celle dans laquelle il a été écrit.
         let locale = languageService.locale
+        let bundle = languageService.bundle
         let rows = trips
             .sorted { $0.startDate < $1.startDate }
             .map { TripReportRow(trip: $0, unit: distanceUnit, locale: locale) }
@@ -76,6 +77,7 @@ final class ReportGenerationService {
                 generatedAt: generatedAt,
                 distanceUnit: distanceUnit,
                 locale: locale,
+                bundle: bundle,
                 vehicleNames: includedVehicleNames,
                 pendingTripCount: pendingTripCount
             )

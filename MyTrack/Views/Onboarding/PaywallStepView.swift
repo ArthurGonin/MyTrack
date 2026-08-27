@@ -60,6 +60,7 @@ struct PaywallStepView: View {
     let onDebugSkip: () -> Void
 
     @Environment(\.locale) private var locale
+    @Environment(\.localizationBundle) private var localizationBundle
     @State private var isPurchaseFailedAlertPresented = false
     @State private var isRestoreFailedAlertPresented = false
     @State private var hasPurchaseFailed = false
@@ -283,12 +284,12 @@ struct PaywallStepView: View {
     /// format du compte : seule la phrase autour se traduit.
     private var annualSubtitle: String {
         let price = annualProduct?.displayPrice ?? "24,99 €"
-        return String(localized: "puis \(price) / an", locale: locale)
+        return String(localized: "puis \(price) / an", bundle: localizationBundle, locale: locale)
     }
 
     private var monthlyTitle: String {
         let price = monthlyProduct?.displayPrice ?? "2,99 €"
-        return String(localized: "\(price) / mois", locale: locale)
+        return String(localized: "\(price) / mois", bundle: localizationBundle, locale: locale)
     }
 
     private func freeTrialTitle(for period: Product.SubscriptionPeriod) -> String {
@@ -298,16 +299,16 @@ struct PaywallStepView: View {
         // Spelled out in days so the real product reads the same as the
         // fallback copy above ("7 jours gratuits"), not "1 semaine gratuite".
         case .week: return freeTrialDaysTitle(days: count * 7)
-        case .month: return String(localized: "\(count) mois gratuits", locale: locale)
-        case .year: return String(localized: "\(count) ans gratuits", locale: locale)
-        @unknown default: return String(localized: "Essai gratuit", locale: locale)
+        case .month: return String(localized: "\(count) mois gratuits", bundle: localizationBundle, locale: locale)
+        case .year: return String(localized: "\(count) ans gratuits", bundle: localizationBundle, locale: locale)
+        @unknown default: return String(localized: "Essai gratuit", bundle: localizationBundle, locale: locale)
         }
     }
 
     /// Le singulier n'est plus un `if` collé au mot : chaque langue accorde à
     /// sa façon, et c'est le catalogue de chaînes qui porte ses règles.
     private func freeTrialDaysTitle(days: Int) -> String {
-        String(localized: "\(days) jours gratuits", locale: locale)
+        String(localized: "\(days) jours gratuits", bundle: localizationBundle, locale: locale)
     }
 }
 

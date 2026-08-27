@@ -63,6 +63,10 @@ final class NotificationService: NSObject, UNUserNotificationCenterDelegate {
     /// serait la seule partie de l'app restée en arrière.
     private var locale: Locale { languageService.locale }
 
+    /// Voir `LanguageService.bundle` : c'est lui, et pas la locale, qui décide
+    /// dans quelle langue une chaîne construite hors SwiftUI est écrite.
+    private var bundle: Bundle { languageService.bundle }
+
     func requestAuthorization() {
         center.requestAuthorization(options: [.alert, .sound]) { granted, error in
             if let error {
@@ -80,10 +84,10 @@ final class NotificationService: NSObject, UNUserNotificationCenterDelegate {
         registerCategory()
 
         let content = UNMutableNotificationContent()
-        content.title = String(localized: "Trajet terminé", locale: locale)
+        content.title = String(localized: "Trajet terminé", bundle: bundle, locale: locale)
         let distance = trip.formattedDistance(in: unitSettingsService.distanceUnit, locale: locale)
         let duration = trip.formattedDuration(locale: locale)
-        content.body = String(localized: "\(distance) en \(duration). Enregistrer ce trajet ?", locale: locale)
+        content.body = String(localized: "\(distance) en \(duration). Enregistrer ce trajet ?", bundle: bundle, locale: locale)
         content.sound = .default
         content.categoryIdentifier = Self.confirmCategoryIdentifier
         content.userInfo = [Self.tripIDKey: trip.id.uuidString]
@@ -106,8 +110,8 @@ final class NotificationService: NSObject, UNUserNotificationCenterDelegate {
         center.removePendingNotificationRequests(withIdentifiers: [identifier])
 
         let content = UNMutableNotificationContent()
-        content.title = String(localized: "Votre rapport est prêt", locale: locale)
-        content.body = String(localized: "Le rapport « \(profileName) » est prêt dans MyTrack.", locale: locale)
+        content.title = String(localized: "Votre rapport est prêt", bundle: bundle, locale: locale)
+        content.body = String(localized: "Le rapport « \(profileName) » est prêt dans MyTrack.", bundle: bundle, locale: locale)
         content.sound = .default
         content.userInfo = [Self.reportReadyKey: true]
 
@@ -128,15 +132,17 @@ final class NotificationService: NSObject, UNUserNotificationCenterDelegate {
     func notifySubscriptionLapsed(hasBillingIssue: Bool) {
         let content = UNMutableNotificationContent()
         if hasBillingIssue {
-            content.title = String(localized: "Problème de paiement", locale: locale)
+            content.title = String(localized: "Problème de paiement", bundle: bundle, locale: locale)
             content.body = String(
                 localized: "Ton abonnement n'a pas pu être renouvelé : tes trajets ne sont plus enregistrés. Mets à jour ton moyen de paiement.",
+                bundle: bundle,
                 locale: locale
             )
         } else {
-            content.title = String(localized: "Abonnement expiré", locale: locale)
+            content.title = String(localized: "Abonnement expiré", bundle: bundle, locale: locale)
             content.body = String(
                 localized: "Tes trajets ne sont plus enregistrés. Tes trajets et rapports déjà enregistrés restent accessibles.",
+                bundle: bundle,
                 locale: locale
             )
         }
@@ -183,12 +189,12 @@ final class NotificationService: NSObject, UNUserNotificationCenterDelegate {
     private func registerCategory() {
         let confirmAction = UNNotificationAction(
             identifier: Self.confirmActionIdentifier,
-            title: String(localized: "Oui, enregistrer", locale: locale),
+            title: String(localized: "Oui, enregistrer", bundle: bundle, locale: locale),
             options: []
         )
         let discardAction = UNNotificationAction(
             identifier: Self.discardActionIdentifier,
-            title: String(localized: "Non", locale: locale),
+            title: String(localized: "Non", bundle: bundle, locale: locale),
             options: [.destructive]
         )
         let category = UNNotificationCategory(

@@ -34,6 +34,24 @@ final class LanguageService {
         return Locale(components: components)
     }
 
+    /// Le bundle de la langue choisie.
+    ///
+    /// `String(localized:)` ne choisit *pas* la traduction d'après la locale
+    /// qu'on lui passe — celle-ci ne sert qu'à mettre en forme les valeurs
+    /// interpolées. C'est le bundle qui décide, et par défaut il suit la langue
+    /// du système. Sans ce détour, tout ce qui s'écrit hors SwiftUI — PDF,
+    /// notifications — repartirait dans la langue de l'iPhone plutôt que dans
+    /// celle de l'app. Les vues, elles, n'en ont pas besoin : `Text` résout ses
+    /// clés à partir de la locale de l'environnement.
+    var bundle: Bundle {
+        guard let path = Bundle.main.path(forResource: language.rawValue, ofType: "lproj"),
+              let bundle = Bundle(path: path)
+        else {
+            return .main
+        }
+        return bundle
+    }
+
     init() {
         // Rien n'est écrit tant que l'utilisateur n'a pas choisi lui-même :
         // sans choix explicite, l'app suit la langue du système, y compris si

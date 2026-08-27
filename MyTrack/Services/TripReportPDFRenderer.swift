@@ -73,6 +73,7 @@ nonisolated enum TripReportPDFRenderer {
         generatedAt: Date,
         distanceUnit: DistanceUnit,
         locale: Locale,
+        bundle: Bundle,
         vehicleNames: [String] = [],
         pendingTripCount: Int = 0
     ) -> Data {
@@ -83,6 +84,7 @@ nonisolated enum TripReportPDFRenderer {
             generatedAt: generatedAt,
             distanceUnit: distanceUnit,
             locale: locale,
+            bundle: bundle,
             vehicleNames: vehicleNames,
             pendingTripCount: pendingTripCount,
             // Looked up once, outside the drawing passes: it's the same image
@@ -129,6 +131,9 @@ nonisolated enum TripReportPDFRenderer {
         /// Le PDF est un document figé, il garde donc la langue dans laquelle
         /// il a été écrit, comme il garde déjà son unité de distance.
         let locale: Locale
+        /// Le bundle accompagne la locale parce que c'est lui qui choisit la
+        /// traduction ; la locale, elle, met en forme dates et nombres.
+        let bundle: Bundle
         let vehicleNames: [String]
         let pendingTripCount: Int
         let icon: UIImage?
@@ -152,20 +157,20 @@ nonisolated enum TripReportPDFRenderer {
         }
 
         beginPage()
-        y = drawBrandBanner(at: y, locale: document.locale, icon: document.icon)
+        y = drawBrandBanner(at: y, locale: document.locale, bundle: document.bundle, icon: document.icon)
         y = drawDocumentHeader(
             at: y, periodStart: document.periodStart, periodEnd: document.periodEnd,
             generatedAt: document.generatedAt, vehicleNames: document.vehicleNames,
-            locale: document.locale
+            locale: document.locale, bundle: document.bundle
         )
-        y = drawTableHeader(at: y, locale: document.locale)
+        y = drawTableHeader(at: y, locale: document.locale, bundle: document.bundle)
 
         // Continuing the table on a fresh page repeats the column titles, so a
         // page read on its own still says what each column holds.
         func continueOnNewPageIfNeeded(for height: CGFloat) {
             guard y + height > contentBottom else { return }
             beginPage()
-            y = drawTableHeader(at: margin, locale: document.locale)
+            y = drawTableHeader(at: margin, locale: document.locale, bundle: document.bundle)
         }
 
         // The totals and the note qualifying them close the report as one
@@ -174,7 +179,7 @@ nonisolated enum TripReportPDFRenderer {
         let noticeHeight = document.pendingTripCount > 0 ? pendingNoticeHeight : 0
 
         if document.rows.isEmpty {
-            y = drawEmptyState(at: y, locale: document.locale)
+            y = drawEmptyState(at: y, locale: document.locale, bundle: document.bundle)
         } else {
             for row in document.rows {
                 continueOnNewPageIfNeeded(for: rowHeight)
@@ -184,14 +189,16 @@ nonisolated enum TripReportPDFRenderer {
             continueOnNewPageIfNeeded(for: totalsHeight + noticeHeight)
             y = drawTotals(
                 at: y, rows: document.rows,
-                distanceUnit: document.distanceUnit, locale: document.locale
+                distanceUnit: document.distanceUnit,
+                locale: document.locale, bundle: document.bundle
             )
         }
 
         if document.pendingTripCount > 0 {
             drawPendingNotice(
                 at: y, count: document.pendingTripCount,
-                hasTotals: !document.rows.isEmpty, locale: document.locale
+                hasTotals: !document.rows.isEmpty,
+                locale: document.locale, bundle: document.bundle
             )
         }
 
@@ -224,12 +231,12 @@ nonisolated enum TripReportPDFRenderer {
     /// en anglais — faute de traductions ; maintenant qu'il y en a, elle suit
     /// la langue du rapport, et reste neutre en unité pour rester vraie quel
     /// que soit ce que les colonnes affichent.
-    private static func drawBrandBanner(at y: CGFloat, locale: Locale, icon: UIImage?) -> CGFloat {
+    private static func drawBrandBanner(at y: CGFloat, locale: Locale, bundle: Bundle, icon: UIImage?) -> CGFloat {
         let iconRect = CGRect(x: margin, y: y, width: brandIconSide, height: brandIconSide)
         drawAppIcon(icon, in: iconRect)
 
         let branding = NSMutableAttributedString(
-            string: String(localized: "Suivi des trajets : ", locale: locale),
+            string: String(localized: "Suivi des trajets : ", bundle: bundle, locale: locale),
             attributes: [
                 .font: UIFont.systemFont(ofSize: 13),
                 .foregroundColor: UIColor.darkGray,
@@ -293,11 +300,11 @@ nonisolated enum TripReportPDFRenderer {
 
     private static func drawDocumentHeader(
         at y: CGFloat, periodStart: Date, periodEnd: Date, generatedAt: Date,
-        vehicleNames: [String], locale: Locale
+        vehicleNames: [String], locale: Locale, bundle: Bundle
     ) -> CGFloat {
         var y = y
 
-        String(localized: "Rapport de trajets", locale: locale).draw(
+        String(localized: "Rapport de trajets", bundle: bundle, locale: locale).draw(
             at: CGPoint(x: margin, y: y),
             withAttributes: [.font: UIFont.boldSystemFont(ofSize: 20)]
         )
@@ -305,18 +312,18 @@ nonisolated enum TripReportPDFRenderer {
 
         let bodyAttributes: [NSAttributedString.Key: Any] = [.font: UIFont.systemFont(ofSize: 12)]
         let period = "\(TripFormatting.shortDate(periodStart, locale: locale)) – \(TripFormatting.shortDate(periodEnd, locale: locale))"
-        String(localized: "Période : \(period)", locale: locale)
+        String(localized: "Période : \(period)", bundle: bundle, locale: locale)
             .draw(at: CGPoint(x: margin, y: y), withAttributes: bodyAttributes)
         y += 16
 
         let generated = TripFormatting.dateAndTime(generatedAt, locale: locale)
-        String(localized: "Généré le \(generated)", locale: locale)
+        String(localized: "Généré le \(generated)", bundle: bundle, locale: locale)
             .draw(at: CGPoint(x: margin, y: y), withAttributes: bodyAttributes)
         y += 16
 
         if !vehicleNames.isEmpty {
             let names = vehicleNames.formatted(.list(type: .and).locale(locale))
-            String(localized: "Véhicules : \(names)", locale: locale)
+            String(localized: "Véhicules : \(names)", bundle: bundle, locale: locale)
                 .draw(at: CGPoint(x: margin, y: y), withAttributes: bodyAttributes)
             y += 16
         }
@@ -327,13 +334,13 @@ nonisolated enum TripReportPDFRenderer {
     // MARK: - Table
 
     @discardableResult
-    private static func drawTableHeader(at y: CGFloat, locale: Locale) -> CGFloat {
+    private static func drawTableHeader(at y: CGFloat, locale: Locale, bundle: Bundle) -> CGFloat {
         let headerAttributes: [NSAttributedString.Key: Any] = [
             .font: UIFont.boldSystemFont(ofSize: 11),
             .foregroundColor: UIColor.darkGray,
         ]
         for column in columns {
-            String(localized: column.titleKey, locale: locale).draw(
+            String(localized: column.titleKey, bundle: bundle, locale: locale).draw(
                 in: CGRect(x: column.x, y: y, width: column.width, height: rowHeight),
                 withAttributes: headerAttributes
             )
@@ -355,7 +362,8 @@ nonisolated enum TripReportPDFRenderer {
     /// each figure sits directly under the column it sums, so the total
     /// distance reads down the Distance column and the total time down Durée.
     private static func drawTotals(
-        at y: CGFloat, rows: [TripReportRow], distanceUnit: DistanceUnit, locale: Locale
+        at y: CGFloat, rows: [TripReportRow], distanceUnit: DistanceUnit,
+        locale: Locale, bundle: Bundle
     ) -> CGFloat {
         var y = y + 4
         drawRule(atY: y, width: 0.8, color: .darkGray)
@@ -365,7 +373,7 @@ nonisolated enum TripReportPDFRenderer {
         let totalDuration = rows.reduce(0.0) { $0 + $1.durationSeconds }
         draw(
             values: [
-                String(localized: "Total (\(rows.count) trajets)", locale: locale),
+                String(localized: "Total (\(rows.count) trajets)", bundle: bundle, locale: locale),
                 "",
                 TripFormatting.distance(meters: totalDistanceMeters, unit: distanceUnit, locale: locale),
                 TripFormatting.duration(totalDuration, locale: locale),
@@ -387,8 +395,8 @@ nonisolated enum TripReportPDFRenderer {
     }
 
     @discardableResult
-    private static func drawEmptyState(at y: CGFloat, locale: Locale) -> CGFloat {
-        String(localized: "Aucun trajet sur cette période.", locale: locale).draw(
+    private static func drawEmptyState(at y: CGFloat, locale: Locale, bundle: Bundle) -> CGFloat {
+        String(localized: "Aucun trajet sur cette période.", bundle: bundle, locale: locale).draw(
             at: CGPoint(x: margin, y: y),
             withAttributes: [.font: UIFont.italicSystemFont(ofSize: 12), .foregroundColor: UIColor.gray]
         )
@@ -398,12 +406,12 @@ nonisolated enum TripReportPDFRenderer {
     /// `hasTotals` is false when the period held nothing but pending trips:
     /// there is no total above to point at, so the note says the trips are
     /// missing from the report rather than from a figure that isn't there.
-    private static func drawPendingNotice(at y: CGFloat, count: Int, hasTotals: Bool, locale: Locale) {
+    private static func drawPendingNotice(at y: CGFloat, count: Int, hasTotals: Bool, locale: Locale, bundle: Bundle) {
         // Le singulier n'est plus un `if` : chaque langue a ses propres règles
         // de pluriel, et c'est le catalogue de chaînes qui les porte.
         let notice = hasTotals
-            ? String(localized: "\(count) trajets de cette période sont encore en attente de confirmation : ils ne sont pas comptés dans ce total.", locale: locale)
-            : String(localized: "\(count) trajets de cette période sont encore en attente de confirmation : ils ne figurent pas dans ce rapport.", locale: locale)
+            ? String(localized: "\(count) trajets de cette période sont encore en attente de confirmation : ils ne sont pas comptés dans ce total.", bundle: bundle, locale: locale)
+            : String(localized: "\(count) trajets de cette période sont encore en attente de confirmation : ils ne figurent pas dans ce rapport.", bundle: bundle, locale: locale)
         notice.draw(
             in: CGRect(x: margin, y: y + 8, width: pageWidth - 2 * margin, height: pendingNoticeHeight),
             withAttributes: [

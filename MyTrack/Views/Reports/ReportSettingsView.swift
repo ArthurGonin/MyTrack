@@ -15,6 +15,7 @@ struct ReportSettingsView: View {
     @Environment(AppServices.self) private var appServices
     @Environment(\.modelContext) private var modelContext
     @Environment(\.locale) private var locale
+    @Environment(\.localizationBundle) private var localizationBundle
 
     @Query(sort: \ReportProfile.createdAt) private var profiles: [ReportProfile]
     @State private var newlyCreatedProfile: ReportProfile?
@@ -65,18 +66,18 @@ struct ReportSettingsView: View {
 
     private func summary(for profile: ReportProfile) -> String {
         let vehiclesLabel = profile.vehicles.isEmpty
-            ? String(localized: "Tous les véhicules", locale: locale)
+            ? String(localized: "Tous les véhicules", bundle: localizationBundle, locale: locale)
             : profile.vehicles.map(\.name).formatted(.list(type: .and).locale(locale))
         return "\(label(for: profile)) · \(vehiclesLabel)"
     }
 
     private func label(for profile: ReportProfile) -> String {
         switch profile.periodicity {
-        case .none: return String(localized: "Désactivé", locale: locale)
-        case .monthly: return String(localized: "Mensuel", locale: locale)
-        case .quarterly: return String(localized: "Trimestriel", locale: locale)
-        case .yearly: return String(localized: "Annuel", locale: locale)
-        case .custom: return String(localized: "Tous les \(profile.customIntervalDays) jours", locale: locale)
+        case .none: return String(localized: "Désactivé", bundle: localizationBundle, locale: locale)
+        case .monthly: return String(localized: "Mensuel", bundle: localizationBundle, locale: locale)
+        case .quarterly: return String(localized: "Trimestriel", bundle: localizationBundle, locale: locale)
+        case .yearly: return String(localized: "Annuel", bundle: localizationBundle, locale: locale)
+        case .custom: return String(localized: "Tous les \(profile.customIntervalDays) jours", bundle: localizationBundle, locale: locale)
         }
     }
 
@@ -93,7 +94,7 @@ struct ReportSettingsView: View {
         // peut renommer, pas du texte d'interface — elle ne doit donc plus
         // bouger si la langue change après coup.
         let profile = appServices.reportProfileService.createProfile(
-            name: String(localized: "Nouveau rapport périodique", locale: locale),
+            name: String(localized: "Nouveau rapport périodique", bundle: localizationBundle, locale: locale),
             in: modelContext
         )
         newlyCreatedProfile = profile

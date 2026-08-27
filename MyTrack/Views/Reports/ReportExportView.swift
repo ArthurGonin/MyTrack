@@ -28,6 +28,7 @@ struct ReportExportView: View {
     @Environment(\.modelContext) private var modelContext
     @Environment(\.dismiss) private var dismiss
     @Environment(\.locale) private var locale
+    @Environment(\.localizationBundle) private var localizationBundle
 
     @Query(sort: \Trip.startDate, order: .reverse) private var allTrips: [Trip]
     @Query(sort: \Vehicle.name) private var allVehicles: [Vehicle]
@@ -70,10 +71,11 @@ struct ReportExportView: View {
     /// n'a alors qu'un nombre, donc un pluriel que le catalogue sait accorder
     /// dans chaque langue.
     private var dateRangeFooter: String {
-        var text = String(localized: "\(tripsToExport.count) trajets sur cette période.", locale: locale)
+        var text = String(localized: "\(tripsToExport.count) trajets sur cette période.", bundle: localizationBundle, locale: locale)
         if pendingTripCount > 0 {
             text += " " + String(
                 localized: "\(pendingTripCount) autres en attente de confirmation, non inclus.",
+                bundle: localizationBundle,
                 locale: locale
             )
         }

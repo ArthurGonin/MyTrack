@@ -17,6 +17,7 @@ import SwiftUI
 struct SubscriptionSettingsSection: View {
     @Environment(AppServices.self) private var appServices
     @Environment(\.locale) private var locale
+    @Environment(\.localizationBundle) private var localizationBundle
 
     @State private var isManageSubscriptionsPresented = false
     @State private var isStorePresented = false
@@ -149,8 +150,8 @@ struct SubscriptionSettingsSection: View {
         // ailleurs une fréquence de rapport — deux sens que plusieurs langues
         // ne rendent pas par le même mot.
         return switch plan {
-        case .annual: String(localized: "plan.annual", defaultValue: "Annuel", locale: locale)
-        case .monthly: String(localized: "plan.monthly", defaultValue: "Mensuel", locale: locale)
+        case .annual: String(localized: "plan.annual", defaultValue: "Annuel", bundle: localizationBundle, locale: locale)
+        case .monthly: String(localized: "plan.monthly", defaultValue: "Mensuel", bundle: localizationBundle, locale: locale)
         }
     }
 
@@ -160,25 +161,25 @@ struct SubscriptionSettingsSection: View {
     private var statusFooter: String {
         guard let subscription = purchaseService.subscription else {
             return purchaseService.hasBillingIssue
-                ? String(localized: "Ton abonnement n'a pas pu être renouvelé : aucun nouveau trajet n'est enregistré. Tes trajets et rapports déjà enregistrés restent accessibles.", locale: locale)
-                : String(localized: "Sans abonnement actif, aucun nouveau trajet n'est enregistré. Tes trajets et rapports déjà enregistrés restent accessibles.", locale: locale)
+                ? String(localized: "Ton abonnement n'a pas pu être renouvelé : aucun nouveau trajet n'est enregistré. Tes trajets et rapports déjà enregistrés restent accessibles.", bundle: localizationBundle, locale: locale)
+                : String(localized: "Sans abonnement actif, aucun nouveau trajet n'est enregistré. Tes trajets et rapports déjà enregistrés restent accessibles.", bundle: localizationBundle, locale: locale)
         }
 
         guard let date = subscription.expirationDate else {
-            return String(localized: "Abonnement actif.", locale: locale)
+            return String(localized: "Abonnement actif.", bundle: localizationBundle, locale: locale)
         }
         let formattedDate = TripFormatting.longDate(date, locale: locale)
 
         if subscription.isInFreeTrial {
             return subscription.willAutoRenew == false
-                ? String(localized: "Essai gratuit jusqu'au \(formattedDate). Aucune reconduction : l'accès s'arrêtera à cette date.", locale: locale)
-                : String(localized: "Essai gratuit jusqu'au \(formattedDate), puis reconduction automatique.", locale: locale)
+                ? String(localized: "Essai gratuit jusqu'au \(formattedDate). Aucune reconduction : l'accès s'arrêtera à cette date.", bundle: localizationBundle, locale: locale)
+                : String(localized: "Essai gratuit jusqu'au \(formattedDate), puis reconduction automatique.", bundle: localizationBundle, locale: locale)
         }
 
         return switch subscription.willAutoRenew {
-        case true: String(localized: "Se renouvelle automatiquement le \(formattedDate).", locale: locale)
-        case false: String(localized: "Actif jusqu'au \(formattedDate), sans reconduction.", locale: locale)
-        case nil: String(localized: "Actif jusqu'au \(formattedDate).", locale: locale)
+        case true: String(localized: "Se renouvelle automatiquement le \(formattedDate).", bundle: localizationBundle, locale: locale)
+        case false: String(localized: "Actif jusqu'au \(formattedDate), sans reconduction.", bundle: localizationBundle, locale: locale)
+        case nil: String(localized: "Actif jusqu'au \(formattedDate).", bundle: localizationBundle, locale: locale)
         }
     }
 

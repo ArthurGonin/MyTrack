@@ -87,6 +87,7 @@ struct MyTrackApp: App {
             // donc changer de langue dans l'app se voit tout de suite, sans
             // redémarrage et sans toucher aux réglages du système.
             .environment(\.locale, appServices.languageService.locale)
+            .environment(\.localizationBundle, appServices.languageService.bundle)
         }
         .modelContainer(modelContainer)
     }
