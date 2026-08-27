@@ -82,6 +82,11 @@ struct MyTrackApp: App {
                 }
             }
             .environment(appServices)
+            // Tous les boutons de l'app en gélule. Posé ici plutôt que sur
+            // chaque bouton : la forme se transmet par l'environnement, donc
+            // un bouton ajouté plus tard la prend sans qu'on y pense — et
+            // aucun ne peut rester rectangulaire par oubli.
+            .buttonBorderShape(.capsule)
             // Toute la localisation de l'app passe par là : SwiftUI résout ses
             // chaînes et ses formats de date avec la locale de l'environnement,
             // donc changer de langue dans l'app se voit tout de suite, sans

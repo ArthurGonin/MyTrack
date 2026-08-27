@@ -54,8 +54,12 @@ struct DeletedTripsView: View {
                                 Label("Supprimer", systemImage: "trash")
                             }
                         }
+                        .appCardRow()
                     }
                 }
+                // Les lignes portent elles-mêmes leur carte : le style de
+                // liste ne doit pas en dessiner une seconde autour d'elles.
+                .listStyle(.plain)
             }
         }
         .appBackground()

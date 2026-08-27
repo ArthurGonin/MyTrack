@@ -43,6 +43,7 @@ struct TripListView: View {
                                     NavigationLink(value: trip) {
                                         TripRow(trip: trip, distanceUnit: appServices.unitSettingsService.distanceUnit)
                                     }
+                                    .appCardRow()
                                 }
                                 .onDelete { indexSet in
                                     for index in indexSet {
@@ -67,8 +68,12 @@ struct TripListView: View {
                                     }
                                 }
                             }
+                            .appCardRow()
                         }
                     }
+                    // Les lignes portent elles-mêmes leur carte : le style de
+                    // liste ne doit pas en dessiner une seconde autour d'elles.
+                    .listStyle(.plain)
                 }
             }
             .appBackground()
@@ -89,18 +94,22 @@ struct TripRow: View {
 
     var body: some View {
         HStack {
-            VStack(alignment: .leading) {
+            VStack(alignment: .leading, spacing: 2) {
                 Text(trip.startDate, style: .date)
+                    .font(.subheadline.weight(.semibold))
                 vehicleName
                     .font(.caption)
                     .foregroundStyle(.secondary)
             }
             Spacer()
-            VStack(alignment: .trailing) {
+            VStack(alignment: .trailing, spacing: 2) {
                 Text(trip.formattedDistance(in: distanceUnit, locale: locale))
+                    .font(.subheadline.weight(.semibold))
+                    .monospacedDigit()
                 Text(trip.formattedDuration(locale: locale))
                     .font(.caption)
                     .foregroundStyle(.secondary)
+                    .monospacedDigit()
             }
         }
     }

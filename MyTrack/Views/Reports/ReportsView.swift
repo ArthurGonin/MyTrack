@@ -36,6 +36,7 @@ struct ReportsView: View {
                     List {
                         ForEach(reports) { report in
                             reportRow(report)
+                                .appCardRow()
                         }
                         .onDelete { indexSet in
                             for index in indexSet {
@@ -43,6 +44,9 @@ struct ReportsView: View {
                             }
                         }
                     }
+                    // Les lignes portent elles-mêmes leur carte : le style de
+                    // liste ne doit pas en dessiner une seconde autour d'elles.
+                    .listStyle(.plain)
                 }
             }
             .appBackground()
@@ -80,13 +84,14 @@ struct ReportsView: View {
                 VStack(alignment: .leading, spacing: 2) {
                     if let profileName = report.profileName {
                         Text(profileName)
-                            .font(.subheadline.weight(.medium))
+                            .font(.subheadline.weight(.semibold))
                     }
                     Text(
                         TripFormatting.shortDate(report.periodStart, locale: locale)
                         + " – "
                         + TripFormatting.shortDate(report.periodEnd, locale: locale)
                     )
+                    .font(.subheadline)
                     HStack(spacing: 6) {
                         Text("\(report.tripCount) trajets")
                         Text("·")

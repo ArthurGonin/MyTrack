@@ -13,6 +13,7 @@ struct RecordTripView: View {
     @Environment(\.modelContext) private var modelContext
     @Environment(\.locale) private var locale
     @Query private var vehicles: [Vehicle]
+    @Query private var userProfiles: [UserProfile]
     @State private var isPermissionDeniedAlertPresented = false
     @State private var isPresentingVehiclePicker = false
     /// Set when a tap on Démarrer could only raise the location prompt, so the
@@ -41,35 +42,22 @@ struct RecordTripView: View {
 
     var body: some View {
         NavigationStack {
-            VStack(spacing: 24) {
+            VStack(spacing: 20) {
+                greetingHeader
+
                 // L'ordre compte : un trajet déjà en cours garde son bouton
                 // Arrêter, même sans abonnement. Celui-ci peut tomber en pleine
                 // route, et il n'est pas question de laisser l'utilisateur sans
                 // moyen de terminer l'enregistrement qu'il a lancé.
                 if viewModel.isRecording {
-                    VStack {
-                        Text(formattedDistance(viewModel.currentDistanceMeters))
-                            .font(.largeTitle)
-                        if let start = viewModel.currentStartDate {
-                            Text(start, style: .timer)
-                                .font(.title2)
-                                .monospacedDigit()
-                        }
-                    }
-
-                    LiveTripMapView()
-                        .frame(maxWidth: .infinity, maxHeight: .infinity)
-
-                    Button("Arrêter") { viewModel.stopManualRecording(in: modelContext) }
-                        .buttonStyle(.borderedProminent)
-                        .tint(.red)
+                    recordingContent
                 } else if canRecordTrips {
-                    Button("Démarrer") { startRecording() }
-                        .buttonStyle(.borderedProminent)
+                    idleContent
                 } else {
                     subscriptionRequiredView
                 }
             }
+            .animation(.smooth(duration: 0.45), value: viewModel.isRecording)
             .padding()
             .appBackground()
             .toolbar {
@@ -135,6 +123,103 @@ struct RecordTripView: View {
         }
     }
 
+    /// Le prénom est une donnée saisie : il se rend tel quel, alors que le
+    /// « Bon retour » au-dessus se traduit. Rien ne s'affiche tant qu'il n'y a
+    /// pas de prénom — une salutation adressée à personne ne vaut pas la place
+    /// qu'elle prend.
+    @ViewBuilder
+    private var greetingHeader: some View {
+        if let firstName = accountFirstName {
+            HStack {
+                VStack(alignment: .leading, spacing: 1) {
+                    Text("Bon retour")
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                    Text(firstName)
+                        .font(.title2.bold())
+                }
+                Spacer()
+            }
+        }
+    }
+
+    private var accountFirstName: String? {
+        let name = userProfiles.first?.firstName.trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
+        return name.isEmpty ? nil : name
+    }
+
+    /// Les deux chiffres qui comptent pendant un trajet, côte à côte dans une
+    /// carte, puis la carte lisant la trace en direct.
+    @ViewBuilder
+    private var recordingContent: some View {
+        HStack(spacing: 16) {
+            StatView("Distance") {
+                Text(formattedDistance(viewModel.currentDistanceMeters))
+            }
+            Divider().frame(height: 34)
+            StatView("Durée") {
+                if let start = viewModel.currentStartDate {
+                    Text(start, style: .timer)
+                } else {
+                    Text(verbatim: "—")
+                }
+            }
+        }
+        .appCard()
+        .transition(.opacity.combined(with: .scale(scale: 0.94)))
+
+        LiveTripMapView()
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
+            // La carte dessine ses propres bords : elle est rognée à la forme
+            // de la carte plutôt que posée dessus.
+            .clipShape(.rect(cornerRadius: 22, style: .continuous))
+            .transition(.opacity.combined(with: .scale(scale: 0.94)))
+
+        // maxWidth va sur le libellé, pas sur le bouton : posé sur le bouton il
+        // n'élargirait que le cadre autour, la gélule restant collée à son
+        // texte.
+        Button { viewModel.stopManualRecording(in: modelContext) } label: {
+            Text("Arrêter").frame(maxWidth: .infinity)
+        }
+        .buttonStyle(.borderedProminent)
+        .controlSize(.large)
+        .tint(.red)
+    }
+
+    /// Au repos, la voiture occupe le centre de l'écran et le bouton Démarrer
+    /// se pose en bas, à portée de pouce.
+    @ViewBuilder
+    private var idleContent: some View {
+        Spacer(minLength: 0)
+
+        VStack(spacing: 18) {
+            Image("CarIllustration")
+                .resizable()
+                .scaledToFit()
+                .frame(maxWidth: 240)
+
+            VStack(spacing: 6) {
+                Text("En route")
+                    .font(.title2.bold())
+                Text("Lance l'enregistrement quand tu démarres.")
+                    .font(.subheadline)
+                    .foregroundStyle(.secondary)
+                    .multilineTextAlignment(.center)
+            }
+        }
+        .frame(maxWidth: .infinity)
+        .appCard(padding: 24)
+        .transition(.opacity.combined(with: .scale(scale: 0.94)))
+
+        Spacer(minLength: 0)
+
+        Button { startRecording() } label: {
+            Text("Démarrer").frame(maxWidth: .infinity)
+        }
+        .buttonStyle(.borderedProminent)
+        .controlSize(.large)
+    }
+
     /// Prend toute la place du bouton Démarrer plutôt que de s'ajouter à côté
     /// de lui : le bouton ne ferait plus rien de toute façon, et c'est cet
     /// écran-là qu'on ouvre en pensant que ses trajets sont enregistrés. C'est
@@ -165,6 +250,7 @@ struct RecordTripView: View {
                 }
             }
             .buttonStyle(.borderedProminent)
+            .controlSize(.large)
         }
     }
 
