@@ -10,7 +10,7 @@ struct NameStepView: View {
     @Binding var lastName: String
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 32) {
+        VStack(alignment: .leading, spacing: 16) {
             VStack(alignment: .leading, spacing: 8) {
                 Text("Comment tu t'appelles ?")
                     .font(.largeTitle.bold())
@@ -18,24 +18,25 @@ struct NameStepView: View {
                     .font(.title3)
                     .foregroundStyle(.secondary)
             }
+            .padding(.horizontal)
 
-            VStack(spacing: 0) {
-                TextField("Prénom", text: $firstName)
-                    .textContentType(.givenName)
-                    .textInputAutocapitalization(.words)
-                    .padding()
-                Divider()
-                    .padding(.leading)
-                TextField("Nom", text: $lastName)
-                    .textContentType(.familyName)
-                    .textInputAutocapitalization(.words)
-                    .padding()
+            // Un `Form`, comme dans les Réglages : les champs y prennent la
+            // hauteur, le retrait et le fond des cellules système, et le
+            // clavier qui monte fait défiler le champ visé au lieu de le
+            // recouvrir. Le `Form` occupe aussi la place restante, ce qui rend
+            // inutile le `Spacer` qui poussait le contenu vers le haut.
+            Form {
+                Section {
+                    TextField("Prénom", text: $firstName)
+                        .textContentType(.givenName)
+                        .textInputAutocapitalization(.words)
+                    TextField("Nom", text: $lastName)
+                        .textContentType(.familyName)
+                        .textInputAutocapitalization(.words)
+                }
             }
-            .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 12))
-
-            Spacer()
+            .contentMargins(.top, 8, for: .scrollContent)
         }
-        .padding()
     }
 }
 

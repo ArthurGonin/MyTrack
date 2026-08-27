@@ -10,7 +10,7 @@ struct VehicleStepView: View {
     @Binding var licensePlate: String
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 32) {
+        VStack(alignment: .leading, spacing: 16) {
             VStack(alignment: .leading, spacing: 8) {
                 Text("Ton véhicule")
                     .font(.largeTitle.bold())
@@ -18,22 +18,18 @@ struct VehicleStepView: View {
                     .font(.title3)
                     .foregroundStyle(.secondary)
             }
+            .padding(.horizontal)
 
-            VStack(spacing: 0) {
-                TextField("Nom du véhicule", text: $vehicleName)
-                    .textInputAutocapitalization(.words)
-                    .padding()
-                Divider()
-                    .padding(.leading)
-                TextField("Immatriculation (optionnel)", text: $licensePlate)
-                    .textInputAutocapitalization(.characters)
-                    .padding()
+            Form {
+                Section {
+                    TextField("Nom du véhicule", text: $vehicleName)
+                        .textInputAutocapitalization(.words)
+                    TextField("Immatriculation (optionnel)", text: $licensePlate)
+                        .textInputAutocapitalization(.characters)
+                }
             }
-            .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 12))
-
-            Spacer()
+            .contentMargins(.top, 8, for: .scrollContent)
         }
-        .padding()
     }
 }
 

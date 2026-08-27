@@ -9,7 +9,7 @@ struct UnitStepView: View {
     @Binding var distanceUnit: DistanceUnit
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 32) {
+        VStack(alignment: .leading, spacing: 16) {
             VStack(alignment: .leading, spacing: 8) {
                 Text("Tes distances")
                     .font(.largeTitle.bold())
@@ -17,14 +17,12 @@ struct UnitStepView: View {
                     .font(.title3)
                     .foregroundStyle(.secondary)
             }
+            .padding(.horizontal)
 
             OnboardingChoiceList(options: DistanceUnit.allCases, selection: $distanceUnit) {
                 Text($0.label)
             }
-
-            Spacer()
         }
-        .padding()
     }
 }
 
