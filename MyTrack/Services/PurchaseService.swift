@@ -2,13 +2,13 @@
 //  PurchaseService.swift
 //  MyTrack
 //
-//  Wraps StoreKit 2: loads the two subscription Products, drives a purchase
-//  through to a finished Transaction, and keeps `subscription` in sync with
-//  Transaction.currentEntitlements — including entitlement changes StoreKit
-//  reports outside of a purchase made this session (renewal, refund, a
-//  purchase made on another device). L'app entière est payante : cet état
-//  est la source de vérité unique, lue par la paywall d'onboarding et par la
-//  section Abonnement des réglages.
+//  Wraps StoreKit 2: loads the two subscription Products plus the one-time
+//  lifetime Product, drives a purchase through to a finished Transaction, and
+//  keeps `entitlement` in sync with Transaction.currentEntitlements —
+//  including entitlement changes StoreKit reports outside of a purchase made
+//  this session (renewal, refund, a purchase made on another device). L'app
+//  entière est payante : cet état est la source de vérité unique, lue par la
+//  paywall d'onboarding et par la section Abonnement des réglages.
 //
 
 import Foundation
@@ -19,6 +19,9 @@ import StoreKit
 enum PricingPlan: Equatable {
     case annual
     case monthly
+    /// Achat unique, non-consommable : pas de groupe d'abonnement, pas de
+    /// reconduction, pas d'expiration.
+    case lifetime
 }
 
 enum PurchaseOutcome: Equatable {
@@ -51,14 +54,32 @@ struct SubscriptionSummary: Equatable {
     let willAutoRenew: Bool?
 }
 
+/// Ce que possède l'utilisateur : soit un abonnement (avec toute l'info de
+/// `SubscriptionSummary`), soit un achat unique à vie, qui n'a ni expiration
+/// ni reconduction ni essai gratuit — le forcer dans `SubscriptionSummary`
+/// aurait laissé ces champs à nil sans que ce nil veuille dire la même chose
+/// que pour un abonnement résilié.
+enum PurchaseEntitlement: Equatable {
+    case subscription(SubscriptionSummary)
+    case lifetime
+}
+
 @MainActor
 @Observable
 final class PurchaseService {
     static let annualProductID = "KiwiJuice.MyTrack.annual"
     static let monthlyProductID = "KiwiJuice.MyTrack.monthly"
-    /// Ordre d'affichage, et la liste que `SubscriptionStoreView` réclame
-    /// pour présenter les mêmes formules que la paywall.
-    static let orderedProductIDs = [annualProductID, monthlyProductID]
+    static let lifetimeProductID = "KiwiJuice.MyTrack.lifetime"
+
+    /// Tout ce que l'app vend, dans l'ordre d'affichage : ce que
+    /// `loadProducts()` charge, et ce que les cartes maison de la paywall
+    /// d'onboarding parcourent.
+    static let orderedProductIDs = [annualProductID, monthlyProductID, lifetimeProductID]
+
+    /// Seulement les deux abonnements, du même groupe — la seule liste que
+    /// `SubscriptionStoreView` sait présenter : cette vue native n'a aucune
+    /// notion d'achat non-consommable.
+    static let subscriptionProductIDs = [annualProductID, monthlyProductID]
 
     private(set) var products: [Product] = []
     private(set) var isLoadingProducts = false
@@ -72,10 +93,10 @@ final class PurchaseService {
     /// app.
     private(set) var hasAttemptedProductLoad = false
 
-    /// L'abonnement en cours, ou nil si aucun.
-    private(set) var subscription: SubscriptionSummary?
+    /// Ce que l'utilisateur possède actuellement, ou nil si rien.
+    private(set) var entitlement: PurchaseEntitlement?
 
-    var isSubscribed: Bool { subscription != nil }
+    var hasEntitlement: Bool { entitlement != nil }
 
     /// Vrai quand l'abonnement n'a pas été résilié mais que le renouvellement
     /// échoue (carte expirée, plafond atteint). L'utilisateur n'a rien annulé :
@@ -138,6 +159,7 @@ final class PurchaseService {
         let id = switch plan {
         case .annual: Self.annualProductID
         case .monthly: Self.monthlyProductID
+        case .lifetime: Self.lifetimeProductID
         }
         return products.first { $0.id == id }
     }
@@ -146,6 +168,7 @@ final class PurchaseService {
         switch productID {
         case annualProductID: .annual
         case monthlyProductID: .monthly
+        case lifetimeProductID: .lifetime
         default: nil
         }
     }
@@ -154,7 +177,7 @@ final class PurchaseService {
     /// sont chargés (sans eux, pas d'info de reconduction). Appelé à
     /// l'ouverture des réglages : un abonnement a pu se renouveler, expirer ou
     /// être résilié depuis le lancement de l'app.
-    func refreshSubscription() async {
+    func refreshEntitlement() async {
         await loadProducts()
         await updateEntitlements()
     }
@@ -235,31 +258,44 @@ final class PurchaseService {
     }
 
     private func updateEntitlements() async {
-        // Deux entitlements du même groupe peuvent coexister le temps d'un
-        // changement de formule. Prendre le dernier arrivé dans la boucle
-        // rendait l'affichage dépendant de l'ordre d'itération ; c'est l'achat
-        // le plus récent qui fait foi.
-        var current: Transaction?
+        // Le non-consommable et les abonnements n'appartiennent pas au même
+        // groupe, donc les deux peuvent apparaître ensemble parmi les
+        // entitlements (quelqu'un qui a un abonnement en cours achète l'accès
+        // à vie, par exemple). Le rachat à vie prime alors sur l'abonnement :
+        // c'est l'entitlement définitif, celui qui restera vrai même si
+        // l'abonnement expire ensuite.
+        //
+        // Entre deux abonnements du même groupe, qui eux peuvent coexister le
+        // temps d'un changement de formule, prendre le dernier arrivé dans la
+        // boucle rendait l'affichage dépendant de l'ordre d'itération ; c'est
+        // l'achat le plus récent qui fait foi.
+        var lifetimeTransaction: Transaction?
+        var subscriptionTransaction: Transaction?
         for await result in Transaction.currentEntitlements {
             guard let transaction = try? checkVerified(result),
-                  Self.plan(for: transaction.productID) != nil else { continue }
-            if let latest = current, latest.purchaseDate >= transaction.purchaseDate { continue }
-            current = transaction
+                  let plan = Self.plan(for: transaction.productID) else { continue }
+            if plan == .lifetime {
+                lifetimeTransaction = transaction
+            } else if subscriptionTransaction == nil || subscriptionTransaction!.purchaseDate < transaction.purchaseDate {
+                subscriptionTransaction = transaction
+            }
         }
 
-        var found: SubscriptionSummary?
-        if let current, let plan = Self.plan(for: current.productID) {
+        var found: PurchaseEntitlement?
+        if lifetimeTransaction != nil {
+            found = .lifetime
+        } else if let subscriptionTransaction, let plan = Self.plan(for: subscriptionTransaction.productID) {
             let renewal = await renewalState(for: plan)
             let pendingPlan = renewal?.autoRenewProductID.flatMap(Self.plan(for:))
-            found = SubscriptionSummary(
+            found = .subscription(SubscriptionSummary(
                 plan: plan,
                 pendingPlan: pendingPlan == plan ? nil : pendingPlan,
-                expirationDate: current.expirationDate,
-                isInFreeTrial: current.offer?.type == .introductory,
+                expirationDate: subscriptionTransaction.expirationDate,
+                isInFreeTrial: subscriptionTransaction.offer?.type == .introductory,
                 willAutoRenew: renewal?.willAutoRenew
-            )
+            ))
         }
-        subscription = found
+        entitlement = found
         hasBillingIssue = found == nil ? await isInBillingRetry() : false
         applyAccessChange()
     }
@@ -278,7 +314,7 @@ final class PurchaseService {
     /// entitlements, elle ne doit pas re-notifier une perte d'accès déjà
     /// annoncée.
     private func applyAccessChange() {
-        var hasAccess = isSubscribed
+        var hasAccess = hasEntitlement
         #if DEBUG
         hasAccess = hasAccess || debugBypassesPaywall
         #endif

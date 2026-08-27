@@ -24,7 +24,8 @@ struct SubscriptionSettingsSection: View {
     @State private var restoreOutcome: RestoreOutcome?
 
     private enum RestoreOutcome {
-        case restored
+        case restoredSubscription
+        case restoredLifetime
         case notFound
     }
 
@@ -47,13 +48,21 @@ struct SubscriptionSettingsSection: View {
 
     private var subscriptionSection: some View {
         Section {
-            if let subscription = purchaseService.subscription {
+            switch purchaseService.entitlement {
+            case .lifetime:
+                LabeledContent("Formule", value: planName(.lifetime))
+                // Rien à gérer côté StoreKit pour un non-consommable : la
+                // feuille système de gestion d'abonnement n'a pas de prise sur
+                // lui, donc pas de bouton "Gérer l'abonnement" ici.
+
+            case .subscription(let subscription):
                 LabeledContent("Formule", value: planName(subscription.plan))
 
                 Button("Gérer l'abonnement") {
                     isManageSubscriptionsPresented = true
                 }
-            } else {
+
+            case nil:
                 // Rappel visible depuis les réglages, en plus de l'écran
                 // Enregistrer : c'est ici qu'on vient chercher pourquoi.
                 Label {
@@ -99,7 +108,7 @@ struct SubscriptionSettingsSection: View {
         // Un abonnement a pu se renouveler, expirer ou être résilié depuis le
         // lancement de l'app : ces réglages ne doivent pas afficher l'état
         // qu'avait StoreKit au démarrage.
-        .task { await purchaseService.refreshSubscription() }
+        .task { await purchaseService.refreshEntitlement() }
         .manageSubscriptionsSheet(isPresented: $isManageSubscriptionsPresented)
         // La feuille système ne dit rien de ce que l'utilisateur y a fait, et un
         // changement de formule différé ne produit aucune transaction : sans
@@ -107,16 +116,17 @@ struct SubscriptionSettingsSection: View {
         // valeur jusqu'à la prochaine ouverture des réglages.
         .onChange(of: isManageSubscriptionsPresented) { _, isPresented in
             guard !isPresented else { return }
-            Task { await purchaseService.refreshSubscription() }
+            Task { await purchaseService.refreshEntitlement() }
         }
         .sheet(isPresented: $isStorePresented) {
             SubscriptionStoreSheet(isPresented: $isStorePresented)
         }
         // L'achat fait dans la feuille App Store remonte par
         // Transaction.updates, pas par un retour de fonction : c'est le
-        // changement d'entitlement qui referme la feuille.
-        .onChange(of: purchaseService.isSubscribed) { _, isSubscribed in
-            if isSubscribed { isStorePresented = false }
+        // changement d'entitlement qui referme la feuille — pour un
+        // abonnement comme pour l'achat unique.
+        .onChange(of: purchaseService.hasEntitlement) { _, hasEntitlement in
+            if hasEntitlement { isStorePresented = false }
         }
         .alert(
             restoreTitle,
@@ -138,13 +148,19 @@ struct SubscriptionSettingsSection: View {
     }
 
     private var restoreTitle: LocalizedStringKey {
-        restoreOutcome == .restored ? "Abonnement restauré" : "Aucun abonnement trouvé"
+        switch restoreOutcome {
+        case .restoredSubscription: "Abonnement restauré"
+        case .restoredLifetime: "Achat restauré"
+        case .notFound, .none: "Aucun abonnement trouvé"
+        }
     }
 
     private var restoreMessage: LocalizedStringKey {
-        restoreOutcome == .restored
-            ? "Ton abonnement a été retrouvé sur ce compte App Store."
-            : "Aucun abonnement actif n'est associé à ce compte App Store."
+        switch restoreOutcome {
+        case .restoredSubscription: "Ton abonnement a été retrouvé sur ce compte App Store."
+        case .restoredLifetime: "Ton achat unique a été retrouvé sur ce compte App Store."
+        case .notFound, .none: "Aucun abonnement actif n'est associé à ce compte App Store."
+        }
     }
 
     /// Traduit par l'app, et non repris de `Product.displayName` : celui-ci
@@ -159,6 +175,7 @@ struct SubscriptionSettingsSection: View {
         switch plan {
         case .annual: String(localized: "plan.annual", defaultValue: "Annuel", bundle: localizationBundle, locale: locale)
         case .monthly: String(localized: "plan.monthly", defaultValue: "Mensuel", bundle: localizationBundle, locale: locale)
+        case .lifetime: String(localized: "plan.lifetime", defaultValue: "Achat unique", bundle: localizationBundle, locale: locale)
         }
     }
 
@@ -166,38 +183,43 @@ struct SubscriptionSettingsSection: View {
     /// c'est la seule que l'utilisateur cherche vraiment ici : est-ce que je
     /// vais être débité, et quand.
     private var statusFooter: String {
-        guard let subscription = purchaseService.subscription else {
+        switch purchaseService.entitlement {
+        case nil:
             return purchaseService.hasBillingIssue
                 ? String(localized: "Ton abonnement n'a pas pu être renouvelé : aucun nouveau trajet n'est enregistré. Tes trajets et rapports déjà enregistrés restent accessibles.", bundle: localizationBundle, locale: locale)
                 : String(localized: "Sans abonnement actif, aucun nouveau trajet n'est enregistré. Tes trajets et rapports déjà enregistrés restent accessibles.", bundle: localizationBundle, locale: locale)
-        }
 
-        guard let date = subscription.expirationDate else {
-            return String(localized: "Abonnement actif.", bundle: localizationBundle, locale: locale)
-        }
-        let formattedDate = TripFormatting.longDate(date, locale: locale)
+        case .lifetime:
+            return String(localized: "Achat unique. Accès à vie à MyTrack, sans abonnement ni reconduction.", bundle: localizationBundle, locale: locale)
 
-        // Avant tout le reste : c'est la seule phrase qui explique pourquoi la
-        // ligne au-dessus affiche encore l'ancienne formule.
-        if let pendingPlan = subscription.pendingPlan {
-            let name = planName(pendingPlan)
-            return String(
-                localized: "Passe à la formule \(name) le \(formattedDate).",
-                bundle: localizationBundle,
-                locale: locale
-            )
-        }
+        case .subscription(let subscription):
+            guard let date = subscription.expirationDate else {
+                return String(localized: "Abonnement actif.", bundle: localizationBundle, locale: locale)
+            }
+            let formattedDate = TripFormatting.longDate(date, locale: locale)
 
-        if subscription.isInFreeTrial {
-            return subscription.willAutoRenew == false
-                ? String(localized: "Essai gratuit jusqu'au \(formattedDate). Aucune reconduction : l'accès s'arrêtera à cette date.", bundle: localizationBundle, locale: locale)
-                : String(localized: "Essai gratuit jusqu'au \(formattedDate), puis reconduction automatique.", bundle: localizationBundle, locale: locale)
-        }
+            // Avant tout le reste : c'est la seule phrase qui explique pourquoi
+            // la ligne au-dessus affiche encore l'ancienne formule.
+            if let pendingPlan = subscription.pendingPlan {
+                let name = planName(pendingPlan)
+                return String(
+                    localized: "Passe à la formule \(name) le \(formattedDate).",
+                    bundle: localizationBundle,
+                    locale: locale
+                )
+            }
 
-        return switch subscription.willAutoRenew {
-        case true: String(localized: "Se renouvelle automatiquement le \(formattedDate).", bundle: localizationBundle, locale: locale)
-        case false: String(localized: "Actif jusqu'au \(formattedDate), sans reconduction.", bundle: localizationBundle, locale: locale)
-        case nil: String(localized: "Actif jusqu'au \(formattedDate).", bundle: localizationBundle, locale: locale)
+            if subscription.isInFreeTrial {
+                return subscription.willAutoRenew == false
+                    ? String(localized: "Essai gratuit jusqu'au \(formattedDate). Aucune reconduction : l'accès s'arrêtera à cette date.", bundle: localizationBundle, locale: locale)
+                    : String(localized: "Essai gratuit jusqu'au \(formattedDate), puis reconduction automatique.", bundle: localizationBundle, locale: locale)
+            }
+
+            return switch subscription.willAutoRenew {
+            case true: String(localized: "Se renouvelle automatiquement le \(formattedDate).", bundle: localizationBundle, locale: locale)
+            case false: String(localized: "Actif jusqu'au \(formattedDate), sans reconduction.", bundle: localizationBundle, locale: locale)
+            case nil: String(localized: "Actif jusqu'au \(formattedDate).", bundle: localizationBundle, locale: locale)
+            }
         }
     }
 
@@ -215,7 +237,11 @@ struct SubscriptionSettingsSection: View {
     private func restore() {
         Task {
             await purchaseService.restorePurchases()
-            restoreOutcome = purchaseService.isSubscribed ? .restored : .notFound
+            switch purchaseService.entitlement {
+            case .subscription: restoreOutcome = .restoredSubscription
+            case .lifetime: restoreOutcome = .restoredLifetime
+            case nil: restoreOutcome = .notFound
+            }
         }
     }
 }

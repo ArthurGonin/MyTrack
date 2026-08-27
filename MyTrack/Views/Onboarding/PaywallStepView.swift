@@ -82,6 +82,10 @@ struct PaywallStepView: View {
         products.first { $0.id == PurchaseService.monthlyProductID }
     }
 
+    private var lifetimeProduct: Product? {
+        products.first { $0.id == PurchaseService.lifetimeProductID }
+    }
+
     var body: some View {
         VStack(spacing: 20) {
             ScrollView {
@@ -193,10 +197,11 @@ struct PaywallStepView: View {
 
     /// Exigé par la règle App Review 3.1.2 : durée et reconduction annoncées
     /// en clair, plus un lien vers les conditions d'utilisation et la
-    /// politique de confidentialité.
+    /// politique de confidentialité. Le texte de reconduction ne doit pas
+    /// s'afficher pour l'achat unique : il n'y a rien à reconduire.
     private var legalFooter: some View {
         VStack(spacing: 6) {
-            Text("Renouvellement automatique, résiliable à tout moment depuis ton compte App Store. Sans résiliation au moins 24 h avant la fin de l'essai, l'abonnement devient payant.")
+            Text(legalDisclosure)
                 .multilineTextAlignment(.center)
 
             HStack(spacing: 6) {
@@ -207,6 +212,14 @@ struct PaywallStepView: View {
         }
         .font(.caption2)
         .foregroundStyle(.secondary)
+    }
+
+    // Typé `LocalizedStringKey` : un ternaire entre deux littéraux passé
+    // directement à `Text` peut se résoudre en `String`, donc sans traduction.
+    private var legalDisclosure: LocalizedStringKey {
+        selectedPlan == .lifetime
+            ? "Paiement unique. Ni abonnement, ni reconduction."
+            : "Renouvellement automatique, résiliable à tout moment depuis ton compte App Store. Sans résiliation au moins 24 h avant la fin de l'essai, l'abonnement devient payant."
     }
 
     /// Grisé tant que l'URL n'est pas renseignée dans `LegalLinks` : un lien
@@ -265,6 +278,14 @@ struct PaywallStepView: View {
                 ) {
                     selectedPlan = .monthly
                 }
+
+                PricingOptionCard(
+                    isSelected: selectedPlan == .lifetime,
+                    title: lifetimeTitle,
+                    subtitle: lifetimeSubtitle
+                ) {
+                    selectedPlan = .lifetime
+                }
             }
         }
     }
@@ -290,6 +311,14 @@ struct PaywallStepView: View {
     private var monthlyTitle: String {
         let price = monthlyProduct?.displayPrice ?? "2,99 €"
         return String(localized: "\(price) / mois", bundle: localizationBundle, locale: locale)
+    }
+
+    private var lifetimeTitle: String {
+        lifetimeProduct?.displayPrice ?? "39,99 €"
+    }
+
+    private var lifetimeSubtitle: String {
+        String(localized: "achat unique, à vie", bundle: localizationBundle, locale: locale)
     }
 
     private func freeTrialTitle(for period: Product.SubscriptionPeriod) -> String {

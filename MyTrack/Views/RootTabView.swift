@@ -84,7 +84,7 @@ struct RootTabView: View {
             // Un abonnement peut aussi être changé ou résilié depuis l'App
             // Store, hors de l'app : le retour au premier plan est le seul
             // moment où elle peut s'en apercevoir.
-            Task { await appServices.purchaseService.refreshSubscription() }
+            Task { await appServices.purchaseService.refreshEntitlement() }
         }
     }
 

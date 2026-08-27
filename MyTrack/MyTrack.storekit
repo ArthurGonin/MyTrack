@@ -10,7 +10,26 @@
 
   ],
   "products" : [
-
+    {
+      "displayPrice" : "39.99",
+      "familyShareable" : false,
+      "internalID" : "6740000301",
+      "localizations" : [
+        {
+          "description" : "Full access to MyTrack, once, for good",
+          "displayName" : "Lifetime",
+          "locale" : "en_US"
+        },
+        {
+          "description" : "Accès complet et définitif à MyTrack",
+          "displayName" : "Achat unique",
+          "locale" : "fr"
+        }
+      ],
+      "productID" : "KiwiJuice.MyTrack.lifetime",
+      "referenceName" : "MyTrack Lifetime",
+      "type" : "NonConsumable"
+    }
   ],
   "settings" : {
     "_askToBuyEnabled" : false,
