@@ -22,6 +22,8 @@ struct SubscriptionSettingsSection: View {
     @State private var isManageSubscriptionsPresented = false
     @State private var isStorePresented = false
     @State private var restoreOutcome: RestoreOutcome?
+    @State private var isPurchaseFailedAlertPresented = false
+    @State private var isCancelReminderPresented = false
 
     private enum RestoreOutcome {
         case restoredSubscription
@@ -53,7 +55,14 @@ struct SubscriptionSettingsSection: View {
                 LabeledContent("Formule", value: planName(.lifetime))
                 // Rien à gérer côté StoreKit pour un non-consommable : la
                 // feuille système de gestion d'abonnement n'a pas de prise sur
-                // lui, donc pas de bouton "Gérer l'abonnement" ici.
+                // lui. Sauf si un abonnement court encore — acheté avant
+                // celui-ci et que l'achat n'a pas résilié : c'est alors le seul
+                // bouton qui compte, celui qui mène à sa résiliation.
+                if purchaseService.activeSubscription != nil {
+                    Button("Gérer l'abonnement") {
+                        isManageSubscriptionsPresented = true
+                    }
+                }
 
             case .subscription(let subscription):
                 LabeledContent("Formule", value: planName(subscription.plan))
@@ -61,6 +70,8 @@ struct SubscriptionSettingsSection: View {
                 Button("Gérer l'abonnement") {
                     isManageSubscriptionsPresented = true
                 }
+
+                lifetimeUpgradeButton
 
             case nil:
                 // Rappel visible depuis les réglages, en plus de l'écran
@@ -108,7 +119,16 @@ struct SubscriptionSettingsSection: View {
         // Un abonnement a pu se renouveler, expirer ou être résilié depuis le
         // lancement de l'app : ces réglages ne doivent pas afficher l'état
         // qu'avait StoreKit au démarrage.
-        .task { await purchaseService.refreshEntitlement() }
+        .task {
+            await purchaseService.refreshEntitlement()
+            // Le bouton d'achat unique affiche son prix, qui vient du catalogue
+            // App Store. Quelqu'un qui n'a jamais ouvert la paywall de cette
+            // session n'a rien de chargé : sans ça, le bouton n'apparaîtrait
+            // jamais.
+            if purchaseService.products.isEmpty {
+                await purchaseService.loadProducts()
+            }
+        }
         .manageSubscriptionsSheet(isPresented: $isManageSubscriptionsPresented)
         // La feuille système ne dit rien de ce que l'utilisateur y a fait, et un
         // changement de formule différé ne produit aucune transaction : sans
@@ -138,6 +158,70 @@ struct SubscriptionSettingsSection: View {
             Button("OK", role: .cancel) {}
         } message: {
             Text(restoreMessage)
+        }
+        .alert("Achat impossible", isPresented: $isPurchaseFailedAlertPresented) {
+            Button("OK", role: .cancel) {}
+        } message: {
+            Text("L'achat n'a pas pu être finalisé. Réessaie plus tard.")
+        }
+        // App Store ne résilie rien tout seul : sans cette alerte, l'achat
+        // réussirait en silence et l'abonnement continuerait de prélever à
+        // côté, pour un accès déjà acquis.
+        .alert("Accès à vie activé", isPresented: $isCancelReminderPresented) {
+            Button("Gérer l'abonnement") { isManageSubscriptionsPresented = true }
+            Button("Plus tard", role: .cancel) {}
+        } message: {
+            Text("Ton abonnement n'est pas résilié pour autant : App Store continuera de le reconduire tant que tu ne l'auras pas fait toi-même.")
+        }
+    }
+
+    /// Le seul chemin, depuis l'app, pour passer d'un abonnement à l'achat
+    /// unique. Il n'existait nulle part : la paywall d'onboarding ne se revoit
+    /// pas, et la feuille App Store qui le propose ne s'ouvrait que faute
+    /// d'abonnement actif — donc jamais pour quelqu'un qui en a un.
+    ///
+    /// Absent tant que le produit n'est pas chargé : un bouton d'achat sans
+    /// prix n'est pas un bouton d'achat.
+    @ViewBuilder
+    private var lifetimeUpgradeButton: some View {
+        if let product = purchaseService.product(for: .lifetime) {
+            Button {
+                buyLifetime()
+            } label: {
+                HStack {
+                    Text("Passer à l'achat unique")
+                    Spacer()
+                    if purchaseService.isPurchasing {
+                        ProgressView()
+                    } else {
+                        // Le prix vient de l'App Store, déjà mis en forme dans
+                        // la devise et le format du compte.
+                        Text(product.displayPrice)
+                            .foregroundStyle(.secondary)
+                    }
+                }
+            }
+            .disabled(purchaseService.isPurchasing)
+        }
+    }
+
+    private func buyLifetime() {
+        // Lu avant l'achat : celui-ci fait basculer `entitlement` sur
+        // `.lifetime`, après quoi on ne saurait plus dire s'il y avait un
+        // abonnement à résilier.
+        let hadSubscription = purchaseService.activeSubscription != nil
+        Task {
+            switch await purchaseService.purchase(.lifetime) {
+            case .success:
+                if hadSubscription { isCancelReminderPresented = true }
+            case .failed:
+                isPurchaseFailedAlertPresented = true
+            // Comme dans la paywall : un achat annulé n'a rien à annoncer, et
+            // un achat en attente d'approbation remontera de lui-même par
+            // Transaction.updates le jour où il sera validé.
+            case .userCancelled, .pending:
+                break
+            }
         }
     }
 
@@ -190,6 +274,12 @@ struct SubscriptionSettingsSection: View {
                 : String(localized: "Sans abonnement actif, aucun nouveau trajet n'est enregistré. Tes trajets et rapports déjà enregistrés restent accessibles.", bundle: localizationBundle, locale: locale)
 
         case .lifetime:
+            // « Sans abonnement ni reconduction » devient un mensonge tant que
+            // l'abonnement d'avant court encore — et un mensonge qui coûte de
+            // l'argent à qui le croit.
+            guard purchaseService.activeSubscription == nil else {
+                return String(localized: "Ton accès à vie est acquis. Ton abonnement, lui, court toujours et sera reconduit : résilie-le pour ne pas payer deux fois.", bundle: localizationBundle, locale: locale)
+            }
             return String(localized: "Achat unique. Accès à vie à MyTrack, sans abonnement ni reconduction.", bundle: localizationBundle, locale: locale)
 
         case .subscription(let subscription):

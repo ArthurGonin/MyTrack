@@ -1223,6 +1223,46 @@
         }
       }
     },
+    "Accès à vie activé" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Lebenslanger Zugang aktiv"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Lifetime access active"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Acceso de por vida activado"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Accès à vie activé"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Accesso a vita attivo"
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Acesso vitalício ativado"
+          }
+        }
+      }
+    },
     "Achat impossible" : {
       "localizations" : {
         "de" : {
@@ -6030,6 +6070,46 @@
         }
       }
     },
+    "Passer à l'achat unique" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Zum Einmalkauf wechseln"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Switch to the one-time purchase"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cambiar a la compra única"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Passer à l'achat unique"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Passa all'acquisto unico"
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mudar para a compra única"
+          }
+        }
+      }
+    },
     "Pendant l'utilisation" : {
       "localizations" : {
         "de" : {
@@ -6266,6 +6346,46 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Mensal"
+          }
+        }
+      }
+    },
+    "Plus tard" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Später"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Later"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Más tarde"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Plus tard"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Più tardi"
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mais tarde"
           }
         }
       }
@@ -8106,6 +8226,86 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Não foi possível renovar a tua subscrição: as tuas viagens já não são registadas. As tuas viagens e relatórios continuam acessíveis."
+          }
+        }
+      }
+    },
+    "Ton abonnement n'est pas résilié pour autant : App Store continuera de le reconduire tant que tu ne l'auras pas fait toi-même." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dein Abo ist damit nicht gekündigt: Der App Store verlängert es weiter, bis du es selbst kündigst."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "That does not cancel your subscription: the App Store will keep renewing it until you cancel it yourself."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Eso no cancela tu suscripción: App Store seguirá renovándola hasta que la canceles."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ton abonnement n'est pas résilié pour autant : App Store continuera de le reconduire tant que tu ne l'auras pas fait toi-même."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Questo non annulla il tuo abbonamento: App Store continuerà a rinnovarlo finché non lo disdici."
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Isso não cancela a tua subscrição: a App Store vai continuar a renová-la até que a canceles."
+          }
+        }
+      }
+    },
+    "Ton accès à vie est acquis. Ton abonnement, lui, court toujours et sera reconduit : résilie-le pour ne pas payer deux fois." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dein lebenslanger Zugang ist gesichert. Dein Abo läuft aber weiter und wird verlängert: Kündige es, damit du nicht doppelt zahlst."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Your lifetime access is secured. Your subscription is still running and will renew: cancel it so you don't pay twice."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tu acceso de por vida está asegurado. Tu suscripción sigue activa y se renovará: cancélala para no pagar dos veces."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ton accès à vie est acquis. Ton abonnement, lui, court toujours et sera reconduit : résilie-le pour ne pas payer deux fois."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Il tuo accesso a vita è acquisito. L'abbonamento però è ancora attivo e si rinnoverà: disdicilo per non pagare due volte."
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "O teu acesso vitalício está garantido. A tua subscrição continua ativa e será renovada: cancela-a para não pagares duas vezes."
           }
         }
       }

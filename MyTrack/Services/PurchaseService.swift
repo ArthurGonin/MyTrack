@@ -98,6 +98,16 @@ final class PurchaseService {
 
     var hasEntitlement: Bool { entitlement != nil }
 
+    /// L'abonnement en cours, s'il y en a un — y compris quand l'achat à vie
+    /// l'emporte sur lui dans `entitlement`.
+    ///
+    /// Acheter l'accès à vie ne résilie pas l'abonnement : App Store continue
+    /// de le reconduire, et seul l'utilisateur peut y mettre fin. Sans le
+    /// garder ici, l'app perdrait sa trace au moment même de l'achat — plus
+    /// rien à quoi accrocher le bouton qui mène à sa résiliation, et quelqu'un
+    /// qui paie deux fois la même chose sans que rien ne le lui dise.
+    private(set) var activeSubscription: SubscriptionSummary?
+
     /// Vrai quand l'abonnement n'a pas été résilié mais que le renouvellement
     /// échoue (carte expirée, plafond atteint). L'utilisateur n'a rien annulé :
     /// lui présenter une nouvelle formule serait à côté de la plaque, ce qu'il
@@ -281,19 +291,29 @@ final class PurchaseService {
             }
         }
 
-        var found: PurchaseEntitlement?
-        if lifetimeTransaction != nil {
-            found = .lifetime
-        } else if let subscriptionTransaction, let plan = Self.plan(for: subscriptionTransaction.productID) {
+        // Le résumé se construit dès qu'un abonnement existe, sans regarder
+        // l'achat à vie : c'est ce qui permet à `activeSubscription` de
+        // survivre au rachat, là où `entitlement` bascule sur `.lifetime` et
+        // perd l'abonnement de vue.
+        var subscription: SubscriptionSummary?
+        if let subscriptionTransaction, let plan = Self.plan(for: subscriptionTransaction.productID) {
             let renewal = await renewalState(for: plan)
             let pendingPlan = renewal?.autoRenewProductID.flatMap(Self.plan(for:))
-            found = .subscription(SubscriptionSummary(
+            subscription = SubscriptionSummary(
                 plan: plan,
                 pendingPlan: pendingPlan == plan ? nil : pendingPlan,
                 expirationDate: subscriptionTransaction.expirationDate,
                 isInFreeTrial: subscriptionTransaction.offer?.type == .introductory,
                 willAutoRenew: renewal?.willAutoRenew
-            ))
+            )
+        }
+        activeSubscription = subscription
+
+        var found: PurchaseEntitlement?
+        if lifetimeTransaction != nil {
+            found = .lifetime
+        } else if let subscription {
+            found = .subscription(subscription)
         }
         entitlement = found
         hasBillingIssue = found == nil ? await isInBillingRetry() : false
