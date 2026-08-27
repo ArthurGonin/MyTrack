@@ -40,6 +40,7 @@ struct AccountSettingsView: View {
 
     var body: some View {
         @Bindable var unitSettings = appServices.unitSettingsService
+        @Bindable var languageService = appServices.languageService
 
         return NavigationStack {
             Form {
@@ -77,6 +78,18 @@ struct AccountSettingsView: View {
                 }
 
                 Section {
+                    // Style par défaut : six langues méritent l'écran poussé
+                    // que SwiftUI ouvre tout seul dans un Form, là où deux
+                    // unités tiennent dans un menu. Le changement s'applique
+                    // aussitôt, sans redémarrage.
+                    Picker("Langue", selection: $languageService.language) {
+                        ForEach(AppLanguage.allCases) { language in
+                            // Chaque langue s'annonce dans la sienne : ce
+                            // libellé ne passe pas par le catalogue.
+                            Text(language.nativeName).tag(language)
+                        }
+                    }
+
                     Picker("Distance", selection: $unitSettings.distanceUnit) {
                         ForEach(DistanceUnit.allCases) { unit in
                             Text(unit.label).tag(unit)
@@ -85,7 +98,7 @@ struct AccountSettingsView: View {
                     // Two options don't warrant pushing a whole screen.
                     .pickerStyle(.menu)
                 } header: {
-                    Text("Unités")
+                    Text("Langue et unités")
                 }
 
                 Section {
