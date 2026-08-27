@@ -7110,6 +7110,46 @@
         }
       }
     },
+    "Renouvellement automatique, résiliable à tout moment depuis ton compte App Store." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Verlängert sich automatisch, jederzeit über dein App-Store-Konto kündbar."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Renews automatically; cancel any time from your App Store account."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Se renueva automáticamente y puedes cancelarla en cualquier momento desde tu cuenta de App Store."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Renouvellement automatique, résiliable à tout moment depuis ton compte App Store."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Si rinnova automaticamente e puoi disdirlo in qualsiasi momento dal tuo account App Store."
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Renova-se automaticamente e podes cancelar a qualquer momento na tua conta App Store."
+          }
+        }
+      }
+    },
     "Renouvellement automatique, résiliable à tout moment depuis ton compte App Store. Sans résiliation au moins 24 h avant la fin de l'essai, l'abonnement devient payant." : {
       "localizations" : {
         "de" : {

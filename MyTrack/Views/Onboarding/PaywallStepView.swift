@@ -220,7 +220,7 @@ struct PaywallStepView: View {
     private var legalDisclosure: LocalizedStringKey {
         selectedPlan == .lifetime
             ? "Paiement unique. Ni abonnement, ni reconduction."
-            : "Renouvellement automatique, résiliable à tout moment depuis ton compte App Store. Sans résiliation au moins 24 h avant la fin de l'essai, l'abonnement devient payant."
+            : "Renouvellement automatique, résiliable à tout moment depuis ton compte App Store."
     }
 
     /// Grisé tant que l'URL n'est pas renseignée dans `LegalLinks` : un lien
