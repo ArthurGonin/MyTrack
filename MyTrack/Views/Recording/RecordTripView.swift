@@ -59,14 +59,15 @@ struct RecordTripView: View {
                 }
             }
             .animation(.smooth(duration: 0.45), value: viewModel.isRecording)
-            // Marge haute réduite : l'en-tête vient se loger juste sous la barre
-            // de navigation. Les 16 pt d'un `padding()` uniforme s'ajoutaient à
-            // la hauteur de cette barre — déjà haute, elle porte le sélecteur de
-            // véhicule sur deux lignes — et faisaient descendre le « Bon retour »
-            // bien plus bas que le haut de l'écran.
-            .padding([.horizontal, .bottom])
-            .padding(.top, 4)
+            .padding()
             .appBackground()
+            // Cet écran n'a pas de `navigationTitle` — le sélecteur de véhicule
+            // occupe le centre de la barre. Sans titre, le mode reste
+            // `.automatic`, donc « grand titre » : la barre réservait une
+            // cinquantaine de points pour un titre qui n'existe pas, et tout le
+            // contenu commençait d'autant plus bas. En `.inline`, cette réserve
+            // disparaît et l'en-tête remonte sous la barre.
+            .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .principal) {
                     Button {
