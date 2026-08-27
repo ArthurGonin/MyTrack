@@ -137,7 +137,8 @@ struct OnboardingView: View {
     private func stepContent(for step: OnboardingStep) -> some View {
         switch step {
         case .welcome:
-            WelcomeLanguageStepView(selectedLanguage: appServices.onboardingService.selectedLanguage)
+            @Bindable var onboardingService = appServices.onboardingService
+            WelcomeLanguageStepView(selectedLanguage: $onboardingService.selectedLanguage)
         case .name:
             NameStepView(firstName: $firstName, lastName: $lastName)
         case .vehicle:

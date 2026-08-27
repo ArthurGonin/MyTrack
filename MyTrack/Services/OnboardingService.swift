@@ -22,21 +22,26 @@ final class OnboardingService {
         }
     }
 
-    var selectedLanguage: String {
+    var selectedLanguage: AppLanguage {
         didSet {
-            UserDefaults.standard.set(selectedLanguage, forKey: Self.selectedLanguageKey)
+            UserDefaults.standard.set(selectedLanguage.rawValue, forKey: Self.selectedLanguageKey)
         }
     }
 
     init() {
         hasCompletedOnboarding = UserDefaults.standard.bool(forKey: Self.hasCompletedOnboardingKey)
-        selectedLanguage = UserDefaults.standard.string(forKey: Self.selectedLanguageKey) ?? "fr"
+        // Rien n'est écrit tant que l'utilisateur n'a pas choisi lui-même :
+        // sans choix explicite, l'app suit la langue du système, y compris si
+        // elle change plus tard — ce qui est le seul comportement sensé tant
+        // qu'aucun réglage de langue n'existe en dehors de l'onboarding.
+        let storedLanguage = UserDefaults.standard.string(forKey: Self.selectedLanguageKey)
+        selectedLanguage = storedLanguage.flatMap(AppLanguage.init(rawValue:)) ?? .systemDefault
     }
 
     /// Puts the app back to a first-launch state, so a deleted account is
     /// greeted by the onboarding again rather than a mostly-reset app.
     func resetToDefaults() {
         hasCompletedOnboarding = false
-        selectedLanguage = "fr"
+        selectedLanguage = .systemDefault
     }
 }
