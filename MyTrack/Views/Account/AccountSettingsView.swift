@@ -45,10 +45,16 @@ struct AccountSettingsView: View {
 
         return NavigationStack {
             Form {
+                // L'ordre suit ce que l'écran raconte : qui tu es, ce que
+                // l'app fait pour toi, ce dont elle a besoin pour le faire, le
+                // reste de ses fonctions, tes préférences, ce que tu paies,
+                // puis la sortie.
                 Section {
                     NavigationLink("Données personnelles") {
                         PersonalDataView()
                     }
+                } header: {
+                    Text("Compte")
                 }
 
                 Section {
@@ -66,26 +72,38 @@ struct AccountSettingsView: View {
                             }
                         }
                     ))
-
-                    if isAutoDetectionBlockedByPermission {
-                        Button("Ouvrir les Réglages") {
-                            if let url = URL(string: UIApplication.openSettingsURLString) {
-                                UIApplication.shared.open(url)
-                            }
-                        }
-                    }
+                } header: {
+                    Text("Enregistrement")
                 } footer: {
                     Text(autoDetectionFooter)
                 }
 
-                // N'a de sens que si le suivi automatique est actif : sans lui,
-                // aucun trajet détecté ne viendrait jamais poser la question.
+                // Sans en-tête : la section se rattache visuellement à celle
+                // du dessus, dont elle précise le comportement. N'a de sens
+                // que si le suivi automatique est actif — sans lui, aucun
+                // trajet détecté ne viendrait jamais poser la question.
                 if viewModel.isAutoDetectionEnabled {
                     Section {
                         Toggle("Confirmer chaque trajet", isOn: $drivingDetector.requiresTripConfirmation)
                     } footer: {
                         Text(tripConfirmationFooter)
                     }
+                }
+
+                // Juste sous le suivi automatique, parce que c'est ce dont il
+                // dépend : quand son pied de section annonce « inactif, il
+                // manque telle autorisation », ce qu'il faut faire est la ligne
+                // d'en dessous. Le raccourci vers les Réglages d'iOS vivait
+                // ici même, dans la section précédente ; il n'a plus lieu
+                // d'être, chaque ligne portant désormais le sien.
+                PermissionsSettingsSection()
+
+                Section {
+                    NavigationLink("Rapports périodiques") {
+                        ReportSettingsView()
+                    }
+                } header: {
+                    Text("Rapports")
                 }
 
                 Section {
@@ -110,12 +128,6 @@ struct AccountSettingsView: View {
                     .pickerStyle(.menu)
                 } header: {
                     Text("Langue et unités")
-                }
-
-                Section {
-                    NavigationLink("Rapports périodiques") {
-                        ReportSettingsView()
-                    }
                 }
 
                 SubscriptionSettingsSection()
@@ -205,17 +217,6 @@ struct AccountSettingsView: View {
         appServices.drivingDetector.requiresTripConfirmation
             ? "MyTrack te demande de confirmer chaque trajet détecté avant de l'enregistrer."
             : "Les trajets détectés sont enregistrés automatiquement, sans confirmation."
-    }
-
-    /// Only the two permission cases are worth a shortcut — an unsupported
-    /// device has nothing to grant.
-    private var isAutoDetectionBlockedByPermission: Bool {
-        switch appServices.drivingDetector.status {
-        case .needsAlwaysLocation, .needsMotionAccess: return true
-        // L'abonnement ne se règle pas dans les Réglages iOS : la section
-        // Abonnement juste en dessous porte déjà le bon bouton.
-        case .off, .running, .unsupportedDevice, .needsSubscription: return false
-        }
     }
 
     private func deleteAccount() {

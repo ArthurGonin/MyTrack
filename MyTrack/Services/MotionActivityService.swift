@@ -23,6 +23,14 @@ final class MotionActivityService {
     /// where the user asked for automatic tracking.
     var isAuthorized: Bool { CMMotionActivityManager.authorizationStatus() == .authorized }
 
+    /// L'état complet, et pas seulement « autorisé ou non ».
+    ///
+    /// Les réglages ont besoin de distinguer un refus d'une question jamais
+    /// posée : au refus, iOS ne réaffichera plus jamais sa fenêtre et seul son
+    /// app Réglages peut encore lever l'interdiction ; à la question jamais
+    /// posée, la demande fait bien apparaître la fenêtre système.
+    var authorizationStatus: CMAuthorizationStatus { CMMotionActivityManager.authorizationStatus() }
+
     /// Triggers the Motion & Fitness system prompt (if not already determined)
     /// and waits for the user's answer. CoreMotion has no dedicated "request
     /// authorization" API with a completion, so this queries a negligible
