@@ -101,6 +101,14 @@ struct SubscriptionSettingsSection: View {
         // qu'avait StoreKit au démarrage.
         .task { await purchaseService.refreshSubscription() }
         .manageSubscriptionsSheet(isPresented: $isManageSubscriptionsPresented)
+        // La feuille système ne dit rien de ce que l'utilisateur y a fait, et un
+        // changement de formule différé ne produit aucune transaction : sans
+        // cette relecture à la fermeture, la ligne Formule reste sur l'ancienne
+        // valeur jusqu'à la prochaine ouverture des réglages.
+        .onChange(of: isManageSubscriptionsPresented) { _, isPresented in
+            guard !isPresented else { return }
+            Task { await purchaseService.refreshSubscription() }
+        }
         .sheet(isPresented: $isStorePresented) {
             SubscriptionStoreSheet(isPresented: $isStorePresented)
         }
@@ -139,17 +147,16 @@ struct SubscriptionSettingsSection: View {
             : "Aucun abonnement actif n'est associé à ce compte App Store."
     }
 
-    /// Le nom vient du produit App Store quand il est chargé — c'est lui qui
-    /// est localisé et qui fait foi. Le repli couvre le cas « pas de réseau »,
-    /// où la section doit quand même savoir nommer la formule en cours.
+    /// Traduit par l'app, et non repris de `Product.displayName` : celui-ci
+    /// vient d'App Store Connect et suit la langue du système, ce qui affichait
+    /// « Annuel » en français au milieu d'un écran en allemand. Les deux noms
+    /// sont les nôtres, autant les tenir dans la même langue que le reste.
+    ///
+    /// Clés explicites : « Annuel » désigne ici une formule d'abonnement et
+    /// ailleurs une fréquence de rapport — deux sens que plusieurs langues ne
+    /// rendent pas par le même mot.
     private func planName(_ plan: PricingPlan) -> String {
-        if let product = purchaseService.product(for: plan) {
-            return product.displayName
-        }
-        // Clés explicites : « Annuel » désigne ici une formule d'abonnement et
-        // ailleurs une fréquence de rapport — deux sens que plusieurs langues
-        // ne rendent pas par le même mot.
-        return switch plan {
+        switch plan {
         case .annual: String(localized: "plan.annual", defaultValue: "Annuel", bundle: localizationBundle, locale: locale)
         case .monthly: String(localized: "plan.monthly", defaultValue: "Mensuel", bundle: localizationBundle, locale: locale)
         }
@@ -169,6 +176,17 @@ struct SubscriptionSettingsSection: View {
             return String(localized: "Abonnement actif.", bundle: localizationBundle, locale: locale)
         }
         let formattedDate = TripFormatting.longDate(date, locale: locale)
+
+        // Avant tout le reste : c'est la seule phrase qui explique pourquoi la
+        // ligne au-dessus affiche encore l'ancienne formule.
+        if let pendingPlan = subscription.pendingPlan {
+            let name = planName(pendingPlan)
+            return String(
+                localized: "Passe à la formule \(name) le \(formattedDate).",
+                bundle: localizationBundle,
+                locale: locale
+            )
+        }
 
         if subscription.isInFreeTrial {
             return subscription.willAutoRenew == false

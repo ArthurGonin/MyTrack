@@ -81,6 +81,10 @@ struct RootTabView: View {
             // CoreMotion reports to nobody. Coming back is the only moment the
             // app can notice, and start watching for drives at last.
             appServices.drivingDetector.refresh()
+            // Un abonnement peut aussi être changé ou résilié depuis l'App
+            // Store, hors de l'app : le retour au premier plan est le seul
+            // moment où elle peut s'en apercevoir.
+            Task { await appServices.purchaseService.refreshSubscription() }
         }
     }
 

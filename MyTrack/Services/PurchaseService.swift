@@ -36,6 +36,13 @@ enum PurchaseOutcome: Equatable {
 /// qui viennent toutes de la même transaction.
 struct SubscriptionSummary: Equatable {
     let plan: PricingPlan
+    /// La formule qui prendra le relais à la prochaine échéance, quand elle
+    /// diffère de celle en cours. Passer d'annuel à mensuel ne s'applique pas
+    /// tout de suite : l'abonnement annuel court jusqu'à son terme, et c'est
+    /// seulement au renouvellement que le mensuel prend la suite. Sans cette
+    /// information, l'app affiche « Annuel » à quelqu'un qui vient de choisir
+    /// « Mensuel » et a toutes les raisons de croire que rien n'a marché.
+    let pendingPlan: PricingPlan?
     let expirationDate: Date?
     let isInFreeTrial: Bool
     /// nil quand StoreKit n'a pas pu livrer l'info de reconduction (produits
@@ -228,15 +235,28 @@ final class PurchaseService {
     }
 
     private func updateEntitlements() async {
-        var found: SubscriptionSummary?
+        // Deux entitlements du même groupe peuvent coexister le temps d'un
+        // changement de formule. Prendre le dernier arrivé dans la boucle
+        // rendait l'affichage dépendant de l'ordre d'itération ; c'est l'achat
+        // le plus récent qui fait foi.
+        var current: Transaction?
         for await result in Transaction.currentEntitlements {
             guard let transaction = try? checkVerified(result),
-                  let plan = Self.plan(for: transaction.productID) else { continue }
+                  Self.plan(for: transaction.productID) != nil else { continue }
+            if let latest = current, latest.purchaseDate >= transaction.purchaseDate { continue }
+            current = transaction
+        }
+
+        var found: SubscriptionSummary?
+        if let current, let plan = Self.plan(for: current.productID) {
+            let renewal = await renewalState(for: plan)
+            let pendingPlan = renewal?.autoRenewProductID.flatMap(Self.plan(for:))
             found = SubscriptionSummary(
                 plan: plan,
-                expirationDate: transaction.expirationDate,
-                isInFreeTrial: transaction.offer?.type == .introductory,
-                willAutoRenew: await willAutoRenew(for: plan)
+                pendingPlan: pendingPlan == plan ? nil : pendingPlan,
+                expirationDate: current.expirationDate,
+                isInFreeTrial: current.offer?.type == .introductory,
+                willAutoRenew: renewal?.willAutoRenew
             )
         }
         subscription = found
@@ -271,16 +291,27 @@ final class PurchaseService {
         onAccessChange?(hasAccess, hadAccess && !hasAccess)
     }
 
+    private struct RenewalState {
+        let willAutoRenew: Bool
+        /// L'identifiant du produit qui sera reconduit — pas forcément celui en
+        /// cours, justement quand un changement de formule est programmé.
+        let autoRenewProductID: String?
+    }
+
     /// `currentEntitlements` dit qu'un abonnement est actif et jusqu'à quand,
-    /// mais pas s'il sera reconduit : ça, seul le renewalInfo du groupe
-    /// d'abonnement le sait. C'est toute la différence entre « renouvellement
-    /// le 12 septembre » et « se termine le 12 septembre ».
-    private func willAutoRenew(for plan: PricingPlan) async -> Bool? {
+    /// mais ni s'il sera reconduit, ni avec quelle formule : ça, seul le
+    /// renewalInfo du groupe d'abonnement le sait. C'est toute la différence
+    /// entre « renouvellement le 12 septembre » et « se termine le
+    /// 12 septembre » — et entre « annuel » et « annuel, puis mensuel ».
+    private func renewalState(for plan: PricingPlan) async -> RenewalState? {
         guard let product = product(for: plan),
               let statuses = try? await product.subscription?.status else { return nil }
         for status in statuses {
             guard let renewalInfo = try? checkVerified(status.renewalInfo) else { continue }
-            return renewalInfo.willAutoRenew
+            return RenewalState(
+                willAutoRenew: renewalInfo.willAutoRenew,
+                autoRenewProductID: renewalInfo.autoRenewPreference
+            )
         }
         return nil
     }
