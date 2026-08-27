@@ -41,6 +41,7 @@ struct AccountSettingsView: View {
     var body: some View {
         @Bindable var unitSettings = appServices.unitSettingsService
         @Bindable var languageService = appServices.languageService
+        @Bindable var drivingDetector = appServices.drivingDetector
 
         return NavigationStack {
             Form {
@@ -75,6 +76,16 @@ struct AccountSettingsView: View {
                     }
                 } footer: {
                     Text(autoDetectionFooter)
+                }
+
+                // N'a de sens que si le suivi automatique est actif : sans lui,
+                // aucun trajet détecté ne viendrait jamais poser la question.
+                if viewModel.isAutoDetectionEnabled {
+                    Section {
+                        Toggle("Confirmer chaque trajet", isOn: $drivingDetector.requiresTripConfirmation)
+                    } footer: {
+                        Text(tripConfirmationFooter)
+                    }
                 }
 
                 Section {
@@ -187,6 +198,12 @@ struct AccountSettingsView: View {
         case .needsSubscription:
             return "Inactif : l'enregistrement de nouveaux trajets nécessite un abonnement actif."
         }
+    }
+
+    private var tripConfirmationFooter: LocalizedStringKey {
+        appServices.drivingDetector.requiresTripConfirmation
+            ? "MyTrack te demande de confirmer chaque trajet détecté avant de l'enregistrer."
+            : "Les trajets détectés sont enregistrés automatiquement, sans confirmation."
     }
 
     /// Only the two permission cases are worth a shortcut — an unsupported

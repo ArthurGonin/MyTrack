@@ -19,6 +19,8 @@ private enum OnboardingStep: Int, CaseIterable {
     case units
     case vehicle
     case autoDetection
+    /// Skipped when auto-detection wasn't just enabled — see `isStepVisible`.
+    case tripConfirmation
     case paywall
 }
 
@@ -49,19 +51,20 @@ struct OnboardingView: View {
             return true
         case .vehicle:
             return !vehicleName.trimmingCharacters(in: .whitespaces).isEmpty
-        case .autoDetection, .paywall:
+        case .autoDetection, .tripConfirmation, .paywall:
             return true
         }
     }
 
     /// Steps with their own action button (auto-detection's yes/no,
-    /// the paywall's "J'y vais") hide the shared bottom button instead of
-    /// using it, since a single "Continuer" wouldn't fit what they need.
+    /// trip-confirmation's two choices, the paywall's "J'y vais") hide the
+    /// shared bottom button instead of using it, since a single "Continuer"
+    /// wouldn't fit what they need.
     private var showsGenericContinueButton: Bool {
         switch currentStep {
         case .welcome, .name, .units, .vehicle:
             return true
-        case .autoDetection, .paywall:
+        case .autoDetection, .tripConfirmation, .paywall:
             return false
         }
     }
@@ -96,7 +99,7 @@ struct OnboardingView: View {
 
             if showsGenericContinueButton {
                 Button {
-                    currentStepIndex += 1
+                    advanceStep()
                 } label: {
                     Text("Continuer").frame(maxWidth: .infinity)
                 }
@@ -124,7 +127,7 @@ struct OnboardingView: View {
     /// same control, not two different sizes.
     private var backButton: some View {
         Button {
-            currentStepIndex -= 1
+            retreatStep()
         } label: {
             Image(systemName: "chevron.backward")
                 .font(.body.weight(.semibold))
@@ -153,7 +156,18 @@ struct OnboardingView: View {
             AutoDetectionStepView(
                 isRequestingPermissions: isRequestingAutoDetectionPermissions,
                 onEnable: enableAutoDetectionAndContinue,
-                onSkip: { currentStepIndex += 1 }
+                onSkip: { advanceStep() }
+            )
+        case .tripConfirmation:
+            TripConfirmationStepView(
+                onChooseConfirmation: {
+                    appServices.drivingDetector.requiresTripConfirmation = true
+                    advanceStep()
+                },
+                onChooseAutomatic: {
+                    appServices.drivingDetector.requiresTripConfirmation = false
+                    advanceStep()
+                }
             )
         case .paywall:
             PaywallStepView(
@@ -177,12 +191,40 @@ struct OnboardingView: View {
             // another device — must not be asked to pay a second time, so the
             // paywall closes itself as soon as StoreKit confirms the
             // entitlement (which may land after the step is already on screen).
-            .task(id: appServices.purchaseService.isSubscribed) {
-                if appServices.purchaseService.isSubscribed {
+            .task(id: appServices.purchaseService.hasEntitlement) {
+                if appServices.purchaseService.hasEntitlement {
                     finish()
                 }
             }
         }
+    }
+
+    /// Whether `step` should actually be shown. Everything is visible except
+    /// `.tripConfirmation`, which only makes sense once auto-detection is on —
+    /// used by `advanceStep()`/`retreatStep()` so both directions skip over it
+    /// the same way, instead of the forward path jumping past it explicitly
+    /// while the back button stumbles into it.
+    private func isStepVisible(_ step: OnboardingStep) -> Bool {
+        switch step {
+        case .tripConfirmation: appServices.drivingDetector.isEnabled
+        default: true
+        }
+    }
+
+    private func advanceStep() {
+        var next = currentStepIndex + 1
+        while next < OnboardingStep.allCases.count, !isStepVisible(OnboardingStep.allCases[next]) {
+            next += 1
+        }
+        currentStepIndex = next
+    }
+
+    private func retreatStep() {
+        var previous = currentStepIndex - 1
+        while previous > 0, !isStepVisible(OnboardingStep.allCases[previous]) {
+            previous -= 1
+        }
+        currentStepIndex = previous
     }
 
     private func purchaseSelectedPlan() async -> PurchaseOutcome {
@@ -191,7 +233,7 @@ struct OnboardingView: View {
 
     private func restoreAndCheckSubscribed() async -> Bool {
         await appServices.purchaseService.restorePurchases()
-        return appServices.purchaseService.isSubscribed
+        return appServices.purchaseService.hasEntitlement
     }
 
     /// Requests Motion first, then location (When In Use, then the Always
@@ -210,13 +252,13 @@ struct OnboardingView: View {
                 appServices.drivingDetector.enable()
                 await appServices.drivingDetector.waitForAuthorizationSettled()
                 isRequestingAutoDetectionPermissions = false
-                currentStepIndex += 1
+                advanceStep()
             }
         }
     }
 
     /// Idempotent: a successful purchase both returns `.success` and flips
-    /// `isSubscribed`, so two callers can reach this in the same run loop —
+    /// `hasEntitlement`, so two callers can reach this in the same run loop —
     /// without the guard that would insert the vehicle twice.
     private func finish() {
         guard !appServices.onboardingService.hasCompletedOnboarding else { return }

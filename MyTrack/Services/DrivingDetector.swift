@@ -68,6 +68,17 @@ final class DrivingDetector {
     /// no observation can see change.
     private(set) var status: DrivingDetectionStatus = .off
 
+    /// Whether a just-finalized automatic trip still needs a yes/no answer
+    /// (the notification + in-app review flow) or gets saved as `.confirmed`
+    /// straight away. Plain settable property, unlike `isEnabled`: choosing
+    /// this has no permissions to request, so the settings screen and the
+    /// onboarding step can both bind to it directly.
+    var requiresTripConfirmation: Bool {
+        didSet {
+            UserDefaults.standard.set(requiresTripConfirmation, forKey: Self.requiresConfirmationKey)
+        }
+    }
+
     /// Set only while *this* detector owns the trip being recorded, so a trip
     /// the user started by hand is never silently finalized — nor notified
     /// about as if it had been detected automatically.
@@ -102,6 +113,7 @@ final class DrivingDetector {
     /// departure would discard a real trip that is only just starting.
     private static let discardGraceWindow: TimeInterval = 60
     private static let preferenceKey = "isAutoDetectionEnabled"
+    private static let requiresConfirmationKey = "autoDetectionRequiresConfirmation"
 
     init(
         motionActivityService: MotionActivityService,
@@ -120,6 +132,10 @@ final class DrivingDetector {
         self.locationService = locationService
         self.modelContext = modelContext
         self.isEnabled = UserDefaults.standard.bool(forKey: Self.preferenceKey)
+        // Absent key means "never set" rather than "chose automatic": default
+        // to true so upgrading users keep today's always-ask behavior instead
+        // of being silently switched to auto-accept.
+        self.requiresTripConfirmation = UserDefaults.standard.object(forKey: Self.requiresConfirmationKey) as? Bool ?? true
 
         // "Always" location can be granted or revoked from Settings while the
         // app isn't running, so monitoring is re-evaluated on every change
@@ -452,7 +468,12 @@ final class DrivingDetector {
         }
 
         if let trip = tripRecorder.finalize(endDate: endDate) {
-            notificationService.scheduleTripConfirmationNotification(for: trip)
+            if requiresTripConfirmation {
+                notificationService.scheduleTripConfirmationNotification(for: trip)
+            } else {
+                trip.confirmationStatus = .confirmed
+                modelContext.saveOrLog()
+            }
         }
         resetState()
     }
