@@ -18,43 +18,15 @@ struct WelcomeLanguageStepView: View {
                     .foregroundStyle(.secondary)
             }
 
-            VStack(spacing: 0) {
-                ForEach(AppLanguage.allCases) { language in
-                    languageRow(language)
-
-                    if language != AppLanguage.allCases.last {
-                        Divider()
-                            .padding(.leading)
-                    }
-                }
+            OnboardingChoiceList(options: AppLanguage.allCases, selection: $selectedLanguage) {
+                // Chaque langue s'annonce dans sa propre langue : ce libellé ne
+                // passe donc pas par le catalogue de traductions.
+                Text($0.nativeName)
             }
-            .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 12))
 
             Spacer()
         }
         .padding()
-    }
-
-    private func languageRow(_ language: AppLanguage) -> some View {
-        Button {
-            selectedLanguage = language
-        } label: {
-            HStack {
-                Text(language.nativeName)
-                    .foregroundStyle(.primary)
-                Spacer()
-                if language == selectedLanguage {
-                    Image(systemName: "checkmark")
-                        .foregroundStyle(.tint)
-                }
-            }
-            .padding()
-            // Sans ça, seul le texte est tapable : la ligne entière doit
-            // répondre, y compris l'espace vide à droite.
-            .contentShape(.rect)
-        }
-        .buttonStyle(.plain)
-        .accessibilityAddTraits(language == selectedLanguage ? .isSelected : [])
     }
 }
 

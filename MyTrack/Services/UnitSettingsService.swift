@@ -23,6 +23,6 @@ final class UnitSettingsService {
 
     init() {
         let storedValue = UserDefaults.standard.string(forKey: Self.distanceUnitKey)
-        distanceUnit = storedValue.flatMap(DistanceUnit.init(rawValue:)) ?? .kilometers
+        distanceUnit = storedValue.flatMap(DistanceUnit.init(rawValue:)) ?? .systemDefault
     }
 }

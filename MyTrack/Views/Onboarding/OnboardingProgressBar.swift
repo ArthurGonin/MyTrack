@@ -27,7 +27,7 @@ struct OnboardingProgressBar: View {
 }
 
 #Preview {
-    OnboardingProgressBar(stepCount: 5, currentIndex: 2)
+    OnboardingProgressBar(stepCount: 6, currentIndex: 2)
         .padding()
         .appBackground()
 }

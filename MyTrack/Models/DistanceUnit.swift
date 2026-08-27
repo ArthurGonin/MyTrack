@@ -29,6 +29,17 @@ nonisolated enum DistanceUnit: String, CaseIterable, Identifiable, Sendable {
         }
     }
 
+    /// L'unité que la région du système laisse attendre, pour que l'étape
+    /// d'onboarding présente déjà la bonne : un iPhone réglé sur les
+    /// États-Unis ou le Royaume-Uni compte ses trajets en miles. Ce n'est qu'un
+    /// pré-choix — c'est l'utilisateur qui tranche, et son choix ne bouge plus.
+    static var systemDefault: DistanceUnit {
+        switch Locale.autoupdatingCurrent.measurementSystem {
+        case .us, .uk: .miles
+        default: .kilometers
+        }
+    }
+
     var unitLength: UnitLength {
         switch self {
         case .kilometers: return .kilometers

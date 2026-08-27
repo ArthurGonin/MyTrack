@@ -16,6 +16,7 @@ import UIKit
 private enum OnboardingStep: Int, CaseIterable {
     case welcome
     case name
+    case units
     case vehicle
     case autoDetection
     case paywall
@@ -44,6 +45,8 @@ struct OnboardingView: View {
         case .name:
             return !firstName.trimmingCharacters(in: .whitespaces).isEmpty
                 && !lastName.trimmingCharacters(in: .whitespaces).isEmpty
+        case .units:
+            return true
         case .vehicle:
             return !vehicleName.trimmingCharacters(in: .whitespaces).isEmpty
         case .autoDetection, .paywall:
@@ -56,7 +59,7 @@ struct OnboardingView: View {
     /// using it, since a single "Continuer" wouldn't fit what they need.
     private var showsGenericContinueButton: Bool {
         switch currentStep {
-        case .welcome, .name, .vehicle:
+        case .welcome, .name, .units, .vehicle:
             return true
         case .autoDetection, .paywall:
             return false
@@ -141,6 +144,9 @@ struct OnboardingView: View {
             WelcomeLanguageStepView(selectedLanguage: $languageService.language)
         case .name:
             NameStepView(firstName: $firstName, lastName: $lastName)
+        case .units:
+            @Bindable var unitSettings = appServices.unitSettingsService
+            UnitStepView(distanceUnit: $unitSettings.distanceUnit)
         case .vehicle:
             VehicleStepView(vehicleName: $vehicleName, licensePlate: $licensePlate)
         case .autoDetection:
