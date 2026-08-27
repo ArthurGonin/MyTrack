@@ -1023,6 +1023,46 @@
         }
       }
     },
+    "5 étoiles sur 5" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "5 von 5 Sternen"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "5 stars out of 5"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "5 estrellas de 5"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "5 étoiles sur 5"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "5 stelle su 5"
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "5 estrelas em 5"
+          }
+        }
+      }
+    },
     "Abonnement" : {
       "localizations" : {
         "de" : {
@@ -3579,6 +3619,46 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Falha na geração"
+          }
+        }
+      }
+    },
+    "Elle se lance toute seule quand je prends la voiture. J'ai fini par l'oublier — c'est le plus beau compliment." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sie startet von allein, sobald ich ins Auto steige. Ich habe sie irgendwann vergessen — das schönste Kompliment."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "It starts on its own whenever I get in the car. I ended up forgetting about it — which is the best compliment I can give it."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Se pone en marcha sola cuando cojo el coche. He acabado olvidándome de ella, y es el mejor cumplido."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Elle se lance toute seule quand je prends la voiture. J'ai fini par l'oublier — c'est le plus beau compliment."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Si avvia da sola quando prendo la macchina. Ho finito per dimenticarmene — ed è il complimento più bello."
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Arranca sozinha quando entro no carro. Acabei por me esquecer dela — e esse é o melhor elogio."
           }
         }
       }
@@ -7186,6 +7266,46 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Voltar"
+          }
+        }
+      }
+    },
+    "Sans abonnement" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kein Abo"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No subscription"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sin suscripción"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sans abonnement"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Senza abbonamento"
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sem subscrição"
           }
         }
       }

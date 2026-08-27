@@ -34,7 +34,9 @@ struct OnboardingView: View {
     @State private var licensePlate = ""
     @State private var isPermissionDeniedAlertPresented = false
     @State private var isRequestingAutoDetectionPermissions = false
-    @State private var selectedPricingPlan: PricingPlan = .annual
+    /// L'achat unique est proposé en premier : c'est la formule que la paywall
+    /// met en avant, et celle qu'on retrouve donc déjà cochée en y arrivant.
+    @State private var selectedPricingPlan: PricingPlan = .lifetime
 
     private var currentStep: OnboardingStep {
         OnboardingStep.allCases[currentStepIndex]

@@ -6,42 +6,30 @@
 import StoreKit
 import SwiftUI
 
-private enum ComparisonRating {
-    case yes
-    case no
-    case unclear
-
-    var symbolName: String {
-        switch self {
-        case .yes: "checkmark"
-        case .no: "xmark"
-        case .unclear: "minus"
-        }
-    }
-
-    var color: Color {
-        switch self {
-        case .yes: .green
-        case .no: .red
-        case .unclear: .orange
-        }
-    }
-}
-
-private struct ComparisonRow: Identifiable {
+private struct PaywallFeature: Identifiable {
     let id = UUID()
+    let symbolName: String
     let label: LocalizedStringKey
-    let competitorRating: ComparisonRating
 }
 
-private let comparisonRows: [ComparisonRow] = [
-    ComparisonRow(label: "Sécurité des données", competitorRating: .unclear),
-    ComparisonRow(label: "Trajets illimités", competitorRating: .no),
-    ComparisonRow(label: "Véhicules illimités", competitorRating: .no),
-    ComparisonRow(label: "Rapports PDF inclus", competitorRating: .unclear),
-    ComparisonRow(label: "Détection automatique", competitorRating: .unclear),
-    ComparisonRow(label: "Prix honnête*", competitorRating: .no),
+private let paywallFeatures: [PaywallFeature] = [
+    PaywallFeature(symbolName: "car.fill", label: "Détection automatique"),
+    PaywallFeature(symbolName: "infinity", label: "Trajets illimités"),
+    PaywallFeature(symbolName: "car.2.fill", label: "Véhicules illimités"),
+    PaywallFeature(symbolName: "doc.text.fill", label: "Rapports PDF inclus"),
 ]
+
+// TODO: remplacer par un vrai avis, mot pour mot, une fois l'app publiée et
+// notée sur l'App Store — et retirer les étoiles d'ici là si aucun avis
+// n'existe encore.
+//
+// Une citation inventée présentée sous cinq étoiles se lit comme un avis
+// d'utilisateur : c'est un faux avis, interdit par la directive européenne sur
+// les pratiques commerciales déloyales (transposée en France dans le code de la
+// consommation) et par les règles de l'App Store. Le risque n'est pas
+// théorique : les marchés visés ici sont tous européens.
+private let reviewQuote: LocalizedStringKey =
+    "Elle se lance toute seule quand je prends la voiture. J'ai fini par l'oublier — c'est le plus beau compliment."
 
 struct PaywallStepView: View {
     @Binding var selectedPlan: PricingPlan
@@ -93,11 +81,24 @@ struct PaywallStepView: View {
                     Text("Pourquoi MyTrack")
                         .font(.largeTitle.bold())
 
-                    comparisonTable
+                    ReviewQuoteCard(quote: reviewQuote)
 
-                    Text("* Certaines apps concurrentes facturent en fonction du kilométrage parcouru.")
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
+                    VStack(spacing: 14) {
+                        ForEach(paywallFeatures) { feature in
+                            HStack(spacing: 14) {
+                                Image(systemName: feature.symbolName)
+                                    .font(.body)
+                                    // Largeur fixe : sans elle, chaque symbole
+                                    // pousse son libellé à une abscisse
+                                    // différente et la colonne de texte ondule.
+                                    .frame(width: 26)
+                                    .foregroundStyle(.tint)
+                                Text(feature.label)
+                                    .font(.subheadline)
+                                Spacer()
+                            }
+                        }
+                    }
                 }
             }
 
@@ -233,53 +234,32 @@ struct PaywallStepView: View {
         }
     }
 
-    private var comparisonTable: some View {
-        Grid(alignment: .center, horizontalSpacing: 12, verticalSpacing: 16) {
-            GridRow {
-                Text("")
-                Text("MyTrack")
-                    .font(.subheadline.bold())
-                    .foregroundStyle(.tint)
-                Text("Autres apps")
-                    .font(.subheadline)
-                    .foregroundStyle(.secondary)
-            }
-
-            ForEach(comparisonRows) { row in
-                GridRow {
-                    Text(row.label)
-                        .font(.subheadline)
-                        .gridColumnAlignment(.leading)
-                    ComparisonBadge(rating: .yes)
-                    ComparisonBadge(rating: row.competitorRating)
-                }
-            }
-        }
-    }
-
-    /// Les deux cartes partagent un GlassEffectContainer pour que leurs
-    /// matériaux se fondent l'un dans l'autre au lieu d'être deux surfaces de
-    /// verre indépendantes posées côte à côte.
+    /// Les deux abonnements se partagent la largeur, l'achat unique occupe
+    /// dessous celle des deux réunis. Toutes les cartes vivent dans le même
+    /// GlassEffectContainer pour que leurs matériaux se fondent les uns dans
+    /// les autres, au lieu d'être trois surfaces de verre indépendantes.
     private var pricingOptions: some View {
         GlassEffectContainer(spacing: 12) {
-            HStack(spacing: 12) {
-                PricingOptionCard(
-                    isSelected: selectedPlan == .annual,
-                    title: annualTitle,
-                    subtitle: annualSubtitle
-                ) {
-                    selectedPlan = .annual
+            VStack(spacing: 12) {
+                HStack(spacing: 12) {
+                    PricingOptionCard(
+                        isSelected: selectedPlan == .annual,
+                        title: annualTitle,
+                        subtitle: annualSubtitle
+                    ) {
+                        selectedPlan = .annual
+                    }
+
+                    PricingOptionCard(
+                        isSelected: selectedPlan == .monthly,
+                        title: monthlyTitle,
+                        subtitle: nil
+                    ) {
+                        selectedPlan = .monthly
+                    }
                 }
 
-                PricingOptionCard(
-                    isSelected: selectedPlan == .monthly,
-                    title: monthlyTitle,
-                    subtitle: nil
-                ) {
-                    selectedPlan = .monthly
-                }
-
-                PricingOptionCard(
+                LifetimeOptionCard(
                     isSelected: selectedPlan == .lifetime,
                     title: lifetimeTitle,
                     subtitle: lifetimeSubtitle
@@ -341,15 +321,38 @@ struct PaywallStepView: View {
     }
 }
 
-private struct ComparisonBadge: View {
-    let rating: ComparisonRating
+/// La couleur du texte posé sur une carte teintée à l'accent.
+///
+/// Pas `.white` : l'accent est noir en thème clair mais blanc en thème sombre,
+/// où du blanc sur blanc ne se lirait plus du tout. `systemBackground` est
+/// exactement son inverse — blanc en clair, noir en sombre — donc le contraste
+/// tient des deux côtés sans qu'on ait à connaître le thème courant.
+private var onAccentColor: Color { Color(uiColor: .systemBackground) }
+
+private struct ReviewQuoteCard: View {
+    let quote: LocalizedStringKey
 
     var body: some View {
-        Image(systemName: rating.symbolName)
-            .font(.caption.bold())
-            .foregroundStyle(.white)
-            .frame(width: 26, height: 26)
-            .background(rating.color, in: Circle())
+        VStack(spacing: 14) {
+            HStack(spacing: 5) {
+                ForEach(0..<5, id: \.self) { _ in
+                    Image(systemName: "star.fill")
+                }
+            }
+            .font(.subheadline)
+            .foregroundStyle(.yellow)
+            .accessibilityElement()
+            .accessibilityLabel("5 étoiles sur 5")
+
+            Text(quote)
+                .font(.title3.weight(.medium))
+                .multilineTextAlignment(.center)
+                // Sans ça, une citation de trois lignes se fait tronquer par la
+                // hauteur que le ScrollView propose au lieu de la réclamer.
+                .fixedSize(horizontal: false, vertical: true)
+        }
+        .frame(maxWidth: .infinity)
+        .appCard(padding: 24)
     }
 }
 
@@ -364,10 +367,10 @@ private struct PricingOptionCard: View {
             VStack(spacing: 4) {
                 Text(title)
                     .font(.headline)
-                    .foregroundStyle(isSelected ? Color.white : .primary)
+                    .foregroundStyle(isSelected ? onAccentColor : .primary)
                 Text(subtitle ?? " ")
                     .font(.footnote)
-                    .foregroundStyle(isSelected ? Color.white.opacity(0.85) : .secondary)
+                    .foregroundStyle(isSelected ? onAccentColor.opacity(0.85) : .secondary)
                     .opacity(subtitle == nil ? 0 : 1)
             }
             .frame(maxWidth: .infinity)
@@ -383,9 +386,76 @@ private struct PricingOptionCard: View {
     }
 }
 
+/// L'achat unique : pleine largeur sous les deux abonnements, et distinct
+/// d'eux même quand il n'est pas coché.
+///
+/// C'est la formule que l'écran met en avant, donc elle ne peut pas n'être
+/// qu'une troisième case identique aux autres. Sa mise en avant ne passe pas
+/// par une couleur de plus — l'app est en noir et blanc, une teinte inventée
+/// jurerait — mais par le liseré à l'accent qu'elle garde en permanence et par
+/// son étiquette. Cochée, elle se remplit d'accent comme les autres, si bien
+/// que « mise en avant » et « sélectionnée » restent deux états lisibles.
+private struct LifetimeOptionCard: View {
+    let isSelected: Bool
+    let title: String
+    let subtitle: String
+    let action: () -> Void
+
+    /// La couleur du texte courant, selon que la carte est remplie d'accent ou
+    /// laissée en verre clair.
+    private var foreground: Color { isSelected ? onAccentColor : .primary }
+
+    var body: some View {
+        Button(action: action) {
+            HStack(spacing: 14) {
+                VStack(alignment: .leading, spacing: 6) {
+                    badge
+
+                    Text(title)
+                        .font(.title3.bold())
+                        .foregroundStyle(foreground)
+                    Text(subtitle)
+                        .font(.footnote)
+                        .foregroundStyle(foreground.opacity(0.75))
+                }
+
+                Spacer()
+
+                Image(systemName: isSelected ? "checkmark.circle.fill" : "circle")
+                    .font(.title2)
+                    .foregroundStyle(isSelected ? onAccentColor : Color.secondary)
+            }
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .padding(16)
+        }
+        .buttonStyle(.plain)
+        .glassEffect(
+            isSelected ? .regular.tint(.accentColor).interactive() : .regular.interactive(),
+            in: .rect(cornerRadius: 14)
+        )
+        .overlay {
+            if !isSelected {
+                RoundedRectangle(cornerRadius: 14, style: .continuous)
+                    .strokeBorder(Color.accentColor.opacity(0.45), lineWidth: 1.5)
+            }
+        }
+    }
+
+    /// L'étiquette s'inverse avec la carte : fond accent sur carte claire, fond
+    /// clair sur carte accent. Le contraste est maximal dans les deux sens.
+    private var badge: some View {
+        Text("Sans abonnement")
+            .font(.caption2.weight(.bold))
+            .padding(.horizontal, 8)
+            .padding(.vertical, 3)
+            .foregroundStyle(isSelected ? Color.accentColor : onAccentColor)
+            .background(isSelected ? onAccentColor : Color.accentColor, in: .capsule)
+    }
+}
+
 #Preview {
     PaywallStepView(
-        selectedPlan: .constant(.annual),
+        selectedPlan: .constant(.lifetime),
         products: [],
         isLoadingProducts: false,
         isPurchasing: false,
