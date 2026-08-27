@@ -17,6 +17,7 @@ struct ReportsView: View {
     @Environment(\.modelContext) private var modelContext
     @Query(sort: \GeneratedReport.createdAt, order: .reverse) private var reports: [GeneratedReport]
 
+    @Environment(\.locale) private var locale
     @State private var previewURL: URL?
     @State private var isPresentingExport = false
 
@@ -82,11 +83,12 @@ struct ReportsView: View {
                             .font(.subheadline.weight(.medium))
                     }
                     Text(
-                        "\(report.periodStart.formatted(date: .abbreviated, time: .omitted)) – "
-                        + report.periodEnd.formatted(date: .abbreviated, time: .omitted)
+                        TripFormatting.shortDate(report.periodStart, locale: locale)
+                        + " – "
+                        + TripFormatting.shortDate(report.periodEnd, locale: locale)
                     )
                     HStack(spacing: 6) {
-                        Text("\(report.tripCount) trajet\(report.tripCount > 1 ? "s" : "")")
+                        Text("\(report.tripCount) trajets")
                         Text("·")
                         // Formatted live, so this follows the current setting —
                         // while the PDF it opens keeps the unit it was made
@@ -94,16 +96,21 @@ struct ReportsView: View {
                         // disagree after a unit change; that's intended.
                         Text(TripFormatting.distance(
                             meters: report.totalDistanceMeters,
-                            unit: appServices.unitSettingsService.distanceUnit
+                            unit: appServices.unitSettingsService.distanceUnit,
+                            locale: locale
                         ))
                     }
                     .font(.caption)
                     .foregroundStyle(.secondary)
-                    Text(
-                        report.includedVehicleNames.isEmpty
-                            ? "Tous les véhicules"
-                            : report.includedVehicleNames.joined(separator: ", ")
-                    )
+                    // Des noms de véhicules sont des données saisies : rendus
+                    // tels quels, contrairement au libellé qui les remplace.
+                    Group {
+                        if report.includedVehicleNames.isEmpty {
+                            Text("Tous les véhicules")
+                        } else {
+                            Text(report.includedVehicleNames.formatted(.list(type: .and).locale(locale)))
+                        }
+                    }
                     .font(.caption)
                     .foregroundStyle(.secondary)
                 }
@@ -112,7 +119,7 @@ struct ReportsView: View {
             .contentShape(Rectangle())
         }
         .buttonStyle(.plain)
-        .accessibilityValue(isUnopened ? "Non ouvert" : "")
+        .accessibilityValue(isUnopened ? Text("Non ouvert") : Text(""))
     }
 
     private func open(_ report: GeneratedReport) {

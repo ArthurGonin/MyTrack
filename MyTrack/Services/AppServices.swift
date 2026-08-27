@@ -20,6 +20,7 @@ final class AppServices {
     let reportProfileService = ReportProfileService()
     let unitSettingsService = UnitSettingsService()
     let onboardingService = OnboardingService()
+    let languageService = LanguageService()
     let locationService = LocationService()
     let motionActivityService = MotionActivityService()
     let reportGenerationService: ReportGenerationService
@@ -31,11 +32,13 @@ final class AppServices {
     init(modelContext: ModelContext) {
         reportGenerationService = ReportGenerationService(
             userProfileService: userProfileService,
-            unitSettingsService: unitSettingsService
+            unitSettingsService: unitSettingsService,
+            languageService: languageService
         )
         notificationService = NotificationService(
             modelContext: modelContext,
-            unitSettingsService: unitSettingsService
+            unitSettingsService: unitSettingsService,
+            languageService: languageService
         )
         tripRecorder = TripRecorder(locationService: locationService, modelContext: modelContext)
         drivingDetector = DrivingDetector(
@@ -85,6 +88,7 @@ final class AppServices {
         drivingDetector.disable()
         notificationService.cancelAllNotifications()
         onboardingService.resetToDefaults()
+        languageService.resetToSystemDefault()
         unitSettingsService.distanceUnit = .kilometers
 
         if let reports = try? context.fetch(FetchDescriptor<GeneratedReport>()) {

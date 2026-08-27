@@ -16,6 +16,7 @@ import SwiftUI
 
 struct SubscriptionSettingsSection: View {
     @Environment(AppServices.self) private var appServices
+    @Environment(\.locale) private var locale
 
     @State private var isManageSubscriptionsPresented = false
     @State private var isStorePresented = false
@@ -55,7 +56,7 @@ struct SubscriptionSettingsSection: View {
                 // Rappel visible depuis les réglages, en plus de l'écran
                 // Enregistrer : c'est ici qu'on vient chercher pourquoi.
                 Label {
-                    Text(purchaseService.hasBillingIssue ? "Problème de paiement" : "Aucun abonnement actif")
+                    Text(warningTitle)
                 } icon: {
                     Image(systemName: purchaseService.hasBillingIssue
                         ? "creditcard.trianglebadge.exclamationmark"
@@ -109,7 +110,7 @@ struct SubscriptionSettingsSection: View {
             if isSubscribed { isStorePresented = false }
         }
         .alert(
-            restoreOutcome == .restored ? "Abonnement restauré" : "Aucun abonnement trouvé",
+            restoreTitle,
             isPresented: Binding(
                 get: { restoreOutcome != nil },
                 set: { if !$0 { restoreOutcome = nil } }
@@ -117,12 +118,24 @@ struct SubscriptionSettingsSection: View {
         ) {
             Button("OK", role: .cancel) {}
         } message: {
-            Text(
-                restoreOutcome == .restored
-                    ? "Ton abonnement a été retrouvé sur ce compte App Store."
-                    : "Aucun abonnement actif n'est associé à ce compte App Store."
-            )
+            Text(restoreMessage)
         }
+    }
+
+    // Typés `LocalizedStringKey` : un ternaire entre deux littéraux passé
+    // directement à `Text` peut se résoudre en `String`, donc sans traduction.
+    private var warningTitle: LocalizedStringKey {
+        purchaseService.hasBillingIssue ? "Problème de paiement" : "Aucun abonnement actif"
+    }
+
+    private var restoreTitle: LocalizedStringKey {
+        restoreOutcome == .restored ? "Abonnement restauré" : "Aucun abonnement trouvé"
+    }
+
+    private var restoreMessage: LocalizedStringKey {
+        restoreOutcome == .restored
+            ? "Ton abonnement a été retrouvé sur ce compte App Store."
+            : "Aucun abonnement actif n'est associé à ce compte App Store."
     }
 
     /// Le nom vient du produit App Store quand il est chargé — c'est lui qui
@@ -132,9 +145,12 @@ struct SubscriptionSettingsSection: View {
         if let product = purchaseService.product(for: plan) {
             return product.displayName
         }
+        // Clés explicites : « Annuel » désigne ici une formule d'abonnement et
+        // ailleurs une fréquence de rapport — deux sens que plusieurs langues
+        // ne rendent pas par le même mot.
         return switch plan {
-        case .annual: "Annuel"
-        case .monthly: "Mensuel"
+        case .annual: String(localized: "plan.annual", defaultValue: "Annuel", locale: locale)
+        case .monthly: String(localized: "plan.monthly", defaultValue: "Mensuel", locale: locale)
         }
     }
 
@@ -144,32 +160,32 @@ struct SubscriptionSettingsSection: View {
     private var statusFooter: String {
         guard let subscription = purchaseService.subscription else {
             return purchaseService.hasBillingIssue
-                ? "Ton abonnement n'a pas pu être renouvelé : aucun nouveau trajet n'est enregistré. Tes trajets et rapports déjà enregistrés restent accessibles."
-                : "Sans abonnement actif, aucun nouveau trajet n'est enregistré. Tes trajets et rapports déjà enregistrés restent accessibles."
+                ? String(localized: "Ton abonnement n'a pas pu être renouvelé : aucun nouveau trajet n'est enregistré. Tes trajets et rapports déjà enregistrés restent accessibles.", locale: locale)
+                : String(localized: "Sans abonnement actif, aucun nouveau trajet n'est enregistré. Tes trajets et rapports déjà enregistrés restent accessibles.", locale: locale)
         }
 
         guard let date = subscription.expirationDate else {
-            return "Abonnement actif."
+            return String(localized: "Abonnement actif.", locale: locale)
         }
-        let formattedDate = date.formatted(date: .long, time: .omitted)
+        let formattedDate = TripFormatting.longDate(date, locale: locale)
 
         if subscription.isInFreeTrial {
             return subscription.willAutoRenew == false
-                ? "Essai gratuit jusqu'au \(formattedDate). Aucune reconduction : l'accès s'arrêtera à cette date."
-                : "Essai gratuit jusqu'au \(formattedDate), puis reconduction automatique."
+                ? String(localized: "Essai gratuit jusqu'au \(formattedDate). Aucune reconduction : l'accès s'arrêtera à cette date.", locale: locale)
+                : String(localized: "Essai gratuit jusqu'au \(formattedDate), puis reconduction automatique.", locale: locale)
         }
 
         return switch subscription.willAutoRenew {
-        case true: "Se renouvelle automatiquement le \(formattedDate)."
-        case false: "Actif jusqu'au \(formattedDate), sans reconduction."
-        case nil: "Actif jusqu'au \(formattedDate)."
+        case true: String(localized: "Se renouvelle automatiquement le \(formattedDate).", locale: locale)
+        case false: String(localized: "Actif jusqu'au \(formattedDate), sans reconduction.", locale: locale)
+        case nil: String(localized: "Actif jusqu'au \(formattedDate).", locale: locale)
         }
     }
 
     /// Même règle que dans la paywall : tant que l'URL n'est pas renseignée
     /// dans `LegalLinks`, un libellé inerte vaut mieux qu'un lien mort.
     @ViewBuilder
-    private func legalLink(_ title: String, url: URL?) -> some View {
+    private func legalLink(_ title: LocalizedStringKey, url: URL?) -> some View {
         if let url {
             Link(title, destination: url)
         } else {

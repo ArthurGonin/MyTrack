@@ -25,12 +25,12 @@ nonisolated struct TripReportRow: Sendable {
 }
 
 extension TripReportRow {
-    init(trip: Trip, unit: DistanceUnit) {
+    init(trip: Trip, unit: DistanceUnit, locale: Locale) {
         self.init(
-            date: trip.formattedStartDate,
+            date: trip.formattedStartDate(locale: locale),
             vehicleName: trip.vehicle?.name ?? "—",
-            distance: trip.formattedDistance(in: unit),
-            duration: trip.formattedDuration,
+            distance: trip.formattedDistance(in: unit, locale: locale),
+            duration: trip.formattedDuration(locale: locale),
             distanceMeters: trip.distanceMeters,
             durationSeconds: (trip.endDate ?? .now).timeIntervalSince(trip.startDate)
         )

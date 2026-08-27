@@ -15,6 +15,7 @@ final class ReportGenerationService {
     private let reportsDirectoryName = "Reports"
     private let userProfileService: UserProfileService
     private let unitSettingsService: UnitSettingsService
+    private let languageService: LanguageService
 
     private static let fileNameDateFormatter: DateFormatter = {
         let formatter = DateFormatter()
@@ -23,9 +24,14 @@ final class ReportGenerationService {
         return formatter
     }()
 
-    init(userProfileService: UserProfileService, unitSettingsService: UnitSettingsService) {
+    init(
+        userProfileService: UserProfileService,
+        unitSettingsService: UnitSettingsService,
+        languageService: LanguageService
+    ) {
         self.userProfileService = userProfileService
         self.unitSettingsService = unitSettingsService
+        self.languageService = languageService
     }
 
     /// Rendering a long report — hundreds of rows across several pages — takes
@@ -50,9 +56,12 @@ final class ReportGenerationService {
         // it keeps the unit in force when it was produced even if the user
         // switches afterwards.
         let distanceUnit = unitSettingsService.distanceUnit
+        // Même raison pour la langue que pour l'unité : le PDF est un document
+        // figé, il garde celle dans laquelle il a été écrit.
+        let locale = languageService.locale
         let rows = trips
             .sorted { $0.startDate < $1.startDate }
-            .map { TripReportRow(trip: $0, unit: distanceUnit) }
+            .map { TripReportRow(trip: $0, unit: distanceUnit, locale: locale) }
 
         let directory = try reportsDirectory()
         let userProfile = userProfileService.currentProfile(in: context)
@@ -66,6 +75,7 @@ final class ReportGenerationService {
                 periodEnd: periodEnd,
                 generatedAt: generatedAt,
                 distanceUnit: distanceUnit,
+                locale: locale,
                 vehicleNames: includedVehicleNames,
                 pendingTripCount: pendingTripCount
             )

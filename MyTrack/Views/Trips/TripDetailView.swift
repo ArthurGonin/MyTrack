@@ -11,19 +11,26 @@ struct TripDetailView: View {
 
     @Environment(\.modelContext) private var modelContext
     @Environment(AppServices.self) private var appServices
+    @Environment(\.locale) private var locale
     @State private var isPresentingVehiclePicker = false
+
+    private var sourceLabel: LocalizedStringKey {
+        trip.source == .automatic ? "Automatique" : "Manuel"
+    }
 
     var body: some View {
         List {
             Section("Trajet") {
-                LabeledContent("Début", value: trip.startDate.formatted(date: .abbreviated, time: .shortened))
+                LabeledContent("Début", value: TripFormatting.dateAndTime(trip.startDate, locale: locale))
                 if let endDate = trip.endDate {
-                    LabeledContent("Fin", value: endDate.formatted(date: .abbreviated, time: .shortened))
+                    LabeledContent("Fin", value: TripFormatting.dateAndTime(endDate, locale: locale))
                 }
-                LabeledContent("Durée", value: trip.formattedDuration)
+                LabeledContent("Durée", value: trip.formattedDuration(locale: locale))
                 LabeledContent(
                     "Distance",
-                    value: trip.formattedDistance(in: appServices.unitSettingsService.distanceUnit)
+                    value: trip.formattedDistance(
+                        in: appServices.unitSettingsService.distanceUnit, locale: locale
+                    )
                 )
             }
             Section("Détails") {
@@ -31,15 +38,25 @@ struct TripDetailView: View {
                     isPresentingVehiclePicker = true
                 } label: {
                     HStack {
-                        LabeledContent("Véhicule", value: trip.vehicle?.name ?? "Aucun véhicule")
+                        LabeledContent("Véhicule") {
+                            if let name = trip.vehicle?.name {
+                                Text(name)
+                            } else {
+                                Text("Aucun véhicule")
+                            }
+                        }
                         Image(systemName: "pencil")
                             .font(.caption)
                             .foregroundStyle(.secondary)
                     }
                 }
                 .buttonStyle(.plain)
-                LabeledContent("Source", value: trip.source == .automatic ? "Automatique" : "Manuel")
-                LabeledContent("Points GPS", value: "\(trip.routePoints.count)")
+                LabeledContent("Source") {
+                    Text(sourceLabel)
+                }
+                LabeledContent("Points GPS") {
+                    Text(trip.routePoints.count, format: .number)
+                }
             }
             Section("Itinéraire") {
                 TripRouteMapView(routePoints: trip.routePoints)

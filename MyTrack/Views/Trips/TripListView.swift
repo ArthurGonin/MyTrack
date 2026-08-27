@@ -59,7 +59,10 @@ struct TripListView: View {
                                     Label("Trajets supprimés", systemImage: "trash")
                                     Spacer()
                                     if deletedTripsCount > 0 {
-                                        Text("\(deletedTripsCount)")
+                                        // `format:` plutôt qu'une interpolation :
+                                        // le séparateur de milliers suit alors la
+                                        // langue de l'app.
+                                        Text(deletedTripsCount, format: .number)
                                             .foregroundStyle(.secondary)
                                     }
                                 }
@@ -82,21 +85,34 @@ struct TripRow: View {
     let trip: Trip
     let distanceUnit: DistanceUnit
 
+    @Environment(\.locale) private var locale
+
     var body: some View {
         HStack {
             VStack(alignment: .leading) {
                 Text(trip.startDate, style: .date)
-                Text(trip.vehicle?.name ?? "Aucun véhicule")
+                vehicleName
                     .font(.caption)
                     .foregroundStyle(.secondary)
             }
             Spacer()
             VStack(alignment: .trailing) {
-                Text(trip.formattedDistance(in: distanceUnit))
-                Text(trip.formattedDuration)
+                Text(trip.formattedDistance(in: distanceUnit, locale: locale))
+                Text(trip.formattedDuration(locale: locale))
                     .font(.caption)
                     .foregroundStyle(.secondary)
             }
+        }
+    }
+
+    /// Le nom d'un véhicule est une donnée saisie par l'utilisateur : il se
+    /// rend tel quel, alors que le texte de remplacement, lui, se traduit.
+    @ViewBuilder
+    private var vehicleName: some View {
+        if let name = trip.vehicle?.name {
+            Text(name)
+        } else {
+            Text("Aucun véhicule")
         }
     }
 }

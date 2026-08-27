@@ -100,11 +100,16 @@
 				};
 			};
 			buildConfigurationList = 2792C3AC303DC54700B0CD26 /* Build configuration list for PBXProject "MyTrack" */;
-			developmentRegion = en;
+			developmentRegion = fr;
 			hasScannedForEncodings = 0;
 			knownRegions = (
 				en,
 				Base,
+				fr,
+				de,
+				es,
+				it,
+				pt,
 			);
 			mainGroup = 2792C3A8303DC54700B0CD26;
 			minimizedProjectReferenceProxies = 1;

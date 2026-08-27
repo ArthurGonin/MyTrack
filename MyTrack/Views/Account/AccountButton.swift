@@ -37,7 +37,11 @@ struct AccountButton: View {
         .buttonStyle(.plain)
         .glassEffect(.regular.interactive(), in: .circle)
         // Without this VoiceOver just reads the initial letter.
-        .accessibilityLabel(hasWarning ? "Compte et réglages, abonnement inactif" : "Compte et réglages")
+        .accessibilityLabel(
+            hasWarning
+                ? Text("Compte et réglages, abonnement inactif")
+                : Text("Compte et réglages")
+        )
     }
 }
 

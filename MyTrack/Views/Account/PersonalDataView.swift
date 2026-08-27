@@ -15,6 +15,7 @@ struct PersonalDataView: View {
     @Environment(AppServices.self) private var appServices
     @Environment(\.modelContext) private var modelContext
     @Environment(\.dismiss) private var dismiss
+    @Environment(\.locale) private var locale
 
     @State private var profile: UserProfile?
     @State private var firstName = ""
@@ -51,7 +52,11 @@ struct PersonalDataView: View {
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
             ToolbarItem(placement: .confirmationAction) {
-                Button("Enregistrer") { save() }
+                // Clé explicite : « Enregistrer » veut dire deux choses
+                // différentes dans l'app — sauvegarder ici, démarrer un
+                // enregistrement dans l'onglet — et une clé par sens est le
+                // seul moyen de les traduire différemment.
+                Button(String(localized: "action.save", defaultValue: "Enregistrer", locale: locale)) { save() }
                     .disabled(!isModified)
             }
         }

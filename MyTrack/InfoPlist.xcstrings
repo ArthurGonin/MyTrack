@@ -1,0 +1,141 @@
+{
+  "sourceLanguage" : "fr",
+  "strings" : {
+    "CFBundleName" : {
+      "comment" : "Bundle name",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "MyTrack"
+          }
+        }
+      }
+    },
+    "NSLocationAlwaysAndWhenInUseUsageDescription" : {
+      "comment" : "Privacy - Location Always and When In Use Usage Description",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "MyTrack verwendet deinen Standort – auch im Hintergrund –, um deine Autofahrten automatisch zu erkennen und aufzuzeichnen."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "MyTrack uses your location, including in the background, to detect and record your car trips automatically."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "MyTrack usa tu ubicación, incluso en segundo plano, para detectar y registrar tus viajes en coche automáticamente."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "MyTrack utilise ta position, y compris en arrière-plan, pour détecter et enregistrer automatiquement tes trajets en voiture."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "MyTrack usa la tua posizione, anche in background, per rilevare e registrare automaticamente i tuoi viaggi in auto."
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "MyTrack usa a tua localização, incluindo em segundo plano, para detetar e registar automaticamente as tuas viagens de carro."
+          }
+        }
+      }
+    },
+    "NSLocationWhenInUseUsageDescription" : {
+      "comment" : "Privacy - Location When In Use Usage Description",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "MyTrack verwendet deinen Standort, um Strecke und Distanz deiner Fahrten aufzuzeichnen."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "MyTrack uses your location to record the route and distance of your trips."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "MyTrack usa tu ubicación para registrar el recorrido y la distancia de tus viajes."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "MyTrack utilise ta position pour enregistrer le tracé et la distance de tes trajets."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "MyTrack usa la tua posizione per registrare il percorso e la distanza dei tuoi viaggi."
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "MyTrack usa a tua localização para registar o percurso e a distância das tuas viagens."
+          }
+        }
+      }
+    },
+    "NSMotionUsageDescription" : {
+      "comment" : "Privacy - Motion Usage Description",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "MyTrack verwendet Bewegungsdaten, um Anfang und Ende deiner Autofahrten automatisch zu erkennen."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "MyTrack uses motion data to detect the start and end of your car trips automatically."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "MyTrack usa los datos de movimiento para detectar automáticamente el inicio y el final de tus viajes en coche."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "MyTrack utilise les données de mouvement pour détecter automatiquement le début et la fin de tes trajets en voiture."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "MyTrack usa i dati di movimento per rilevare automaticamente l'inizio e la fine dei tuoi viaggi in auto."
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "MyTrack usa os dados de movimento para detetar automaticamente o início e o fim das tuas viagens de carro."
+          }
+        }
+      }
+    }
+  },
+  "version" : "1.0"
+}

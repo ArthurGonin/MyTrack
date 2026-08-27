@@ -11,6 +11,7 @@ struct AddVehicleView: View {
 
     @Environment(\.modelContext) private var modelContext
     @Environment(\.dismiss) private var dismiss
+    @Environment(\.locale) private var locale
 
     @State private var name = ""
     @State private var licensePlate = ""
@@ -31,7 +32,9 @@ struct AddVehicleView: View {
                     Button("Annuler") { dismiss() }
                 }
                 ToolbarItem(placement: .confirmationAction) {
-                    Button("Enregistrer") {
+                    // Voir PersonalDataView : clé explicite, parce que le mot
+                    // « Enregistrer » couvre deux sens différents dans l'app.
+                    Button(String(localized: "action.save", defaultValue: "Enregistrer", locale: locale)) {
                         viewModel.addVehicle(name: name, licensePlate: licensePlate, in: modelContext)
                         dismiss()
                     }

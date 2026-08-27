@@ -30,7 +30,7 @@ private enum ComparisonRating {
 
 private struct ComparisonRow: Identifiable {
     let id = UUID()
-    let label: String
+    let label: LocalizedStringKey
     let competitorRating: ComparisonRating
 }
 
@@ -59,6 +59,7 @@ struct PaywallStepView: View {
     /// l'enregistrement est bloqué.
     let onDebugSkip: () -> Void
 
+    @Environment(\.locale) private var locale
     @State private var isPurchaseFailedAlertPresented = false
     @State private var isRestoreFailedAlertPresented = false
     @State private var hasPurchaseFailed = false
@@ -210,7 +211,7 @@ struct PaywallStepView: View {
     /// Grisé tant que l'URL n'est pas renseignée dans `LegalLinks` : un lien
     /// mort serait pire qu'un libellé inerte.
     @ViewBuilder
-    private func legalLink(_ title: String, url: URL?) -> some View {
+    private func legalLink(_ title: LocalizedStringKey, url: URL?) -> some View {
         if let url {
             Link(title, destination: url)
         } else {
@@ -273,32 +274,40 @@ struct PaywallStepView: View {
     /// blank price.
     private var annualTitle: String {
         guard let offer = annualProduct?.subscription?.introductoryOffer, offer.paymentMode == .freeTrial else {
-            return "7 jours gratuits"
+            return freeTrialDaysTitle(days: 7)
         }
         return freeTrialTitle(for: offer.period)
     }
 
+    /// Le prix vient de l'App Store, déjà mis en forme dans la devise et le
+    /// format du compte : seule la phrase autour se traduit.
     private var annualSubtitle: String {
-        guard let annualProduct else { return "puis 24,99 € / an" }
-        return "puis \(annualProduct.displayPrice) / an"
+        let price = annualProduct?.displayPrice ?? "24,99 €"
+        return String(localized: "puis \(price) / an", locale: locale)
     }
 
     private var monthlyTitle: String {
-        guard let monthlyProduct else { return "2,99 € / mois" }
-        return "\(monthlyProduct.displayPrice) / mois"
+        let price = monthlyProduct?.displayPrice ?? "2,99 €"
+        return String(localized: "\(price) / mois", locale: locale)
     }
 
     private func freeTrialTitle(for period: Product.SubscriptionPeriod) -> String {
         let count = period.value
         switch period.unit {
-        case .day: return "\(count) jour\(count > 1 ? "s" : "") gratuit\(count > 1 ? "s" : "")"
+        case .day: return freeTrialDaysTitle(days: count)
         // Spelled out in days so the real product reads the same as the
         // fallback copy above ("7 jours gratuits"), not "1 semaine gratuite".
-        case .week: return "\(count * 7) jours gratuits"
-        case .month: return "\(count) mois gratuit\(count > 1 ? "s" : "")"
-        case .year: return "\(count) an\(count > 1 ? "s" : "") gratuit\(count > 1 ? "s" : "")"
-        @unknown default: return "Essai gratuit"
+        case .week: return freeTrialDaysTitle(days: count * 7)
+        case .month: return String(localized: "\(count) mois gratuits", locale: locale)
+        case .year: return String(localized: "\(count) ans gratuits", locale: locale)
+        @unknown default: return String(localized: "Essai gratuit", locale: locale)
         }
+    }
+
+    /// Le singulier n'est plus un `if` collé au mot : chaque langue accorde à
+    /// sa façon, et c'est le catalogue de chaînes qui porte ses règles.
+    private func freeTrialDaysTitle(days: Int) -> String {
+        String(localized: "\(days) jours gratuits", locale: locale)
     }
 }
 

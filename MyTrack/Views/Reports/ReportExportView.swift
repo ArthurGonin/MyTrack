@@ -12,14 +12,22 @@ import OSLog
 import SwiftData
 
 struct ReportExportView: View {
-    private enum ExportMode: String, CaseIterable, Hashable {
-        case dateRange = "Plage de dates"
-        case manualSelection = "Sélection manuelle"
+    private enum ExportMode: CaseIterable, Hashable {
+        case dateRange
+        case manualSelection
+
+        var label: LocalizedStringKey {
+            switch self {
+            case .dateRange: "Plage de dates"
+            case .manualSelection: "Sélection manuelle"
+            }
+        }
     }
 
     @Environment(AppServices.self) private var appServices
     @Environment(\.modelContext) private var modelContext
     @Environment(\.dismiss) private var dismiss
+    @Environment(\.locale) private var locale
 
     @Query(sort: \Trip.startDate, order: .reverse) private var allTrips: [Trip]
     @Query(sort: \Vehicle.name) private var allVehicles: [Vehicle]
@@ -58,11 +66,16 @@ struct ReportExportView: View {
         return selectedVehicleIDs.contains(vehicle.persistentModelID)
     }
 
+    /// Deux phrases traduites séparément plutôt qu'une seule à trous : chacune
+    /// n'a alors qu'un nombre, donc un pluriel que le catalogue sait accorder
+    /// dans chaque langue.
     private var dateRangeFooter: String {
-        let count = tripsToExport.count
-        var text = "\(count) trajet\(count > 1 ? "s" : "") sur cette période."
+        var text = String(localized: "\(tripsToExport.count) trajets sur cette période.", locale: locale)
         if pendingTripCount > 0 {
-            text += " \(pendingTripCount) autre\(pendingTripCount > 1 ? "s" : "") en attente de confirmation, non inclus."
+            text += " " + String(
+                localized: "\(pendingTripCount) autres en attente de confirmation, non inclus.",
+                locale: locale
+            )
         }
         return text
     }
@@ -97,7 +110,7 @@ struct ReportExportView: View {
             Form {
                 Picker("Mode", selection: $mode) {
                     ForEach(ExportMode.allCases, id: \.self) { mode in
-                        Text(mode.rawValue).tag(mode)
+                        Text(mode.label).tag(mode)
                     }
                 }
                 .pickerStyle(.segmented)
@@ -105,12 +118,12 @@ struct ReportExportView: View {
 
                 if !allVehicles.isEmpty {
                     Section {
-                        vehicleSelectionRow(named: "Tous les véhicules", isSelected: selectedVehicleIDs.isEmpty) {
+                        vehicleSelectionRow(title: Text("Tous les véhicules"), isSelected: selectedVehicleIDs.isEmpty) {
                             selectedVehicleIDs.removeAll()
                         }
                         ForEach(allVehicles) { vehicle in
                             vehicleSelectionRow(
-                                named: vehicle.name,
+                                title: Text(vehicle.name),
                                 isSelected: selectedVehicleIDs.contains(vehicle.persistentModelID)
                             ) {
                                 toggleVehicle(vehicle)
@@ -183,12 +196,20 @@ struct ReportExportView: View {
                 VStack(alignment: .leading) {
                     Text(trip.startDate, style: .date)
                         .foregroundStyle(.primary)
-                    Text(trip.vehicle?.name ?? "Aucun véhicule")
+                    Group {
+                        if let name = trip.vehicle?.name {
+                            Text(name)
+                        } else {
+                            Text("Aucun véhicule")
+                        }
+                    }
                         .font(.caption)
                         .foregroundStyle(.secondary)
                 }
                 Spacer()
-                Text(trip.formattedDistance(in: appServices.unitSettingsService.distanceUnit))
+                Text(trip.formattedDistance(
+                    in: appServices.unitSettingsService.distanceUnit, locale: locale
+                ))
                     .foregroundStyle(.secondary)
                 Image(systemName: isSelected ? "checkmark.circle.fill" : "circle")
                     .foregroundStyle(isSelected ? Color.accentColor : Color.secondary)
@@ -197,10 +218,13 @@ struct ReportExportView: View {
         .buttonStyle(.plain)
     }
 
-    private func vehicleSelectionRow(named name: String, isSelected: Bool, action: @escaping () -> Void) -> some View {
+    /// Le titre arrive déjà sous forme de `Text` : un nom de véhicule est une
+    /// donnée saisie, qui se rend telle quelle, tandis que « Tous les
+    /// véhicules » est du texte d'interface, qui se traduit.
+    private func vehicleSelectionRow(title: Text, isSelected: Bool, action: @escaping () -> Void) -> some View {
         Button(action: action) {
             HStack {
-                Text(name)
+                title
                     .foregroundStyle(.primary)
                 Spacer()
                 Image(systemName: isSelected ? "checkmark.circle.fill" : "circle")

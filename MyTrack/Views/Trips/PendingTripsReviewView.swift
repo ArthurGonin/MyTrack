@@ -19,6 +19,7 @@ struct PendingTripsReviewView: View {
     // case, so the pending-only filter is applied in Swift. Reading them
     // through @Query rather than a snapshot keeps this screen correct when the
     // same trip is confirmed from the notification while it's open.
+    @Environment(\.locale) private var locale
     @Query(sort: \Trip.startDate, order: .forward) private var allTrips: [Trip]
 
     private var pendingTrips: [Trip] {
@@ -32,11 +33,13 @@ struct PendingTripsReviewView: View {
             Group {
                 if let trip = pendingTrips.first {
                     VStack(spacing: 16) {
-                        Text(trip.startDate.formatted(date: .abbreviated, time: .shortened))
+                        Text(TripFormatting.dateAndTime(trip.startDate, locale: locale))
                             .foregroundStyle(.secondary)
-                        Text(trip.formattedDistance(in: appServices.unitSettingsService.distanceUnit))
+                        Text(trip.formattedDistance(
+                            in: appServices.unitSettingsService.distanceUnit, locale: locale
+                        ))
                             .font(.largeTitle)
-                        Text(trip.formattedDuration)
+                        Text(trip.formattedDuration(locale: locale))
                             .foregroundStyle(.secondary)
 
                         HStack(spacing: 16) {

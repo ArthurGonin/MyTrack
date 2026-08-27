@@ -14,6 +14,7 @@ struct ReportProfileEditView: View {
     @Environment(AppServices.self) private var appServices
     @Environment(\.modelContext) private var modelContext
     @Environment(\.dismiss) private var dismiss
+    @Environment(\.locale) private var locale
 
     let profile: ReportProfile
 
@@ -38,7 +39,7 @@ struct ReportProfileEditView: View {
                     }
                 }
                 if profile.periodicity != .none, profile.periodicity != .custom, let nextDueDate = profile.nextDueDate {
-                    Text("Le prochain rapport sera envoyé le \(nextDueDate.formatted(date: .long, time: .omitted))")
+                    Text("Le prochain rapport sera envoyé le \(TripFormatting.longDate(nextDueDate, locale: locale))")
                         .font(.footnote)
                         .foregroundStyle(.secondary)
                 }
@@ -64,12 +65,12 @@ struct ReportProfileEditView: View {
                 Text("Génère automatiquement un rapport PDF des trajets de ce profil à la fréquence choisie.")
             }
             Section {
-                vehicleSelectionRow(named: "Tous les véhicules", isSelected: profile.vehicles.isEmpty) {
+                vehicleSelectionRow(title: Text("Tous les véhicules"), isSelected: profile.vehicles.isEmpty) {
                     updateVehicles([])
                 }
                 ForEach(allVehicles) { vehicle in
                     vehicleSelectionRow(
-                        named: vehicle.name,
+                        title: Text(vehicle.name),
                         isSelected: profile.vehicles.contains { $0.persistentModelID == vehicle.persistentModelID }
                     ) {
                         toggleVehicle(vehicle)
@@ -103,10 +104,12 @@ struct ReportProfileEditView: View {
         }
     }
 
-    private func vehicleSelectionRow(named name: String, isSelected: Bool, action: @escaping () -> Void) -> some View {
+    /// Voir ReportExportView : le titre est un `Text` parce qu'un nom de
+    /// véhicule ne se traduit pas, contrairement au libellé qui les couvre tous.
+    private func vehicleSelectionRow(title: Text, isSelected: Bool, action: @escaping () -> Void) -> some View {
         Button(action: action) {
             HStack {
-                Text(name)
+                title
                     .foregroundStyle(.primary)
                 Spacer()
                 Image(systemName: isSelected ? "checkmark.circle.fill" : "circle")
@@ -165,7 +168,7 @@ struct ReportProfileEditView: View {
         dismiss()
     }
 
-    private func label(for periodicity: ReportPeriodicity) -> String {
+    private func label(for periodicity: ReportPeriodicity) -> LocalizedStringKey {
         switch periodicity {
         case .none: return "Désactivé"
         case .monthly: return "Mensuel"

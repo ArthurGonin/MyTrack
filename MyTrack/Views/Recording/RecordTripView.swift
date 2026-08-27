@@ -11,6 +11,7 @@ import CoreLocation
 struct RecordTripView: View {
     @Environment(AppServices.self) private var appServices
     @Environment(\.modelContext) private var modelContext
+    @Environment(\.locale) private var locale
     @Query private var vehicles: [Vehicle]
     @State private var isPermissionDeniedAlertPresented = false
     @State private var isPresentingVehiclePicker = false
@@ -78,7 +79,16 @@ struct RecordTripView: View {
                     } label: {
                         VStack(spacing: 2) {
                             HStack(spacing: 4) {
-                                Text(selectedVehicle?.name ?? "Aucun véhicule")
+                                // `??` produirait un `String`, que SwiftUI rendrait
+                                // tel quel : le texte de remplacement resterait en
+                                // français. Le nom du véhicule, lui, est une donnée.
+                                Group {
+                                    if let name = selectedVehicle?.name {
+                                        Text(name)
+                                    } else {
+                                        Text("Aucun véhicule")
+                                    }
+                                }
                                     .font(.headline)
                                 Image(systemName: "chevron.down")
                                     .font(.caption2)
@@ -132,7 +142,7 @@ struct RecordTripView: View {
     private var subscriptionRequiredView: some View {
         ContentUnavailableView {
             Label {
-                Text(hasBillingIssue ? "Problème de paiement" : "Abonnement inactif")
+                Text(blockedTitle)
             } icon: {
                 // Rouge, et pas le gris par défaut d'un écran vide : ce n'est
                 // pas « il n'y a rien ici », c'est « ça ne tourne plus ».
@@ -142,16 +152,12 @@ struct RecordTripView: View {
                     .foregroundStyle(.red)
             }
         } description: {
-            Text(
-                hasBillingIssue
-                    ? "Ton abonnement n'a pas pu être renouvelé : tes trajets ne sont plus enregistrés. Tes trajets et rapports restent accessibles."
-                    : "L'enregistrement des trajets nécessite un abonnement actif. Tes trajets et rapports déjà enregistrés restent accessibles."
-            )
+            Text(blockedDescription)
         } actions: {
             // Un paiement qui échoue n'est pas une résiliation : proposer une
             // nouvelle formule à quelqu'un qui n'a rien annulé ne réglerait pas
             // son problème. Ce qu'il lui faut, c'est sa carte.
-            Button(hasBillingIssue ? "Mettre à jour le paiement" : "Se réabonner") {
+            Button(blockedActionTitle) {
                 if hasBillingIssue {
                     isManageSubscriptionsPresented = true
                 } else {
@@ -163,6 +169,23 @@ struct RecordTripView: View {
     }
 
     private var hasBillingIssue: Bool { appServices.purchaseService.hasBillingIssue }
+
+    // Typés `LocalizedStringKey` : un ternaire entre deux littéraux passé
+    // directement à `Text` peut se résoudre en `String` — donc sans traduction.
+    // Le type explicite lève le doute.
+    private var blockedTitle: LocalizedStringKey {
+        hasBillingIssue ? "Problème de paiement" : "Abonnement inactif"
+    }
+
+    private var blockedDescription: LocalizedStringKey {
+        hasBillingIssue
+            ? "Ton abonnement n'a pas pu être renouvelé : tes trajets ne sont plus enregistrés. Tes trajets et rapports restent accessibles."
+            : "L'enregistrement des trajets nécessite un abonnement actif. Tes trajets et rapports déjà enregistrés restent accessibles."
+    }
+
+    private var blockedActionTitle: LocalizedStringKey {
+        hasBillingIssue ? "Mettre à jour le paiement" : "Se réabonner"
+    }
 
     /// A first tap on a fresh install can only raise the location prompt and
     /// return — nothing is recorded yet. Remembering that lets the same call
@@ -188,6 +211,7 @@ struct RecordTripView: View {
         TripFormatting.distance(
             meters: meters,
             unit: appServices.unitSettingsService.distanceUnit,
+            locale: locale,
             fractionDigits: 2
         )
     }

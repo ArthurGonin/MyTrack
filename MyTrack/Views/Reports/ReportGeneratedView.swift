@@ -30,7 +30,7 @@ struct ReportGeneratedView: View {
                     .foregroundStyle(.green)
                 Text("Rapport généré")
                     .font(.title2.weight(.semibold))
-                Text("\(report.tripCount) trajet\(report.tripCount > 1 ? "s" : "")")
+                Text("\(report.tripCount) trajets")
                     .foregroundStyle(.secondary)
             }
             .padding()

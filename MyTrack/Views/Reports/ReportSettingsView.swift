@@ -14,6 +14,7 @@ import SwiftData
 struct ReportSettingsView: View {
     @Environment(AppServices.self) private var appServices
     @Environment(\.modelContext) private var modelContext
+    @Environment(\.locale) private var locale
 
     @Query(sort: \ReportProfile.createdAt) private var profiles: [ReportProfile]
     @State private var newlyCreatedProfile: ReportProfile?
@@ -64,18 +65,18 @@ struct ReportSettingsView: View {
 
     private func summary(for profile: ReportProfile) -> String {
         let vehiclesLabel = profile.vehicles.isEmpty
-            ? "Tous les véhicules"
-            : profile.vehicles.map(\.name).joined(separator: ", ")
+            ? String(localized: "Tous les véhicules", locale: locale)
+            : profile.vehicles.map(\.name).formatted(.list(type: .and).locale(locale))
         return "\(label(for: profile)) · \(vehiclesLabel)"
     }
 
     private func label(for profile: ReportProfile) -> String {
         switch profile.periodicity {
-        case .none: return "Désactivé"
-        case .monthly: return "Mensuel"
-        case .quarterly: return "Trimestriel"
-        case .yearly: return "Annuel"
-        case .custom: return "Tous les \(profile.customIntervalDays) jours"
+        case .none: return String(localized: "Désactivé", locale: locale)
+        case .monthly: return String(localized: "Mensuel", locale: locale)
+        case .quarterly: return String(localized: "Trimestriel", locale: locale)
+        case .yearly: return String(localized: "Annuel", locale: locale)
+        case .custom: return String(localized: "Tous les \(profile.customIntervalDays) jours", locale: locale)
         }
     }
 
@@ -88,8 +89,12 @@ struct ReportSettingsView: View {
     }
 
     private func addProfile() {
+        // Traduit à la création : c'est ensuite une donnée que l'utilisateur
+        // peut renommer, pas du texte d'interface — elle ne doit donc plus
+        // bouger si la langue change après coup.
         let profile = appServices.reportProfileService.createProfile(
-            name: "Nouveau rapport périodique", in: modelContext
+            name: String(localized: "Nouveau rapport périodique", locale: locale),
+            in: modelContext
         )
         newlyCreatedProfile = profile
     }

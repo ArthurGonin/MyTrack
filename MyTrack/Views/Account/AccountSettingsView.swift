@@ -159,7 +159,7 @@ struct AccountSettingsView: View {
     /// happening. Without it the setting could sit there reading "on" while
     /// monitoring refused to arm for want of a permission — and no trip would
     /// ever be detected.
-    private var autoDetectionFooter: String {
+    private var autoDetectionFooter: LocalizedStringKey {
         switch appServices.drivingDetector.status {
         case .off:
             return "Détecte automatiquement tes trajets en voiture."

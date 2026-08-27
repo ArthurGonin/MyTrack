@@ -21,6 +21,7 @@ final class NotificationService: NSObject, UNUserNotificationCenterDelegate {
     private let center = UNUserNotificationCenter.current()
     private let modelContext: ModelContext
     private let unitSettingsService: UnitSettingsService
+    private let languageService: LanguageService
 
     private static let confirmCategoryIdentifier = "TRIP_CONFIRMATION"
     private static let confirmActionIdentifier = "TRIP_CONFIRM"
@@ -44,13 +45,23 @@ final class NotificationService: NSObject, UNUserNotificationCenterDelegate {
     /// could sit unconfirmed with nothing left pointing at it.
     var shouldOpenPendingTripsReview = false
 
-    init(modelContext: ModelContext, unitSettingsService: UnitSettingsService) {
+    init(
+        modelContext: ModelContext,
+        unitSettingsService: UnitSettingsService,
+        languageService: LanguageService
+    ) {
         self.modelContext = modelContext
         self.unitSettingsService = unitSettingsService
+        self.languageService = languageService
         super.init()
         center.delegate = self
         registerCategory()
     }
+
+    /// La langue de l'app, relue à chaque envoi : une notification écrite au
+    /// lancement dans une langue et affichée après un changement de langue
+    /// serait la seule partie de l'app restée en arrière.
+    private var locale: Locale { languageService.locale }
 
     func requestAuthorization() {
         center.requestAuthorization(options: [.alert, .sound]) { granted, error in
@@ -63,10 +74,16 @@ final class NotificationService: NSObject, UNUserNotificationCenterDelegate {
     }
 
     func scheduleTripConfirmationNotification(for trip: Trip) {
+        // Les titres des boutons Oui/Non sont figés dans la catégorie au moment
+        // où on l'enregistre : la ré-enregistrer ici est ce qui les garde dans
+        // la langue courante après un changement de langue.
+        registerCategory()
+
         let content = UNMutableNotificationContent()
-        content.title = "Trajet terminé"
-        let distance = trip.formattedDistance(in: unitSettingsService.distanceUnit)
-        content.body = "\(distance) en \(trip.formattedDuration). Enregistrer ce trajet ?"
+        content.title = String(localized: "Trajet terminé", locale: locale)
+        let distance = trip.formattedDistance(in: unitSettingsService.distanceUnit, locale: locale)
+        let duration = trip.formattedDuration(locale: locale)
+        content.body = String(localized: "\(distance) en \(duration). Enregistrer ce trajet ?", locale: locale)
         content.sound = .default
         content.categoryIdentifier = Self.confirmCategoryIdentifier
         content.userInfo = [Self.tripIDKey: trip.id.uuidString]
@@ -89,8 +106,8 @@ final class NotificationService: NSObject, UNUserNotificationCenterDelegate {
         center.removePendingNotificationRequests(withIdentifiers: [identifier])
 
         let content = UNMutableNotificationContent()
-        content.title = "Votre rapport est prêt"
-        content.body = "Le rapport « \(profileName) » est prêt dans MyTrack."
+        content.title = String(localized: "Votre rapport est prêt", locale: locale)
+        content.body = String(localized: "Le rapport « \(profileName) » est prêt dans MyTrack.", locale: locale)
         content.sound = .default
         content.userInfo = [Self.reportReadyKey: true]
 
@@ -111,11 +128,17 @@ final class NotificationService: NSObject, UNUserNotificationCenterDelegate {
     func notifySubscriptionLapsed(hasBillingIssue: Bool) {
         let content = UNMutableNotificationContent()
         if hasBillingIssue {
-            content.title = "Problème de paiement"
-            content.body = "Ton abonnement n'a pas pu être renouvelé : tes trajets ne sont plus enregistrés. Mets à jour ton moyen de paiement."
+            content.title = String(localized: "Problème de paiement", locale: locale)
+            content.body = String(
+                localized: "Ton abonnement n'a pas pu être renouvelé : tes trajets ne sont plus enregistrés. Mets à jour ton moyen de paiement.",
+                locale: locale
+            )
         } else {
-            content.title = "Abonnement expiré"
-            content.body = "Tes trajets ne sont plus enregistrés. Tes trajets et rapports déjà enregistrés restent accessibles."
+            content.title = String(localized: "Abonnement expiré", locale: locale)
+            content.body = String(
+                localized: "Tes trajets ne sont plus enregistrés. Tes trajets et rapports déjà enregistrés restent accessibles.",
+                locale: locale
+            )
         }
         content.sound = .default
 
@@ -160,12 +183,12 @@ final class NotificationService: NSObject, UNUserNotificationCenterDelegate {
     private func registerCategory() {
         let confirmAction = UNNotificationAction(
             identifier: Self.confirmActionIdentifier,
-            title: "Oui, enregistrer",
+            title: String(localized: "Oui, enregistrer", locale: locale),
             options: []
         )
         let discardAction = UNNotificationAction(
             identifier: Self.discardActionIdentifier,
-            title: "Non",
+            title: String(localized: "Non", locale: locale),
             options: [.destructive]
         )
         let category = UNNotificationCategory(

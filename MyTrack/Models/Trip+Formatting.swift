@@ -6,19 +6,15 @@
 import Foundation
 
 extension Trip {
-    func formattedDistance(in unit: DistanceUnit) -> String {
-        TripFormatting.distance(meters: distanceMeters, unit: unit)
+    func formattedDistance(in unit: DistanceUnit, locale: Locale) -> String {
+        TripFormatting.distance(meters: distanceMeters, unit: unit, locale: locale)
     }
 
-    var formattedDuration: String {
-        TripFormatting.duration((endDate ?? Date()).timeIntervalSince(startDate))
+    func formattedDuration(locale: Locale) -> String {
+        TripFormatting.duration((endDate ?? Date()).timeIntervalSince(startDate), locale: locale)
     }
 
-    var formattedStartDate: String {
-        startDate.formatted(date: .abbreviated, time: .shortened)
-    }
-
-    var formattedSource: String {
-        source == .automatic ? "Automatique" : "Manuel"
+    func formattedStartDate(locale: Locale) -> String {
+        TripFormatting.dateAndTime(startDate, locale: locale)
     }
 }

@@ -82,6 +82,11 @@ struct MyTrackApp: App {
                 }
             }
             .environment(appServices)
+            // Toute la localisation de l'app passe par là : SwiftUI résout ses
+            // chaînes et ses formats de date avec la locale de l'environnement,
+            // donc changer de langue dans l'app se voit tout de suite, sans
+            // redémarrage et sans toucher aux réglages du système.
+            .environment(\.locale, appServices.languageService.locale)
         }
         .modelContainer(modelContainer)
     }
