@@ -50,10 +50,22 @@ final class LocationService: NSObject, CLLocationManagerDelegate {
             return false
         }
 
-        // Only request background continuation when we actually have "Always"
-        // authorization — setting this true without it throws at runtime, and
-        // it would otherwise reject perfectly valid When-In-Use manual trips.
-        manager.allowsBackgroundLocationUpdates = authorizationStatus == .authorizedAlways
+        // Vrai dans les deux niveaux d'autorisation, et pas seulement pour
+        // « Toujours ».
+        //
+        // Ce qui fait lever une exception ici, c'est l'absence du mode d'arrière-
+        // plan `location` dans l'Info.plist, pas le niveau d'autorisation — et
+        // ce mode est déclaré. « Lorsque l'app est active » autorise bien la
+        // poursuite en arrière-plan dès lors qu'on la demande : iOS l'accorde et
+        // montre son indicateur bleu pendant toute sa durée.
+        //
+        // Sans ça, un trajet lancé à la main avec « Lorsque l'app est active » —
+        // le niveau que demande précisément le bouton Démarrer — cessait de
+        // recevoir le moindre point dès que l'écran se verrouillait, ce que
+        // personne ne manque de faire en conduisant. Le chronomètre continuait
+        // de tourner, lui, puisqu'il compte l'heure murale : au retour, une
+        // demi-heure de trajet affichait deux cents mètres.
+        manager.allowsBackgroundLocationUpdates = true
         manager.desiredAccuracy = kCLLocationAccuracyBestForNavigation
         manager.activityType = .automotiveNavigation
         manager.distanceFilter = 10
