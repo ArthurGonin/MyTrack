@@ -22,6 +22,13 @@ nonisolated enum TripReportPDFRenderer {
     /// without the rows they sum.
     private static let totalsHeight: CGFloat = rowHeight + 12
     private static let pendingNoticeHeight: CGFloat = 30
+    /// The strip at the foot of every page holding "1/3". Reserved whether or
+    /// not the number is drawn yet — see `render` — so that both layout passes
+    /// break pages at the same rows.
+    private static let footerHeight: CGFloat = 24
+
+    /// The lowest y content may occupy before it has to move to a new page.
+    private static var contentBottom: CGFloat { pageHeight - margin - footerHeight }
 
     private struct Column {
         let title: String
@@ -65,51 +72,135 @@ nonisolated enum TripReportPDFRenderer {
         vehicleNames: [String] = [],
         pendingTripCount: Int = 0
     ) -> Data {
-        let bounds = CGRect(x: 0, y: 0, width: pageWidth, height: pageHeight)
-        let renderer = UIGraphicsPDFRenderer(bounds: bounds, format: UIGraphicsPDFRendererFormat())
-        // Looked up once, outside the drawing closure: it's the same image on
-        // every page, and the lookup reaches into the bundle.
-        let icon = appIcon()
+        let document = Document(
+            rows: rows,
+            periodStart: periodStart,
+            periodEnd: periodEnd,
+            generatedAt: generatedAt,
+            distanceUnit: distanceUnit,
+            vehicleNames: vehicleNames,
+            pendingTripCount: pendingTripCount,
+            // Looked up once, outside the drawing passes: it's the same image
+            // on every page, and the lookup reaches into the bundle.
+            icon: appIcon()
+        )
 
-        return renderer.pdfData { context in
+        // "1/3" can't be written before the last page is known, and a PDF page
+        // can't be revisited once the next one has begun. So the layout runs
+        // twice: a first pass whose output is thrown away purely to count the
+        // pages, then the real one with the count in hand. Running the same
+        // code both times — rather than predicting the page count from the row
+        // count — is what guarantees the two agree; a header line that appears
+        // only for some reports would otherwise be enough to skew the maths.
+        //
+        // A fresh renderer per pass: a UIGraphicsPDFRenderer yields its
+        // document once, and answers a second `pdfData` with empty Data.
+        var pageCount = 0
+        _ = makeRenderer().pdfData { context in
+            pageCount = draw(document, in: context, pageCount: nil)
+        }
+
+        return makeRenderer().pdfData { context in
+            _ = draw(document, in: context, pageCount: pageCount)
+        }
+    }
+
+    private static func makeRenderer() -> UIGraphicsPDFRenderer {
+        UIGraphicsPDFRenderer(
+            bounds: CGRect(x: 0, y: 0, width: pageWidth, height: pageHeight),
+            format: UIGraphicsPDFRendererFormat()
+        )
+    }
+
+    /// Everything the layout reads, gathered so the two passes are handed
+    /// identical input by construction.
+    private struct Document {
+        let rows: [TripReportRow]
+        let periodStart: Date
+        let periodEnd: Date
+        let generatedAt: Date
+        let distanceUnit: DistanceUnit
+        let vehicleNames: [String]
+        let pendingTripCount: Int
+        let icon: UIImage?
+    }
+
+    /// Lays the whole report out and returns how many pages it took.
+    /// `pageCount` is nil on the counting pass, when the footer's total isn't
+    /// known yet: the strip is still reserved, only left blank.
+    private static func draw(
+        _ document: Document, in context: UIGraphicsPDFRendererContext, pageCount: Int?
+    ) -> Int {
+        var pageNumber = 0
+        var y: CGFloat = margin
+
+        func beginPage() {
             context.beginPage()
-            var y = drawBrandBanner(at: margin, distanceUnit: distanceUnit, icon: icon)
-            y = drawDocumentHeader(
-                at: y, periodStart: periodStart, periodEnd: periodEnd,
-                generatedAt: generatedAt, vehicleNames: vehicleNames
-            )
-            y = drawTableHeader(at: y)
-
-            // Continuing the table on a fresh page repeats the column titles,
-            // so a page read on its own still says what each column holds.
-            func continueOnNewPageIfNeeded(for height: CGFloat) {
-                guard y + height > pageHeight - margin else { return }
-                context.beginPage()
-                y = drawTableHeader(at: margin)
-            }
-
-            if rows.isEmpty {
-                y = drawEmptyState(at: y)
-            } else {
-                for row in rows {
-                    continueOnNewPageIfNeeded(for: rowHeight)
-                    draw(row, at: y)
-                    y += rowHeight
-                }
-                continueOnNewPageIfNeeded(for: totalsHeight)
-                y = drawTotals(at: y, rows: rows, distanceUnit: distanceUnit)
-            }
-
-            if pendingTripCount > 0 {
-                // A standalone note rather than table content: if it overflows
-                // it starts a bare page, without repeating the column titles.
-                if y + pendingNoticeHeight > pageHeight - margin {
-                    context.beginPage()
-                    y = margin
-                }
-                drawPendingNotice(at: y, count: pendingTripCount, hasTotals: !rows.isEmpty)
+            pageNumber += 1
+            if let pageCount {
+                drawFooter(page: pageNumber, of: pageCount)
             }
         }
+
+        beginPage()
+        y = drawBrandBanner(at: y, distanceUnit: document.distanceUnit, icon: document.icon)
+        y = drawDocumentHeader(
+            at: y, periodStart: document.periodStart, periodEnd: document.periodEnd,
+            generatedAt: document.generatedAt, vehicleNames: document.vehicleNames
+        )
+        y = drawTableHeader(at: y)
+
+        // Continuing the table on a fresh page repeats the column titles, so a
+        // page read on its own still says what each column holds.
+        func continueOnNewPageIfNeeded(for height: CGFloat) {
+            guard y + height > contentBottom else { return }
+            beginPage()
+            y = drawTableHeader(at: margin)
+        }
+
+        // The totals and the note qualifying them close the report as one
+        // block: the note exists to explain that figure, and a page carrying
+        // nothing but the sentence reads like a printing accident.
+        let noticeHeight = document.pendingTripCount > 0 ? pendingNoticeHeight : 0
+
+        if document.rows.isEmpty {
+            y = drawEmptyState(at: y)
+        } else {
+            for row in document.rows {
+                continueOnNewPageIfNeeded(for: rowHeight)
+                draw(row, at: y)
+                y += rowHeight
+            }
+            continueOnNewPageIfNeeded(for: totalsHeight + noticeHeight)
+            y = drawTotals(at: y, rows: document.rows, distanceUnit: document.distanceUnit)
+        }
+
+        if document.pendingTripCount > 0 {
+            drawPendingNotice(
+                at: y, count: document.pendingTripCount, hasTotals: !document.rows.isEmpty
+            )
+        }
+
+        return pageNumber
+    }
+
+    /// "1/3", centred at the foot of the page — and "1/1" on a single-page
+    /// report, so a page always says where it sits and a reader can tell a
+    /// complete report from one that lost its second sheet.
+    private static func drawFooter(page: Int, of pageCount: Int) {
+        let paragraph = NSMutableParagraphStyle()
+        paragraph.alignment = .center
+        "\(page)/\(pageCount)".draw(
+            in: CGRect(
+                x: margin, y: pageHeight - margin - footerHeight + 6,
+                width: pageWidth - 2 * margin, height: footerHeight
+            ),
+            withAttributes: [
+                .font: UIFont.systemFont(ofSize: 9),
+                .foregroundColor: UIColor.gray,
+                .paragraphStyle: paragraph,
+            ]
+        )
     }
 
     // MARK: - Branding
