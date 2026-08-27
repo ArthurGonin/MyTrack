@@ -64,6 +64,7 @@ struct TripDetailView: View {
                     .listRowInsets(EdgeInsets())
             }
         }
+        .appBackground()
         .localizedNavigationTitle("Détail du trajet")
         .sheet(isPresented: $isPresentingVehiclePicker) {
             VehiclePickerView(selectedVehicle: trip.vehicle) { vehicle in

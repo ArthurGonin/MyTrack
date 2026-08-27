@@ -48,6 +48,7 @@ struct ReportSettingsView: View {
                 Text("Génère automatiquement un rapport PDF par profil, à sa fréquence propre. Les rapports générés apparaissent dans l'onglet Rapports.")
             }
         }
+        .appBackground()
         .localizedNavigationTitle("Rapports périodiques")
         .navigationBarTitleDisplayMode(.inline)
         .navigationDestination(item: $newlyCreatedProfile) { profile in

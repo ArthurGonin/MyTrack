@@ -49,6 +49,7 @@ struct PersonalDataView: View {
                     .textContentType(.telephoneNumber)
             }
         }
+        .appBackground()
         .localizedNavigationTitle("Données personnelles")
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {

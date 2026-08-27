@@ -27,6 +27,7 @@ struct AddVehicleView: View {
                 TextField("Nom du véhicule", text: $name)
                 TextField("Immatriculation (optionnel)", text: $licensePlate)
             }
+            .appBackground()
             .localizedNavigationTitle("Nouveau véhicule")
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {

@@ -34,6 +34,7 @@ struct ReportGeneratedView: View {
                     .foregroundStyle(.secondary)
             }
             .padding()
+            .appBackground()
             .toolbar {
                 ToolbarItem(placement: .confirmationAction) {
                     Button("Terminé") { onDone() }

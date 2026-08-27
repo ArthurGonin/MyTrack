@@ -156,6 +156,7 @@ struct ReportExportView: View {
                     }
                 }
             }
+            .appBackground()
             .localizedNavigationTitle("Nouveau rapport")
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {

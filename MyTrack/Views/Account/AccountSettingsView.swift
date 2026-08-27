@@ -137,6 +137,7 @@ struct AccountSettingsView: View {
                     Text("Supprime définitivement tous tes trajets, véhicules et réglages. Cette action est irréversible.")
                 }
             }
+            .appBackground()
             .localizedNavigationTitle("Réglages")
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {

@@ -66,6 +66,7 @@ struct VehiclePickerView: View {
                     }
                 }
             }
+            .appBackground()
             .localizedNavigationTitle("Véhicules")
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {

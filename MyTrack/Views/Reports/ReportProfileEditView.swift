@@ -88,6 +88,7 @@ struct ReportProfileEditView: View {
                 }
             }
         }
+        .appBackground()
         // Le nom du profil est une donnée, pas du texte d'interface : seul le
         // titre de remplacement se traduit. Résolu ici plutôt que par
         // `navigationTitle("…")`, qui ne se relit pas au changement de langue.
