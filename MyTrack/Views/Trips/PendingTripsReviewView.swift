@@ -60,7 +60,7 @@ struct PendingTripsReviewView: View {
                         .foregroundStyle(.secondary)
                 }
             }
-            .navigationTitle("Trajets en attente")
+            .localizedNavigationTitle("Trajets en attente")
         }
         .onChange(of: pendingTrips.isEmpty) { _, isEmpty in
             if isEmpty {

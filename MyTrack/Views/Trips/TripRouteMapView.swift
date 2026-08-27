@@ -9,6 +9,8 @@ import MapKit
 struct TripRouteMapView: View {
     let routePoints: [RoutePoint]
 
+    @Environment(\.locale) private var locale
+    @Environment(\.localizationBundle) private var localizationBundle
     @State private var cameraPosition: MapCameraPosition
 
     init(routePoints: [RoutePoint]) {
@@ -35,12 +37,23 @@ struct TripRouteMapView: View {
                             .stroke(.blue, style: StrokeStyle(lineWidth: 4, lineCap: .round, lineJoin: .round))
                     }
                     if let start = coordinates.first {
-                        Marker("Départ", systemImage: "flag.circle.fill", coordinate: start)
-                            .tint(.green)
+                        // Titres résolus ici plutôt que laissés en clé : ce que
+                        // MapKit affiche est figé au premier rendu, comme le
+                        // titre d'une barre de navigation.
+                        Marker(
+                            String(localized: "Départ", bundle: localizationBundle, locale: locale),
+                            systemImage: "flag.circle.fill",
+                            coordinate: start
+                        )
+                        .tint(.green)
                     }
                     if coordinates.count >= 2, let end = coordinates.last {
-                        Marker("Arrivée", systemImage: "flag.checkered.circle.fill", coordinate: end)
-                            .tint(.red)
+                        Marker(
+                            String(localized: "Arrivée", bundle: localizationBundle, locale: locale),
+                            systemImage: "flag.checkered.circle.fill",
+                            coordinate: end
+                        )
+                        .tint(.red)
                     }
                 }
             }

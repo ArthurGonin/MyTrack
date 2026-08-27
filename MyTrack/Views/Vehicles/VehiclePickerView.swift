@@ -66,7 +66,7 @@ struct VehiclePickerView: View {
                     }
                 }
             }
-            .navigationTitle("Véhicules")
+            .localizedNavigationTitle("Véhicules")
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
                     Button("Fermer") { dismiss() }

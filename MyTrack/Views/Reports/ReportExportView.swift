@@ -156,7 +156,7 @@ struct ReportExportView: View {
                     }
                 }
             }
-            .navigationTitle("Nouveau rapport")
+            .localizedNavigationTitle("Nouveau rapport")
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
                     Button("Annuler") { dismiss() }

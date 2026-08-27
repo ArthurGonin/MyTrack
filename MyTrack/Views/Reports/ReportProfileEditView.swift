@@ -15,6 +15,7 @@ struct ReportProfileEditView: View {
     @Environment(\.modelContext) private var modelContext
     @Environment(\.dismiss) private var dismiss
     @Environment(\.locale) private var locale
+    @Environment(\.localizationBundle) private var localizationBundle
 
     let profile: ReportProfile
 
@@ -87,7 +88,14 @@ struct ReportProfileEditView: View {
                 }
             }
         }
-        .navigationTitle(profile.name.isEmpty ? "Profil" : profile.name)
+        // Le nom du profil est une donnée, pas du texte d'interface : seul le
+        // titre de remplacement se traduit. Résolu ici plutôt que par
+        // `navigationTitle("…")`, qui ne se relit pas au changement de langue.
+        .navigationTitle(
+            profile.name.isEmpty
+                ? String(localized: "Profil", bundle: localizationBundle, locale: locale)
+                : profile.name
+        )
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
             ToolbarItem(placement: .confirmationAction) {

@@ -59,7 +59,7 @@ struct DeletedTripsView: View {
             }
         }
         .appBackground()
-        .navigationTitle("Trajets supprimés")
+        .localizedNavigationTitle("Trajets supprimés")
         .navigationBarTitleDisplayMode(.inline)
     }
 }

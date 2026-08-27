@@ -47,7 +47,7 @@ struct ReportsView: View {
             }
             .appBackground()
             .quickLookPreview($previewURL)
-            .navigationTitle("Rapports")
+            .localizedNavigationTitle("Rapports")
             .toolbar {
                 ToolbarItem(placement: .primaryAction) {
                     Button {

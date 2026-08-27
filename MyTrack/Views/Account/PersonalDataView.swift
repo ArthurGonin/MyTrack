@@ -49,7 +49,7 @@ struct PersonalDataView: View {
                     .textContentType(.telephoneNumber)
             }
         }
-        .navigationTitle("Données personnelles")
+        .localizedNavigationTitle("Données personnelles")
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
             ToolbarItem(placement: .confirmationAction) {
