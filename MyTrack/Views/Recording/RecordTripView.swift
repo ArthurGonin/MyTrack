@@ -5,6 +5,7 @@
 
 import SwiftUI
 import SwiftData
+import StoreKit
 import CoreLocation
 
 struct RecordTripView: View {
@@ -16,6 +17,8 @@ struct RecordTripView: View {
     /// Set when a tap on Démarrer could only raise the location prompt, so the
     /// answer — whenever it comes — resumes what the user actually asked for.
     @State private var isAwaitingLocationPermission = false
+    @State private var isSubscriptionStorePresented = false
+    @State private var isManageSubscriptionsPresented = false
 
     private var selectedVehicle: Vehicle? {
         vehicles.first { $0.isSelected }
@@ -28,13 +31,20 @@ struct RecordTripView: View {
             vehicleService: appServices.vehicleService,
             drivingDetector: appServices.drivingDetector,
             notificationService: appServices.notificationService,
-            motionActivityService: appServices.motionActivityService
+            motionActivityService: appServices.motionActivityService,
+            purchaseService: appServices.purchaseService
         )
     }
+
+    private var canRecordTrips: Bool { appServices.purchaseService.canRecordTrips }
 
     var body: some View {
         NavigationStack {
             VStack(spacing: 24) {
+                // L'ordre compte : un trajet déjà en cours garde son bouton
+                // Arrêter, même sans abonnement. Celui-ci peut tomber en pleine
+                // route, et il n'est pas question de laisser l'utilisateur sans
+                // moyen de terminer l'enregistrement qu'il a lancé.
                 if viewModel.isRecording {
                     VStack {
                         Text(formattedDistance(viewModel.currentDistanceMeters))
@@ -48,17 +58,16 @@ struct RecordTripView: View {
 
                     LiveTripMapView()
                         .frame(maxWidth: .infinity, maxHeight: .infinity)
-                }
 
-                Button(viewModel.isRecording ? "Arrêter" : "Démarrer") {
-                    if viewModel.isRecording {
-                        viewModel.stopManualRecording(in: modelContext)
-                    } else {
-                        startRecording()
-                    }
+                    Button("Arrêter") { viewModel.stopManualRecording(in: modelContext) }
+                        .buttonStyle(.borderedProminent)
+                        .tint(.red)
+                } else if canRecordTrips {
+                    Button("Démarrer") { startRecording() }
+                        .buttonStyle(.borderedProminent)
+                } else {
+                    subscriptionRequiredView
                 }
-                .buttonStyle(.borderedProminent)
-                .tint(viewModel.isRecording ? .red : .accentColor)
             }
             .padding()
             .appBackground()
@@ -109,8 +118,51 @@ struct RecordTripView: View {
                     viewModel.selectVehicle(vehicle, in: modelContext)
                 }
             }
+            .sheet(isPresented: $isSubscriptionStorePresented) {
+                SubscriptionStoreSheet(isPresented: $isSubscriptionStorePresented)
+            }
+            .manageSubscriptionsSheet(isPresented: $isManageSubscriptionsPresented)
         }
     }
+
+    /// Prend toute la place du bouton Démarrer plutôt que de s'ajouter à côté
+    /// de lui : le bouton ne ferait plus rien de toute façon, et c'est cet
+    /// écran-là qu'on ouvre en pensant que ses trajets sont enregistrés. C'est
+    /// donc ici que le dire compte le plus.
+    private var subscriptionRequiredView: some View {
+        ContentUnavailableView {
+            Label {
+                Text(hasBillingIssue ? "Problème de paiement" : "Abonnement inactif")
+            } icon: {
+                // Rouge, et pas le gris par défaut d'un écran vide : ce n'est
+                // pas « il n'y a rien ici », c'est « ça ne tourne plus ».
+                Image(systemName: hasBillingIssue
+                    ? "creditcard.trianglebadge.exclamationmark"
+                    : "exclamationmark.triangle.fill")
+                    .foregroundStyle(.red)
+            }
+        } description: {
+            Text(
+                hasBillingIssue
+                    ? "Ton abonnement n'a pas pu être renouvelé : tes trajets ne sont plus enregistrés. Tes trajets et rapports restent accessibles."
+                    : "L'enregistrement des trajets nécessite un abonnement actif. Tes trajets et rapports déjà enregistrés restent accessibles."
+            )
+        } actions: {
+            // Un paiement qui échoue n'est pas une résiliation : proposer une
+            // nouvelle formule à quelqu'un qui n'a rien annulé ne réglerait pas
+            // son problème. Ce qu'il lui faut, c'est sa carte.
+            Button(hasBillingIssue ? "Mettre à jour le paiement" : "Se réabonner") {
+                if hasBillingIssue {
+                    isManageSubscriptionsPresented = true
+                } else {
+                    isSubscriptionStorePresented = true
+                }
+            }
+            .buttonStyle(.borderedProminent)
+        }
+    }
+
+    private var hasBillingIssue: Bool { appServices.purchaseService.hasBillingIssue }
 
     /// A first tap on a fresh install can only raise the location prompt and
     /// return — nothing is recorded yet. Remembering that lets the same call
@@ -125,6 +177,10 @@ struct RecordTripView: View {
         case .permissionDenied:
             isAwaitingLocationPermission = false
             isPermissionDeniedAlertPresented = true
+        case .subscriptionRequired:
+            // L'écran a déjà remplacé le bouton par l'avertissement : il n'y a
+            // rien de plus à dire, et surtout pas une alerte par-dessus.
+            isAwaitingLocationPermission = false
         }
     }
 

@@ -44,8 +44,25 @@ final class AppServices {
             vehicleService: vehicleService,
             notificationService: notificationService,
             locationService: locationService,
-            modelContext: modelContext
+            modelContext: modelContext,
+            hasRecordingAccess: purchaseService.canRecordTrips
         )
+
+        // L'abonnement paie l'enregistrement de nouveaux trajets. Quand il
+        // tombe, la détection doit s'arrêter — sinon elle continuerait de
+        // consommer de la batterie en arrière-plan pour des trajets que
+        // personne n'enregistre — et l'utilisateur doit l'apprendre tout de
+        // suite, y compris app fermée : c'est précisément là que le silence
+        // lui coûterait un trajet.
+        purchaseService.onAccessChange = { [weak self] canRecordTrips, didJustLapse in
+            guard let self else { return }
+            drivingDetector.setRecordingAccess(canRecordTrips)
+            guard didJustLapse else { return }
+            notificationService.notifySubscriptionLapsed(hasBillingIssue: purchaseService.hasBillingIssue)
+            // Un « ton rapport est prêt » qui arriverait maintenant serait un
+            // mensonge : plus aucun rapport périodique n'est généré.
+            notificationService.cancelReportReadyNotifications()
+        }
 
         tripRecorder.cleanUpOrphanedTrips()
     }

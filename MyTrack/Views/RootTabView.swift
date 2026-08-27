@@ -128,10 +128,23 @@ struct RootTabView: View {
         isGeneratingPeriodicReports = true
         defer { isGeneratingPeriodicReports = false }
 
+        // Générer un rapport fait partie de ce que l'abonnement paie. Sans
+        // abonnement, les périodes échues sont passées plutôt que mises en
+        // attente : reprendre son abonnement six mois plus tard ne doit pas
+        // déverser six PDF portant sur des mois où rien n'a été enregistré.
+        let canGenerate = appServices.purchaseService.canRecordTrips
+
         for profile in appServices.reportProfileService.allProfiles(in: modelContext) {
             var generatedCount = 0
             while generatedCount < Self.maxCatchUpReportsPerProfile,
                   let period = appServices.reportProfileService.periodDueForGeneration(profile: profile, now: .now) {
+                guard canGenerate else {
+                    appServices.reportProfileService.skipPeriod(
+                        profile: profile, through: period.periodEnd, in: modelContext
+                    )
+                    generatedCount += 1
+                    continue
+                }
                 guard await generateReport(for: profile, over: period) else { break }
                 generatedCount += 1
             }

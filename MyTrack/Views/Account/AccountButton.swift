@@ -10,6 +10,9 @@ import SwiftUI
 
 struct AccountButton: View {
     let initial: String
+    /// Pastille rouge : rappel permanent, visible depuis tous les onglets, que
+    /// quelque chose ne tourne plus — aujourd'hui, l'abonnement.
+    var hasWarning: Bool = false
     let action: () -> Void
 
     var body: some View {
@@ -23,15 +26,25 @@ struct AccountButton: View {
                 }
                 .frame(width: 28, height: 28)
                 .padding(6)
+                .overlay(alignment: .topTrailing) {
+                    if hasWarning {
+                        Circle()
+                            .fill(.red)
+                            .frame(width: 10, height: 10)
+                    }
+                }
         }
         .buttonStyle(.plain)
         .glassEffect(.regular.interactive(), in: .circle)
         // Without this VoiceOver just reads the initial letter.
-        .accessibilityLabel("Compte et réglages")
+        .accessibilityLabel(hasWarning ? "Compte et réglages, abonnement inactif" : "Compte et réglages")
     }
 }
 
 #Preview {
-    AccountButton(initial: "A", action: {})
-        .padding()
+    VStack {
+        AccountButton(initial: "A", action: {})
+        AccountButton(initial: "A", hasWarning: true, action: {})
+    }
+    .padding()
 }

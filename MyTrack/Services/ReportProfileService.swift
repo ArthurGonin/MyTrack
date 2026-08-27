@@ -90,6 +90,21 @@ final class ReportProfileService {
         return (range.start, range.end)
     }
 
+    /// Passe une période échue sans rien générer — ce que fait l'app quand
+    /// l'abonnement n'est plus actif. `lastGeneratedAt` reste intact : rien n'a
+    /// été généré, et le dire serait faux. Sans ça, reprendre son abonnement six
+    /// mois plus tard déverserait six rapports vides d'un coup.
+    @discardableResult
+    func skipPeriod(profile: ReportProfile, through periodEnd: Date, in context: ModelContext) -> Date? {
+        profile.nextDueDate = ReportPeriodBoundary.nextDueDate(
+            after: periodEnd,
+            periodicity: profile.periodicity,
+            customIntervalDays: profile.customIntervalDays
+        )
+        context.saveOrLog()
+        return profile.nextDueDate
+    }
+
     /// Call after a periodic report was successfully generated through `periodEnd`.
     /// Returns the new due date so the caller can reschedule the "report ready" notification.
     @discardableResult

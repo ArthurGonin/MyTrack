@@ -40,6 +40,9 @@ enum DrivingDetectionStatus: Equatable {
     case needsMotionAccess
     /// No motion coprocessor: no activity sample will ever be delivered.
     case unsupportedDevice
+    /// Asked for, but there is no active subscription — recording new trips is
+    /// what the subscription pays for, so nothing is watched.
+    case needsSubscription
 }
 
 @Observable
@@ -52,6 +55,11 @@ final class DrivingDetector {
     private let modelContext: ModelContext
 
     private(set) var isEnabled: Bool
+
+    /// Poussé depuis AppServices à chaque changement d'abonnement, plutôt que
+    /// lu sur PurchaseService : la détection n'a pas à connaître StoreKit, elle
+    /// a juste besoin de savoir si elle a le droit de tourner.
+    private(set) var hasRecordingAccess: Bool
 
     /// What detection is really doing, as opposed to what the preference says.
     /// Read by the settings screen so the toggle can't claim to be on while
@@ -101,8 +109,10 @@ final class DrivingDetector {
         vehicleService: VehicleService,
         notificationService: NotificationService,
         locationService: LocationService,
-        modelContext: ModelContext
+        modelContext: ModelContext,
+        hasRecordingAccess: Bool
     ) {
+        self.hasRecordingAccess = hasRecordingAccess
         self.motionActivityService = motionActivityService
         self.tripRecorder = tripRecorder
         self.vehicleService = vehicleService
@@ -147,6 +157,42 @@ final class DrivingDetector {
         stopMonitoring()
         resetState()
         status = currentStatus
+    }
+
+    /// Ouvre ou ferme la détection selon l'abonnement. La *préférence* de
+    /// l'utilisateur (`isEnabled`) n'est jamais touchée : reprendre son
+    /// abonnement doit faire repartir la détection sans avoir à re-basculer un
+    /// réglage qu'on aurait éteint dans son dos.
+    func setRecordingAccess(_ hasAccess: Bool) {
+        guard hasRecordingAccess != hasAccess else { return }
+        hasRecordingAccess = hasAccess
+
+        guard !hasAccess else {
+            refresh()
+            return
+        }
+
+        // L'abonnement tombe au milieu d'un trajet : le couper net donnerait
+        // une distance fausse dans un rapport de frais, et arrêter la
+        // surveillance tout de suite laisserait le trajet ouvert pour toujours,
+        // GPS allumé, puisque plus rien ne viendrait constater sa fin. Le
+        // trajet en cours va donc au bout ; c'est resetState(), à la
+        // finalisation, qui coupera.
+        guard !ownsTripInProgress else {
+            status = currentStatus
+            return
+        }
+        stopMonitoringForLostAccess()
+    }
+
+    private var ownsTripInProgress: Bool {
+        recordingStartedAt != nil && tripRecorder.isRecording
+    }
+
+    private func stopMonitoringForLostAccess() {
+        stopMonitoring()
+        status = currentStatus
+        AppLog.recording.notice("Auto-detection stopped: no active subscription.")
     }
 
     /// Waits until the "Always" escalation started by enable() has settled —
@@ -227,6 +273,9 @@ final class DrivingDetector {
 
     private var currentStatus: DrivingDetectionStatus {
         guard isEnabled else { return .off }
+        // Avant les permissions : c'est la cause la plus actionnable, et celle
+        // qui explique vraiment pourquoi plus rien ne s'enregistre.
+        guard hasRecordingAccess else { return .needsSubscription }
         guard motionActivityService.isAvailable else { return .unsupportedDevice }
         guard locationService.authorizationStatus == .authorizedAlways else { return .needsAlwaysLocation }
         guard motionActivityService.isAuthorized else { return .needsMotionAccess }
@@ -239,6 +288,9 @@ final class DrivingDetector {
 
         switch status {
         case .off:
+            return
+        case .needsSubscription:
+            AppLog.recording.notice("Auto-detection is on but there is no active subscription — monitoring stays off.")
             return
         case .unsupportedDevice:
             AppLog.recording.notice("Motion activity is unavailable on this device — auto-detection can't run.")
@@ -292,6 +344,11 @@ final class DrivingDetector {
     private func resetState() {
         recordingStartedAt = nil
         clearPendingDecision()
+        // Le trajet qui était en cours quand l'abonnement est tombé vient de se
+        // terminer : c'est ici, et pas avant, qu'on cesse de surveiller.
+        if !hasRecordingAccess, isMonitoring {
+            stopMonitoringForLostAccess()
+        }
     }
 
     private func handle(_ activity: CMMotionActivity) {
@@ -367,6 +424,10 @@ final class DrivingDetector {
     }
 
     private func startProvisionalTrip() {
+        // Un échantillon de mouvement peut arriver dans l'intervalle entre la
+        // perte d'accès et l'arrêt effectif de la surveillance.
+        guard hasRecordingAccess else { return }
+
         let vehicle = vehicleService.selectedVehicle(in: modelContext)
         tripRecorder.start(vehicle: vehicle, source: .automatic)
         // Recording can refuse to start (location authorization lost since

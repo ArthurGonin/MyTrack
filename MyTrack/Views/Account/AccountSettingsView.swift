@@ -33,7 +33,8 @@ struct AccountSettingsView: View {
             vehicleService: appServices.vehicleService,
             drivingDetector: appServices.drivingDetector,
             notificationService: appServices.notificationService,
-            motionActivityService: appServices.motionActivityService
+            motionActivityService: appServices.motionActivityService,
+            purchaseService: appServices.purchaseService
         )
     }
 
@@ -92,6 +93,8 @@ struct AccountSettingsView: View {
                         ReportSettingsView()
                     }
                 }
+
+                SubscriptionSettingsSection()
 
                 Section {
                     Button {
@@ -168,6 +171,8 @@ struct AccountSettingsView: View {
             return "Inactif : le suivi automatique a besoin de l'accès à Motion et forme pour reconnaître la conduite."
         case .unsupportedDevice:
             return "Cet appareil ne mesure pas l'activité de mouvement : le suivi automatique ne peut pas fonctionner ici."
+        case .needsSubscription:
+            return "Inactif : l'enregistrement de nouveaux trajets nécessite un abonnement actif."
         }
     }
 
@@ -176,7 +181,9 @@ struct AccountSettingsView: View {
     private var isAutoDetectionBlockedByPermission: Bool {
         switch appServices.drivingDetector.status {
         case .needsAlwaysLocation, .needsMotionAccess: return true
-        case .off, .running, .unsupportedDevice: return false
+        // L'abonnement ne se règle pas dans les Réglages iOS : la section
+        // Abonnement juste en dessous porte déjà le bon bouton.
+        case .off, .running, .unsupportedDevice, .needsSubscription: return false
         }
     }
 

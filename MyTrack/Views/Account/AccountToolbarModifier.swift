@@ -10,6 +10,7 @@ import SwiftUI
 import SwiftData
 
 private struct AccountToolbarModifier: ViewModifier {
+    @Environment(AppServices.self) private var appServices
     @Query private var userProfiles: [UserProfile]
     @State private var isPresentingSettings = false
 
@@ -23,7 +24,10 @@ private struct AccountToolbarModifier: ViewModifier {
         content
             .toolbar {
                 ToolbarItem(placement: .topBarLeading) {
-                    AccountButton(initial: accountInitial) {
+                    AccountButton(
+                        initial: accountInitial,
+                        hasWarning: !appServices.purchaseService.canRecordTrips
+                    ) {
                         isPresentingSettings = true
                     }
                 }

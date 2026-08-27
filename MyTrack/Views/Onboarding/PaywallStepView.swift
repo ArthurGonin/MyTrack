@@ -54,6 +54,10 @@ struct PaywallStepView: View {
     let onRestore: () async -> Bool
     let onRetryLoadProducts: () async -> Void
     let onContinue: () -> Void
+    /// Ce que fait « Ignorer (debug) » en plus de continuer : sans ça, un build
+    /// de développement qui saute la paywall atterrit dans une app où
+    /// l'enregistrement est bloqué.
+    let onDebugSkip: () -> Void
 
     @State private var isPurchaseFailedAlertPresented = false
     @State private var isRestoreFailedAlertPresented = false
@@ -131,7 +135,10 @@ struct PaywallStepView: View {
                 // doesn't require completing a purchase every time. The
                 // release build's own way out is the button above, which
                 // appears when buying has proved impossible.
-                Button("Ignorer (debug)") { onContinue() }
+                Button("Ignorer (debug)") {
+                    onDebugSkip()
+                    onContinue()
+                }
                     .font(.footnote)
                     .buttonStyle(.plain)
                     .foregroundStyle(.tertiary)
@@ -348,7 +355,8 @@ private struct PricingOptionCard: View {
         onPurchase: { .success },
         onRestore: { false },
         onRetryLoadProducts: {},
-        onContinue: {}
+        onContinue: {},
+        onDebugSkip: {}
     )
     .appBackground()
 }

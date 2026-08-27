@@ -14,6 +14,7 @@ struct RecordTripViewModel {
     let drivingDetector: DrivingDetector
     let notificationService: NotificationService
     let motionActivityService: MotionActivityService
+    let purchaseService: PurchaseService
 
     var isRecording: Bool { tripRecorder.isRecording }
     var currentDistanceMeters: Double { tripRecorder.currentDistanceMeters }
@@ -24,9 +25,16 @@ struct RecordTripViewModel {
         case started
         case permissionRequested
         case permissionDenied
+        /// L'abonnement paie l'enregistrement : sans lui, aucun nouveau trajet.
+        case subscriptionRequired
     }
 
     func startManualRecording(in context: ModelContext) -> StartResult {
+        // L'écran remplace déjà le bouton Démarrer quand l'abonnement n'est plus
+        // actif ; cette garde est ce qui empêche un autre chemin d'appel
+        // d'enregistrer quand même.
+        guard purchaseService.canRecordTrips else { return .subscriptionRequired }
+
         switch locationService.authorizationStatus {
         case .notDetermined:
             locationService.requestWhenInUseAuthorization()

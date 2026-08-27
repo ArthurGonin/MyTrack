@@ -28,6 +28,7 @@ final class NotificationService: NSObject, UNUserNotificationCenterDelegate {
     private static let tripIDKey = "tripID"
     private static let reportReadyKey = "reportReady"
     private static let reportReadyIdentifierPrefix = "REPORT_READY_"
+    private static let subscriptionLapsedIdentifier = "SUBSCRIPTION_LAPSED"
 
     /// Raised when the user taps a "your report is ready" notification, so the
     /// app can bring them to the Rapports tab. Consumed — and reset — by
@@ -103,8 +104,48 @@ final class NotificationService: NSObject, UNUserNotificationCenterDelegate {
         }
     }
 
+    /// Envoyée au moment précis où l'enregistrement s'arrête. C'est la seule
+    /// alerte qui atteint l'utilisateur app fermée — donc la seule qui puisse
+    /// lui épargner de découvrir trois semaines plus tard que rien n'a été
+    /// enregistré.
+    func notifySubscriptionLapsed(hasBillingIssue: Bool) {
+        let content = UNMutableNotificationContent()
+        if hasBillingIssue {
+            content.title = "Problème de paiement"
+            content.body = "Ton abonnement n'a pas pu être renouvelé : tes trajets ne sont plus enregistrés. Mets à jour ton moyen de paiement."
+        } else {
+            content.title = "Abonnement expiré"
+            content.body = "Tes trajets ne sont plus enregistrés. Tes trajets et rapports déjà enregistrés restent accessibles."
+        }
+        content.sound = .default
+
+        let request = UNNotificationRequest(
+            identifier: Self.subscriptionLapsedIdentifier,
+            content: content,
+            trigger: nil
+        )
+        center.add(request) { error in
+            if let error {
+                AppLog.purchases.error("Subscription lapse notification failed: \(error.localizedDescription, privacy: .public)")
+            }
+        }
+    }
+
     func cancelReportReadyNotification(profileID: UUID) {
         center.removePendingNotificationRequests(withIdentifiers: [reportReadyIdentifier(for: profileID)])
+    }
+
+    /// Annule les nudges de rapport encore en attente, sans avoir à connaître
+    /// les profils : appelée quand l'abonnement tombe, alors qu'aucun de ces
+    /// rapports ne sera plus généré.
+    func cancelReportReadyNotifications() {
+        center.getPendingNotificationRequests { [weak self] requests in
+            let identifiers = requests
+                .map(\.identifier)
+                .filter { $0.hasPrefix(Self.reportReadyIdentifierPrefix) }
+            guard !identifiers.isEmpty else { return }
+            self?.center.removePendingNotificationRequests(withIdentifiers: identifiers)
+        }
     }
 
     private func reportReadyIdentifier(for profileID: UUID) -> String {
