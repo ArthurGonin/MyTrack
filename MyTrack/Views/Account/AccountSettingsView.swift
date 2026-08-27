@@ -138,12 +138,26 @@ struct AccountSettingsView: View {
                             UIApplication.shared.open(appStoreReviewURL)
                         }
                     } label: {
-                        Label("Laisser un avis", systemImage: "star.bubble")
+                        // Icône colorée à part du libellé : un `Label(_:systemImage:)`
+                        // teindrait les deux d'un coup, et le texte doit rester noir.
+                        Label {
+                            Text("Laisser un avis")
+                        } icon: {
+                            Image(systemName: "star.square.fill")
+                                .foregroundStyle(.green)
+                        }
                     }
                     .disabled(appStoreReviewURL == nil)
 
-                    Button("Supprimer le compte", role: .destructive) {
+                    Button(role: .destructive) {
                         isDeleteConfirmationPresented = true
+                    } label: {
+                        Label {
+                            Text("Supprimer le compte")
+                        } icon: {
+                            Image(systemName: "trash.square.fill")
+                                .foregroundStyle(.red)
+                        }
                     }
                 } footer: {
                     Text("Supprime définitivement tous tes trajets, véhicules et réglages. Cette action est irréversible.")
