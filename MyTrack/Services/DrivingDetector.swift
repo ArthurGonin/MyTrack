@@ -162,6 +162,49 @@ final class DrivingDetector {
         refresh()
     }
 
+    /// Le point d'entrée unique pour allumer la détection automatique, d'où
+    /// qu'on le demande — l'étape d'onboarding comme l'interrupteur des
+    /// réglages.
+    ///
+    /// Les deux écrans enchaînaient chacun leur propre séquence, et les deux
+    /// avaient divergé : l'un attendait la fin des demandes système, l'autre
+    /// repartait aussitôt ; l'un demandait les notifications, l'autre les
+    /// demandait ailleurs. Surtout, l'écran des réglages annonçait son
+    /// résultat à partir de l'état lu *avant* les fenêtres, donc sans jamais
+    /// savoir ce que l'utilisateur venait de répondre. La séquence vit
+    /// désormais ici, à côté de l'escalade de position qu'elle pilote, et rend
+    /// l'état réel une fois tout retombé.
+    ///
+    /// Les notifications n'en font délibérément pas partie : un trajet détecté
+    /// est enregistré qu'elles soient accordées ou non — seule la confirmation
+    /// change de chemin et se fait alors dans l'app. Elles ont leur propre
+    /// ligne dans les réglages plutôt que d'être un préalable à celui-ci.
+    @discardableResult
+    func requestActivation() async -> DrivingDetectionStatus {
+        // Rien à demander sur un appareil sans coprocesseur de mouvement : la
+        // détection ne peut pas y fonctionner, et faire surgir des fenêtres
+        // d'autorisation pour ça ne mènerait nulle part.
+        guard motionActivityService.isAvailable else {
+            enable()
+            return status
+        }
+
+        // Motion d'abord : la surveillance refuse de démarrer sans lui, et le
+        // laisser à `startActivityUpdates` ferait surgir sa fenêtre à un
+        // lancement ultérieur, loin du geste qui l'a demandée.
+        await motionActivityService.requestAuthorization()
+
+        // La préférence se pose même si une autorisation manque encore. Elle
+        // dit ce que l'utilisateur veut, `status` dit ce qui tourne vraiment —
+        // c'est toute la raison d'être des deux. L'accorder plus tard depuis
+        // les Réglages d'iOS suffit alors à démarrer la surveillance, sans
+        // avoir à revenir rebasculer un interrupteur éteint entre-temps.
+        enable()
+        await waitForAuthorizationSettled()
+        refresh()
+        return status
+    }
+
     /// Stops watching motion activity. A trip already in progress is left
     /// running — TripRecorder keeps recording it via the manual-mode path
     /// until finalized, rather than being cut off abruptly.

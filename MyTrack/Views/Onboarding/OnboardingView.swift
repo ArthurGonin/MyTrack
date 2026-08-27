@@ -233,22 +233,26 @@ struct OnboardingView: View {
         return appServices.purchaseService.hasEntitlement
     }
 
-    /// Requests Motion first, then location (When In Use, then the Always
-    /// upgrade) — staying on this step, with both buttons disabled, for as
-    /// long as any of those prompts is still awaiting an answer. Moves on
-    /// only once the whole chain has settled, whatever the outcome, rather
-    /// than racing ahead of the system dialogs.
+    /// Reste sur l'étape, boutons désactivés, tant qu'une fenêtre système
+    /// attend encore une réponse — `requestActivation()` ne rend la main qu'une
+    /// fois toute la chaîne retombée, plutôt que de courir devant les
+    /// dialogues.
+    ///
+    /// Le résultat décide de la suite. La position refusée est le seul cas qui
+    /// retient : sans elle la détection ne peut rien faire, et le dire ici vaut
+    /// mieux que de laisser croire que c'est actif. On ne bloque pas pour
+    /// autant — « Non, peut-être plus tard » reste juste à côté. Les autres cas
+    /// laissent passer : l'abonnement se règle à l'étape suivante, et un
+    /// appareil sans capteur de mouvement n'a rien à accorder.
     private func enableAutoDetectionAndContinue() {
-        switch appServices.locationService.authorizationStatus {
-        case .denied, .restricted:
-            isPermissionDeniedAlertPresented = true
-        default:
-            isRequestingAutoDetectionPermissions = true
-            Task {
-                await appServices.motionActivityService.requestAuthorization()
-                appServices.drivingDetector.enable()
-                await appServices.drivingDetector.waitForAuthorizationSettled()
-                isRequestingAutoDetectionPermissions = false
+        isRequestingAutoDetectionPermissions = true
+        Task {
+            let status = await appServices.drivingDetector.requestActivation()
+            isRequestingAutoDetectionPermissions = false
+
+            if status == .needsAlwaysLocation {
+                isPermissionDeniedAlertPresented = true
+            } else {
                 advanceStep()
             }
         }
@@ -277,7 +281,11 @@ struct OnboardingView: View {
         // Requested here — once, at the true end of onboarding — rather than
         // tied to the auto-detection step, since more steps may still follow
         // it and notifications are also used for report-ready alerts.
-        appServices.notificationService.requestAuthorization()
+        //
+        // Détaché : la réponse n'a rien à décider ici, l'onboarding se termine
+        // qu'elle soit oui ou non. Les réglages portent la ligne qui permettra
+        // de revenir dessus.
+        Task { await appServices.notificationService.requestAuthorization() }
 
         appServices.onboardingService.hasCompletedOnboarding = true
     }

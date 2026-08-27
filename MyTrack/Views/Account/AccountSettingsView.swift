@@ -12,7 +12,6 @@ struct AccountSettingsView: View {
     @Environment(\.modelContext) private var modelContext
     @Environment(\.dismiss) private var dismiss
 
-    @State private var isPermissionDeniedAlertPresented = false
     @State private var isDeleteConfirmationPresented = false
     @State private var isDeletionFailedAlertPresented = false
 
@@ -32,8 +31,6 @@ struct AccountSettingsView: View {
             locationService: appServices.locationService,
             vehicleService: appServices.vehicleService,
             drivingDetector: appServices.drivingDetector,
-            notificationService: appServices.notificationService,
-            motionActivityService: appServices.motionActivityService,
             purchaseService: appServices.purchaseService
         )
     }
@@ -58,15 +55,16 @@ struct AccountSettingsView: View {
                 }
 
                 Section {
+                    // Pas d'alerte au refus : le pied de section juste dessous
+                    // nomme déjà ce qui manque, et la section Autorisations qui
+                    // suit porte la ligne qui le répare. Une modale par-dessus
+                    // dirait la même chose en obligeant à s'en débarrasser
+                    // avant de pouvoir agir.
                     Toggle("Suivi automatique", isOn: Binding(
                         get: { viewModel.isAutoDetectionEnabled },
                         set: { isOn in
                             if isOn {
-                                Task {
-                                    if await viewModel.enableAutoDetection() == .permissionDenied {
-                                        isPermissionDeniedAlertPresented = true
-                                    }
-                                }
+                                Task { await viewModel.enableAutoDetection() }
                             } else {
                                 viewModel.disableAutoDetection()
                             }
@@ -171,20 +169,6 @@ struct AccountSettingsView: View {
                         dismiss()
                     }
                 }
-            }
-            .alert(
-                "Localisation refusée",
-                isPresented: $isPermissionDeniedAlertPresented
-            ) {
-                Button("Réglages") {
-                    if let url = URL(string: UIApplication.openSettingsURLString) {
-                        UIApplication.shared.open(url)
-                    }
-                }
-
-                Button("Annuler", role: .cancel) {}
-            } message: {
-                Text("Autorise l'accès à la position dans Réglages pour activer le suivi automatique.")
             }
             .alert(
                 "Supprimer le compte ?",

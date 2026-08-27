@@ -18,17 +18,21 @@ import CoreLocation
 import CoreMotion
 import SwiftUI
 import UIKit
+import UserNotifications
 
 struct PermissionsSettingsSection: View {
     @Environment(AppServices.self) private var appServices
     @Environment(\.scenePhase) private var scenePhase
 
-    /// CoreMotion ne prévient personne quand son autorisation change et
-    /// `MotionActivityService` n'est pas observable : l'état est relu à la
-    /// main. À l'ouverture, après chaque demande, et au retour au premier plan
-    /// — revenir des Réglages d'iOS est le seul moment où l'app peut
-    /// s'apercevoir qu'on vient d'y changer quelque chose.
+    /// Ni CoreMotion ni les notifications ne préviennent quand leur
+    /// autorisation change — il n'y a pas de délégué à écouter, seulement une
+    /// lecture à refaire. D'où ces deux copies relues à la main : à
+    /// l'affichage, après chaque demande, et au retour au premier plan, seul
+    /// moment où l'app peut s'apercevoir qu'on vient de changer quelque chose
+    /// dans les Réglages d'iOS. La position, elle, est observable et se met à
+    /// jour toute seule.
     @State private var motionStatus: CMAuthorizationStatus = .notDetermined
+    @State private var notificationStatus: UNAuthorizationStatus = .notDetermined
 
     var body: some View {
         Section {
@@ -44,14 +48,21 @@ struct PermissionsSettingsSection: View {
                 state: motionState,
                 action: requestMotion
             )
+            PermissionRow(
+                title: "Notifications",
+                systemImage: "bell",
+                state: notificationState,
+                action: requestNotifications
+            )
         } header: {
             Text("Autorisations")
         } footer: {
-            Text("Le suivi automatique a besoin de la position réglée sur « Toujours » pour réveiller l'app au départ d'un trajet, et de l'activité physique pour reconnaître la conduite. Une autorisation refusée ne peut plus se rétablir que dans les Réglages d'iOS.")
+            Text("Le suivi automatique a besoin de la position réglée sur « Toujours » pour réveiller l'app au départ d'un trajet, et de l'activité physique pour reconnaître la conduite. Les notifications servent à confirmer un trajet détecté et à prévenir qu'un rapport est prêt. Une autorisation refusée ne peut plus se rétablir que dans les Réglages d'iOS.")
         }
-        .onAppear { refreshMotionStatus() }
+        .task { await refreshStatuses() }
         .onChange(of: scenePhase) { _, phase in
-            if phase == .active { refreshMotionStatus() }
+            guard phase == .active else { return }
+            Task { await refreshStatuses() }
         }
     }
 
@@ -83,6 +94,18 @@ struct PermissionsSettingsSection: View {
         }
     }
 
+    /// `.provisional` compte comme accordée : les notifications passent, en
+    /// silence, ce qui suffit à ce que l'app en fait — poser une question et
+    /// annoncer un rapport. La présenter comme un refus enverrait réparer
+    /// quelque chose qui fonctionne.
+    private var notificationState: PermissionState {
+        switch notificationStatus {
+        case .authorized, .provisional, .ephemeral: .satisfied("Autorisé")
+        case .notDetermined: .askable("Autoriser")
+        default: .blocked("Refusé")
+        }
+    }
+
     // MARK: - Actions
 
     /// Demander n'a de sens qu'à la toute première fois. Ensuite, seuls les
@@ -110,12 +133,28 @@ struct PermissionsSettingsSection: View {
         }
         Task {
             await appServices.motionActivityService.requestAuthorization()
-            refreshMotionStatus()
+            await refreshStatuses()
+            // Le mouvement est l'une des conditions de la surveillance :
+            // l'accorder ici doit l'armer, sans quoi elle attendrait le
+            // prochain passage au premier plan pour s'en apercevoir.
+            appServices.drivingDetector.refresh()
         }
     }
 
-    private func refreshMotionStatus() {
+    private func requestNotifications() {
+        guard notificationStatus == .notDetermined else {
+            openSystemSettings()
+            return
+        }
+        Task {
+            await appServices.notificationService.requestAuthorization()
+            await refreshStatuses()
+        }
+    }
+
+    private func refreshStatuses() async {
         motionStatus = appServices.motionActivityService.authorizationStatus
+        notificationStatus = await appServices.notificationService.authorizationStatus()
     }
 
     private func openSystemSettings() {

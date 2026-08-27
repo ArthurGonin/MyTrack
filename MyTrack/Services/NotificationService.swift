@@ -67,13 +67,32 @@ final class NotificationService: NSObject, UNUserNotificationCenterDelegate {
     /// dans quelle langue une chaîne construite hors SwiftUI est écrite.
     private var bundle: Bundle { languageService.bundle }
 
-    func requestAuthorization() {
-        center.requestAuthorization(options: [.alert, .sound]) { granted, error in
-            if let error {
-                AppLog.recording.error("Notification authorization failed: \(error.localizedDescription, privacy: .public)")
-            } else if !granted {
+    /// L'état courant, relu à la demande.
+    ///
+    /// Contrairement à la position, iOS ne prévient personne quand
+    /// l'autorisation de notification change : il n'y a pas de délégué à
+    /// écouter, seulement cette lecture. Les réglages la refont donc à
+    /// l'affichage et au retour au premier plan.
+    func authorizationStatus() async -> UNAuthorizationStatus {
+        await center.notificationSettings().authorizationStatus
+    }
+
+    /// Demande l'autorisation et attend la réponse.
+    ///
+    /// Attendre, plutôt que de lancer la demande et repartir : la ligne des
+    /// réglages qui l'appelle doit se remettre à jour sur ce que l'utilisateur
+    /// vient de répondre, et elle n'a aucun autre moyen de l'apprendre.
+    @discardableResult
+    func requestAuthorization() async -> Bool {
+        do {
+            let granted = try await center.requestAuthorization(options: [.alert, .sound])
+            if !granted {
                 AppLog.recording.notice("Notifications denied — trips will only be confirmable from the in-app review screen.")
             }
+            return granted
+        } catch {
+            AppLog.recording.error("Notification authorization failed: \(error.localizedDescription, privacy: .public)")
+            return false
         }
     }
 

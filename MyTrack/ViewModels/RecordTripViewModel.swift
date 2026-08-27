@@ -12,8 +12,6 @@ struct RecordTripViewModel {
     let locationService: LocationService
     let vehicleService: VehicleService
     let drivingDetector: DrivingDetector
-    let notificationService: NotificationService
-    let motionActivityService: MotionActivityService
     let purchaseService: PurchaseService
 
     var isRecording: Bool { tripRecorder.isRecording }
@@ -68,30 +66,13 @@ struct RecordTripViewModel {
         drivingDetector.forgetOwnedTrip()
     }
 
-    enum AutoDetectionEnableResult {
-        case enabled
-        case permissionRequested
-        case permissionDenied
-    }
-
-    /// Turns auto-detection on and requests notification permission. Location
-    /// itself is handled by DrivingDetector.enable(), which chains through
-    /// whichever system prompts are still needed to reach "Always" on its own.
-    ///
-    /// Motion & Fitness is asked for here, up front, because monitoring now
-    /// refuses to start without it — and because leaving it to
-    /// startActivityUpdates would raise the prompt on some later launch
-    /// rather than on the tap that asked for automatic tracking.
-    func enableAutoDetection() async -> AutoDetectionEnableResult {
-        let status = locationService.authorizationStatus
-        guard status != .denied, status != .restricted else {
-            return .permissionDenied
-        }
-
-        await motionActivityService.requestAuthorization()
-        drivingDetector.enable()
-        notificationService.requestAuthorization()
-        return status == .authorizedAlways ? .enabled : .permissionRequested
+    /// Renvoie l'état réel une fois toutes les fenêtres système répondues, et
+    /// non ce qu'il était avant de les poser : c'est `DrivingDetector` qui
+    /// enchaîne la séquence, pour que l'onboarding et les réglages allument la
+    /// détection exactement de la même façon.
+    @discardableResult
+    func enableAutoDetection() async -> DrivingDetectionStatus {
+        await drivingDetector.requestActivation()
     }
 
     func disableAutoDetection() {

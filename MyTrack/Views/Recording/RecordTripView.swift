@@ -32,8 +32,6 @@ struct RecordTripView: View {
             locationService: appServices.locationService,
             vehicleService: appServices.vehicleService,
             drivingDetector: appServices.drivingDetector,
-            notificationService: appServices.notificationService,
-            motionActivityService: appServices.motionActivityService,
             purchaseService: appServices.purchaseService
         )
     }

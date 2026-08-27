@@ -5426,6 +5426,46 @@
         }
       }
     },
+    "Le suivi automatique a besoin de la position réglée sur « Toujours » pour réveiller l'app au départ d'un trajet, et de l'activité physique pour reconnaître la conduite. Les notifications servent à confirmer un trajet détecté et à prévenir qu'un rapport est prêt. Une autorisation refusée ne peut plus se rétablir que dans les Réglages d'iOS." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Die automatische Erkennung braucht den Standort auf „Immer“, damit die App zu Fahrtbeginn geweckt wird, und die körperliche Aktivität, um das Fahren zu erkennen. Mitteilungen dienen dazu, eine erkannte Fahrt zu bestätigen und über einen fertigen Bericht zu informieren. Eine abgelehnte Berechtigung lässt sich nur noch in den iOS-Einstellungen wiederherstellen."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Automatic tracking needs location set to “Always” so the app can be woken at the start of a trip, and physical activity to recognise driving. Notifications are what confirm a detected trip and tell you a report is ready. A permission you have denied can only be restored in iOS Settings."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "El seguimiento automático necesita la ubicación en «Siempre» para despertar la app al inicio de un trayecto, y la actividad física para reconocer la conducción. Las notificaciones sirven para confirmar un trayecto detectado y avisar de que un informe está listo. Un permiso denegado solo se puede restablecer en los Ajustes de iOS."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Le suivi automatique a besoin de la position réglée sur « Toujours » pour réveiller l'app au départ d'un trajet, et de l'activité physique pour reconnaître la conduite. Les notifications servent à confirmer un trajet détecté et à prévenir qu'un rapport est prêt. Une autorisation refusée ne peut plus se rétablir que dans les Réglages d'iOS."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Il rilevamento automatico ha bisogno della posizione impostata su «Sempre» per risvegliare l'app all'inizio di un viaggio, e dell'attività fisica per riconoscere la guida. Le notifiche servono a confermare un viaggio rilevato e ad avvisare che un rapporto è pronto. Un'autorizzazione negata si può ripristinare solo in Impostazioni di iOS."
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "A deteção automática precisa da localização definida como «Sempre» para despertar a app no início de uma viagem, e da atividade física para reconhecer a condução. As notificações servem para confirmar uma viagem detetada e avisar que um relatório está pronto. Uma autorização recusada só pode ser reposta nas Definições do iOS."
+          }
+        }
+      }
+    },
     "Le suivi automatique a besoin de la position réglée sur « Toujours » pour réveiller l'app au départ d'un trajet, et de l'activité physique pour reconnaître la conduite. Une autorisation refusée ne peut plus se rétablir que dans les Réglages d'iOS." : {
       "localizations" : {
         "de" : {
@@ -6265,6 +6305,46 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Não, talvez mais tarde"
+          }
+        }
+      }
+    },
+    "Notifications" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mitteilungen"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Notifications"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Notificaciones"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Notifications"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Notifiche"
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Notificações"
           }
         }
       }
