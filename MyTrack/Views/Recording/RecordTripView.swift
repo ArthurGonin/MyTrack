@@ -16,7 +16,7 @@ struct RecordTripView: View {
     @Query private var userProfiles: [UserProfile]
     @State private var isPermissionDeniedAlertPresented = false
     @State private var isPresentingVehiclePicker = false
-    /// Set when a tap on Démarrer could only raise the location prompt, so the
+    /// Set when the start slider could only raise the location prompt, so the
     /// answer — whenever it comes — resumes what the user actually asked for.
     @State private var isAwaitingLocationPermission = false
     @State private var isSubscriptionStorePresented = false
@@ -181,19 +181,21 @@ struct RecordTripView: View {
             .clipShape(.rect(cornerRadius: 22, style: .continuous))
             .transition(.opacity.combined(with: .scale(scale: 0.94)))
 
-        // maxWidth va sur le libellé, pas sur le bouton : posé sur le bouton il
-        // n'élargirait que le cadre autour, la gélule restant collée à son
-        // texte.
-        Button { viewModel.stopManualRecording(in: modelContext) } label: {
-            Text("Arrêter").frame(maxWidth: .infinity)
+        // Un glissement, et de droite à gauche : couper un enregistrement en
+        // cours est irréversible pour la portion de trajet qui reste, et le
+        // geste part du bord opposé à celui qui l'a lancé.
+        SlideToConfirmButton(
+            title: "Glisser pour arrêter",
+            systemImage: "chevron.left",
+            tint: .red,
+            startEdge: .trailing
+        ) {
+            viewModel.stopManualRecording(in: modelContext)
         }
-        .buttonStyle(.borderedProminent)
-        .controlSize(.large)
-        .tint(.red)
     }
 
-    /// Au repos, la voiture occupe le centre de l'écran et le bouton Démarrer
-    /// se pose en bas, à portée de pouce.
+    /// Au repos, la voiture occupe le centre de l'écran et le bouton à faire
+    /// glisser pour démarrer se pose en bas, à portée de pouce.
     ///
     /// Le centrage se dit sur la carte elle-même plutôt qu'avec un `Spacer` de
     /// part et d'autre. Le résultat est le même au pixel près — les deux
@@ -223,11 +225,14 @@ struct RecordTripView: View {
         .frame(maxHeight: .infinity)
         .transition(.opacity.combined(with: .scale(scale: 0.94)))
 
-        Button { startRecording() } label: {
-            Text("Démarrer").frame(maxWidth: .infinity)
+        SlideToConfirmButton(
+            title: "Glisser pour démarrer",
+            systemImage: "chevron.right",
+            tint: .green,
+            startEdge: .leading
+        ) {
+            startRecording()
         }
-        .buttonStyle(.borderedProminent)
-        .controlSize(.large)
     }
 
     /// Prend toute la place du bouton Démarrer plutôt que de s'ajouter à côté
