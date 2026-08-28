@@ -187,7 +187,7 @@ struct RecordTripView: View {
         SlideToConfirmButton(
             title: "Arrêter",
             systemImage: "chevron.left",
-            tint: .red,
+            tint: .red.mix(with: .black, by: 0.22),
             startEdge: .trailing
         ) {
             viewModel.stopManualRecording(in: modelContext)
@@ -228,7 +228,7 @@ struct RecordTripView: View {
         SlideToConfirmButton(
             title: "Démarrer",
             systemImage: "chevron.right",
-            tint: .green,
+            tint: .green.mix(with: .black, by: 0.32),
             startEdge: .leading
         ) {
             startRecording()
