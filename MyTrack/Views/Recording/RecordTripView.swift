@@ -210,6 +210,10 @@ struct RecordTripView: View {
                 }
 
                 carArtwork(width: carWidth)
+                    // Posée en bas de la bande : les roues affleurent le bouton
+                    // Démarrer, et tout ce qui est au-dessus reste libre pour ce
+                    // qui viendra s'y mettre.
+                    .frame(maxHeight: .infinity, alignment: .bottom)
                     .offset(x: carOffset(fullWidth: fullWidth, carWidth: carWidth))
             }
             .frame(width: contentWidth, height: proxy.size.height, alignment: .leading)
@@ -354,13 +358,23 @@ struct RecordTripView: View {
     /// parce que la voiture doit précisément en sortir.
     private static let screenInset: CGFloat = 16
 
-    /// Combien de largeurs d'écran la voiture occupe. C'est ce dépassement qui
-    /// décide de ce qu'on en voit : à 1,9 l'écran s'arrête vers le milieu de la
-    /// vitre avant, donc l'arrière et l'habitacle, rien du capot.
-    private static let carWidthRatio: CGFloat = 1.9
+    /// Combien de largeurs d'écran la voiture occupe.
+    ///
+    /// Ce seul nombre décide de deux choses à la fois, et c'est ce qui le rend
+    /// délicat à régler : de la taille du dessin — la hauteur en découle, les
+    /// proportions étant fixes — et de ce qu'on en voit, puisque ce qui dépasse
+    /// à droite est hors cadre. Le réduire rapetisse la voiture *et* en montre
+    /// davantage.
+    private static let carWidthRatio: CGFloat = 1.6
 
-    /// Les proportions du dessin, 1774 × 887.
-    private static let carAspectRatio: CGFloat = 2
+    /// Les proportions du dessin, 1738 × 570.
+    ///
+    /// L'image est recadrée au plus juste sur le trait, sans marge
+    /// transparente. C'est ce qui permet de la poser en bas de la bande et
+    /// d'avoir les roues là où on les attend : avec les 137 pixels de vide
+    /// qu'elle avait sous elle, « aligné en bas » laissait la voiture flotter
+    /// bien au-dessus du bouton.
+    private static let carAspectRatio: CGFloat = 1738.0 / 570.0
 
     /// Prend toute la place du bouton Démarrer plutôt que de s'ajouter à côté
     /// de lui : le bouton ne ferait plus rien de toute façon, et c'est cet
