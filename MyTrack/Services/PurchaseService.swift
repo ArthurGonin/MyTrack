@@ -202,8 +202,16 @@ final class PurchaseService {
     }
 
     func purchase(_ plan: PricingPlan) async -> PurchaseOutcome {
+        // Un achat demandé alors que le produit manque ne doit pas échouer sans
+        // avoir retenté : au premier lancement sans réseau, la seule tentative
+        // de chargement a échoué et l'utilisateur se retrouvait devant « Achat
+        // impossible » pour une raison qui n'a rien à voir avec son achat.
+        if product(for: plan) == nil {
+            await loadProducts()
+        }
+
         guard let product = product(for: plan) else {
-            AppLog.purchases.error("Purchase requested before products finished loading.")
+            AppLog.purchases.error("Purchase requested but \(String(describing: plan), privacy: .public) never loaded.")
             return .failed
         }
 
@@ -216,7 +224,7 @@ final class PurchaseService {
             case .success(let verification):
                 let transaction = try checkVerified(verification)
                 await transaction.finish()
-                await updateEntitlements()
+                await updateEntitlements(including: transaction)
                 return .success
             case .userCancelled:
                 return .userCancelled
@@ -249,10 +257,21 @@ final class PurchaseService {
     private func handle(updatedTransaction result: VerificationResult<Transaction>) async {
         guard let transaction = try? checkVerified(result) else { return }
         await transaction.finish()
-        await updateEntitlements()
+        await updateEntitlements(including: transaction)
     }
 
-    private func updateEntitlements() async {
+    /// - Parameter justPurchased: une transaction qu'on vient d'obtenir en
+    ///   main propre, à compter en plus de ce que dit `currentEntitlements`.
+    ///
+    ///   Elle n'est pas redondante : `currentEntitlements` est alimenté de
+    ///   façon asynchrone et ne contient pas encore, dans la foulée immédiate
+    ///   d'un `purchase()`, la transaction que ce `purchase()` vient tout juste
+    ///   de rendre. Sans elle, l'app relisait une liste vide et laissait
+    ///   `entitlement` à nil : l'achat réussissait, la paywall se fermait, et
+    ///   l'écran d'enregistrement annonçait « Abonnement inactif » à quelqu'un
+    ///   qui venait de payer. Ça se réparait au lancement suivant, ce qui rend
+    ///   le défaut d'autant plus déroutant.
+    private func updateEntitlements(including justPurchased: Transaction? = nil) async {
         // Le non-consommable et les abonnements n'appartiennent pas au même
         // groupe, donc les deux peuvent apparaître ensemble parmi les
         // entitlements (quelqu'un qui a un abonnement en cours achète l'accès
@@ -266,15 +285,29 @@ final class PurchaseService {
         // l'achat le plus récent qui fait foi.
         var lifetimeTransaction: Transaction?
         var subscriptionTransaction: Transaction?
-        for await result in Transaction.currentEntitlements {
-            guard let transaction = try? checkVerified(result),
-                  let plan = Self.plan(for: transaction.productID) else { continue }
+
+        // Retenir une transaction, d'où qu'elle vienne. Les deux garde-fous
+        // valent surtout pour `justPurchased` : `currentEntitlements` écarte
+        // déjà de lui-même ce qui est remboursé ou périmé, mais une
+        // transaction reçue par `Transaction.updates` peut très bien être
+        // justement une révocation, et l'injecter rendrait l'accès à
+        // quelqu'un à qui on vient de le retirer.
+        func consider(_ transaction: Transaction) {
+            guard transaction.revocationDate == nil,
+                  transaction.expirationDate.map({ $0 > .now }) ?? true,
+                  let plan = Self.plan(for: transaction.productID) else { return }
             if plan == .lifetime {
                 lifetimeTransaction = transaction
             } else if subscriptionTransaction == nil || subscriptionTransaction!.purchaseDate < transaction.purchaseDate {
                 subscriptionTransaction = transaction
             }
         }
+
+        for await result in Transaction.currentEntitlements {
+            guard let transaction = try? checkVerified(result) else { continue }
+            consider(transaction)
+        }
+        if let justPurchased { consider(justPurchased) }
 
         // Le résumé se construit dès qu'un abonnement existe, sans regarder
         // l'achat à vie : c'est ce qui permet à `activeSubscription` de
