@@ -26,17 +26,6 @@ struct SlideToConfirmButton: View {
     var systemImage: String
     /// La teinte de l'ensemble : verte pour lancer, rouge pour arrêter.
     var tint: Color
-    /// Rapporte où en est la pastille, de 0 à 1, à chaque instant du geste —
-    /// y compris quand elle revient en arrière parce que le doigt recule.
-    ///
-    /// C'est ce qui permet à l'écran de suivre le glissement au lieu de le
-    /// subir : la scène derrière le bouton avance et recule avec le pouce, et
-    /// le geste devient réversible tant qu'il n'est pas allé au bout.
-    ///
-    /// Les retours au repos sont rapportés depuis l'intérieur de leur
-    /// animation, pour que ce qui écoute reparte avec la même courbe plutôt
-    /// que de sauter.
-    var onProgressChange: (CGFloat) -> Void = { _ in }
     /// Appelée une fois la pastille menée jusqu'au bout.
     var action: () -> Void
 
@@ -107,18 +96,10 @@ struct SlideToConfirmButton: View {
         // se vide. Ce retour ne se voit que si on est encore là — c'est-à-dire
         // quand l'action n'a rien changé à l'écran, par exemple parce qu'elle a
         // buté sur une autorisation refusée.
-        // Le retour à zéro est rapporté comme les autres. Quand l'action a
-        // abouti, ce que le pouce avait parcouru a déjà été converti en pas
-        // franchi de l'autre côté, et ce zéro-là n'apprend rien à personne.
-        // Quand elle a échoué — une autorisation refusée, par exemple — c'est
-        // au contraire ce qui ramène la scène là où elle doit être.
         .task(id: completions) {
             guard completions > 0 else { return }
             try? await Task.sleep(for: .milliseconds(600))
-            withAnimation(.smooth) {
-                offsetX = 0
-                onProgressChange(0)
-            }
+            withAnimation(.smooth) { offsetX = 0 }
             hasReachedEnd = false
         }
     }
@@ -230,18 +211,13 @@ struct SlideToConfirmButton: View {
             .onChanged { value in
                 offsetX = min(max(value.translation.width, 0), travel)
                 hasReachedEnd = offsetX == travel
-                onProgressChange(offsetX / travel)
             }
             .onEnded { _ in
                 if offsetX == travel {
-                    onProgressChange(1)
                     fire()
                 } else {
                     hasReachedEnd = false
-                    withAnimation(.smooth) {
-                        offsetX = 0
-                        onProgressChange(0)
-                    }
+                    withAnimation(.smooth) { offsetX = 0 }
                 }
             }
     }
