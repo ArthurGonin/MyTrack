@@ -39,6 +39,25 @@ nonisolated enum TripFormatting {
             )
     }
 
+    /// La même distance, mais en deux morceaux : le nombre d'un côté, le
+    /// symbole de l'unité de l'autre.
+    ///
+    /// Le compteur de l'écran d'accueil écrit les deux dans des tailles
+    /// différentes — un grand nombre, un petit « km » posé à côté — ce qu'une
+    /// chaîne d'un seul tenant ne permet pas. Le nombre passe malgré tout par
+    /// le formateur de Foundation, pour que le séparateur de milliers suive la
+    /// langue de l'app (« 12 345 » en français, « 12,345 » en anglais).
+    static func distanceParts(
+        meters: Double, unit: DistanceUnit, locale: Locale, fractionDigits: Int = 0
+    ) -> (value: String, symbol: String) {
+        let measurement = Measurement(value: max(0, meters), unit: UnitLength.meters)
+            .converted(to: unit.unitLength)
+        let value = measurement.value.formatted(
+            .number.precision(.fractionLength(fractionDigits)).locale(locale)
+        )
+        return (value, measurement.unit.symbol)
+    }
+
     /// « 45min », « 1h 5min » — la mise en forme vient de Foundation plutôt que
     /// d'un `String(format: "%dh%02d")` maison, parce que chaque langue abrège
     /// ses unités à sa façon (« 1 Std. 5 Min. » en allemand). `narrow` plutôt

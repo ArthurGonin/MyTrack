@@ -13,6 +13,7 @@ struct RecordTripView: View {
     @Environment(\.modelContext) private var modelContext
     @Environment(\.locale) private var locale
     @Query private var vehicles: [Vehicle]
+    @Query private var trips: [Trip]
     @Query private var userProfiles: [UserProfile]
     @State private var isPermissionDeniedAlertPresented = false
     @State private var isPresentingVehiclePicker = false
@@ -21,6 +22,10 @@ struct RecordTripView: View {
     @State private var isAwaitingLocationPermission = false
     @State private var isSubscriptionStorePresented = false
     @State private var isManageSubscriptionsPresented = false
+    /// La taille du grand nombre du compteur. `@ScaledMetric` plutôt
+    /// qu'une constante : une taille en points ne suit pas les réglages
+    /// d'accessibilité, et ce nombre-là est ce qu'on vient lire.
+    @ScaledMetric(relativeTo: .largeTitle) private var odometerSize: CGFloat = 64
 
     private var selectedVehicle: Vehicle? {
         vehicles.first { $0.isSelected }
@@ -56,6 +61,16 @@ struct RecordTripView: View {
                 }
             }
             .padding()
+            // La photo se glisse entre le contenu et le fond de l'app : elle
+            // apporte son propre décor, qui recouvre le gris sans le remplacer.
+            // Celui-ci reprend la main dès qu'un trajet démarre — la carte n'a
+            // pas de voiture derrière elle — et quand l'abonnement manque,
+            // parce que l'écran ne parle alors plus que de ça.
+            .background {
+                if !viewModel.isRecording && canRecordTrips {
+                    carBackdrop.ignoresSafeArea()
+                }
+            }
             .appBackground()
             // Cet écran n'a pas de `navigationTitle` — le sélecteur de véhicule
             // occupe le centre de la barre. Sans titre, le mode reste
@@ -152,9 +167,9 @@ struct RecordTripView: View {
         return name.isEmpty ? nil : name
     }
 
-    /// La bande centrale : la voiture à l'arrêt, la carte pendant un trajet.
+    /// La bande centrale : le compteur à l'arrêt, la carte pendant un trajet.
     ///
-    /// L'une prend simplement la place de l'autre. Rien ne glisse et rien ne
+    /// L'un prend simplement la place de l'autre. Rien ne glisse et rien ne
     /// roule : lancer un enregistrement doit afficher la carte, pas la faire
     /// entrer en scène.
     @ViewBuilder
@@ -162,22 +177,92 @@ struct RecordTripView: View {
         if viewModel.isRecording {
             recordingStage
         } else {
-            carArtwork
+            // La voiture n'est pas ici mais en fond d'écran, sous tout le
+            // reste. Ne restent sur la bande que le compteur et la place vide
+            // qu'elle occupe en dessous.
+            VStack(spacing: 0) {
+                odometer
+                Spacer(minLength: 0)
+            }
         }
     }
 
-    /// La voiture au repos, posée en bas de la bande : les roues affleurent le
-    /// bouton Démarrer, et tout ce qui est au-dessus reste libre pour ce qui
-    /// viendra s'y mettre.
+    /// Le compteur : tout ce que la voiture a parcouru, écrit en grand
+    /// au-dessus d'elle.
     ///
-    /// Deux images dans un même jeu, une par thème : contrairement au trait
-    /// d'un dessin, une photo ne se recolore pas, donc le thème sombre a la
-    /// sienne.
-    private var carArtwork: some View {
-        Image("HomeCar")
-            .resizable()
-            .scaledToFit()
-            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottom)
+    /// Le nombre et son unité sont deux textes et non un seul, parce qu'ils
+    /// n'ont pas la même taille — c'est le nombre qu'on lit d'un coup d'œil, le
+    /// « km » n'est là que pour le qualifier.
+    private var odometer: some View {
+        VStack(alignment: .leading, spacing: 0) {
+            Text("Distance totale")
+                .font(.subheadline)
+                .foregroundStyle(.secondary)
+            HStack(alignment: .firstTextBaseline, spacing: 4) {
+                Text(totalDistance.value)
+                    .font(.system(size: odometerSize, weight: .light))
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.4)
+                Text(totalDistance.symbol)
+                    .font(.title2)
+                    .foregroundStyle(.secondary)
+            }
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+    }
+
+    private var totalDistance: (value: String, symbol: String) {
+        TripFormatting.distanceParts(
+            meters: totalDistanceMeters,
+            unit: appServices.unitSettingsService.distanceUnit,
+            locale: locale
+        )
+    }
+
+    /// Ce que le véhicule sélectionné a parcouru depuis toujours.
+    ///
+    /// Les trajets confirmés seulement : un trajet détecté que personne n'a
+    /// encore validé n'en est pas encore un, et un trajet supprimé n'en est
+    /// plus un. Sans véhicule sélectionné il n'y a rien à distinguer, et le
+    /// compteur additionne alors tout ce qui a été parcouru.
+    private var totalDistanceMeters: Double {
+        trips.reduce(0) { total, trip in
+            guard trip.confirmationStatus == .confirmed else { return total }
+            guard selectedVehicle == nil || trip.vehicle === selectedVehicle else { return total }
+            return total + trip.distanceMeters
+        }
+    }
+
+    /// La photo de la voiture, peinte en fond d'écran.
+    ///
+    /// Le cadrage se calcule au lieu de se régler à l'œil, parce que ce qu'on
+    /// place est la voiture et non l'image : la photo est bien plus grande
+    /// qu'elle, et la marge autour change d'une photo à l'autre. Les deux
+    /// réglages qui comptent portent donc sur la voiture — la largeur qu'elle
+    /// occupe et la hauteur où ses roues se posent — et l'image s'en déduit.
+    private var carBackdrop: some View {
+        GeometryReader { proxy in
+            let imageWidth = proxy.size.width * Self.carWidthRatio / Self.carWidthInImage
+            let imageHeight = imageWidth * Self.carImageAspectRatio
+            let wheels = proxy.size.height * Self.carBaseline
+
+            // Le gris de la photo, étendu au-delà d'elle : selon la taille de
+            // l'écran, le cadrage peut la laisser plus courte, et cette
+            // couleur-là fait que le raccord ne se voit pas. Elle est rangée
+            // dans le catalogue à côté de l'image parce qu'elle est la sienne :
+            // les deux se remplacent ensemble.
+            Color("HomeCarPaper")
+                .overlay(alignment: .topLeading) {
+                    Image("HomeCar")
+                        .resizable()
+                        .frame(width: imageWidth, height: imageHeight)
+                        .offset(
+                            x: (proxy.size.width - imageWidth) / 2,
+                            y: wheels - Self.carBottomInImage * imageHeight
+                        )
+                }
+                .clipped()
+        }
     }
 
     /// Ce qui remplace la voiture pendant un trajet : les compteurs et la
@@ -234,6 +319,24 @@ struct RecordTripView: View {
             }
         }
     }
+
+    /// Les proportions de la photo, 1024 × 1536.
+    private static let carImageAspectRatio: CGFloat = 1536.0 / 1024.0
+
+    /// La place de la voiture dans la photo, relevée dessus : elle en occupe un
+    /// peu plus des trois quarts en largeur, et ses roues touchent le sol à
+    /// 58 % de la hauteur. Deux nombres à reprendre en même temps que l'image.
+    private static let carWidthInImage: CGFloat = 0.758
+    private static let carBottomInImage: CGFloat = 0.581
+
+    /// Combien de largeurs d'écran la voiture occupe. Au-delà de 1 les deux
+    /// pare-chocs sortent du cadre, et c'est bien ce qu'on veut : une voiture
+    /// qui déborde a l'air posée devant l'écran plutôt que dedans.
+    private static let carWidthRatio: CGFloat = 1.4
+
+    /// La hauteur d'écran où les roues se posent, comptée depuis le haut :
+    /// juste au-dessus du bouton Démarrer.
+    private static let carBaseline: CGFloat = 0.74
 
     /// Prend toute la place du bouton Démarrer plutôt que de s'ajouter à côté
     /// de lui : le bouton ne ferait plus rien de toute façon, et c'est cet
