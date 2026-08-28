@@ -99,7 +99,34 @@ final class DrivingDetector {
     /// prompt (staying at "When In Use") doesn't always produce another
     /// authorization-change callback for escalateToAlwaysIfNeeded to react to.
     private var escalationTimeoutTask: Task<Void, Never>?
-    private static let escalationTimeout: Duration = .seconds(10)
+    /// Combien de temps l'escalade vers « Toujours » reste armée sans nouvelle.
+    ///
+    /// C'est un filet, pas un rythme d'interface. Il n'existe que pour le cas
+    /// où iOS ne montre rien et ne rappellera jamais — typiquement quand la
+    /// fenêtre de passage à « Toujours », qu'iOS ne propose qu'une seule fois,
+    /// a déjà été dépensée. Il doit donc être plus long que le temps qu'un
+    /// humain met à lire une fenêtre d'autorisation et à se décider.
+    ///
+    /// Il valait 10 s, et c'était le bug : la fenêtre s'affichait, le compte à
+    /// rebours courait pendant que l'utilisateur lisait, et il expirait avant
+    /// qu'il ait répondu. Sa réponse arrivait ensuite sur une escalade
+    /// désarmée, `escalateToAlwaysIfNeeded` s'arrêtait à sa garde, et la
+    /// seconde fenêtre — celle qui demande « Toujours » — n'était jamais
+    /// demandée. L'app restait en « Pendant l'utilisation » sans que rien ne
+    /// l'explique, et la détection en arrière-plan ne pouvait pas fonctionner.
+    private static let escalationTimeout: Duration = .seconds(90)
+
+    /// Ce que l'onboarding accepte d'attendre avant de passer à la suite.
+    ///
+    /// Séparé de `escalationTimeout` à dessein : l'escalade peut rester armée
+    /// longtemps sans que l'écran ait à se figer d'autant. Sans cette
+    /// séparation, allonger le filet ci-dessus aurait bloqué l'onboarding
+    /// pendant tout ce temps dans le cas justement où iOS ne montre rien.
+    ///
+    /// Passé ce délai l'onboarding avance ; une fenêtre système encore ouverte
+    /// reste posée par-dessus, puisqu'elle n'appartient pas à l'écran qu'elle
+    /// recouvre, et la réponse sera prise en compte quand elle arrivera.
+    private static let onboardingWaitTimeout: Duration = .seconds(20)
 
     /// How far back to look for a drive already under way when monitoring
     /// arms. Long enough to catch a trip that began before the app was woken,
@@ -259,7 +286,8 @@ final class DrivingDetector {
     /// reply. Onboarding awaits this so it only moves on once the user has
     /// actually answered every prompt, instead of racing ahead of them.
     func waitForAuthorizationSettled() async {
-        while isEscalatingToAlways {
+        let deadline = ContinuousClock.now + Self.onboardingWaitTimeout
+        while isEscalatingToAlways, ContinuousClock.now < deadline {
             try? await Task.sleep(for: .milliseconds(200))
         }
     }
