@@ -41,7 +41,14 @@ struct DeletedTripsView: View {
                         }
                         .swipeActions(edge: .leading) {
                             Button {
-                                viewModel.restore(trip, in: modelContext)
+                                // `onDelete` anime le retrait de ligne (et la
+                                // remontée des lignes suivantes) automatiquement ;
+                                // un bouton de swipeActions "plain" ne le fait pas,
+                                // il faut donc le demander explicitement pour
+                                // retrouver la même animation que la suppression.
+                                withAnimation {
+                                    viewModel.restore(trip, in: modelContext)
+                                }
                             } label: {
                                 Label("Restaurer", systemImage: "arrow.uturn.backward")
                             }
