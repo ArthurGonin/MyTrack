@@ -72,37 +72,38 @@ struct PaywallStepView: View {
 
     var body: some View {
         VStack(spacing: 16) {
-            // Tout ce bloc doit tenir sans défiler : le tarif occupant le bas de
-            // l'écran, ce qui dépasse ici part sous lui et ne se voit plus —
-            // les avantages, précisément ce que la paywall a à défendre. D'où
-            // des tailles resserrées plutôt que confortables. Le ScrollView
-            // reste, mais comme filet pour les grandes tailles de texte et les
-            // petits écrans, pas comme mode de lecture normal.
-            ScrollView {
-                VStack(alignment: .leading, spacing: 18) {
-                    Text("Pourquoi MyTrack")
-                        .font(.title.bold())
+            // L'argumentaire ne défile pas : comme le reste de l'onboarding, il
+            // tient d'un seul tenant. Le tarif occupe le bas de l'écran, donc ce
+            // qui dépasserait ici passerait sous lui et ne se verrait plus — les
+            // avantages, précisément ce que la paywall a à défendre. D'où des
+            // tailles resserrées plutôt que confortables, et le `Spacer` qui
+            // pousse tout vers le haut au lieu de laisser le bloc s'étirer.
+            VStack(alignment: .leading, spacing: 18) {
+                Text("Pourquoi MyTrack")
+                    .font(.title.bold())
 
-                    ReviewQuoteCard(quote: reviewQuote)
+                ReviewQuoteCard(quote: reviewQuote)
 
-                    VStack(spacing: 12) {
-                        ForEach(paywallFeatures) { feature in
-                            HStack(spacing: 14) {
-                                Image(systemName: feature.symbolName)
-                                    .font(.body)
-                                    // Largeur fixe : sans elle, chaque symbole
-                                    // pousse son libellé à une abscisse
-                                    // différente et la colonne de texte ondule.
-                                    .frame(width: 26)
-                                    .foregroundStyle(.tint)
-                                Text(feature.label)
-                                    .font(.subheadline)
-                                Spacer()
-                            }
+                VStack(spacing: 12) {
+                    ForEach(paywallFeatures) { feature in
+                        HStack(spacing: 14) {
+                            Image(systemName: feature.symbolName)
+                                .font(.body)
+                                // Largeur fixe : sans elle, chaque symbole
+                                // pousse son libellé à une abscisse
+                                // différente et la colonne de texte ondule.
+                                .frame(width: 26)
+                                .foregroundStyle(.tint)
+                            Text(feature.label)
+                                .font(.subheadline)
+                            Spacer()
                         }
                     }
                 }
             }
+            .frame(maxWidth: .infinity, alignment: .leading)
+
+            Spacer(minLength: 0)
 
             if isLoadingProducts || isPurchasing || isRestoring {
                 ProgressView()
@@ -110,10 +111,9 @@ struct PaywallStepView: View {
             }
 
             VStack(spacing: 8) {
-                // Le tarif reste hors du ScrollView, avec le bouton d'achat :
-                // c'est ce sur quoi l'écran demande de se prononcer, donc ça ne
-                // doit jamais dépendre d'un défilement. Seul l'argumentaire
-                // défile.
+                // Le tarif est collé au bouton d'achat, en bas : c'est sur ce
+                // couple-là que l'écran demande de se prononcer, et il reste
+                // ancré au pouce quoi qu'il arrive à l'argumentaire au-dessus.
                 pricingOptions
                     .padding(.bottom, 4)
 
@@ -124,6 +124,7 @@ struct PaywallStepView: View {
                 }
                 .buttonStyle(.borderedProminent)
                 .foregroundStyle(Color.onAccent)
+                .glassEffect(.clear.interactive())
                 .controlSize(.large)
 
                 Button("Restaurer les achats") { restore() }
