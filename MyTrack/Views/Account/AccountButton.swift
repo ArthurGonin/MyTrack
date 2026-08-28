@@ -22,7 +22,7 @@ struct AccountButton: View {
                 .overlay {
                     Text(initial)
                         .font(.subheadline.weight(.semibold))
-                        .foregroundStyle(.white)
+                        .foregroundStyle(Color.onAccent)
                 }
                 .frame(width: 28, height: 28)
                 .padding(6)

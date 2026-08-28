@@ -265,6 +265,7 @@ struct RecordTripView: View {
                 }
             }
             .buttonStyle(.borderedProminent)
+            .foregroundStyle(Color.onAccent)
             .controlSize(.large)
         }
     }

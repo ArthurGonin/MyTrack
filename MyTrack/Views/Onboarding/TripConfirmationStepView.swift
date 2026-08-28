@@ -31,6 +31,7 @@ struct TripConfirmationStepView: View {
                     Text("Me demander à chaque fois").frame(maxWidth: .infinity)
                 }
                 .buttonStyle(.borderedProminent)
+                .foregroundStyle(Color.onAccent)
                 .controlSize(.large)
 
                 Button { onChooseAutomatic() } label: {

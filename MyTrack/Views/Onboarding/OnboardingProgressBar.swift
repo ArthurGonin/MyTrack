@@ -3,9 +3,10 @@
 //  MyTrack
 //
 //  One capsule per onboarding step, filled up to and including the current
-//  one. Uses a tinted fill rather than literal white — the onboarding
-//  background is a light gradient, so white-on-white wouldn't read — with
-//  the same "Stories"-style progress pattern.
+//  one, in the "Stories" progress pattern. Both colours are adaptive rather
+//  than literal black or white: the accent for the steps already done, and
+//  a faint `primary` for the ones left. Whichever theme is on, the two stay
+//  on opposite sides of the background.
 //
 
 import SwiftUI

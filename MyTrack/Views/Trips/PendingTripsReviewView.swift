@@ -52,6 +52,7 @@ struct PendingTripsReviewView: View {
                                 viewModel.confirm(trip, in: modelContext)
                             }
                             .buttonStyle(.borderedProminent)
+                            .foregroundStyle(Color.onAccent)
                         }
                     }
                     .padding()

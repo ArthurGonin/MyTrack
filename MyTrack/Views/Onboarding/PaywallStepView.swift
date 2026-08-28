@@ -123,6 +123,7 @@ struct PaywallStepView: View {
                     Text("J'y vais").frame(maxWidth: .infinity)
                 }
                 .buttonStyle(.borderedProminent)
+                .foregroundStyle(Color.onAccent)
                 .controlSize(.large)
 
                 Button("Restaurer les achats") { restore() }
@@ -309,14 +310,6 @@ struct PaywallStepView: View {
     }
 }
 
-/// La couleur du texte posé sur une carte teintée à l'accent.
-///
-/// Pas `.white` : l'accent est noir en thème clair mais blanc en thème sombre,
-/// où du blanc sur blanc ne se lirait plus du tout. `systemBackground` est
-/// exactement son inverse — blanc en clair, noir en sombre — donc le contraste
-/// tient des deux côtés sans qu'on ait à connaître le thème courant.
-private var onAccentColor: Color { Color(uiColor: .systemBackground) }
-
 private struct ReviewQuoteCard: View {
     let quote: LocalizedStringKey
 
@@ -355,10 +348,10 @@ private struct PricingOptionCard: View {
             VStack(spacing: 4) {
                 Text(title)
                     .font(.headline)
-                    .foregroundStyle(isSelected ? onAccentColor : .primary)
+                    .foregroundStyle(isSelected ? Color.onAccent : .primary)
                 Text(subtitle ?? " ")
                     .font(.footnote)
-                    .foregroundStyle(isSelected ? onAccentColor.opacity(0.85) : .secondary)
+                    .foregroundStyle(isSelected ? Color.onAccent.opacity(0.85) : .secondary)
                     .opacity(subtitle == nil ? 0 : 1)
             }
             .frame(maxWidth: .infinity)
@@ -391,7 +384,7 @@ private struct LifetimeOptionCard: View {
 
     /// La couleur du texte courant, selon que la carte est remplie d'accent ou
     /// laissée en verre clair.
-    private var foreground: Color { isSelected ? onAccentColor : .primary }
+    private var foreground: Color { isSelected ? Color.onAccent : .primary }
 
     var body: some View {
         Button(action: action) {
@@ -436,8 +429,8 @@ private struct LifetimeOptionCard: View {
             .font(.caption2.weight(.bold))
             .padding(.horizontal, 8)
             .padding(.vertical, 3)
-            .foregroundStyle(isSelected ? Color.accentColor : onAccentColor)
-            .background(isSelected ? onAccentColor : Color.accentColor, in: .capsule)
+            .foregroundStyle(isSelected ? Color.accentColor : Color.onAccent)
+            .background(isSelected ? Color.onAccent : Color.accentColor, in: .capsule)
     }
 }
 

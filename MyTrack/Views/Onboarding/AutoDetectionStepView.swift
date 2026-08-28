@@ -40,6 +40,7 @@ struct AutoDetectionStepView: View {
                     Text("Oui, activer").frame(maxWidth: .infinity)
                 }
                 .buttonStyle(.borderedProminent)
+                .foregroundStyle(Color.onAccent)
                 .controlSize(.large)
 
                 Button { onSkip() } label: {
