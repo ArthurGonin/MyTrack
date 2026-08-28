@@ -133,8 +133,11 @@ struct SlideToConfirmButton: View {
         .font(.title3)
         .fontWeight(.medium)
         .lineLimit(1)
+        // Centré sur la gélule entière, et non sur ce qu'il en reste une fois
+        // la pastille au repos retirée : c'est la forme qu'on voit, donc c'est
+        // par rapport à elle que le libellé doit être au milieu. La pastille
+        // lui passe dessus, elle ne lui prend pas sa place.
         .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .padding(.leading, height / 2)
         .visualEffect { [isActive, offsetX, height] content, proxy in
             // La pastille grossit sous le doigt, et la lentille grossit avec
             // elle : c'est le même rectangle qui décrit les deux.
