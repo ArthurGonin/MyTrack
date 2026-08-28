@@ -6,12 +6,14 @@
 //  attend d'iOS, et où en est chaque demande.
 //
 //  iOS ne pose sa question qu'une fois. Tant qu'elle n'a jamais été posée, la
-//  demande fait bien apparaître la fenêtre système ; une fois refusée, la même
+//  demande fait bien apparaître la fenêtre système ; une fois répondue, la même
 //  demande ne fait plus rien du tout — silencieusement. Une ligne qui
 //  appellerait toujours `request…` laisserait donc l'utilisateur taper dans le
 //  vide sans rien comprendre. C'est pourquoi chaque ligne lit son état avant
-//  d'agir : elle demande quand le système répondra encore, et ouvre les
-//  Réglages d'iOS quand c'est le seul chemin qui reste.
+//  d'agir : elle ne pose la question système que la première fois, et mène aux
+//  Réglages d'iOS dans tous les autres cas — pour lever un refus comme pour
+//  relire ou reprendre ce qui a déjà été accordé. Seule une autorisation que
+//  l'appareil ne peut pas rendre reste inerte.
 //
 
 import CoreLocation
@@ -176,7 +178,11 @@ struct PermissionsSettingsSection: View {
 /// par iOS : c'est ce qui décide à la fois du libellé de droite et de ce que
 /// fait la ligne quand on la touche.
 private enum PermissionState {
-    /// Accordée — il n'y a plus rien à demander, la ligne ne réagit plus.
+    /// Accordée. Il n'y a plus rien à demander, mais la ligne reste vivante et
+    /// mène aux Réglages d'iOS : c'est là qu'on va relire ce qu'on a accordé à
+    /// l'app, ou le reprendre. Une ligne inerte obligeait à ressortir de l'app
+    /// et à retrouver MyTrack à la main dans une liste de tout ce qui est
+    /// installé.
     case satisfied(LocalizedStringKey)
     /// Jamais demandée, ou demandée à un palier inférieur : le système
     /// répondra encore par sa fenêtre.
@@ -200,8 +206,10 @@ private enum PermissionState {
 
     var isActionable: Bool {
         switch self {
-        case .askable, .blocked: true
-        case .satisfied, .unavailable: false
+        case .askable, .blocked, .satisfied: true
+        // Pas de capteur sur l'appareil : les Réglages n'ont pas de ligne à
+        // montrer pour quelque chose qui n'existe pas ici.
+        case .unavailable: false
         }
     }
 
@@ -212,8 +220,10 @@ private enum PermissionState {
     /// vrai départ. Une ligne qui se contente de poser la question du système
     /// ne quitte rien et n'en porte donc pas.
     var opensSystemSettings: Bool {
-        if case .blocked = self { return true }
-        return false
+        switch self {
+        case .blocked, .satisfied: true
+        case .askable, .unavailable: false
+        }
     }
 }
 
