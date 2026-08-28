@@ -22,6 +22,9 @@ struct RecordTripView: View {
     @State private var isAwaitingLocationPermission = false
     @State private var isSubscriptionStorePresented = false
     @State private var isManageSubscriptionsPresented = false
+    /// Vrai quand la feuille a été tirée vers le bas : la carte est
+    /// rangée, les deux chiffres et le bouton restent.
+    @State private var isSheetCollapsed = false
     /// La taille du grand nombre du compteur. `@ScaledMetric` plutôt
     /// qu'une constante : une taille en points ne suit pas les réglages
     /// d'accessibilité, et ce nombre-là est ce qu'on vient lire.
@@ -59,6 +62,12 @@ struct RecordTripView: View {
                     // plus rien entre les deux.
                     if !viewModel.isRecording {
                         odometer
+                    }
+                    // Ce qui pousse la feuille en bas quand elle n'y arrive
+                    // pas d'elle-même. Pas de ressort tant que la carte est
+                    // là : elle est déjà élastique, et les deux se
+                    // partageraient la place au lieu de la lui laisser.
+                    if !viewModel.isRecording || isSheetCollapsed {
                         Spacer(minLength: 0)
                     }
                     recordingSheet
@@ -123,6 +132,12 @@ struct RecordTripView: View {
                 }
             }
             .accountToolbar()
+            // Une nouvelle course s'ouvre toujours sur la carte : c'est ce
+            // qu'on vient voir. Ce qu'on avait replié la fois d'avant ne la
+            // suit pas.
+            .onChange(of: viewModel.isRecording) { _, isRecording in
+                if isRecording { isSheetCollapsed = false }
+            }
             // The system prompt is answered long after the tap that raised it
             // returned. Watching the status here is what turns that answer back
             // into the recording the user asked for — LocationService's
@@ -282,14 +297,18 @@ struct RecordTripView: View {
     private var recordingSheet: some View {
         VStack(spacing: 16) {
             if viewModel.isRecording {
+                grabber
                 liveStats
-                LiveTripMapView()
-                    .frame(maxWidth: .infinity, maxHeight: .infinity)
-                    // L'arrondi des cartes de l'app (`appCard`), et non celui,
-                    // concentrique, de la feuille : la carte flotte au milieu
-                    // d'elle, loin de ses coins, et `.concentric` n'a rien à
-                    // quoi se raccorder là — il retombe sur des coins droits.
-                    .clipShape(.rect(cornerRadius: 22, style: .continuous))
+                if !isSheetCollapsed {
+                    LiveTripMapView()
+                        .frame(maxWidth: .infinity, maxHeight: .infinity)
+                        // L'arrondi des cartes de l'app (`appCard`), et non
+                        // celui, concentrique, de la feuille : la carte flotte
+                        // au milieu d'elle, loin de ses coins, et `.concentric`
+                        // n'a rien à quoi se raccorder là — il retombe sur des
+                        // coins droits.
+                        .clipShape(.rect(cornerRadius: 22, style: .continuous))
+                }
             }
             slideControl
         }
@@ -298,6 +317,48 @@ struct RecordTripView: View {
             viewModel.isRecording ? .regular : .identity,
             in: .rect(cornerRadius: Self.sheetCornerRadius, style: .continuous)
         )
+        .gesture(collapseDrag)
+        .sensoryFeedback(.impact(weight: .light), trigger: isSheetCollapsed)
+    }
+
+    /// La barre grise en haut de la feuille : elle dit que ça se prend et que
+    /// ça se replie, comme sur les feuilles du système.
+    ///
+    /// Le trait fait 36 × 5 comme celui d'iOS, mais la zone qui l'entoure est
+    /// bien plus haute : c'est elle qu'on attrape, et cinq points de haut ne
+    /// s'attrapent pas. Elle répond aussi à l'appui, qui est le geste que
+    /// beaucoup essaient en premier.
+    private var grabber: some View {
+        let label: LocalizedStringKey = isSheetCollapsed ? "Afficher la carte" : "Masquer la carte"
+        return Capsule()
+            .fill(.tertiary)
+            .frame(width: 36, height: 5)
+            .frame(maxWidth: .infinity, minHeight: 22)
+            // Remonté dans la marge de la feuille : posée telle quelle, la
+            // barre serait trop bas pour se lire comme le haut de la feuille.
+            .padding(.top, -6)
+            .contentShape(.rect)
+            .onTapGesture {
+                withAnimation(Self.collapseAnimation) { isSheetCollapsed.toggle() }
+            }
+            .accessibilityLabel(label)
+            .accessibilityAddTraits(.isButton)
+    }
+
+    /// Le glissement qui range la carte et la ramène.
+    ///
+    /// Il se décide au relâchement plutôt que de suivre le doigt : la carte est
+    /// une vue MapKit, et la redimensionner à chaque image du geste coûte cher
+    /// pour ce que ça rapporte. `predictedEndTranslation` enlève ce que ça
+    /// pourrait avoir de sec — un coup vif vers le bas suffit, sans avoir à
+    /// faire tout le chemin.
+    private var collapseDrag: some Gesture {
+        DragGesture(minimumDistance: 12)
+            .onEnded { value in
+                let travel = value.predictedEndTranslation.height
+                guard abs(travel) > 40 else { return }
+                withAnimation(Self.collapseAnimation) { isSheetCollapsed = travel > 0 }
+            }
     }
 
     /// Les deux chiffres qui comptent pendant un trajet, en haut de la feuille.
@@ -319,7 +380,6 @@ struct RecordTripView: View {
             }
         }
         .padding(.horizontal, 10)
-        .padding(.top, 6)
     }
 
     /// Le bouton du bas, qui lance ou arrête l'enregistrement.
@@ -343,6 +403,10 @@ struct RecordTripView: View {
             }
         }
     }
+
+    /// Le repli et le retour de la carte. Le même que l'ouverture de la
+    /// feuille, en un peu plus court : le chemin l'est aussi.
+    private static let collapseAnimation: Animation = .smooth(duration: 0.35)
 
     /// La marge entre le bord de la feuille et ce qu'elle contient — le
     /// bouton compris, qu'elle vient donc border de dix points.
