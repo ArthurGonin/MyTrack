@@ -185,7 +185,7 @@ struct RecordTripView: View {
         // cours est irréversible pour la portion de trajet qui reste, et le
         // geste part du bord opposé à celui qui l'a lancé.
         SlideToConfirmButton(
-            title: "Glisser pour arrêter",
+            title: "Arrêter",
             systemImage: "chevron.left",
             tint: .red,
             startEdge: .trailing
@@ -226,7 +226,7 @@ struct RecordTripView: View {
         .transition(.opacity.combined(with: .scale(scale: 0.94)))
 
         SlideToConfirmButton(
-            title: "Glisser pour démarrer",
+            title: "Démarrer",
             systemImage: "chevron.right",
             tint: .green,
             startEdge: .leading
