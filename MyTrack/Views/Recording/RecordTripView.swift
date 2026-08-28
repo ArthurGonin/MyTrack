@@ -38,6 +38,14 @@ struct RecordTripView: View {
 
     private var canRecordTrips: Bool { appServices.purchaseService.canRecordTrips }
 
+    /// Où en est la scène : 0 la voiture est garée, 1 la carte est en place.
+    ///
+    /// Piloté par le glissement plutôt que par `isRecording`, et c'est tout
+    /// l'intérêt : tant que le pouce n'est pas allé au bout, il peut revenir en
+    /// arrière et la voiture recule avec lui. Le déduire de `isRecording`
+    /// n'aurait donné que deux positions, et un saut entre les deux.
+    @State private var stageProgress: CGFloat = 0
+
     var body: some View {
         NavigationStack {
             VStack(spacing: 20) {
@@ -47,10 +55,13 @@ struct RecordTripView: View {
                 // Arrêter, même sans abonnement. Celui-ci peut tomber en pleine
                 // route, et il n'est pas question de laisser l'utilisateur sans
                 // moyen de terminer l'enregistrement qu'il a lancé.
-                if viewModel.isRecording {
-                    recordingContent
-                } else if canRecordTrips {
-                    idleContent
+                if viewModel.isRecording || canRecordTrips {
+                    // La scène vit ici, en dehors du test sur `isRecording` :
+                    // dedans, SwiftUI la détruirait et la reconstruirait au
+                    // basculement, et la voiture comme la carte sauteraient au
+                    // lieu de finir leur course. Seul le bouton change.
+                    stage
+                    slideControl
                 } else {
                     subscriptionRequiredView
                         .frame(maxHeight: .infinity)
@@ -157,81 +168,149 @@ struct RecordTripView: View {
     /// Les deux chiffres qui comptent pendant un trajet, côte à côte dans une
     /// carte, puis la carte lisant la trace en direct.
     @ViewBuilder
-    private var recordingContent: some View {
-        HStack(spacing: 16) {
-            StatView("Distance") {
-                Text(formattedDistance(viewModel.currentDistanceMeters))
+    /// La scène : la voiture et la carte se relaient sur la même bande, l'une
+    /// sortant par la droite pendant que l'autre entre par la gauche.
+    ///
+    /// La voiture est dessinée par-dessus la carte, et non l'inverse : elle
+    /// s'en va *devant*, la carte apparaissant dans son dos. Les deux glissent
+    /// d'une largeur d'écran pleine, marges comprises, pour sortir franchement
+    /// du cadre au lieu de s'arrêter au bord du contenu.
+    private var stage: some View {
+        GeometryReader { proxy in
+            let width = proxy.size.width + Self.screenInset * 2
+
+            // Aligné à gauche, et pas au centre : la voiture est plus large que
+            // l'écran, et un ZStack centré aurait fait déborder son surplus des
+            // deux côtés — l'arrière se serait fait couper autant que l'avant.
+            ZStack(alignment: .leading) {
+                // Montée seulement quand elle a commencé à entrer : la carte
+                // fait tourner son propre suivi de position, et ça n'a pas à
+                // vivre en fond d'écran d'accueil tant que rien ne bouge.
+                if stageProgress > 0 {
+                    recordingStage
+                        // Largeur imposée : le ZStack prend celle de son plus
+                        // grand enfant, ici la voiture qui déborde exprès, et
+                        // sans ça la carte s'étirait jusque-là et sortait du
+                        // cadre par la droite.
+                        .frame(width: proxy.size.width)
+                        .offset(x: -(1 - stageProgress) * width)
+                }
+
+                carArtwork(availableWidth: width)
+                    .offset(x: stageProgress * width)
             }
-            Divider().frame(height: 34)
-            StatView("Durée") {
-                if let start = viewModel.currentStartDate {
-                    Text(start, style: .timer)
-                } else {
-                    Text(verbatim: "—")
+            .frame(width: proxy.size.width, height: proxy.size.height, alignment: .leading)
+        }
+        .frame(maxHeight: .infinity)
+        // Un trajet peut aussi démarrer sans que personne n'ait touché au
+        // bouton — la détection automatique s'en charge. La scène suit alors
+        // l'état plutôt que le pouce.
+        .onChange(of: viewModel.isRecording) { _, isRecording in
+            withAnimation(.smooth(duration: 0.45)) {
+                stageProgress = isRecording ? 1 : 0
+            }
+        }
+        .onAppear { stageProgress = viewModel.isRecording ? 1 : 0 }
+    }
+
+    /// La voiture au repos : garée à gauche, l'avant déjà sorti du cadre.
+    ///
+    /// Elle est plus large que l'écran et alignée à gauche, si bien qu'on n'en
+    /// voit que l'arrière et le flanc — assez pour la reconnaître, assez peu
+    /// pour qu'elle ait l'air d'être sur le point de partir. Le décalage annule
+    /// la marge de l'écran : le trait doit toucher le bord, pas s'arrêter avant.
+    ///
+    /// En template : le trait prend `primary`, donc noir en thème clair et blanc
+    /// en thème sombre, sans qu'on ait à fournir deux images.
+    private func carArtwork(availableWidth: CGFloat) -> some View {
+        // Dimensions posées à la main plutôt que `scaledToFit` : le dessin
+        // touche les deux bords de son image (aucune marge transparente), donc
+        // `scaledToFit` le ramenait sagement dans la largeur disponible — soit
+        // exactement ce qu'on ne veut pas ici, où il doit déborder.
+        let carWidth = availableWidth * Self.carWidthRatio
+
+        return Image("CarLineArt")
+            .renderingMode(.template)
+            .resizable()
+            .foregroundStyle(.primary)
+            // Le pare-chocs arrière est à l'abscisse zéro du dessin, donc poser
+            // ce cadre au bord gauche suffit à montrer l'arrière en entier : la
+            // voiture est garée là, complète, et c'est son avant qui déborde.
+            .frame(width: carWidth, height: carWidth / Self.carAspectRatio)
+    }
+
+    /// Ce qui remplace la voiture pendant un trajet : les compteurs et la
+    /// carte, d'un seul tenant. Ils arrivent ensemble parce qu'ils sont une
+    /// seule chose — l'écran de trajet en cours — et que les faire entrer l'un
+    /// après l'autre ferait bouger la hauteur de la carte en pleine course.
+    private var recordingStage: some View {
+        VStack(spacing: 20) {
+            HStack(spacing: 16) {
+                StatView("Distance") {
+                    Text(formattedDistance(viewModel.currentDistanceMeters))
+                }
+                Divider().frame(height: 34)
+                StatView("Durée") {
+                    if let start = viewModel.currentStartDate {
+                        Text(start, style: .timer)
+                    } else {
+                        Text(verbatim: "—")
+                    }
                 }
             }
-        }
-        .appCard()
-        .transition(.opacity.combined(with: .scale(scale: 0.94)))
+            .appCard()
 
-        LiveTripMapView()
-            .frame(maxWidth: .infinity, maxHeight: .infinity)
-            // La carte dessine ses propres bords : elle est rognée à la forme
-            // de la carte plutôt que posée dessus.
-            .clipShape(.rect(cornerRadius: 22, style: .continuous))
-            .transition(.opacity.combined(with: .scale(scale: 0.94)))
-
-        // Un glissement, pas un appui : couper un enregistrement en cours est
-        // irréversible pour la portion de trajet qui reste, et ça ne doit pas
-        // pouvoir se faire d'un doigt posé par mégarde sur l'écran.
-        SlideToConfirmButton(
-            title: "Arrêter",
-            systemImage: "stop.fill",
-            tint: .red
-        ) {
-            viewModel.stopManualRecording(in: modelContext)
+            LiveTripMapView()
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+                // La carte dessine ses propres bords : elle est rognée à la
+                // forme de la carte plutôt que posée dessus.
+                .clipShape(.rect(cornerRadius: 22, style: .continuous))
         }
     }
 
-    /// Au repos, la voiture occupe le centre de l'écran et le bouton à faire
-    /// glisser pour démarrer se pose en bas, à portée de pouce.
+    /// Le bouton du bas, seul élément à changer entre les deux états.
     ///
-    /// Le centrage se dit sur la carte elle-même plutôt qu'avec un `Spacer` de
-    /// part et d'autre. Le résultat est le même au pixel près — les deux
-    /// `Spacer` étaient symétriques, ils centraient donc déjà — mais l'intention
-    /// est écrite une fois, là où elle s'applique, au lieu d'être à déduire de
-    /// deux vues invisibles autour desquelles le `VStack` ajoutait encore son
-    /// espacement.
+    /// Les deux pilotent la même scène en sens inverse : démarrer la pousse
+    /// vers la carte, arrêter la ramène vers la voiture. D'où le `1 - progress`
+    /// d'un côté, qui fait reculer la carte à mesure que le pouce avance.
+    ///
+    /// Un glissement et pas un appui, dans les deux sens : couper un
+    /// enregistrement en cours est irréversible pour la portion de trajet qui
+    /// reste, et ça ne doit pas pouvoir se faire d'un doigt posé par mégarde.
     @ViewBuilder
-    private var idleContent: some View {
-        VStack(spacing: 18) {
-            Image("CarIllustration")
-                .resizable()
-                .scaledToFit()
-                .frame(maxWidth: 240)
-
-            VStack(spacing: 6) {
-                Text("En route")
-                    .font(.title2.bold())
-                Text("Lance l'enregistrement quand tu démarres.")
-                    .font(.subheadline)
-                    .foregroundStyle(.secondary)
-                    .multilineTextAlignment(.center)
+    private var slideControl: some View {
+        if viewModel.isRecording {
+            SlideToConfirmButton(
+                title: "Arrêter",
+                systemImage: "stop.fill",
+                tint: .red,
+                onProgressChange: { stageProgress = 1 - $0 }
+            ) {
+                viewModel.stopManualRecording(in: modelContext)
+            }
+        } else {
+            SlideToConfirmButton(
+                title: "Démarrer",
+                systemImage: "play.fill",
+                tint: .green,
+                onProgressChange: { stageProgress = $0 }
+            ) {
+                startRecording()
             }
         }
-        .frame(maxWidth: .infinity)
-        .appCard(padding: 24)
-        .frame(maxHeight: .infinity)
-        .transition(.opacity.combined(with: .scale(scale: 0.94)))
-
-        SlideToConfirmButton(
-            title: "Démarrer",
-            systemImage: "play.fill",
-            tint: .green
-        ) {
-            startRecording()
-        }
     }
+
+    /// La marge que `padding()` pose autour du contenu de l'écran. Répétée ici
+    /// parce que la voiture doit précisément en sortir.
+    private static let screenInset: CGFloat = 16
+
+    /// Combien de largeurs d'écran la voiture occupe. Au-delà de 1, l'avant
+    /// passe le bord droit : c'est ce dépassement qui fait qu'on n'en voit que
+    /// l'arrière, et qu'elle a l'air prête à partir.
+    private static let carWidthRatio: CGFloat = 1.35
+
+    /// Les proportions du dessin, 1774 × 887.
+    private static let carAspectRatio: CGFloat = 2
 
     /// Prend toute la place du bouton Démarrer plutôt que de s'ajouter à côté
     /// de lui : le bouton ne ferait plus rien de toute façon, et c'est cet
