@@ -47,8 +47,14 @@ struct AccountSettingsView: View {
                 // reste de ses fonctions, tes préférences, ce que tu paies,
                 // puis la sortie.
                 Section {
-                    NavigationLink("Données personnelles") {
+                    NavigationLink {
                         PersonalDataView()
+                    } label: {
+                        SettingsRowLabel(
+                            "Données personnelles",
+                            systemImage: "person.crop.square.fill",
+                            tint: .indigo
+                        )
                     }
                 } header: {
                     Text("Compte")
@@ -60,7 +66,7 @@ struct AccountSettingsView: View {
                     // suit porte la ligne qui le répare. Une modale par-dessus
                     // dirait la même chose en obligeant à s'en débarrasser
                     // avant de pouvoir agir.
-                    Toggle("Suivi automatique", isOn: Binding(
+                    Toggle(isOn: Binding(
                         get: { viewModel.isAutoDetectionEnabled },
                         set: { isOn in
                             if isOn {
@@ -69,7 +75,13 @@ struct AccountSettingsView: View {
                                 viewModel.disableAutoDetection()
                             }
                         }
-                    ))
+                    )) {
+                        SettingsRowLabel(
+                            "Suivi automatique",
+                            systemImage: "car.fill",
+                            tint: .green
+                        )
+                    }
                 } header: {
                     Text("Enregistrement")
                 } footer: {
@@ -82,7 +94,13 @@ struct AccountSettingsView: View {
                 // trajet détecté ne viendrait jamais poser la question.
                 if viewModel.isAutoDetectionEnabled {
                     Section {
-                        Toggle("Confirmer chaque trajet", isOn: $drivingDetector.requiresTripConfirmation)
+                        Toggle(isOn: $drivingDetector.requiresTripConfirmation) {
+                            SettingsRowLabel(
+                                "Confirmer chaque trajet",
+                                systemImage: "checkmark.square.fill",
+                                tint: .teal
+                            )
+                        }
                     } footer: {
                         Text(tripConfirmationFooter)
                     }
@@ -97,8 +115,14 @@ struct AccountSettingsView: View {
                 PermissionsSettingsSection()
 
                 Section {
-                    NavigationLink("Rapports périodiques") {
+                    NavigationLink {
                         ReportSettingsView()
+                    } label: {
+                        SettingsRowLabel(
+                            "Rapports périodiques",
+                            systemImage: "doc.text.fill",
+                            tint: .orange
+                        )
                     }
                 } header: {
                     Text("Rapports")
@@ -109,18 +133,22 @@ struct AccountSettingsView: View {
                     // que SwiftUI ouvre tout seul dans un Form, là où deux
                     // unités tiennent dans un menu. Le changement s'applique
                     // aussitôt, sans redémarrage.
-                    Picker("Langue", selection: $languageService.language) {
+                    Picker(selection: $languageService.language) {
                         ForEach(AppLanguage.allCases) { language in
                             // Chaque langue s'annonce dans la sienne : ce
                             // libellé ne passe pas par le catalogue.
                             Text(language.nativeName).tag(language)
                         }
+                    } label: {
+                        SettingsRowLabel("Langue", systemImage: "globe", tint: .purple)
                     }
 
-                    Picker("Distance", selection: $unitSettings.distanceUnit) {
+                    Picker(selection: $unitSettings.distanceUnit) {
                         ForEach(DistanceUnit.allCases) { unit in
                             Text(unit.label).tag(unit)
                         }
+                    } label: {
+                        SettingsRowLabel("Distance", systemImage: "ruler.fill", tint: .brown)
                     }
                     // Two options don't warrant pushing a whole screen.
                     .pickerStyle(.menu)
@@ -136,26 +164,22 @@ struct AccountSettingsView: View {
                             UIApplication.shared.open(appStoreReviewURL)
                         }
                     } label: {
-                        // Icône colorée à part du libellé : un `Label(_:systemImage:)`
-                        // teindrait les deux d'un coup, et le texte doit rester noir.
-                        Label {
-                            Text("Laisser un avis")
-                        } icon: {
-                            Image(systemName: "star.square.fill")
-                                .foregroundStyle(.green)
-                        }
+                        SettingsRowLabel(
+                            "Laisser un avis",
+                            systemImage: "star.square.fill",
+                            tint: .green
+                        )
                     }
                     .disabled(appStoreReviewURL == nil)
 
                     Button(role: .destructive) {
                         isDeleteConfirmationPresented = true
                     } label: {
-                        Label {
-                            Text("Supprimer le compte")
-                        } icon: {
-                            Image(systemName: "trash.square.fill")
-                                .foregroundStyle(.red)
-                        }
+                        SettingsRowLabel(
+                            "Supprimer le compte",
+                            systemImage: "trash.square.fill",
+                            tint: .red
+                        )
                     }
                 } footer: {
                     Text("Supprime définitivement tous tes trajets, véhicules et réglages. Cette action est irréversible.")

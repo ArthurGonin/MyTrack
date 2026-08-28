@@ -38,19 +38,27 @@ struct PermissionsSettingsSection: View {
         Section {
             PermissionRow(
                 title: "Localisation",
-                systemImage: "location",
+                systemImage: "location.square.fill",
+                tint: .blue,
                 state: locationState,
                 action: requestLocation
             )
+            // Le symbole de base de l'activité physique : celui que CoreMotion
+            // et la rubrique « Mouvement et forme » des Réglages d'iOS
+            // emploient. Pas de variante `.square.fill` chez Apple pour
+            // celui-ci — c'est la seule ligne de l'écran à porter un glyphe
+            // nu, et la teinte suffit à la ranger avec les autres.
             PermissionRow(
                 title: "Activité physique",
                 systemImage: "figure.walk.motion",
+                tint: .pink,
                 state: motionState,
                 action: requestMotion
             )
             PermissionRow(
                 title: "Notifications",
-                systemImage: "bell",
+                systemImage: "bell.square.fill",
+                tint: .red,
                 state: notificationState,
                 action: requestNotifications
             )
@@ -211,13 +219,14 @@ private enum PermissionState {
 private struct PermissionRow: View {
     let title: LocalizedStringKey
     let systemImage: String
+    let tint: Color
     let state: PermissionState
     let action: () -> Void
 
     var body: some View {
         Button(action: action) {
             HStack {
-                Label(title, systemImage: systemImage)
+                SettingsRowLabel(title, systemImage: systemImage, tint: tint)
                     .foregroundStyle(.primary)
                 Spacer()
                 // Gris quand c'est acquis, à l'accent quand il reste quelque

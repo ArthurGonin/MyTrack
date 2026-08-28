@@ -42,8 +42,18 @@ struct SubscriptionSettingsSection: View {
             subscriptionSection
 
             Section {
-                legalLink("Conditions d'utilisation", url: LegalLinks.termsOfUse)
-                legalLink("Confidentialité", url: LegalLinks.privacyPolicy)
+                legalLink(
+                    "Conditions d'utilisation",
+                    systemImage: "doc.plaintext.fill",
+                    tint: .gray,
+                    url: LegalLinks.termsOfUse
+                )
+                legalLink(
+                    "Confidentialité",
+                    systemImage: "hand.raised.square.fill",
+                    tint: .blue,
+                    url: LegalLinks.privacyPolicy
+                )
             }
         }
     }
@@ -52,23 +62,35 @@ struct SubscriptionSettingsSection: View {
         Section {
             switch purchaseService.entitlement {
             case .lifetime:
-                LabeledContent("Formule", value: planName(.lifetime))
+                LabeledContent {
+                    Text(planName(.lifetime))
+                } label: {
+                    SettingsRowLabel("Formule", systemImage: "creditcard.fill", tint: .indigo)
+                }
                 // Rien à gérer côté StoreKit pour un non-consommable : la
                 // feuille système de gestion d'abonnement n'a pas de prise sur
                 // lui. Sauf si un abonnement court encore — acheté avant
                 // celui-ci et que l'achat n'a pas résilié : c'est alors le seul
                 // bouton qui compte, celui qui mène à sa résiliation.
                 if purchaseService.activeSubscription != nil {
-                    Button("Gérer l'abonnement") {
+                    Button {
                         isManageSubscriptionsPresented = true
+                    } label: {
+                        SettingsRowLabel("Gérer l'abonnement", systemImage: "gearshape.fill", tint: .gray)
                     }
                 }
 
             case .subscription(let subscription):
-                LabeledContent("Formule", value: planName(subscription.plan))
+                LabeledContent {
+                    Text(planName(subscription.plan))
+                } label: {
+                    SettingsRowLabel("Formule", systemImage: "creditcard.fill", tint: .indigo)
+                }
 
-                Button("Gérer l'abonnement") {
+                Button {
                     isManageSubscriptionsPresented = true
+                } label: {
+                    SettingsRowLabel("Gérer l'abonnement", systemImage: "gearshape.fill", tint: .gray)
                 }
 
                 lifetimeUpgradeButton
@@ -89,12 +111,24 @@ struct SubscriptionSettingsSection: View {
                 // faut à quelqu'un qui n'a rien annulé, c'est sa carte, pas une
                 // nouvelle formule.
                 if purchaseService.hasBillingIssue {
-                    Button("Mettre à jour le paiement") {
+                    Button {
                         isManageSubscriptionsPresented = true
+                    } label: {
+                        SettingsRowLabel(
+                            "Mettre à jour le paiement",
+                            systemImage: "creditcard.fill",
+                            tint: .indigo
+                        )
                     }
                 } else {
-                    Button("Voir les formules") {
+                    Button {
                         isStorePresented = true
+                    } label: {
+                        SettingsRowLabel(
+                            "Voir les formules",
+                            systemImage: "creditcard.fill",
+                            tint: .indigo
+                        )
                     }
                 }
             }
@@ -103,7 +137,11 @@ struct SubscriptionSettingsSection: View {
                 restore()
             } label: {
                 HStack {
-                    Text("Restaurer les achats")
+                    SettingsRowLabel(
+                        "Restaurer les achats",
+                        systemImage: "arrow.clockwise.square.fill",
+                        tint: .blue
+                    )
                     if purchaseService.isRestoring {
                         Spacer()
                         ProgressView()
@@ -189,7 +227,11 @@ struct SubscriptionSettingsSection: View {
                 buyLifetime()
             } label: {
                 HStack {
-                    Text("Passer à l'achat unique")
+                    SettingsRowLabel(
+                        "Passer à l'achat unique",
+                        systemImage: "infinity",
+                        tint: .yellow
+                    )
                     Spacer()
                     if purchaseService.isPurchasing {
                         ProgressView()
@@ -320,11 +362,16 @@ struct SubscriptionSettingsSection: View {
     /// pour le navigateur. Sans elle, la ligne ressemble à toutes celles qui
     /// poussent un écran, et le départ vers Safari surprend.
     @ViewBuilder
-    private func legalLink(_ title: LocalizedStringKey, url: URL?) -> some View {
+    private func legalLink(
+        _ title: LocalizedStringKey,
+        systemImage: String,
+        tint: Color,
+        url: URL?
+    ) -> some View {
         if let url {
             Link(destination: url) {
                 HStack {
-                    Text(title)
+                    SettingsRowLabel(title, systemImage: systemImage, tint: tint)
                         .foregroundStyle(.primary)
                     Spacer()
                     Image(systemName: "arrow.up.right")
@@ -334,7 +381,9 @@ struct SubscriptionSettingsSection: View {
                 .contentShape(.rect)
             }
         } else {
-            Text(title).foregroundStyle(.tertiary)
+            // Ligne inerte : l'icône s'éteint avec le texte plutôt que de
+            // garder sa couleur, qui donnerait l'air d'un lien cliquable.
+            Label(title, systemImage: systemImage).foregroundStyle(.tertiary)
         }
     }
 
