@@ -44,7 +44,7 @@ struct SubscriptionSettingsSection: View {
             Section {
                 legalLink(
                     "Conditions d'utilisation",
-                    systemImage: "doc.plaintext.fill",
+                    systemImage: "info.square.fill",
                     tint: .gray,
                     url: LegalLinks.termsOfUse
                 )
@@ -65,7 +65,7 @@ struct SubscriptionSettingsSection: View {
                 LabeledContent {
                     Text(planName(.lifetime))
                 } label: {
-                    SettingsRowLabel("Formule", systemImage: "creditcard.fill", tint: .indigo)
+                    SettingsRowLabel("Formule", systemImage: "tag.square.fill", tint: .indigo)
                 }
                 // Rien à gérer côté StoreKit pour un non-consommable : la
                 // feuille système de gestion d'abonnement n'a pas de prise sur
@@ -76,7 +76,7 @@ struct SubscriptionSettingsSection: View {
                     Button {
                         isManageSubscriptionsPresented = true
                     } label: {
-                        SettingsRowLabel("Gérer l'abonnement", systemImage: "gearshape.fill", tint: .gray)
+                        SettingsRowLabel("Gérer l'abonnement", systemImage: "arrow.up.right.square.fill", tint: .gray)
                     }
                 }
 
@@ -84,13 +84,13 @@ struct SubscriptionSettingsSection: View {
                 LabeledContent {
                     Text(planName(subscription.plan))
                 } label: {
-                    SettingsRowLabel("Formule", systemImage: "creditcard.fill", tint: .indigo)
+                    SettingsRowLabel("Formule", systemImage: "tag.square.fill", tint: .indigo)
                 }
 
                 Button {
                     isManageSubscriptionsPresented = true
                 } label: {
-                    SettingsRowLabel("Gérer l'abonnement", systemImage: "gearshape.fill", tint: .gray)
+                    SettingsRowLabel("Gérer l'abonnement", systemImage: "arrow.up.right.square.fill", tint: .gray)
                 }
 
                 lifetimeUpgradeButton
@@ -101,9 +101,10 @@ struct SubscriptionSettingsSection: View {
                 Label {
                     Text(warningTitle)
                 } icon: {
-                    Image(systemName: purchaseService.hasBillingIssue
-                        ? "creditcard.trianglebadge.exclamationmark"
-                        : "exclamationmark.triangle.fill")
+                    // Un seul glyphe pour les deux cas, comme le reste de
+                    // l'écran : c'est le libellé — « Problème de paiement » ou
+                    // « Aucun abonnement actif » — qui dit lequel des deux.
+                    Image(systemName: "exclamationmark.square.fill")
                 }
                 .foregroundStyle(.red)
 
@@ -116,8 +117,8 @@ struct SubscriptionSettingsSection: View {
                     } label: {
                         SettingsRowLabel(
                             "Mettre à jour le paiement",
-                            systemImage: "creditcard.fill",
-                            tint: .indigo
+                            systemImage: "arrow.up.right.square.fill",
+                            tint: .gray
                         )
                     }
                 } else {
@@ -126,7 +127,7 @@ struct SubscriptionSettingsSection: View {
                     } label: {
                         SettingsRowLabel(
                             "Voir les formules",
-                            systemImage: "creditcard.fill",
+                            systemImage: "tag.square.fill",
                             tint: .indigo
                         )
                     }
@@ -229,7 +230,7 @@ struct SubscriptionSettingsSection: View {
                 HStack {
                     SettingsRowLabel(
                         "Passer à l'achat unique",
-                        systemImage: "infinity",
+                        systemImage: "arrow.up.square.fill",
                         tint: .yellow
                     )
                     Spacer()

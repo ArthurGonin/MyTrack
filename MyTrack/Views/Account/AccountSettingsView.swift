@@ -78,7 +78,7 @@ struct AccountSettingsView: View {
                     )) {
                         SettingsRowLabel(
                             "Suivi automatique",
-                            systemImage: "car.fill",
+                            systemImage: "bolt.square.fill",
                             tint: .green
                         )
                     }
@@ -120,7 +120,7 @@ struct AccountSettingsView: View {
                     } label: {
                         SettingsRowLabel(
                             "Rapports périodiques",
-                            systemImage: "doc.text.fill",
+                            systemImage: "square.text.square.fill",
                             tint: .orange
                         )
                     }
@@ -140,7 +140,7 @@ struct AccountSettingsView: View {
                             Text(language.nativeName).tag(language)
                         }
                     } label: {
-                        SettingsRowLabel("Langue", systemImage: "globe", tint: .purple)
+                        SettingsRowLabel("Langue", systemImage: "character.square.fill", tint: .purple)
                     }
 
                     Picker(selection: $unitSettings.distanceUnit) {
@@ -148,7 +148,7 @@ struct AccountSettingsView: View {
                             Text(unit.label).tag(unit)
                         }
                     } label: {
-                        SettingsRowLabel("Distance", systemImage: "ruler.fill", tint: .brown)
+                        SettingsRowLabel("Distance", systemImage: "arrow.left.and.right.square.fill", tint: .brown)
                     }
                     // Two options don't warrant pushing a whole screen.
                     .pickerStyle(.menu)

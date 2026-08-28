@@ -43,14 +43,15 @@ struct PermissionsSettingsSection: View {
                 state: locationState,
                 action: requestLocation
             )
-            // Le symbole de base de l'activité physique : celui que CoreMotion
-            // et la rubrique « Mouvement et forme » des Réglages d'iOS
-            // emploient. Pas de variante `.square.fill` chez Apple pour
-            // celui-ci — c'est la seule ligne de l'écran à porter un glyphe
-            // nu, et la teinte suffit à la ranger avec les autres.
+            // `figure.walk.motion` serait le symbole propre à l'activité
+            // physique — c'est celui de CoreMotion et de la rubrique
+            // « Mouvement et forme » des Réglages d'iOS. Mais Apple n'en
+            // publie aucune variante `.square.fill`, et tout l'écran tient sur
+            // cette forme-là. Le cœur, métaphore de la santé chez Apple, dit
+            // presque la même chose et laisse l'écran d'un seul tenant.
             PermissionRow(
                 title: "Activité physique",
-                systemImage: "figure.walk.motion",
+                systemImage: "heart.square.fill",
                 tint: .pink,
                 state: motionState,
                 action: requestMotion
