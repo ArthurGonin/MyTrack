@@ -106,6 +106,7 @@ struct OnboardingView: View {
                     Text("Continuer").frame(maxWidth: .infinity)
                 }
                 .buttonStyle(.borderedProminent)
+                .glassEffect(.clear.interactive())
                 .controlSize(.large)
                 .disabled(!canContinue)
             }
