@@ -10,6 +10,10 @@ import MapKit
 /// en direct. Volontairement non interactive — c'est un indicateur visuel, pas
 /// une carte à explorer.
 ///
+/// Ne rogne pas ses coins : c'est à qui la pose de le faire, selon la surface
+/// où elle se pose. Elle le faisait, et son arrondi à elle — le plus petit —
+/// l'emportait sur celui demandé au-dehors, qui n'a donc jamais rien donné.
+///
 /// N'utilise pas `LocationService` : `UserAnnotation` s'appuie sur le
 /// `CLLocationManager` interne de MapKit. `LocationService.onLocationUpdate`
 /// est un slot unique déjà pris par `TripRecorder` pendant un enregistrement,
@@ -22,12 +26,12 @@ struct LiveTripMapView: View {
             UserAnnotation()
         }
         .mapControls {}
-        .clipShape(.rect(cornerRadius: 10))
     }
 }
 
 #Preview {
     LiveTripMapView()
         .frame(height: 300)
+        .clipShape(.rect(cornerRadius: 22, style: .continuous))
         .padding()
 }

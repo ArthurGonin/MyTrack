@@ -53,21 +53,33 @@ struct RecordTripView: View {
                 // route, et il n'est pas question de laisser l'utilisateur sans
                 // moyen de terminer l'enregistrement qu'il a lancé.
                 if viewModel.isRecording || canRecordTrips {
-                    stage
-                    slideControl
+                    // Au repos, le compteur en haut et la photo derrière lui.
+                    // Pendant un trajet, la feuille prend toute la place :
+                    // elle s'ouvre jusque sous le « Bon retour », et il n'y a
+                    // plus rien entre les deux.
+                    if !viewModel.isRecording {
+                        odometer
+                        Spacer(minLength: 0)
+                    }
+                    recordingSheet
                 } else {
                     subscriptionRequiredView
                         .frame(maxHeight: .infinity)
                 }
             }
+            // L'ouverture et la fermeture de la feuille, en un seul endroit :
+            // c'est le même changement d'état qui la fait grandir depuis le
+            // bouton, effacer le compteur et retourner le bouton.
+            .animation(.smooth(duration: 0.42), value: viewModel.isRecording)
             .padding()
             // La photo se glisse entre le contenu et le fond de l'app : elle
             // apporte son propre décor, qui recouvre le gris sans le remplacer.
-            // Celui-ci reprend la main dès qu'un trajet démarre — la carte n'a
-            // pas de voiture derrière elle — et quand l'abonnement manque,
-            // parce que l'écran ne parle alors plus que de ça.
+            // Elle reste là pendant un trajet, sous la feuille — c'est elle
+            // qu'on voit à travers le verre, et sans elle il n'y aurait rien à
+            // réfracter. Seul l'écran d'abonnement expiré s'en passe : il ne
+            // parle plus que de ça.
             .background {
-                if !viewModel.isRecording && canRecordTrips {
+                if canRecordTrips {
                     carBackdrop.ignoresSafeArea()
                 }
             }
@@ -167,26 +179,6 @@ struct RecordTripView: View {
         return name.isEmpty ? nil : name
     }
 
-    /// La bande centrale : le compteur à l'arrêt, la carte pendant un trajet.
-    ///
-    /// L'un prend simplement la place de l'autre. Rien ne glisse et rien ne
-    /// roule : lancer un enregistrement doit afficher la carte, pas la faire
-    /// entrer en scène.
-    @ViewBuilder
-    private var stage: some View {
-        if viewModel.isRecording {
-            recordingStage
-        } else {
-            // La voiture n'est pas ici mais en fond d'écran, sous tout le
-            // reste. Ne restent sur la bande que le compteur et la place vide
-            // qu'elle occupe en dessous.
-            VStack(spacing: 0) {
-                odometer
-                Spacer(minLength: 0)
-            }
-        }
-    }
-
     /// Le compteur : tout ce que la voiture a parcouru, écrit en grand
     /// au-dessus d'elle.
     ///
@@ -265,33 +257,69 @@ struct RecordTripView: View {
         }
     }
 
-    /// Ce qui remplace la voiture pendant un trajet : les compteurs et la
-    /// carte, d'un seul tenant. Ils arrivent ensemble parce qu'ils sont une
-    /// seule chose — l'écran de trajet en cours — et que les faire entrer l'un
-    /// après l'autre ferait bouger la hauteur de la carte en pleine course.
-    private var recordingStage: some View {
-        VStack(spacing: 20) {
-            HStack(spacing: 16) {
-                StatView("Distance") {
-                    Text(formattedDistance(viewModel.currentDistanceMeters))
-                }
-                Divider().frame(height: 34)
-                StatView("Durée") {
-                    if let start = viewModel.currentStartDate {
-                        Text(start, style: .timer)
-                    } else {
-                        Text(verbatim: "—")
-                    }
+    /// La feuille qui s'ouvre autour du bouton le temps d'un trajet.
+    ///
+    /// Une feuille et non un écran : elle s'ouvre *par-dessus* l'accueil, qui
+    /// reste dessous. La photo de la voiture ne s'en va pas, elle passe
+    /// derrière le verre — et c'est bien elle qu'on y voit se déformer.
+    ///
+    /// Le bouton en fait partie et n'en bouge pas : il est le bas de la
+    /// feuille, et c'est de lui qu'elle sort. Rien ne le remplace au
+    /// démarrage, il change seulement de libellé, de symbole et de couleur —
+    /// d'où un seul `SlideToConfirmButton` pour les deux états plutôt qu'un par
+    /// état, que SwiftUI détruirait et reconstruirait au basculement. Il finit
+    /// donc de se vider tranquillement pendant que la feuille s'ouvre.
+    ///
+    /// Le verre est celui d'Apple (`glassEffect`), et `Glass.identity` est ce
+    /// qui l'éteint au repos : la même vue, sans matériau. Il n'y a donc rien
+    /// à faire apparaître ni disparaître — le verre se matérialise de lui-même
+    /// quand l'état change, et la feuille grandit parce que la carte pousse le
+    /// haut de la pile pendant que le bouton, lui, tient le bas.
+    ///
+    /// Pas de `GlassEffectContainer` autour : il sert à faire fusionner les
+    /// surfaces de verre proches, et la pastille du bouton en est une. Elle
+    /// doit rester une lentille posée *sur* la feuille, pas se fondre dedans.
+    private var recordingSheet: some View {
+        VStack(spacing: 16) {
+            if viewModel.isRecording {
+                liveStats
+                LiveTripMapView()
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                    // L'arrondi des cartes de l'app (`appCard`), et non celui,
+                    // concentrique, de la feuille : la carte flotte au milieu
+                    // d'elle, loin de ses coins, et `.concentric` n'a rien à
+                    // quoi se raccorder là — il retombe sur des coins droits.
+                    .clipShape(.rect(cornerRadius: 22, style: .continuous))
+            }
+            slideControl
+        }
+        .padding(viewModel.isRecording ? Self.sheetPadding : 0)
+        .glassEffect(
+            viewModel.isRecording ? .regular : .identity,
+            in: .rect(cornerRadius: Self.sheetCornerRadius, style: .continuous)
+        )
+    }
+
+    /// Les deux chiffres qui comptent pendant un trajet, en haut de la feuille.
+    ///
+    /// Posés à même le verre, sans carte sous eux : la feuille est déjà la
+    /// surface, et une carte dessus ferait une surface sur une surface.
+    private var liveStats: some View {
+        HStack(spacing: 16) {
+            StatView("Distance") {
+                Text(formattedDistance(viewModel.currentDistanceMeters))
+            }
+            Divider().frame(height: 34)
+            StatView("Durée") {
+                if let start = viewModel.currentStartDate {
+                    Text(start, style: .timer)
+                } else {
+                    Text(verbatim: "—")
                 }
             }
-            .appCard()
-
-            LiveTripMapView()
-                .frame(maxWidth: .infinity, maxHeight: .infinity)
-                // La carte dessine ses propres bords : elle est rognée à la
-                // forme de la carte plutôt que posée dessus.
-                .clipShape(.rect(cornerRadius: 22, style: .continuous))
         }
+        .padding(.horizontal, 10)
+        .padding(.top, 6)
     }
 
     /// Le bouton du bas, qui lance ou arrête l'enregistrement.
@@ -299,26 +327,31 @@ struct RecordTripView: View {
     /// Un glissement et pas un appui, dans les deux sens : couper un
     /// enregistrement en cours est irréversible pour la portion de trajet qui
     /// reste, et ça ne doit pas pouvoir se faire d'un doigt posé par mégarde.
-    @ViewBuilder
     private var slideControl: some View {
-        if viewModel.isRecording {
-            SlideToConfirmButton(
-                title: "Arrêter",
-                systemImage: "stop.fill",
-                tint: .red
-            ) {
+        // Typé : un ternaire entre deux littéraux peut se résoudre en `String`,
+        // qui ne passerait pas par la traduction.
+        let title: LocalizedStringKey = viewModel.isRecording ? "Arrêter" : "Démarrer"
+        return SlideToConfirmButton(
+            title: title,
+            systemImage: viewModel.isRecording ? "stop.fill" : "play.fill",
+            tint: viewModel.isRecording ? .red : .green
+        ) {
+            if viewModel.isRecording {
                 viewModel.stopManualRecording(in: modelContext)
-            }
-        } else {
-            SlideToConfirmButton(
-                title: "Démarrer",
-                systemImage: "play.fill",
-                tint: .green
-            ) {
+            } else {
                 startRecording()
             }
         }
     }
+
+    /// La marge entre le bord de la feuille et ce qu'elle contient — le
+    /// bouton compris, qu'elle vient donc border de dix points.
+    private static let sheetPadding: CGFloat = 10
+
+    /// L'arrondi de la feuille : celui de la gélule du bouton (34, sa
+    /// demi-hauteur) plus la marge qui l'en sépare. C'est ce qui fait que le
+    /// bas de la feuille épouse le bouton au lieu de le recouper.
+    private static let sheetCornerRadius: CGFloat = 44
 
     /// Les proportions de la photo, 1024 × 1536.
     private static let carImageAspectRatio: CGFloat = 1536.0 / 1024.0

@@ -201,7 +201,10 @@ struct SlideToConfirmButton: View {
             }
             .contentShape(.circle)
             .scaleEffect(isActive ? 1.15 : 0.9)
-            .offset(x: offsetX)
+            // Borné à la course du moment : la gélule rétrécit quand la feuille
+            // s'ouvre autour d'elle, et la pastille — restée au bout le temps
+            // que l'écran change — dépasserait sinon du bord droit.
+            .offset(x: min(offsetX, travel))
             .highPriorityGesture(drag(travel: travel))
     }
 
