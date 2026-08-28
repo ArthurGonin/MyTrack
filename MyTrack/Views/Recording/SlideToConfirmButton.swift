@@ -55,6 +55,7 @@ struct SlideToConfirmButton: View {
         // formes de verre qu'il contient et les dessine par-dessus le reste de
         // son contenu, ce qui enterrait le libellé et le chevron.
         ZStack {
+            rail
             pastille
             labels
             chevron
@@ -103,6 +104,45 @@ struct SlideToConfirmButton: View {
     /// Le bord de repos, dit dans le vocabulaire des `frame` et des `mask`.
     private var restAlignment: Alignment { startEdge == .leading ? .leading : .trailing }
 
+    /// Le rail sous la pastille : un dégradé en diagonale, posé tout au fond.
+    ///
+    /// Il n'est pas décoratif. Le Liquid Glass ne fait que déformer ce qu'il a
+    /// derrière lui ; sur un aplat uni il n'a rien à déformer et rend mat, ce
+    /// qui était tout le problème. Le dégradé lui donne de la matière, et la
+    /// pastille le déforme en la traversant.
+    private var rail: some View {
+        Capsule().fill(
+            LinearGradient(
+                colors: [tint.opacity(0.34), tint.opacity(0.05)],
+                startPoint: .topLeading, endPoint: .bottomTrailing
+            )
+        )
+    }
+
+    /// Le liseré et le reflet qui font lire une épaisseur de verre : l'arête
+    /// vive en haut, plus sourde en bas, et la lumière qui glisse du haut vers
+    /// le milieu.
+    ///
+    /// Deux dégradés à la main par-dessus le matériau natif, et non à sa place :
+    /// `glassEffect` garde le flou, la réfraction et le gonflement au toucher.
+    /// Il ne rend ces reflets-là que sur un fond qui en offre, et une gélule
+    /// posée sur le gris uni de l'app n'en offre pas.
+    private var specular: some View {
+        ZStack {
+            Capsule()
+                .strokeBorder(
+                    LinearGradient(
+                        colors: [.white.opacity(0.65), .white.opacity(0.04), .white.opacity(0.3)],
+                        startPoint: .top, endPoint: .bottom
+                    ),
+                    lineWidth: 1
+                )
+            Capsule()
+                .fill(LinearGradient(colors: [.white.opacity(0.26), .clear],
+                                     startPoint: .top, endPoint: .center))
+        }
+    }
+
     /// La pastille et la traînée qu'elle laisse sont une seule forme : une
     /// gélule ancrée au bord de repos, large d'un diamètre plus la distance
     /// parcourue. Au repos elle est donc exactement un rond, et elle s'allonge
@@ -110,7 +150,8 @@ struct SlideToConfirmButton: View {
     private var pastille: some View {
         Color.clear
             .frame(width: height + travelled, height: height)
-            .glassEffect(.regular.tint(tint.opacity(0.85)).interactive(), in: .capsule)
+            .glassEffect(.regular.tint(tint.opacity(0.8)).interactive(), in: .capsule)
+            .overlay { specular }
             .frame(maxWidth: .infinity, alignment: restAlignment)
             // Elle s'aplatit d'un rien au milieu de la course, comme un
             // élastique tendu, et retrouve sa hauteur aux deux bouts.
