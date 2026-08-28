@@ -234,7 +234,8 @@ struct PaywallStepView: View {
                     PricingOptionCard(
                         isSelected: selectedPlan == .annual,
                         title: annualTitle,
-                        subtitle: annualSubtitle
+                        subtitle: annualSubtitle,
+                        isPriceKnown: annualProduct != nil
                     ) {
                         selectedPlan = .annual
                     }
@@ -242,7 +243,8 @@ struct PaywallStepView: View {
                     PricingOptionCard(
                         isSelected: selectedPlan == .monthly,
                         title: monthlyTitle,
-                        subtitle: nil
+                        subtitle: nil,
+                        isPriceKnown: monthlyProduct != nil
                     ) {
                         selectedPlan = .monthly
                     }
@@ -251,7 +253,8 @@ struct PaywallStepView: View {
                 LifetimeOptionCard(
                     isSelected: selectedPlan == .lifetime,
                     title: lifetimeTitle,
-                    subtitle: lifetimeSubtitle
+                    subtitle: lifetimeSubtitle,
+                    isPriceKnown: lifetimeProduct != nil
                 ) {
                     selectedPlan = .lifetime
                 }
@@ -259,10 +262,10 @@ struct PaywallStepView: View {
         }
     }
 
-    /// Falls back to the static copy whenever the product hasn't loaded yet
-    /// (first launch, before the fetch completes) or failed to load (no
-    /// StoreKit config wired up, no network) — the paywall must never show a
-    /// blank price.
+    /// La durée de l'essai vient de l'offre attachée au produit. Sans produit
+    /// chargé, la valeur rendue ici n'est qu'un gabarit : la carte est alors
+    /// masquée en entier par la redaction, titre compris, puisque les deux
+    /// lignes sortent du même produit absent.
     private var annualTitle: String {
         guard let offer = annualProduct?.subscription?.introductoryOffer, offer.paymentMode == .freeTrial else {
             return freeTrialDaysTitle(days: 7)
@@ -273,17 +276,17 @@ struct PaywallStepView: View {
     /// Le prix vient de l'App Store, déjà mis en forme dans la devise et le
     /// format du compte : seule la phrase autour se traduit.
     private var annualSubtitle: String {
-        let price = annualProduct?.displayPrice ?? "24,99 €"
+        let price = PriceDisplay.price(of: annualProduct)
         return String(localized: "puis \(price) / an", bundle: localizationBundle, locale: locale)
     }
 
     private var monthlyTitle: String {
-        let price = monthlyProduct?.displayPrice ?? "2,99 €"
+        let price = PriceDisplay.price(of: monthlyProduct)
         return String(localized: "\(price) / mois", bundle: localizationBundle, locale: locale)
     }
 
     private var lifetimeTitle: String {
-        lifetimeProduct?.displayPrice ?? "39,99 €"
+        PriceDisplay.price(of: lifetimeProduct)
     }
 
     private var lifetimeSubtitle: String {
@@ -294,8 +297,8 @@ struct PaywallStepView: View {
         let count = period.value
         switch period.unit {
         case .day: return freeTrialDaysTitle(days: count)
-        // Spelled out in days so the real product reads the same as the
-        // fallback copy above ("7 jours gratuits"), not "1 semaine gratuite".
+        // Spelled out in days so a seven-day trial reads "7 jours gratuits"
+        // rather than "1 semaine gratuite".
         case .week: return freeTrialDaysTitle(days: count * 7)
         case .month: return String(localized: "\(count) mois gratuits", bundle: localizationBundle, locale: locale)
         case .year: return String(localized: "\(count) ans gratuits", bundle: localizationBundle, locale: locale)
@@ -341,6 +344,10 @@ private struct PricingOptionCard: View {
     let isSelected: Bool
     let title: String
     let subtitle: String?
+    /// Faux tant que StoreKit n'a pas livré le produit. Le titre comme le
+    /// sous-titre en sortent tous les deux, donc c'est la carte entière qui
+    /// passe alors sous la barre grise.
+    let isPriceKnown: Bool
     let action: () -> Void
 
     var body: some View {
@@ -356,6 +363,7 @@ private struct PricingOptionCard: View {
             }
             .frame(maxWidth: .infinity)
             .padding(.vertical, 16)
+            .redacted(reason: isPriceKnown ? [] : .placeholder)
         }
         .buttonStyle(.plain)
         // La sélection se lit au matériau lui-même — verre teinté à l'accent
@@ -380,6 +388,10 @@ private struct LifetimeOptionCard: View {
     let isSelected: Bool
     let title: String
     let subtitle: String
+    /// Faux tant que StoreKit n'a pas livré le produit. Ici seul le titre est
+    /// un prix — l'étiquette et « achat unique, à vie » restent vraies sans
+    /// lui — donc la barre grise ne couvre que cette ligne-là.
+    let isPriceKnown: Bool
     let action: () -> Void
 
     /// La couleur du texte courant, selon que la carte est remplie d'accent ou
@@ -397,6 +409,7 @@ private struct LifetimeOptionCard: View {
                 Text(title)
                     .font(.title3.bold())
                     .foregroundStyle(foreground)
+                    .redacted(reason: isPriceKnown ? [] : .placeholder)
                 Text(subtitle)
                     .font(.footnote)
                     .foregroundStyle(foreground.opacity(0.75))

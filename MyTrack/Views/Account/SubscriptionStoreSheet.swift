@@ -86,6 +86,7 @@ struct SubscriptionStoreSheet: View {
                         Text(lifetimePriceCaption)
                             .font(.caption)
                             .foregroundStyle(.secondary)
+                            .redacted(reason: lifetimeProduct == nil ? .placeholder : [])
                     }
                     Spacer()
                     if purchaseService.isPurchasing {
@@ -103,8 +104,10 @@ struct SubscriptionStoreSheet: View {
         .background(.regularMaterial)
     }
 
+    /// Masqué par la redaction tant que le produit manque : la phrase entière
+    /// tourne autour du prix, donc sans lui elle n'a rien à dire.
     private var lifetimePriceCaption: String {
-        let price = lifetimeProduct?.displayPrice ?? "39,99 €"
+        let price = PriceDisplay.price(of: lifetimeProduct)
         return String(localized: "\(price), une seule fois — accès à vie", bundle: localizationBundle, locale: locale)
     }
 
