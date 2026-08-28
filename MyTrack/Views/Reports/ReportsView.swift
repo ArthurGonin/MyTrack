@@ -107,17 +107,6 @@ struct ReportsView: View {
                     }
                     .font(.caption)
                     .foregroundStyle(.secondary)
-                    // Des noms de véhicules sont des données saisies : rendus
-                    // tels quels, contrairement au libellé qui les remplace.
-                    Group {
-                        if report.includedVehicleNames.isEmpty {
-                            Text("Tous les véhicules")
-                        } else {
-                            Text(report.includedVehicleNames.formatted(.list(type: .and).locale(locale)))
-                        }
-                    }
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
                 }
                 Spacer()
             }
