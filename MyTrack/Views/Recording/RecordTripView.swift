@@ -181,14 +181,13 @@ struct RecordTripView: View {
             .clipShape(.rect(cornerRadius: 22, style: .continuous))
             .transition(.opacity.combined(with: .scale(scale: 0.94)))
 
-        // Un glissement, et de droite à gauche : couper un enregistrement en
-        // cours est irréversible pour la portion de trajet qui reste, et le
-        // geste part du bord opposé à celui qui l'a lancé.
+        // Un glissement, pas un appui : couper un enregistrement en cours est
+        // irréversible pour la portion de trajet qui reste, et ça ne doit pas
+        // pouvoir se faire d'un doigt posé par mégarde sur l'écran.
         SlideToConfirmButton(
             title: "Arrêter",
-            systemImage: "chevron.left",
-            tint: .red.mix(with: .black, by: 0.22),
-            startEdge: .trailing
+            systemImage: "stop.fill",
+            tint: .red
         ) {
             viewModel.stopManualRecording(in: modelContext)
         }
@@ -227,9 +226,8 @@ struct RecordTripView: View {
 
         SlideToConfirmButton(
             title: "Démarrer",
-            systemImage: "chevron.right",
-            tint: .green.mix(with: .black, by: 0.32),
-            startEdge: .leading
+            systemImage: "play.fill",
+            tint: .green
         ) {
             startRecording()
         }

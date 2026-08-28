@@ -2,79 +2,89 @@
 //  SlideToConfirmButton.swift
 //  MyTrack
 //
+//  Un bouton qu'on fait glisser au lieu de l'appuyer, dans le style des
+//  glissières système d'iOS — « glisser pour éteindre », l'appel d'urgence,
+//  l'arrêt d'alarme.
+//
+//  Trois choses font ce rendu, et il en manquerait une que ça retomberait dans
+//  le fait-maison : une gélule à peine teintée qui laisse voir le fond, un
+//  balayage lumineux qui traverse le libellé en boucle pour dire « ça se
+//  glisse » sans l'écrire, et surtout une pastille qui se comporte en lentille
+//  — le texte se déforme derrière elle quand elle passe dessus. C'est ce
+//  dernier point qui ne s'obtient pas en SwiftUI seul : il demande le shader
+//  `liquidLens`, dans LiquidLens.metal à côté.
+//
+//  D'après LiquidGlassSlider de Balaji Venkatesh (Kavsoft).
+//
 
 import SwiftUI
 
-/// Un bouton qu'on fait glisser au lieu de l'appuyer.
-///
-/// Au repos, une pastille de verre teinté occupe l'un des deux bouts d'une
-/// gélule. On la pousse vers le bout opposé : sa couleur s'étire derrière elle,
-/// comme si elle s'allongeait sous le doigt, et l'action part une fois la
-/// gélule remplie. Relâcher avant la fin la renvoie à sa place.
-///
-/// Le libellé, lui, ne bouge pas : c'est la pastille qui lui passe dessus, et
-/// il bascule du sombre au blanc au fur et à mesure qu'elle le recouvre.
-///
-/// Le sens vient de `startEdge` — depuis la gauche pour démarrer, depuis la
-/// droite pour arrêter. Le geste inverse pour l'action inverse, ce qui rend
-/// l'arrêt impossible à déclencher par le geste qui lance.
 struct SlideToConfirmButton: View {
-    /// Le libellé, centré sur la gélule entière.
+    /// Le libellé posé dans la gélule, que la pastille traverse.
     var title: LocalizedStringKey
-    /// Le symbole SF porté par la pastille : le chevron qui montre où pousser.
+    /// Le symbole SF porté par la pastille.
     var systemImage: String
-    /// La teinte de la pastille, et en beaucoup plus pâle celle de la gélule.
-    ///
-    /// Le verre éclaircit ce qu'il teinte : une couleur système passée telle
-    /// quelle en ressort délavée. Les appelants donnent donc une version
-    /// assombrie plutôt que `.green` ou `.red` bruts.
+    /// La teinte de l'ensemble : verte pour lancer, rouge pour arrêter.
     var tint: Color
-    /// Le bord où la pastille se repose, donc le sens du glissement.
-    var startEdge: HorizontalEdge
-    /// Appelée une fois la gélule remplie.
+    /// Appelée une fois la pastille menée jusqu'au bout.
     var action: () -> Void
 
-    /// Distance parcourue par la pastille depuis son bord de repos, en points.
-    @State private var travelled: CGFloat = 0
-    /// Largeur mesurée de la gélule, d'où se déduit la course de la pastille.
-    @State private var width: CGFloat = 0
-    /// Vrai dès que le doigt est allé assez loin pour valider en relâchant.
-    @State private var isAtEnd = false
+    @Environment(\.colorScheme) private var colorScheme
+
+    /// Vrai tant que le doigt est sur la pastille. Pilote le grossissement,
+    /// qui est aussi ce qui change la focale de la lentille.
+    @GestureState private var isActive = false
+    /// Distance parcourue par la pastille depuis le bord gauche, en points.
+    @State private var offsetX: CGFloat = 0
     /// Compte les glissements menés à terme. C'est un déclencheur : ce qui
     /// compte est qu'il change, pas ce qu'il vaut.
     @State private var completions = 0
+    /// Vrai quand la pastille est allée jusqu'au bout et n'en est pas encore
+    /// revenue. Sert au retour haptique, une seule fois par passage.
+    @State private var hasReachedEnd = false
 
     /// Hauteur de la gélule, donc diamètre de la pastille.
-    private let height: CGFloat = 64
-    /// Part de la course à franchir pour valider. Exiger la totalité
-    /// obligerait à pousser le doigt au pixel près jusqu'au bord.
-    private let threshold: CGFloat = 0.9
+    private let height: CGFloat = 68
+
+    /// La teinte de ce qui doit se lire : le libellé et le symbole.
+    ///
+    /// Les glissières système d'iOS ne vivent que sur fond noir, où le vert et
+    /// le rouge ressortent d'eux-mêmes. L'app, elle, a aussi un thème clair, et
+    /// ces deux couleurs y sont vives mais claires : posées sur un gris presque
+    /// blanc, elles se délavent au point que le libellé disparaît. On les
+    /// assombrit donc de ce côté-là seulement — le thème sombre garde la teinte
+    /// pleine, qui est déjà la bonne.
+    private var ink: Color {
+        colorScheme == .dark ? tint : tint.mix(with: .black, by: 0.35)
+    }
+
+    /// Ce qui reste du libellé hors du balayage. Plus soutenu en thème clair,
+    /// pour la même raison : un tiers d'opacité s'y lit à peine.
+    private var restingTextOpacity: Double {
+        colorScheme == .dark ? 0.3 : 0.5
+    }
+
+    /// Le lavis de la gélule. Un peu plus dense en clair, sinon la forme se
+    /// confond avec le fond de l'app au lieu de dessiner le chemin à parcourir.
+    private var trackOpacity: Double {
+        colorScheme == .dark ? 0.08 : 0.14
+    }
 
     var body: some View {
-        // Pas de `GlassEffectContainer` autour de tout ceci : il rassemble les
-        // formes de verre qu'il contient et les dessine par-dessus le reste de
-        // son contenu, ce qui enterrait le libellé et le chevron.
-        ZStack {
-            rail
-            pastille
-            labels
-            chevron
+        GeometryReader { proxy in
+            let travel = max(proxy.size.width - height, 1)
+
+            ZStack(alignment: .leading) {
+                track
+                label
+                knob(travel: travel)
+            }
+            .animation(.spring(response: 0.3, dampingFraction: 0.5), value: isActive)
         }
         .frame(height: height)
-        .onGeometryChange(for: CGFloat.self) { $0.size.width } action: { width = $0 }
-        .padding(6)
-        // La zone de glissement couvre le verre en entier, marge comprise :
-        // s'arrêter à la gélule intérieure ferait rater les prises un peu
-        // hautes ou un peu basses.
-        .contentShape(.capsule)
-        .gesture(slide)
-        // `interactive()` sur les deux verres : c'est ce qui leur donne la
-        // réaction native au toucher, la gélule et la pastille se gonflant
-        // légèrement sous le doigt.
-        .glassEffect(.regular.tint(tint.opacity(0.16)).interactive(), in: .capsule)
-        // Un coup sec quand le doigt atteint le point de validation : on sait
-        // qu'on peut relâcher sans regarder l'écran.
-        .sensoryFeedback(.impact(weight: .light), trigger: isAtEnd) { _, atEnd in atEnd }
+        // Un coup sec au moment où la pastille atteint le bout : on sait qu'on
+        // peut relâcher sans regarder l'écran.
+        .sensoryFeedback(.impact(weight: .light), trigger: hasReachedEnd) { _, reached in reached }
         .sensoryFeedback(.success, trigger: completions)
         // VoiceOver ne fait pas glisser : sans action explicite, le bouton
         // serait hors de portée.
@@ -82,153 +92,130 @@ struct SlideToConfirmButton: View {
         .accessibilityLabel(title)
         .accessibilityAddTraits(.isButton)
         .accessibilityAction { fire() }
-        // La gélule reste pleine le temps que l'écran change de contenu, puis
+        // La gélule reste remplie le temps que l'écran change de contenu, puis
         // se vide. Ce retour ne se voit que si on est encore là — c'est-à-dire
         // quand l'action n'a rien changé à l'écran, par exemple parce qu'elle a
         // buté sur une autorisation refusée.
         .task(id: completions) {
             guard completions > 0 else { return }
             try? await Task.sleep(for: .milliseconds(600))
-            withAnimation(.snappy(duration: 0.3, extraBounce: 0.1)) { travelled = 0 }
+            withAnimation(.smooth) { offsetX = 0 }
+            hasReachedEnd = false
         }
     }
 
-    /// La course de la pastille : la largeur de la gélule moins la pastille
-    /// elle-même, qui occupe déjà un diamètre au repos. Jamais nulle, pour ne
-    /// pas diviser par zéro à la première image, avant la mesure.
-    private var travel: CGFloat { max(width - height, 1) }
+    /// Le fond : une gélule à peine teintée, cerclée d'un trait très fin. Elle
+    /// ne doit pas se lire comme un bouton plein — c'est la pastille qui porte
+    /// la couleur, le reste n'est que le chemin à parcourir.
+    private var track: some View {
+        Capsule()
+            .fill(tint.opacity(trackOpacity))
+            .stroke(Color.primary.tertiary, lineWidth: 0.3)
+    }
 
-    /// Part de la course déjà faite, de 0 à 1.
-    private var progress: CGFloat { min(travelled / travel, 1) }
-
-    /// Le bord de repos, dit dans le vocabulaire des `frame` et des `mask`.
-    private var restAlignment: Alignment { startEdge == .leading ? .leading : .trailing }
-
-    /// Le rail sous la pastille : un dégradé en diagonale, posé tout au fond.
+    /// Le libellé en deux exemplaires superposés : une version sourde, et
+    /// par-dessus la même en pleine teinte, révélée seulement par une bande
+    /// oblique et floue qui la traverse en boucle. C'est le balayage des
+    /// glissières système, et il dit « ça se glisse » sans avoir à l'écrire.
     ///
-    /// Il n'est pas décoratif. Le Liquid Glass ne fait que déformer ce qu'il a
-    /// derrière lui ; sur un aplat uni il n'a rien à déformer et rend mat, ce
-    /// qui était tout le problème. Le dégradé lui donne de la matière, et la
-    /// pastille le déforme en la traversant.
-    private var rail: some View {
-        Capsule().fill(
-            LinearGradient(
-                colors: [tint.opacity(0.34), tint.opacity(0.05)],
-                startPoint: .topLeading, endPoint: .bottomTrailing
+    /// L'effet de lentille porte sur ce bloc-là uniquement, et non sur la
+    /// gélule entière : c'est le texte qui doit se déformer sous la pastille,
+    /// pas le contour qui la contient.
+    private var label: some View {
+        ZStack(alignment: .leading) {
+            Text(title)
+                .foregroundStyle(ink.opacity(restingTextOpacity))
+
+            Text(title)
+                .foregroundStyle(ink)
+                .mask(alignment: .leading) { shimmerMask }
+        }
+        .font(.title3)
+        .fontWeight(.medium)
+        .lineLimit(1)
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .padding(.leading, height / 2)
+        .visualEffect { [isActive, offsetX, height] content, proxy in
+            // La pastille grossit sous le doigt, et la lentille grossit avec
+            // elle : c'est le même rectangle qui décrit les deux.
+            let scale: CGFloat = isActive ? 1.15 : 0.9
+            let lens = CGRect(x: offsetX, y: 0, width: height, height: height)
+                .insetBy(dx: height * (1 - scale) / 2, dy: height * (1 - scale) / 2)
+
+            return content.layerEffect(
+                ShaderLibrary.liquidLens(
+                    .float2(lens.size),
+                    .float(lens.minX),
+                    // Combien le texte se courbe en passant sous le verre.
+                    .float(12),
+                    // Sur quelle épaisseur depuis le bord la courbure s'étale.
+                    .float(height / 4)
+                ),
+                maxSampleOffset: proxy.size
             )
-        )
-    }
-
-    /// Le liseré et le reflet qui font lire une épaisseur de verre : l'arête
-    /// vive en haut, plus sourde en bas, et la lumière qui glisse du haut vers
-    /// le milieu.
-    ///
-    /// Deux dégradés à la main par-dessus le matériau natif, et non à sa place :
-    /// `glassEffect` garde le flou, la réfraction et le gonflement au toucher.
-    /// Il ne rend ces reflets-là que sur un fond qui en offre, et une gélule
-    /// posée sur le gris uni de l'app n'en offre pas.
-    private var specular: some View {
-        ZStack {
-            Capsule()
-                .strokeBorder(
-                    LinearGradient(
-                        colors: [.white.opacity(0.65), .white.opacity(0.04), .white.opacity(0.3)],
-                        startPoint: .top, endPoint: .bottom
-                    ),
-                    lineWidth: 1
-                )
-            Capsule()
-                .fill(LinearGradient(colors: [.white.opacity(0.26), .clear],
-                                     startPoint: .top, endPoint: .center))
         }
     }
 
-    /// La pastille et la traînée qu'elle laisse sont une seule forme : une
-    /// gélule ancrée au bord de repos, large d'un diamètre plus la distance
-    /// parcourue. Au repos elle est donc exactement un rond, et elle s'allonge
-    /// ensuite jusqu'à remplir la gélule.
-    private var pastille: some View {
-        Color.clear
-            .frame(width: height + travelled, height: height)
-            .glassEffect(.regular.tint(tint.opacity(0.8)).interactive(), in: .capsule)
-            .overlay { specular }
-            .frame(maxWidth: .infinity, alignment: restAlignment)
-            // Elle s'aplatit d'un rien au milieu de la course, comme un
-            // élastique tendu, et retrouve sa hauteur aux deux bouts.
-            .scaleEffect(y: 1 - flattening)
-    }
-
-    private var flattening: CGFloat {
-        CGFloat(sin(Double(progress) * .pi)) * 0.05
-    }
-
-    /// Le libellé en deux exemplaires posés par-dessus la pastille, chacun
-    /// découpé à sa zone : sombre en dehors d'elle, blanc dessus. Deux copies
-    /// plutôt qu'une teinte moyenne, parce qu'aucune couleur unique ne tient à
-    /// la fois sur le verre très pâle de la gélule et sur la couleur pleine.
-    ///
-    /// Par-dessus la pastille, et non dessous : le Liquid Glass floute ce qu'il
-    /// a derrière lui, et un mot flouté n'est plus un mot.
-    private var labels: some View {
-        ZStack {
-            label(color: .primary).mask { outsidePastille }
-            label(color: .white).mask(alignment: restAlignment) { pastilleShape }
+    private var shimmerMask: some View {
+        GeometryReader { proxy in
+            let bandWidth: CGFloat = 30
+            Rectangle()
+                .frame(width: bandWidth)
+                .blur(radius: 5)
+                .rotationEffect(.degrees(15))
+                .offset(x: -bandWidth)
+                .keyframeAnimator(initialValue: CGFloat.zero, repeating: true) { content, offset in
+                    content.offset(x: offset)
+                } keyframes: { _ in
+                    LinearKeyframe(proxy.size.width + bandWidth * 2, duration: 3)
+                }
         }
     }
 
-    private func label(color: some ShapeStyle) -> some View {
-        Text(title)
-            .font(.headline)
-            .lineLimit(1)
-            .foregroundStyle(color)
-            .frame(maxWidth: .infinity)
-    }
-
-    private var pastilleShape: some View {
-        Capsule().frame(width: height + travelled)
-    }
-
-    /// Le négatif de la pastille : un plein dans lequel sa forme est percée.
-    private var outsidePastille: some View {
-        Rectangle()
-            .overlay(alignment: restAlignment) {
-                pastilleShape.blendMode(.destinationOut)
-            }
-            .compositingGroup()
-    }
-
-    private var chevron: some View {
+    /// La pastille : le symbole posé sur un disque de verre dont seul le bord
+    /// est rendu. Le centre reste vide exprès — c'est par là qu'on voit le
+    /// texte déformé, et un disque plein n'aurait rien d'une lentille.
+    private func knob(travel: CGFloat) -> some View {
         Image(systemName: systemImage)
-            .font(.title2.weight(.semibold))
-            .foregroundStyle(.white)
+            .font(.title3)
+            .foregroundStyle(ink)
             .frame(width: height, height: height)
-            .frame(maxWidth: .infinity, alignment: restAlignment)
-            .offset(x: startEdge == .leading ? travelled : -travelled)
-            // Il dit « pousse ici ». Une fois qu'on pousse il n'a plus rien à
-            // dire, et il s'efface avant d'arriver sur le libellé plutôt que de
-            // lui passer au travers.
-            .opacity(1 - min(progress / 0.3, 1))
+            .clipShape(.circle)
+            .background {
+                Circle()
+                    .fill(.clear)
+                    .glassEffect(.clear.tint(tint.opacity(0.1)), in: .circle)
+                    // Masque inversé : on perce le disque pour ne garder que
+                    // son liseré.
+                    .mask {
+                        Rectangle().overlay {
+                            Circle()
+                                .padding(2)
+                                .blur(radius: 2)
+                                .blendMode(.destinationOut)
+                        }
+                    }
+            }
+            .contentShape(.circle)
+            .scaleEffect(isActive ? 1.15 : 0.9)
+            .offset(x: offsetX)
+            .highPriorityGesture(drag(travel: travel))
     }
 
-    private var slide: some Gesture {
+    private func drag(travel: CGFloat) -> some Gesture {
         DragGesture(minimumDistance: 0)
+            .updating($isActive) { _, active, _ in active = true }
             .onChanged { value in
-                // Le geste va toujours du bord de repos vers l'autre : vers la
-                // droite pour une pastille à gauche, vers la gauche sinon.
-                let pushed = startEdge == .leading
-                    ? value.translation.width
-                    : -value.translation.width
-                travelled = min(max(pushed, 0), travel)
-                isAtEnd = travelled >= travel * threshold
+                offsetX = min(max(value.translation.width, 0), travel)
+                hasReachedEnd = offsetX == travel
             }
             .onEnded { _ in
-                if isAtEnd {
-                    withAnimation(.snappy(duration: 0.2, extraBounce: 0)) { travelled = travel }
+                if offsetX == travel {
                     fire()
                 } else {
-                    withAnimation(.snappy(duration: 0.3, extraBounce: 0.15)) { travelled = 0 }
+                    hasReachedEnd = false
+                    withAnimation(.smooth) { offsetX = 0 }
                 }
-                isAtEnd = false
             }
     }
 
@@ -242,19 +229,8 @@ struct SlideToConfirmButton: View {
 
 #Preview {
     VStack(spacing: 24) {
-        SlideToConfirmButton(
-            title: "Démarrer",
-            systemImage: "chevron.right",
-            tint: .green.mix(with: .black, by: 0.32),
-            startEdge: .leading
-        ) {}
-
-        SlideToConfirmButton(
-            title: "Arrêter",
-            systemImage: "chevron.left",
-            tint: .red.mix(with: .black, by: 0.22),
-            startEdge: .trailing
-        ) {}
+        SlideToConfirmButton(title: "Démarrer", systemImage: "play.fill", tint: .green) {}
+        SlideToConfirmButton(title: "Arrêter", systemImage: "stop.fill", tint: .red) {}
     }
     .padding()
     .appBackground()
