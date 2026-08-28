@@ -107,13 +107,18 @@ struct SlideToConfirmButton: View {
         // se vide. Ce retour ne se voit que si on est encore là — c'est-à-dire
         // quand l'action n'a rien changé à l'écran, par exemple parce qu'elle a
         // buté sur une autorisation refusée.
-        // Sans rapport de progression ici, volontairement : à ce stade la scène
-        // a déjà basculé pour de bon, et lui annoncer un retour à zéro la ferait
-        // repartir en arrière alors que l'action est faite.
+        // Le retour à zéro est rapporté comme les autres. Quand l'action a
+        // abouti, ce que le pouce avait parcouru a déjà été converti en pas
+        // franchi de l'autre côté, et ce zéro-là n'apprend rien à personne.
+        // Quand elle a échoué — une autorisation refusée, par exemple — c'est
+        // au contraire ce qui ramène la scène là où elle doit être.
         .task(id: completions) {
             guard completions > 0 else { return }
             try? await Task.sleep(for: .milliseconds(600))
-            withAnimation(.smooth) { offsetX = 0 }
+            withAnimation(.smooth) {
+                offsetX = 0
+                onProgressChange(0)
+            }
             hasReachedEnd = false
         }
     }

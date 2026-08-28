@@ -4066,6 +4066,7 @@
       }
     },
     "En route" : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -5187,6 +5188,7 @@
       }
     },
     "Lance l'enregistrement quand tu démarres." : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {

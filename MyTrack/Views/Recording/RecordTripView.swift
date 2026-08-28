@@ -38,13 +38,23 @@ struct RecordTripView: View {
 
     private var canRecordTrips: Bool { appServices.purchaseService.canRecordTrips }
 
-    /// Où en est la scène : 0 la voiture est garée, 1 la carte est en place.
+    /// Le pas franchi : 0 la voiture est garée, 1 la carte est en place, 2 la
+    /// voiture est revenue se garer. Il ne redescend jamais.
     ///
-    /// Piloté par le glissement plutôt que par `isRecording`, et c'est tout
-    /// l'intérêt : tant que le pouce n'est pas allé au bout, il peut revenir en
-    /// arrière et la voiture recule avec lui. Le déduire de `isRecording`
-    /// n'aurait donné que deux positions, et un saut entre les deux.
-    @State private var stageProgress: CGFloat = 0
+    /// C'est un voyage et non un aller-retour, parce qu'une voiture n'arrive
+    /// pas en marche arrière : elle sort par la droite au premier pas, et
+    /// revient par la gauche au second. Compter les pas plutôt que basculer
+    /// entre deux états est ce qui permet de le dire.
+    @State private var journeyStep = 0
+
+    /// Ce que le pouce a parcouru dans la transition en cours, de 0 à 1.
+    ///
+    /// Séparé du pas pour que le geste reste réversible : tant qu'il n'est pas
+    /// allé au bout, revenir en arrière ramène la scène avec lui.
+    @State private var slideProgress: CGFloat = 0
+
+    /// La position sur le voyage, pas franchi et geste en cours réunis.
+    private var journey: CGFloat { CGFloat(journeyStep) + slideProgress }
 
     var body: some View {
         NavigationStack {
@@ -168,75 +178,114 @@ struct RecordTripView: View {
     /// Les deux chiffres qui comptent pendant un trajet, côte à côte dans une
     /// carte, puis la carte lisant la trace en direct.
     @ViewBuilder
-    /// La scène : la voiture et la carte se relaient sur la même bande, l'une
-    /// sortant par la droite pendant que l'autre entre par la gauche.
+    /// La scène : la voiture et la carte se relaient sur la même bande.
+    ///
+    /// Les deux vont toujours vers la droite, jamais en arrière. La voiture
+    /// s'en va par la droite pendant que la carte entre par la gauche dans son
+    /// dos ; à l'arrêt, la carte poursuit sa route et sort à droite tandis que
+    /// la voiture réapparaît à gauche et avance jusqu'à se regarer. Personne ne
+    /// fait de marche arrière, sauf le pouce quand il revient sur ses pas.
     ///
     /// La voiture est dessinée par-dessus la carte, et non l'inverse : elle
-    /// s'en va *devant*, la carte apparaissant dans son dos. Les deux glissent
-    /// d'une largeur d'écran pleine, marges comprises, pour sortir franchement
-    /// du cadre au lieu de s'arrêter au bord du contenu.
+    /// part *devant*, la carte apparaissant derrière elle.
     private var stage: some View {
         GeometryReader { proxy in
-            let width = proxy.size.width + Self.screenInset * 2
+            let contentWidth = proxy.size.width
+            let fullWidth = contentWidth + Self.screenInset * 2
+            let carWidth = fullWidth * Self.carWidthRatio
+            let mapPosition = cyclePosition(journey - 1)
 
-            // Aligné à gauche, et pas au centre : la voiture est plus large que
-            // l'écran, et un ZStack centré aurait fait déborder son surplus des
-            // deux côtés — l'arrière se serait fait couper autant que l'avant.
             ZStack(alignment: .leading) {
-                // Montée seulement quand elle a commencé à entrer : la carte
-                // fait tourner son propre suivi de position, et ça n'a pas à
-                // vivre en fond d'écran d'accueil tant que rien ne bouge.
-                if stageProgress > 0 {
+                // Montée seulement quand elle est en vue : la carte fait
+                // tourner son propre suivi de position, et ça n'a pas à vivre
+                // en fond d'écran d'accueil tant qu'elle est hors champ.
+                if abs(mapPosition) < 1 {
                     recordingStage
                         // Largeur imposée : le ZStack prend celle de son plus
                         // grand enfant, ici la voiture qui déborde exprès, et
                         // sans ça la carte s'étirait jusque-là et sortait du
                         // cadre par la droite.
-                        .frame(width: proxy.size.width)
-                        .offset(x: -(1 - stageProgress) * width)
+                        .frame(width: contentWidth)
+                        .offset(x: mapPosition * fullWidth)
                 }
 
-                carArtwork(availableWidth: width)
-                    .offset(x: stageProgress * width)
+                carArtwork(width: carWidth)
+                    .offset(x: carOffset(fullWidth: fullWidth, carWidth: carWidth))
             }
-            .frame(width: proxy.size.width, height: proxy.size.height, alignment: .leading)
+            .frame(width: contentWidth, height: proxy.size.height, alignment: .leading)
         }
         .frame(maxHeight: .infinity)
-        // Un trajet peut aussi démarrer sans que personne n'ait touché au
-        // bouton — la détection automatique s'en charge. La scène suit alors
-        // l'état plutôt que le pouce.
-        .onChange(of: viewModel.isRecording) { _, isRecording in
-            withAnimation(.smooth(duration: 0.45)) {
-                stageProgress = isRecording ? 1 : 0
-            }
-        }
-        .onAppear { stageProgress = viewModel.isRecording ? 1 : 0 }
+        // Un trajet peut aussi démarrer ou finir sans que personne n'ait touché
+        // au bouton — la détection automatique s'en charge.
+        .onChange(of: viewModel.isRecording) { _, _ in advanceJourney() }
+        .onAppear { journeyStep = viewModel.isRecording ? 1 : 0 }
     }
 
-    /// La voiture au repos : garée à gauche, l'avant déjà sorti du cadre.
+    /// La place d'un élément sur son cycle : 0 en place, +1 sorti par la
+    /// droite, -1 en attente à gauche.
     ///
-    /// Elle est plus large que l'écran et alignée à gauche, si bien qu'on n'en
-    /// voit que l'arrière et le flanc — assez pour la reconnaître, assez peu
-    /// pour qu'elle ait l'air d'être sur le point de partir. Le décalage annule
-    /// la marge de l'écran : le trait doit toucher le bord, pas s'arrêter avant.
-    ///
-    /// En template : le trait prend `primary`, donc noir en thème clair et blanc
-    /// en thème sombre, sans qu'on ait à fournir deux images.
-    private func carArtwork(availableWidth: CGFloat) -> some View {
-        // Dimensions posées à la main plutôt que `scaledToFit` : le dessin
-        // touche les deux bords de son image (aucune marge transparente), donc
-        // `scaledToFit` le ramenait sagement dans la largeur disponible — soit
-        // exactement ce qu'on ne veut pas ici, où il doit déborder.
-        let carWidth = availableWidth * Self.carWidthRatio
+    /// Le cycle fait deux pas, et c'est ce qui interdit la marche arrière : à
+    /// +1 l'élément vient de sortir par la droite, et le pas suivant le reprend
+    /// à -1 pour le faire entrer par la gauche. Le saut entre les deux tombe
+    /// pile au moment où il est hors champ des deux façons à la fois, donc il
+    /// ne se voit pas.
+    private func cyclePosition(_ step: CGFloat) -> CGFloat {
+        let wrapped = step.truncatingRemainder(dividingBy: 2)
+        let positive = wrapped < 0 ? wrapped + 2 : wrapped
+        return positive <= 1 ? positive : positive - 2
+    }
 
-        return Image("CarLineArt")
+    /// Le décalage de la voiture, qui n'a pas la même route à faire selon le
+    /// sens où elle va.
+    ///
+    /// Pour sortir par la droite, une largeur d'écran suffit : elle part du
+    /// bord gauche, donc au bout d'un écran il n'en reste rien. C'est aussi ce
+    /// que parcourt la carte, si bien que les deux avancent du même pas — la
+    /// carte suit la voiture au lieu de traîner loin derrière.
+    ///
+    /// Pour revenir par la gauche il lui faut sa propre largeur, presque deux
+    /// écrans : plus courte, l'attente se ferait à moitié visible au bord.
+    private func carOffset(fullWidth: CGFloat, carWidth: CGFloat) -> CGFloat {
+        let position = cyclePosition(journey)
+        return position >= 0 ? position * fullWidth : position * carWidth
+    }
+
+    /// Franchit le pas suivant.
+    ///
+    /// Quand le geste vient d'aboutir, ce que le pouce avait parcouru devient
+    /// le pas franchi : la somme ne bouge pas d'un pixel, donc rien ne saute et
+    /// il n'y a rien à animer. Quand le trajet a démarré tout seul, il n'y a
+    /// aucun geste derrière et c'est l'animation qui fait le chemin.
+    private func advanceJourney() {
+        if slideProgress > 0 {
+            journeyStep += 1
+            slideProgress = 0
+        } else {
+            withAnimation(.smooth(duration: 0.45)) { journeyStep += 1 }
+        }
+    }
+
+    /// La voiture au repos : garée à gauche, tout l'avant déjà hors du cadre.
+    ///
+    /// Elle est bien plus large que l'écran et posée au bord gauche, si bien
+    /// qu'on n'en voit que l'arrière et le début de l'habitacle — assez pour la
+    /// reconnaître, assez peu pour qu'elle ait l'air d'être déjà en partance.
+    ///
+    /// En template : le trait prend `primary`, donc noir en thème clair et
+    /// blanc en thème sombre, sans qu'on ait à fournir deux images.
+    ///
+    /// Dimensions posées à la main plutôt que `scaledToFit` : le dessin touche
+    /// les deux bords de son image, sans marge transparente, donc `scaledToFit`
+    /// le ramenait sagement dans la largeur disponible — exactement ce qu'on ne
+    /// veut pas ici, où il doit déborder.
+    private func carArtwork(width: CGFloat) -> some View {
+        Image("CarLineArt")
             .renderingMode(.template)
             .resizable()
             .foregroundStyle(.primary)
             // Le pare-chocs arrière est à l'abscisse zéro du dessin, donc poser
-            // ce cadre au bord gauche suffit à montrer l'arrière en entier : la
-            // voiture est garée là, complète, et c'est son avant qui déborde.
-            .frame(width: carWidth, height: carWidth / Self.carAspectRatio)
+            // ce cadre au bord gauche suffit à montrer l'arrière en entier.
+            .frame(width: width, height: width / Self.carAspectRatio)
     }
 
     /// Ce qui remplace la voiture pendant un trajet : les compteurs et la
@@ -270,9 +319,10 @@ struct RecordTripView: View {
 
     /// Le bouton du bas, seul élément à changer entre les deux états.
     ///
-    /// Les deux pilotent la même scène en sens inverse : démarrer la pousse
-    /// vers la carte, arrêter la ramène vers la voiture. D'où le `1 - progress`
-    /// d'un côté, qui fait reculer la carte à mesure que le pouce avance.
+    /// Les deux rapportent leur geste de la même façon : c'est le voyage qui
+    /// sait ce que ça veut dire, selon le pas où il en est. Démarrer et arrêter
+    /// poussent donc la scène dans le même sens, ce qui est bien ce qu'on voit
+    /// à l'écran — tout part toujours vers la droite.
     ///
     /// Un glissement et pas un appui, dans les deux sens : couper un
     /// enregistrement en cours est irréversible pour la portion de trajet qui
@@ -284,7 +334,7 @@ struct RecordTripView: View {
                 title: "Arrêter",
                 systemImage: "stop.fill",
                 tint: .red,
-                onProgressChange: { stageProgress = 1 - $0 }
+                onProgressChange: { slideProgress = $0 }
             ) {
                 viewModel.stopManualRecording(in: modelContext)
             }
@@ -293,7 +343,7 @@ struct RecordTripView: View {
                 title: "Démarrer",
                 systemImage: "play.fill",
                 tint: .green,
-                onProgressChange: { stageProgress = $0 }
+                onProgressChange: { slideProgress = $0 }
             ) {
                 startRecording()
             }
@@ -304,10 +354,10 @@ struct RecordTripView: View {
     /// parce que la voiture doit précisément en sortir.
     private static let screenInset: CGFloat = 16
 
-    /// Combien de largeurs d'écran la voiture occupe. Au-delà de 1, l'avant
-    /// passe le bord droit : c'est ce dépassement qui fait qu'on n'en voit que
-    /// l'arrière, et qu'elle a l'air prête à partir.
-    private static let carWidthRatio: CGFloat = 1.35
+    /// Combien de largeurs d'écran la voiture occupe. C'est ce dépassement qui
+    /// décide de ce qu'on en voit : à 1,9 l'écran s'arrête vers le milieu de la
+    /// vitre avant, donc l'arrière et l'habitacle, rien du capot.
+    private static let carWidthRatio: CGFloat = 1.9
 
     /// Les proportions du dessin, 1774 × 887.
     private static let carAspectRatio: CGFloat = 2
