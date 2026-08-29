@@ -1,11 +1,11 @@
 {
-  "sourceLanguage" : "fr",
+  "sourceLanguage" : "en",
   "strings" : {
     "CFBundleName" : {
       "comment" : "Bundle name",
       "extractionState" : "extracted_with_value",
       "localizations" : {
-        "fr" : {
+        "en" : {
           "stringUnit" : {
             "state" : "new",
             "value" : "MyTrack"
