@@ -42,9 +42,24 @@ struct SlideToConfirmButton: View {
     /// Vrai quand la pastille est allée jusqu'au bout et n'en est pas encore
     /// revenue. Sert au retour haptique, une seule fois par passage.
     @State private var hasReachedEnd = false
+    /// Ce que `label` affiche vraiment. `title` change au milieu du ressort
+    /// qui ouvre la feuille, et un `.animation(value:)` posé directement sur
+    /// le texte hérite quand même de ce ressort-là — c'est le même
+    /// changement d'état qui déclenche les deux. En recopiant `title` ici
+    /// nous-mêmes, dans un `withAnimation` séparé (voir `onChange` plus
+    /// bas), ce texte-là ne suit plus que la courbe qu'on lui donne.
+    @State private var displayedTitle: LocalizedStringKey
 
     /// Hauteur de la gélule, donc diamètre de la pastille.
     private let height: CGFloat = 68
+
+    init(title: LocalizedStringKey, systemImage: String, tint: Color, action: @escaping () -> Void) {
+        self.title = title
+        self.systemImage = systemImage
+        self.tint = tint
+        self.action = action
+        self._displayedTitle = State(initialValue: title)
+    }
 
     /// La teinte de ce qui doit se lire : le libellé et le symbole.
     ///
@@ -102,6 +117,14 @@ struct SlideToConfirmButton: View {
             withAnimation(.smooth) { offsetX = 0 }
             hasReachedEnd = false
         }
+        // Rejoue chaque changement de `title` dans son propre `withAnimation`,
+        // pour la raison détaillée à `displayedTitle` : ignorer le ressort
+        // ambiant de la feuille qui s'ouvre autour du bouton.
+        .onChange(of: title) { _, newTitle in
+            withAnimation(.easeInOut(duration: 0.2)) {
+                displayedTitle = newTitle
+            }
+        }
     }
 
     /// Le fond : une gélule à peine teintée, cerclée d'un trait très fin. Elle
@@ -123,16 +146,19 @@ struct SlideToConfirmButton: View {
     /// pas le contour qui la contient.
     private var label: some View {
         ZStack(alignment: .leading) {
-            Text(title)
+            Text(displayedTitle)
                 .foregroundStyle(ink.opacity(restingTextOpacity))
 
-            Text(title)
+            Text(displayedTitle)
                 .foregroundStyle(ink)
                 .mask(alignment: .leading) { shimmerMask }
         }
         .font(.title3)
         .fontWeight(.medium)
         .lineLimit(1)
+        // Fait glisser les lettres qui changent à la place du mot entier,
+        // qui lui ne bouge pas — le remplacement des glissières système.
+        .contentTransition(.numericText())
         // Centré sur la gélule entière, et non sur ce qu'il en reste une fois
         // la pastille au repos retirée : c'est la forme qu'on voit, donc c'est
         // par rapport à elle que le libellé doit être au milieu. La pastille
