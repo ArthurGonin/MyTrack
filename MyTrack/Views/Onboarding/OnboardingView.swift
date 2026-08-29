@@ -124,6 +124,18 @@ struct OnboardingView: View {
         } message: {
             Text("Autorise l'accès à la position dans Réglages pour activer le suivi automatique.")
         }
+        // Une position accordée après coup ne doit pas laisser à l'écran une
+        // alerte qui dit le contraire. L'étape n'attend les fenêtres système
+        // qu'un temps borné (voir `DrivingDetector.waitForAuthorizationSettled`)
+        // et il y en a deux à lire : qui prend son temps sur celle de
+        // « Toujours » peut répondre après que l'étape a renoncé à l'attendre,
+        // et découvrir un « Localisation refusée » posé sous la fenêtre à
+        // laquelle il vient justement de dire oui.
+        .onChange(of: appServices.locationService.authorizationStatus) { _, status in
+            guard isPermissionDeniedAlertPresented, status == .authorizedAlways else { return }
+            isPermissionDeniedAlertPresented = false
+            advanceStep()
+        }
     }
 
     /// Sized to match AccountButton's glass bubble (28pt content + 6pt

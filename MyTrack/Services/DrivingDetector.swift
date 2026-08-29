@@ -87,7 +87,27 @@ final class DrivingDetector {
     private var pendingDecisionTask: Task<Void, Never>?
     private var isMonitoring = false
 
-    /// "Always" is only reachable in two steps — the initial When In Use-style
+    /// Les deux fenêtres système à enchaîner pour atteindre « Toujours ».
+    ///
+    /// Leur ordre n'est pas une question de présentation : c'est la seule
+    /// façon d'obtenir la seconde. iOS ne réserve la fenêtre de passage à
+    /// « Toujours » qu'à une app qui a déjà « Lorsque l'app est active » et
+    /// qui n'a encore jamais demandé « Toujours » — une fois, et une seule.
+    ///
+    /// Demander `.always` d'emblée, sans rien avoir encore, ne demande donc
+    /// pas « Toujours » : ça affiche la fenêtre de `.whenInUse`, qui ne
+    /// propose que « Lorsque l'app est active », et ça dépense le coup unique
+    /// au passage. C'était le bug : la seconde fenêtre était bien demandée
+    /// ensuite, mais l'appel ne faisait plus rien — sans erreur, sans rappel,
+    /// sans rien. L'app restait sur « Lorsque l'app est active », donc jamais
+    /// réveillée en arrière-plan, et la détection automatique ne pouvait pas
+    /// démarrer.
+    private enum LocationPrompt {
+        case whenInUse
+        case always
+    }
+
+    /// "Always" is only reachable in two steps — the initial When In Use
     /// prompt, then a separate upgrade prompt once that's granted. Set for the
     /// duration of one enable() call so both are chained automatically instead
     /// of requiring the user to come back and enable again after each prompt.
@@ -107,13 +127,11 @@ final class DrivingDetector {
     /// a déjà été dépensée. Il doit donc être plus long que le temps qu'un
     /// humain met à lire une fenêtre d'autorisation et à se décider.
     ///
-    /// Il valait 10 s, et c'était le bug : la fenêtre s'affichait, le compte à
-    /// rebours courait pendant que l'utilisateur lisait, et il expirait avant
-    /// qu'il ait répondu. Sa réponse arrivait ensuite sur une escalade
-    /// désarmée, `escalateToAlwaysIfNeeded` s'arrêtait à sa garde, et la
-    /// seconde fenêtre — celle qui demande « Toujours » — n'était jamais
-    /// demandée. L'app restait en « Pendant l'utilisation » sans que rien ne
-    /// l'explique, et la détection en arrière-plan ne pouvait pas fonctionner.
+    /// Il valait 10 s : le compte à rebours courait pendant que l'utilisateur
+    /// lisait la fenêtre et expirait avant sa réponse, qui arrivait ensuite sur
+    /// une escalade déjà désarmée — `escalateToAlwaysIfNeeded` s'arrêtait à sa
+    /// garde et ne demandait plus rien. Un délai d'autorisation se dimensionne
+    /// sur un temps humain, jamais sur un temps machine.
     private static let escalationTimeout: Duration = .seconds(90)
 
     /// Ce que l'onboarding accepte d'attendre avant de passer à la suite.
@@ -127,6 +145,12 @@ final class DrivingDetector {
     /// reste posée par-dessus, puisqu'elle n'appartient pas à l'écran qu'elle
     /// recouvre, et la réponse sera prise en compte quand elle arrivera.
     private static let onboardingWaitTimeout: Duration = .seconds(20)
+
+    /// Le battement laissé à une fenêtre système pour finir de se refermer
+    /// avant qu'on pose la suivante. Demander la seconde depuis le rappel
+    /// d'autorisation qui vient d'annoncer la réponse à la première n'est pas
+    /// fiable : CoreLocation peut avaler la demande sans rien montrer.
+    private static let promptSettlingDelay: Duration = .milliseconds(500)
 
     /// How far back to look for a drive already under way when monitoring
     /// arms. Long enough to catch a trip that began before the app was woken,
@@ -238,8 +262,7 @@ final class DrivingDetector {
     func disable() {
         isEnabled = false
         UserDefaults.standard.set(false, forKey: Self.preferenceKey)
-        isEscalatingToAlways = false
-        escalationTimeoutTask?.cancel()
+        stopEscalating()
         stopMonitoring()
         resetState()
         status = currentStatus
@@ -317,25 +340,57 @@ final class DrivingDetector {
         let status = locationService.authorizationStatus
 
         switch status {
-        case .notDetermined, .authorizedWhenInUse:
+        // Rien n'a encore été accordé : on demande « Lorsque l'app est
+        // active », et surtout pas « Toujours » — voir LocationPrompt.
+        // Demander « Toujours » ici afficherait exactement la même fenêtre,
+        // mais dépenserait la demande unique dont dépend l'étape suivante.
+        case .notDetermined:
             guard lastEscalationRequestStatus != status else { return }
             lastEscalationRequestStatus = status
-            armEscalationTimeout()
-            // Calling requestAlwaysAuthorization() synchronously from inside
-            // the very authorization-change callback that just reported the
-            // previous grant is unreliable — CoreLocation can silently drop
-            // it and never show the upgrade prompt. A short delay lets it
-            // settle first.
-            Task { [weak self] in
-                try? await Task.sleep(for: .milliseconds(500))
-                self?.locationService.requestAlwaysAuthorization()
-            }
+            requestPrompt(.whenInUse)
+
+        // « Lorsque l'app est active » est accordé : c'est maintenant, et
+        // seulement maintenant, qu'iOS montre la fenêtre de passage à
+        // « Toujours ».
+        case .authorizedWhenInUse:
+            guard lastEscalationRequestStatus != status else { return }
+            lastEscalationRequestStatus = status
+            requestPrompt(.always)
+
         default:
             // Reached "Always", or the user declined outright — either way
             // there is nothing left to escalate toward.
-            isEscalatingToAlways = false
-            escalationTimeoutTask?.cancel()
+            stopEscalating()
         }
+    }
+
+    /// Pose une fenêtre système, après avoir laissé la précédente se refermer
+    /// (`promptSettlingDelay`) et armé le filet qui désarmera l'escalade si
+    /// rien ne revient jamais.
+    private func requestPrompt(_ prompt: LocationPrompt) {
+        armEscalationTimeout()
+        // Sur le fil principal : `CLLocationManager` demande à être piloté
+        // depuis un fil qui a une boucle d'exécution, et c'est une fenêtre
+        // qu'on fait apparaître à l'écran.
+        Task { @MainActor [weak self] in
+            try? await Task.sleep(for: Self.promptSettlingDelay)
+            guard let self else { return }
+            switch prompt {
+            case .whenInUse:
+                AppLog.recording.notice("Asking for \"When In Use\" location.")
+                locationService.requestWhenInUseAuthorization()
+            case .always:
+                AppLog.recording.notice("Asking to upgrade location to \"Always\".")
+                locationService.requestAlwaysAuthorization()
+            }
+        }
+    }
+
+    /// Il n'y a plus de fenêtre à attendre : ce qui patiente sur l'escalade
+    /// (l'onboarding) peut reprendre tout de suite.
+    private func stopEscalating() {
+        isEscalatingToAlways = false
+        escalationTimeoutTask?.cancel()
     }
 
     private func armEscalationTimeout() {

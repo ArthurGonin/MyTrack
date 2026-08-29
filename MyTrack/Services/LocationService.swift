@@ -32,10 +32,28 @@ final class LocationService: NSObject, CLLocationManagerDelegate {
         manager.delegate = self
     }
 
+    /// Fait apparaître la première des deux fenêtres : « Lorsque l'app est
+    /// active ». Sans effet une fois la question posée, ou si l'app n'est pas
+    /// au premier plan.
     func requestWhenInUseAuthorization() {
         manager.requestWhenInUseAuthorization()
     }
 
+    /// Fait apparaître la seconde fenêtre, celle du passage à « Toujours ».
+    ///
+    /// iOS ne l'accorde qu'à une app qui a **déjà** « Lorsque l'app est
+    /// active » et qui n'a **jamais** demandé « Toujours » auparavant — une
+    /// fois par installation, et une seule (c'est écrit noir sur blanc dans
+    /// `CLLocationManager.h`).
+    ///
+    /// Appelée avant que « Lorsque l'app est active » soit accordé, elle
+    /// n'échoue pas : elle montre exactement la même fenêtre que
+    /// `requestWhenInUseAuthorization()` — iOS n'y propose jamais
+    /// « Toujours » — mais dépense au passage ce coup unique. Tout appel
+    /// suivant ne fait alors plus rien du tout, sans erreur ni rappel, et
+    /// l'app reste sur « Lorsque l'app est active » sans que rien ne
+    /// l'explique. C'est `DrivingDetector` qui enchaîne les deux fenêtres
+    /// dans le bon ordre.
     func requestAlwaysAuthorization() {
         manager.requestAlwaysAuthorization()
     }
