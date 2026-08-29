@@ -25,6 +25,12 @@ struct RecordTripView: View {
     /// Vrai quand la feuille a été tirée vers le bas : la carte est
     /// rangée, les deux chiffres et le bouton restent.
     @State private var isSheetCollapsed = false
+    /// L'opacité de ce que porte la feuille, pilotée à part de son ouverture.
+    /// Part de 1 pour que l'app relancée en plein trajet montre la feuille
+    /// pleine tout de suite, sans rien à révéler.
+    @State private var sheetContentOpacity: Double = 1
+    /// Celle de la carte seule, pour son propre aller-retour quand on replie.
+    @State private var mapOpacity: Double = 1
     /// La taille du grand nombre du compteur. `@ScaledMetric` plutôt
     /// qu'une constante : une taille en points ne suit pas les réglages
     /// d'accessibilité, et ce nombre-là est ce qu'on vient lire.
@@ -76,10 +82,17 @@ struct RecordTripView: View {
                         .frame(maxHeight: .infinity)
                 }
             }
+            // Aligné en bas : quand le ressort dépasse sa cible, la pile est
+            // un instant plus haute que la place disponible, et ce qui
+            // déborde doit partir par le haut. Centré — ce qu'il ferait sans
+            // ça — le dépassement se partagerait entre les deux bouts et
+            // pousserait le bouton vers le bas, qui est précisément ce qui ne
+            // doit pas bouger.
+            .frame(maxHeight: .infinity, alignment: .bottom)
             // L'ouverture et la fermeture de la feuille, en un seul endroit :
             // c'est le même changement d'état qui la fait grandir depuis le
             // bouton, effacer le compteur et retourner le bouton.
-            .animation(.smooth(duration: 0.42), value: viewModel.isRecording)
+            .animation(Self.sheetAnimation, value: viewModel.isRecording)
             .padding()
             // La photo se glisse entre le contenu et le fond de l'app : elle
             // apporte son propre décor, qui recouvre le gris sans le remplacer.
@@ -136,7 +149,24 @@ struct RecordTripView: View {
             // qu'on vient voir. Ce qu'on avait replié la fois d'avant ne la
             // suit pas.
             .onChange(of: viewModel.isRecording) { _, isRecording in
-                if isRecording { isSheetCollapsed = false }
+                guard isRecording else {
+                    // À l'arrêt, le contenu s'en va d'un coup et la feuille se
+                    // referme sur un bouton qui n'a plus rien derrière lui.
+                    sheetContentOpacity = 0
+                    return
+                }
+                isSheetCollapsed = false
+                mapOpacity = 1
+                sheetContentOpacity = 0
+                withAnimation(Self.contentReveal) { sheetContentOpacity = 1 }
+            }
+            .onChange(of: isSheetCollapsed) { _, isCollapsed in
+                // Au repli, la carte quitte la pile d'un coup et la feuille se
+                // referme sur les chiffres. Au retour, elle attend que la
+                // place soit refaite, pour la même raison qu'à l'ouverture.
+                guard !isCollapsed else { return }
+                mapOpacity = 0
+                withAnimation(Self.contentReveal) { mapOpacity = 1 }
             }
             // The system prompt is answered long after the tap that raised it
             // returned. Watching the status here is what turns that answer back
@@ -297,22 +327,46 @@ struct RecordTripView: View {
     private var recordingSheet: some View {
         VStack(spacing: 16) {
             if viewModel.isRecording {
-                grabber
-                liveStats
-                if !isSheetCollapsed {
-                    LiveTripMapView()
-                        .frame(maxWidth: .infinity, maxHeight: .infinity)
-                        // L'arrondi des cartes de l'app (`appCard`), et non
-                        // celui, concentrique, de la feuille : la carte flotte
-                        // au milieu d'elle, loin de ses coins, et `.concentric`
-                        // n'a rien à quoi se raccorder là — il retombe sur des
-                        // coins droits.
-                        .clipShape(.rect(cornerRadius: 22, style: .continuous))
+                VStack(spacing: 16) {
+                    grabber
+                    liveStats
+                    if !isSheetCollapsed {
+                        LiveTripMapView()
+                            .frame(maxWidth: .infinity, maxHeight: .infinity)
+                            .opacity(mapOpacity)
+                            // L'arrondi des cartes de l'app (`appCard`), et non
+                            // celui, concentrique, de la feuille : la carte
+                            // flotte au milieu d'elle, loin de ses coins, et
+                            // `.concentric` n'a rien à quoi se raccorder là —
+                            // il retombe sur des coins droits.
+                            .clipShape(.rect(cornerRadius: 22, style: .continuous))
+                    }
                 }
+                .opacity(sheetContentOpacity)
+                // Aucune transition : c'est l'opacité au-dessus qui fait
+                // entrer et sortir ce contenu. Une transition ferait la même
+                // chose, mais son animation à elle déteint sur ce qui l'entoure
+                // — le libellé du bouton se met à rejoindre sa place en
+                // glissant, et on le voit passer au-dessus de la gélule.
+                .transition(.identity)
             }
             slideControl
+                // Servi en premier : le temps que la feuille s'ouvre, elle est
+                // plus courte que ce qu'elle contient, et une pile trop serrée
+                // rogne ses éléments et les déplace. Le bouton, lui, garde sa
+                // taille et sa place quoi qu'il arrive au-dessus de lui.
+                .layoutPriority(1)
         }
-        .padding(viewModel.isRecording ? Self.sheetPadding : 0)
+        // La marge est là dans les deux états, y compris quand la feuille est
+        // éteinte et qu'on ne voit que le bouton. C'est ce qui fait qu'il ne
+        // bouge pas d'un point à l'ouverture, et ce qui laisse à sa pastille
+        // la place de grossir sous le doigt sans que le rognage la coupe.
+        .padding(Self.sheetPadding)
+        // Rogné à la forme de la feuille : le temps qu'elle grandisse, elle est
+        // plus courte que ce qu'elle contient, et une pile trop serrée laisse
+        // ses éléments se chevaucher et sortir. Sans ça, les chiffres et la
+        // carte se voient un instant flotter sur la photo.
+        .clipShape(.rect(cornerRadius: Self.sheetCornerRadius, style: .continuous))
         .glassEffect(
             viewModel.isRecording ? .regular : .identity,
             in: .rect(cornerRadius: Self.sheetCornerRadius, style: .continuous)
@@ -404,12 +458,34 @@ struct RecordTripView: View {
         }
     }
 
-    /// Le repli et le retour de la carte. Le même que l'ouverture de la
-    /// feuille, en un peu plus court : le chemin l'est aussi.
-    private static let collapseAnimation: Animation = .smooth(duration: 0.35)
+    /// L'ouverture et la fermeture de la feuille.
+    ///
+    /// `bouncy` plutôt que `smooth` : un ressort qui dépasse un peu sa cible
+    /// avant de s'y poser, comme les feuilles du système. Sans ce dépassement,
+    /// le verre arrive à sa place et s'arrête net — ça se voit.
+    ///
+    /// Le rebond reste petit, et ça n'est pas qu'une affaire de goût : la
+    /// feuille ouverte occupe déjà toute la hauteur disponible, donc tout ce
+    /// qu'elle dépasse en plus déborde de l'écran et pousse ce qui l'entoure.
+    /// Quelques points suffisent à faire ressort ; dix fois plus ferait sauter
+    /// la salutation au-dessus.
+    private static let sheetAnimation: Animation = .bouncy(duration: 0.5, extraBounce: 0.03)
+
+    /// Le repli et le retour de la carte. Le même ressort en plus court : le
+    /// chemin l'est aussi.
+    private static let collapseAnimation: Animation = .bouncy(duration: 0.4, extraBounce: 0.03)
+
+    /// L'arrivée du contenu dans la feuille, en retard sur elle.
+    ///
+    /// Il ne se montre qu'une fois la place faite : pendant que la feuille
+    /// s'ouvre, elle est plus courte que ce qu'elle porte, la pile se tasse et
+    /// MapKit recadre pour suivre — on verrait la moitié de la France défiler
+    /// en un quart de seconde. Le retard couvre exactement ce moment-là.
+    private static let contentReveal: Animation = .easeOut(duration: 0.2).delay(0.22)
 
     /// La marge entre le bord de la feuille et ce qu'elle contient — le
-    /// bouton compris, qu'elle vient donc border de dix points.
+    /// bouton compris, qu'elle borde donc de dix points, y compris au repos où
+    /// elle est le seul écart entre lui et le bord d'une feuille invisible.
     private static let sheetPadding: CGFloat = 10
 
     /// L'arrondi de la feuille : celui de la gélule du bouton (34, sa
