@@ -129,6 +129,7 @@
       }
     },
     "%@ / mois" : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -1185,6 +1186,7 @@
       }
     },
     "5 étoiles sur 5" : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -1705,6 +1707,7 @@
       }
     },
     "achat unique, à vie" : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -4108,6 +4111,7 @@
       }
     },
     "Détection automatique" : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -4429,6 +4433,7 @@
       }
     },
     "Elle se lance toute seule quand je prends la voiture. J'ai fini par l'oublier — c'est le plus beau compliment." : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -5431,6 +5436,7 @@
       }
     },
     "J'y vais" : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -7801,6 +7807,7 @@
       }
     },
     "Pourquoi MyTrack" : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -8042,6 +8049,7 @@
       }
     },
     "puis %@ / an" : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -8242,6 +8250,7 @@
       }
     },
     "Rapports PDF inclus" : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -8723,6 +8732,7 @@
       }
     },
     "Sans abonnement" : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -10628,6 +10638,7 @@
       }
     },
     "Trajets illimités" : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -10989,6 +11000,7 @@
       }
     },
     "Véhicules illimités" : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
