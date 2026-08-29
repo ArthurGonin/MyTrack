@@ -9113,6 +9113,46 @@
         }
       }
     },
+    "Ton accès à vie est acquis. Ton abonnement résilié reste actif jusqu'au %@, sans reconduction.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Dein lebenslanger Zugang ist gesichert. Dein gekündigtes Abo bleibt bis %@ aktiv, ohne Verlängerung."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Your lifetime access is secured. Your cancelled subscription stays active until %@, with no renewal."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tu acceso de por vida está asegurado. Tu suscripción cancelada sigue activa hasta el %@, sin renovación."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ton accès à vie est acquis. Ton abonnement résilié reste actif jusqu'au %@, sans reconduction."
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Il tuo accesso a vita è acquisito. L'abbonamento disdetto resta attivo fino al %@, senza rinnovo."
+          }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "O teu acesso vitalício está garantido. A tua subscrição cancelada mantém-se ativa até %@, sem renovação."
+          }
+        }
+      }
+    },
     "Ton accès à vie est acquis. Ton abonnement, lui, court toujours et sera reconduit : résilie-le pour ne pas payer deux fois.": {
       "localizations": {
         "de": {
