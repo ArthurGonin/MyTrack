@@ -317,13 +317,23 @@ struct SubscriptionSettingsSection: View {
                 : String(localized: "Sans abonnement actif, aucun nouveau trajet n'est enregistré. Tes trajets et rapports déjà enregistrés restent accessibles.", bundle: localizationBundle, locale: locale)
 
         case .lifetime:
-            // « Sans abonnement ni reconduction » devient un mensonge tant que
-            // l'abonnement d'avant court encore — et un mensonge qui coûte de
-            // l'argent à qui le croit.
-            guard purchaseService.activeSubscription == nil else {
+            // « Sans abonnement ni reconduction » devient un mensonge tant qu'un
+            // abonnement d'avant court encore, résilié ou non : il y a bien un
+            // abonnement, actif jusqu'à son terme.
+            guard let subscription = purchaseService.activeSubscription else {
+                return String(localized: "Achat unique. Accès à vie à MyTrack, sans abonnement ni reconduction.", bundle: localizationBundle, locale: locale)
+            }
+            // Résilié, il n'y a plus rien à reconduire : le rappel n'a plus lieu
+            // d'être, même si l'abonnement court encore jusqu'à son terme.
+            guard subscription.willAutoRenew == false, let date = subscription.expirationDate else {
                 return String(localized: "Ton accès à vie est acquis. Ton abonnement, lui, court toujours et sera reconduit : résilie-le pour ne pas payer deux fois.", bundle: localizationBundle, locale: locale)
             }
-            return String(localized: "Achat unique. Accès à vie à MyTrack, sans abonnement ni reconduction.", bundle: localizationBundle, locale: locale)
+            let formattedDate = TripFormatting.longDate(date, locale: locale)
+            return String(
+                localized: "Ton accès à vie est acquis. Ton abonnement résilié reste actif jusqu'au \(formattedDate), sans reconduction.",
+                bundle: localizationBundle,
+                locale: locale
+            )
 
         case .subscription(let subscription):
             guard let date = subscription.expirationDate else {
