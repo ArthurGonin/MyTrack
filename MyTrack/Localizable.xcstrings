@@ -2540,6 +2540,46 @@
         }
       }
     },
+    "Autorise l'accès à l'activité physique dans Réglages pour activer le suivi automatique.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Erlaube den Zugriff auf körperliche Aktivität in den Einstellungen, um die automatische Erfassung zu aktivieren."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Allow physical activity access in Settings to turn on automatic tracking."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Permite el acceso a la actividad física en Ajustes para activar el seguimiento automático."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Autorise l'accès à l'activité physique dans Réglages pour activer le suivi automatique."
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Consenti l'accesso all'attività fisica in Impostazioni per attivare il rilevamento automatico."
+          }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Permite o acesso à atividade física nas Definições para ativar a deteção automática."
+          }
+        }
+      }
+    },
     "Autorise l'accès à la position dans Réglages pour activer le suivi automatique.": {
       "localizations": {
         "de": {
@@ -7792,6 +7832,86 @@
         }
       }
     },
+    "Règle l'accès à la position sur « Toujours » dans Réglages pour activer le suivi automatique.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Stelle den Standortzugriff in den Einstellungen auf „Immer“, um die automatische Erfassung zu aktivieren."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Set location access to “Always” in Settings to turn on automatic tracking."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Configura el acceso a la ubicación en «Siempre» en Ajustes para activar el seguimiento automático."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Règle l'accès à la position sur « Toujours » dans Réglages pour activer le suivi automatique."
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Imposta l'accesso alla posizione su “Sempre” in Impostazioni per attivare il rilevamento automatico."
+          }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Define o acesso à localização como «Sempre» nas Definições para ativar a deteção automática."
+          }
+        }
+      }
+    },
+    "Règle la position sur « Toujours » et autorise l'activité physique dans Réglages pour activer le suivi automatique.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Stelle den Standort auf „Immer“ und erlaube die körperliche Aktivität in den Einstellungen, um die automatische Erfassung zu aktivieren."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Set location to “Always” and allow physical activity in Settings to turn on automatic tracking."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Configura la ubicación en «Siempre» y permite la actividad física en Ajustes para activar el seguimiento automático."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Règle la position sur « Toujours » et autorise l'activité physique dans Réglages pour activer le suivi automatique."
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Imposta la posizione su “Sempre” e consenti l'attività fisica in Impostazioni per attivare il rilevamento automatico."
+          }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Define a localização como «Sempre» e permite a atividade física nas Definições para ativar a deteção automática."
+          }
+        }
+      }
+    },
     "Réglages": {
       "localizations": {
         "de": {
@@ -8108,6 +8228,46 @@
           "stringUnit": {
             "state": "translated",
             "value": "Deteção automática"
+          }
+        }
+      }
+    },
+    "Suivi automatique inactif": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Automatische Erfassung inaktiv"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Automatic tracking inactive"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Seguimiento automático inactivo"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Suivi automatique inactif"
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Rilevamento automatico non attivo"
+          }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Deteção automática inativa"
           }
         }
       }

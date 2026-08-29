@@ -13,6 +13,26 @@ import SwiftData
 import SwiftUI
 import UIKit
 
+/// Ce qui manque encore au suivi automatique une fois les fenêtres système
+/// passées — donc ce que l'alerte de l'étape doit nommer, et où envoyer
+/// l'utilisateur le réparer.
+private enum MissingAutoDetectionPermission {
+    case location
+    case motion
+    case both
+
+    var message: LocalizedStringKey {
+        switch self {
+        case .location:
+            "Règle l'accès à la position sur « Toujours » dans Réglages pour activer le suivi automatique."
+        case .motion:
+            "Autorise l'accès à l'activité physique dans Réglages pour activer le suivi automatique."
+        case .both:
+            "Règle la position sur « Toujours » et autorise l'activité physique dans Réglages pour activer le suivi automatique."
+        }
+    }
+}
+
 private enum OnboardingStep: Int, CaseIterable {
     case welcome
     case name
@@ -32,7 +52,8 @@ struct OnboardingView: View {
     @State private var lastName = ""
     @State private var vehicleName = ""
     @State private var licensePlate = ""
-    @State private var isPermissionDeniedAlertPresented = false
+    /// Non nil quand l'alerte est à l'écran, et porte ce qu'elle a à dire.
+    @State private var missingPermission: MissingAutoDetectionPermission?
     @State private var isRequestingAutoDetectionPermissions = false
     /// L'achat unique est proposé en premier : c'est la formule que la paywall
     /// met en avant, et celle qu'on retrouve donc déjà cochée en y arrivant.
@@ -114,27 +135,38 @@ struct OnboardingView: View {
         }
         .padding()
         .appBackground()
-        .alert("Localisation refusée", isPresented: $isPermissionDeniedAlertPresented) {
+        .alert(
+            "Suivi automatique inactif",
+            isPresented: Binding(
+                get: { missingPermission != nil },
+                set: { if !$0 { missingPermission = nil } }
+            ),
+            presenting: missingPermission
+        ) { _ in
             Button("Réglages") {
                 if let url = URL(string: UIApplication.openSettingsURLString) {
                     UIApplication.shared.open(url)
                 }
             }
             Button("Annuler", role: .cancel) {}
-        } message: {
-            Text("Autorise l'accès à la position dans Réglages pour activer le suivi automatique.")
+        } message: { missing in
+            Text(missing.message)
         }
-        // Une position accordée après coup ne doit pas laisser à l'écran une
-        // alerte qui dit le contraire. L'étape n'attend les fenêtres système
-        // qu'un temps borné (voir `DrivingDetector.waitForAuthorizationSettled`)
-        // et il y en a deux à lire : qui prend son temps sur celle de
-        // « Toujours » peut répondre après que l'étape a renoncé à l'attendre,
-        // et découvrir un « Localisation refusée » posé sous la fenêtre à
-        // laquelle il vient justement de dire oui.
-        .onChange(of: appServices.locationService.authorizationStatus) { _, status in
-            guard isPermissionDeniedAlertPresented, status == .authorizedAlways else { return }
-            isPermissionDeniedAlertPresented = false
-            advanceStep()
+        // Une autorisation accordée après coup ne doit pas laisser à l'écran
+        // une alerte qui dit le contraire. L'étape n'attend les fenêtres
+        // système qu'un temps borné (voir
+        // `DrivingDetector.waitForAuthorizationSettled`) et il y en a deux à
+        // lire : qui prend son temps sur celle de « Toujours » peut répondre
+        // après que l'étape a renoncé à l'attendre, et découvrir une alerte
+        // posée sous la fenêtre à laquelle il vient justement de dire oui.
+        // L'alerte se remet donc à jour sur la réponse tardive — et disparaît,
+        // l'étape reprenant son cours, s'il ne manque plus rien.
+        .onChange(of: appServices.locationService.authorizationStatus) { _, _ in
+            guard missingPermission != nil else { return }
+            missingPermission = missingAutoDetectionPermission
+            if missingPermission == nil {
+                advanceStep()
+            }
         }
     }
 
@@ -252,23 +284,52 @@ struct OnboardingView: View {
     /// fois toute la chaîne retombée, plutôt que de courir devant les
     /// dialogues.
     ///
-    /// Le résultat décide de la suite. La position refusée est le seul cas qui
-    /// retient : sans elle la détection ne peut rien faire, et le dire ici vaut
-    /// mieux que de laisser croire que c'est actif. On ne bloque pas pour
-    /// autant — « Non, peut-être plus tard » reste juste à côté. Les autres cas
-    /// laissent passer : l'abonnement se règle à l'étape suivante, et un
-    /// appareil sans capteur de mouvement n'a rien à accorder.
+    /// Ce qui décide de la suite, ce sont les autorisations elles-mêmes et non
+    /// `DrivingDetector.status` : celui-ci nomme l'abonnement avant les
+    /// permissions — c'est la cause la plus actionnable une fois l'app en
+    /// service — et la paywall n'est pas encore passée à cette étape. Il
+    /// répondait donc `.needsSubscription` quoi que l'utilisateur vienne
+    /// d'accorder ou de refuser, et l'étape avançait sans un mot sur un refus,
+    /// alors qu'elle croyait le signaler.
+    ///
+    /// On ne bloque pas pour autant : l'alerte nomme ce qui manque et mène aux
+    /// Réglages, « Non, peut-être plus tard » reste juste à côté, et la section
+    /// Autorisations des réglages porte les mêmes lignes pour y revenir plus
+    /// tard.
     private func enableAutoDetectionAndContinue() {
         isRequestingAutoDetectionPermissions = true
         Task {
-            let status = await appServices.drivingDetector.requestActivation()
+            await appServices.drivingDetector.requestActivation()
             isRequestingAutoDetectionPermissions = false
 
-            if status == .needsAlwaysLocation {
-                isPermissionDeniedAlertPresented = true
+            if let missing = missingAutoDetectionPermission {
+                missingPermission = missing
             } else {
                 advanceStep()
             }
+        }
+    }
+
+    /// Ce qui manque au suivi automatique pour tourner vraiment, lu sur les
+    /// autorisations au moment où on le demande.
+    ///
+    /// Nil sur un appareil sans capteur de mouvement — le simulateur, par
+    /// exemple : la détection ne peut pas y fonctionner de toute façon, et il
+    /// n'y a rien à y accorder. Réclamer une autorisation qui ne servirait à
+    /// rien ne ferait qu'égarer.
+    private var missingAutoDetectionPermission: MissingAutoDetectionPermission? {
+        guard appServices.motionActivityService.isAvailable else { return nil }
+
+        // « Pendant l'utilisation » ne suffit pas : sans « Toujours » l'app
+        // n'est jamais réveillée au départ d'un trajet.
+        let needsLocation = appServices.locationService.authorizationStatus != .authorizedAlways
+        let needsMotion = !appServices.motionActivityService.isAuthorized
+
+        switch (needsLocation, needsMotion) {
+        case (true, true): return .both
+        case (true, false): return .location
+        case (false, true): return .motion
+        case (false, false): return nil
         }
     }
 
