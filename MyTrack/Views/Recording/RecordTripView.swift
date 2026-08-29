@@ -12,6 +12,7 @@ struct RecordTripView: View {
     @Environment(AppServices.self) private var appServices
     @Environment(\.modelContext) private var modelContext
     @Environment(\.locale) private var locale
+    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
     @Query private var vehicles: [Vehicle]
     @Query private var trips: [Trip]
     @Query private var userProfiles: [UserProfile]
@@ -31,6 +32,27 @@ struct RecordTripView: View {
     @State private var sheetContentOpacity: Double = 1
     /// Celle de la carte seule, pour son propre aller-retour quand on replie.
     @State private var mapOpacity: Double = 1
+    /// La gélule de la barre d'onglets, quand on a pu la mesurer : c'est elle
+    /// que le bouton Démarrer épouse au repos. `nil` tant qu'on ne l'a pas lue
+    /// — ou si elle est introuvable, auquel cas le bouton garde sa pleine
+    /// taille, celle qu'il avait avant.
+    @State private var tabBarSize: CGSize?
+    /// La largeur que le bouton prend en trajet, relevée sur la feuille.
+    @State private var fullButtonWidth: CGFloat?
+    /// De combien la feuille est descendue vers la barre d'onglets : tout au
+    /// repos, rien en trajet.
+    ///
+    /// Recopié de `isRecording` dans son propre `withAnimation` plutôt que lu
+    /// directement, et pour la même raison que `displayedTitle` dans le bouton :
+    /// le ressort qui ouvre la feuille dépasse sa cible de deux points avant de
+    /// s'y poser, et une valeur lue directement hériterait de ce ressort-là —
+    /// c'est le même changement d'état qui déclenche les deux. Ce dépassement
+    /// est ce qu'on veut d'une feuille qui s'ouvre ; appliqué en plus à un
+    /// déplacement de dix-huit points, il fait rebondir le libellé du bouton au
+    /// moment même où il se transforme, et c'est le seul texte de l'écran :
+    /// l'œil ne suit que lui. Isolé ici, ce trajet-là suit la courbe qu'on lui
+    /// donne, et la feuille garde son rebond.
+    @State private var sheetDrop: CGFloat = RecordTripView.restingDrop
     /// La taille du grand nombre du compteur. `@ScaledMetric` plutôt
     /// qu'une constante : une taille en points ne suit pas les réglages
     /// d'accessibilité, et ce nombre-là est ce qu'on vient lire.
@@ -76,7 +98,11 @@ struct RecordTripView: View {
                     if !viewModel.isRecording || isSheetCollapsed {
                         Spacer(minLength: 0)
                     }
+                    // Une marge négative et non un décalage : le bouton change
+                    // vraiment de place dans la pile, il ne se contente pas de
+                    // se dessiner plus bas.
                     recordingSheet
+                        .padding(.bottom, -sheetDrop)
                 } else {
                     subscriptionRequiredView
                         .frame(maxHeight: .infinity)
@@ -145,10 +171,30 @@ struct RecordTripView: View {
                 }
             }
             .accountToolbar()
+            // La barre d'onglets est mesurée à l'affichage, puis relue chaque
+            // fois qu'elle peut avoir changé de largeur : ses libellés sont ce
+            // qui la dimensionne, et ils changent avec la langue comme avec le
+            // corps de texte. Relu au tour de boucle suivant — au moment où
+            // SwiftUI signale le changement, UIKit n'a pas encore remis la
+            // barre en page et on lirait l'ancienne largeur.
+            .onAppear {
+                refreshTabBarSize()
+                // L'app relancée en plein trajet s'ouvre déjà sur la feuille :
+                // le bouton y est en haute position, sans avoir eu à y monter.
+                sheetDrop = viewModel.isRecording ? 0 : Self.restingDrop
+            }
+            .onChange(of: locale) { _, _ in Task { refreshTabBarSize() } }
+            .onChange(of: dynamicTypeSize) { _, _ in Task { refreshTabBarSize() } }
             // Une nouvelle course s'ouvre toujours sur la carte : c'est ce
             // qu'on vient voir. Ce qu'on avait replié la fois d'avant ne la
             // suit pas.
             .onChange(of: viewModel.isRecording) { _, isRecording in
+                // Le bouton monte vers sa place de trajet, ou redescend contre
+                // la barre d'onglets — dans sa propre animation, pour la raison
+                // détaillée à `sheetDrop`.
+                withAnimation(Self.dropAnimation) {
+                    sheetDrop = isRecording ? 0 : Self.restingDrop
+                }
                 guard isRecording else {
                     // À l'arrêt, le contenu s'en va d'un coup et la feuille se
                     // referme sur un bouton qui n'a plus rien derrière lui.
@@ -357,6 +403,17 @@ struct RecordTripView: View {
                 // taille et sa place quoi qu'il arrive au-dessus de lui.
                 .layoutPriority(1)
         }
+        // La feuille garde toute la largeur dans les deux états. Au repos elle
+        // est invisible — verre éteint, fond transparent — et c'est le bouton
+        // seul qui rétrécit ; sans ça, elle se refermerait sur lui et la carte
+        // n'aurait plus de largeur d'où s'ouvrir.
+        .frame(maxWidth: .infinity)
+        // Ce que le bouton mesure quand rien ne le contraint. Le relever plutôt
+        // que le recalculer, c'est ce qui permet de donner au bouton une
+        // largeur chiffrée dans les deux états : entre deux nombres l'ouverture
+        // s'interpole, alors qu'un passage à « prends toute la place » se ferait
+        // d'un coup.
+        .onGeometryChange(for: CGFloat.self) { $0.size.width } action: { fullButtonWidth = $0 }
         // La marge est là dans les deux états, y compris quand la feuille est
         // éteinte et qu'on ne voit que le bouton. C'est ce qui fait qu'il ne
         // bouge pas d'un point à l'ouverture, et ce qui laisse à sa pastille
@@ -366,10 +423,10 @@ struct RecordTripView: View {
         // plus courte que ce qu'elle contient, et une pile trop serrée laisse
         // ses éléments se chevaucher et sortir. Sans ça, les chiffres et la
         // carte se voient un instant flotter sur la photo.
-        .clipShape(.rect(cornerRadius: Self.sheetCornerRadius, style: .continuous))
+        .clipShape(.rect(cornerRadius: sheetCornerRadius, style: .continuous))
         .glassEffect(
             viewModel.isRecording ? .regular : .identity,
-            in: .rect(cornerRadius: Self.sheetCornerRadius, style: .continuous)
+            in: .rect(cornerRadius: sheetCornerRadius, style: .continuous)
         )
         .gesture(collapseDrag)
         .sensoryFeedback(.impact(weight: .light), trigger: isSheetCollapsed)
@@ -441,6 +498,11 @@ struct RecordTripView: View {
     /// Un glissement et pas un appui, dans les deux sens : couper un
     /// enregistrement en cours est irréversible pour la portion de trajet qui
     /// reste, et ça ne doit pas pouvoir se faire d'un doigt posé par mégarde.
+    ///
+    /// Au repos, il a très exactement la taille de la barre d'onglets sous lui
+    /// — deux gélules l'une au-dessus de l'autre, du même gabarit, plutôt
+    /// qu'une grosse barre verte posée sur une petite. Il ne reprend sa pleine
+    /// taille qu'une fois lancé, quand la feuille s'ouvre autour de lui.
     private var slideControl: some View {
         // Typé : un ternaire entre deux littéraux peut se résoudre en `String`,
         // qui ne passerait pas par la traduction.
@@ -448,7 +510,12 @@ struct RecordTripView: View {
         return SlideToConfirmButton(
             title: title,
             systemImage: viewModel.isRecording ? "stop.fill" : "play.fill",
-            tint: viewModel.isRecording ? .red : .green
+            // Du verre au repos, comme la barre d'onglets qu'il surplombe :
+            // démarrer un trajet est le geste ordinaire de cet écran, il n'a
+            // pas à s'annoncer par une couleur. Arrêter, si — c'est le geste
+            // qu'on cherche des yeux, et le seul qui soit irréversible.
+            style: viewModel.isRecording ? .tinted(.red) : .glass,
+            height: buttonHeight
         ) {
             if viewModel.isRecording {
                 viewModel.stopManualRecording(in: modelContext)
@@ -456,6 +523,27 @@ struct RecordTripView: View {
                 startRecording()
             }
         }
+        .frame(width: buttonWidth)
+    }
+
+    private var buttonHeight: CGFloat {
+        guard !viewModel.isRecording, let tabBarSize else { return SlideToConfirmButton.fullHeight }
+        return tabBarSize.height
+    }
+
+    /// `nil` seulement à la toute première image, avant que la feuille ait été
+    /// mesurée : le bouton prend alors la largeur qu'on lui propose, qui est
+    /// celle qu'il aura de toute façon en trajet.
+    private var buttonWidth: CGFloat? {
+        guard !viewModel.isRecording, let tabBarSize else { return fullButtonWidth }
+        return tabBarSize.width
+    }
+
+    /// Relit la gélule de la barre d'onglets et la garde si la lecture échoue :
+    /// un `nil` passager renverrait le bouton en pleine largeur le temps d'une
+    /// image, ce qui se verrait bien plus qu'une mesure d'un point périmée.
+    private func refreshTabBarSize() {
+        tabBarSize = TabBarMetrics.floatingBarSize ?? tabBarSize
     }
 
     /// L'ouverture et la fermeture de la feuille.
@@ -475,6 +563,11 @@ struct RecordTripView: View {
     /// chemin l'est aussi.
     private static let collapseAnimation: Animation = .bouncy(duration: 0.4, extraBounce: 0.03)
 
+    /// La descente du bouton vers la barre d'onglets, et sa remontée. Le
+    /// ressort de la feuille sans son rebond — `smooth` est exactement ça — et
+    /// la même durée, pour que les deux se posent ensemble.
+    private static let dropAnimation: Animation = .smooth(duration: 0.5)
+
     /// L'arrivée du contenu dans la feuille, en retard sur elle.
     ///
     /// Il ne se montre qu'une fois la place faite : pendant que la feuille
@@ -488,10 +581,22 @@ struct RecordTripView: View {
     /// elle est le seul écart entre lui et le bord d'une feuille invisible.
     private static let sheetPadding: CGFloat = 10
 
-    /// L'arrondi de la feuille : celui de la gélule du bouton (34, sa
-    /// demi-hauteur) plus la marge qui l'en sépare. C'est ce qui fait que le
-    /// bas de la feuille épouse le bouton au lieu de le recouper.
-    private static let sheetCornerRadius: CGFloat = 44
+    /// De combien le bouton descend au repos, pour se ranger contre la barre
+    /// d'onglets au lieu de flotter au-dessus d'elle.
+    ///
+    /// La cible n'est pas ce nombre, c'est l'écart qu'il laisse : 8 points,
+    /// celui que le système met lui-même entre la barre et une
+    /// `tabViewBottomAccessory` — la gélule flottante qu'il sait poser
+    /// au-dessus d'elle. Relevé sur cet accessoire plutôt que choisi à l'œil.
+    /// Au repos le bouton en est à 26 (la marge de l'écran, 16, plus celle de
+    /// la feuille, 10), d'où ces 18.
+    private static let restingDrop: CGFloat = 18
+
+    /// L'arrondi de la feuille : celui de la gélule du bouton (sa demi-hauteur)
+    /// plus la marge qui l'en sépare. C'est ce qui fait que le bas de la
+    /// feuille épouse le bouton au lieu de le recouper — et comme le bouton
+    /// n'a pas la même hauteur au repos qu'en trajet, l'arrondi le suit.
+    private var sheetCornerRadius: CGFloat { buttonHeight / 2 + Self.sheetPadding }
 
     /// Les proportions de la photo, 1024 × 1536.
     private static let carImageAspectRatio: CGFloat = 1536.0 / 1024.0

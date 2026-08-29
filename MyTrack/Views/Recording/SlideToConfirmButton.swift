@@ -7,7 +7,8 @@
 //  l'arrêt d'alarme.
 //
 //  Trois choses font ce rendu, et il en manquerait une que ça retomberait dans
-//  le fait-maison : une gélule à peine teintée qui laisse voir le fond, un
+//  le fait-maison : une gélule discrète qui laisse voir le fond — du verre ou
+//  un lavis de couleur selon ce qu'elle commande, voir `Style` — un
 //  balayage lumineux qui traverse le libellé en boucle pour dire « ça se
 //  glisse » sans l'écrire, et surtout une pastille qui se comporte en lentille
 //  — le texte se déforme derrière elle quand elle passe dessus. C'est ce
@@ -20,12 +21,33 @@
 import SwiftUI
 
 struct SlideToConfirmButton: View {
+    /// L'habillage du bouton.
+    enum Style {
+        /// Du verre neutre, la matière même de la barre d'onglets : la gélule
+        /// laisse voir ce qu'il y a derrière, le libellé et le symbole
+        /// prennent la couleur du texte. Pour l'action qui n'a pas à crier —
+        /// démarrer un trajet, c'est le geste ordinaire de cet écran.
+        case glass
+        /// Une gélule teintée, pour l'action qui doit se voir de loin.
+        case tinted(Color)
+
+        var isGlass: Bool {
+            if case .glass = self { return true }
+            return false
+        }
+    }
+
     /// Le libellé posé dans la gélule, que la pastille traverse.
     var title: LocalizedStringKey
     /// Le symbole SF porté par la pastille.
     var systemImage: String
-    /// La teinte de l'ensemble : verte pour lancer, rouge pour arrêter.
-    var tint: Color
+    /// De quoi le bouton est fait : du verre, ou une teinte.
+    var style: Style
+    /// Hauteur de la gélule, donc diamètre de la pastille. Elle se règle de
+    /// l'extérieur parce que le bouton n'a pas la même taille selon ce qu'il
+    /// commande : au repos il se cale sur la barre d'onglets, en trajet il
+    /// prend la pleine taille (voir `RecordTripView`).
+    var height: CGFloat = Self.fullHeight
     /// Appelée une fois la pastille menée jusqu'au bout.
     var action: () -> Void
 
@@ -50,39 +72,71 @@ struct SlideToConfirmButton: View {
     /// bas), ce texte-là ne suit plus que la courbe qu'on lui donne.
     @State private var displayedTitle: LocalizedStringKey
 
-    /// Hauteur de la gélule, donc diamètre de la pastille.
-    private let height: CGFloat = 68
+    /// La hauteur du bouton quand rien ne le contraint — celle qu'il prend en
+    /// pleine feuille, et celle des glissières système dont il s'inspire.
+    static let fullHeight: CGFloat = 68
 
-    init(title: LocalizedStringKey, systemImage: String, tint: Color, action: @escaping () -> Void) {
+    init(
+        title: LocalizedStringKey,
+        systemImage: String,
+        style: Style,
+        height: CGFloat = SlideToConfirmButton.fullHeight,
+        action: @escaping () -> Void
+    ) {
         self.title = title
         self.systemImage = systemImage
-        self.tint = tint
+        self.style = style
+        self.height = height
         self.action = action
         self._displayedTitle = State(initialValue: title)
     }
 
     /// La teinte de ce qui doit se lire : le libellé et le symbole.
     ///
-    /// Les glissières système d'iOS ne vivent que sur fond noir, où le vert et
-    /// le rouge ressortent d'eux-mêmes. L'app, elle, a aussi un thème clair, et
-    /// ces deux couleurs y sont vives mais claires : posées sur un gris presque
-    /// blanc, elles se délavent au point que le libellé disparaît. On les
-    /// assombrit donc de ce côté-là seulement — le thème sombre garde la teinte
-    /// pleine, qui est déjà la bonne.
+    /// En verre, c'est la couleur du texte — et `.primary` plutôt qu'un noir
+    /// écrit en dur, pour que le thème sombre la retourne comme il retourne
+    /// celle des libellés de la barre d'onglets juste en dessous.
+    ///
+    /// Teinté, c'est la teinte elle-même. Les glissières système d'iOS ne
+    /// vivent que sur fond noir, où le rouge ressort de lui-même. L'app, elle,
+    /// a aussi un thème clair, et cette couleur y est vive mais claire : posée
+    /// sur un gris presque blanc, elle se délave au point que le libellé
+    /// disparaît. On l'assombrit donc de ce côté-là seulement — le thème sombre
+    /// garde la teinte pleine, qui est déjà la bonne.
     private var ink: Color {
-        colorScheme == .dark ? tint : tint.mix(with: .black, by: 0.35)
+        switch style {
+        case .glass:
+            .primary
+        case .tinted(let tint):
+            colorScheme == .dark ? tint : tint.mix(with: .black, by: 0.35)
+        }
     }
 
-    /// Ce qui reste du libellé hors du balayage. Plus soutenu en thème clair,
-    /// pour la même raison : un tiers d'opacité s'y lit à peine.
+    /// Ce qui reste du libellé hors du balayage.
+    ///
+    /// En verre, presque plein : le libellé doit se lire comme celui d'un
+    /// onglet juste en dessous, et un gris à mi-chemin trahirait tout de suite
+    /// que ce n'en est pas un. Le balayage n'y passe alors plus qu'un reflet,
+    /// et c'est assez — la gélule et la pastille disent déjà que ça se glisse.
+    ///
+    /// Teinté, il peut rester sourd : la couleur suffit à désigner le libellé,
+    /// et le balayage a de quoi le révéler pour de bon. Plus soutenu en thème
+    /// clair dans les deux cas — un tiers d'opacité s'y lit à peine.
     private var restingTextOpacity: Double {
-        colorScheme == .dark ? 0.3 : 0.5
+        switch style {
+        case .glass: colorScheme == .dark ? 0.75 : 0.8
+        case .tinted: colorScheme == .dark ? 0.3 : 0.5
+        }
     }
 
-    /// Le lavis de la gélule. Un peu plus dense en clair, sinon la forme se
-    /// confond avec le fond de l'app au lieu de dessiner le chemin à parcourir.
-    private var trackOpacity: Double {
-        colorScheme == .dark ? 0.08 : 0.14
+    /// Le verre de la pastille. Teinté comme le reste quand le bouton l'est,
+    /// incolore quand il est déjà de verre — une teinte de plus par-dessus le
+    /// verre du fond ne ferait que le troubler.
+    private var knobGlass: Glass {
+        switch style {
+        case .glass: .clear
+        case .tinted(let tint): .clear.tint(tint.opacity(0.1))
+        }
     }
 
     var body: some View {
@@ -127,13 +181,41 @@ struct SlideToConfirmButton: View {
         }
     }
 
-    /// Le fond : une gélule à peine teintée, cerclée d'un trait très fin. Elle
-    /// ne doit pas se lire comme un bouton plein — c'est la pastille qui porte
-    /// la couleur, le reste n'est que le chemin à parcourir.
+    /// Le fond, c'est-à-dire le chemin à parcourir. Dans les deux habillages il
+    /// reste discret : ce n'est pas un bouton plein, et rien n'y doit crier.
+    ///
+    /// En verre, c'est le matériau d'Apple, celui-là même dont est faite la
+    /// barre d'onglets sous le bouton — et c'est tout l'intérêt : les deux
+    /// gélules se lisent alors comme une paire, pas comme un bouton posé sur
+    /// une barre. Teinté, un lavis cerclé d'un trait très fin, un peu plus
+    /// dense en thème clair sinon la forme se confond avec le fond de l'app.
+    ///
+    /// Une seule gélule pour les deux, et non une par habillage : entre deux
+    /// vues, SwiftUI détruit l'une et construit l'autre, et le fondu qui les
+    /// relie passe par un creux où ni l'une ni l'autre ne se voit — au beau
+    /// milieu de l'ouverture, le bouton s'effaçait. Ici rien n'est remplacé,
+    /// seules changent des valeurs : le lavis et le cerne sont des couleurs,
+    /// qui s'interpolent, et le verre s'éteint comme celui de la feuille
+    /// s'allume, au même instant et par le même chemin.
     private var track: some View {
         Capsule()
-            .fill(tint.opacity(trackOpacity))
-            .stroke(Color.primary.tertiary, lineWidth: 0.3)
+            .fill(trackWash)
+            .glassEffect(style.isGlass ? .regular : .identity, in: .capsule)
+            // Le cerne du lavis, dont le verre n'a pas besoin : il porte déjà
+            // son propre bord.
+            .overlay {
+                Capsule()
+                    .stroke(Color.primary.tertiary, lineWidth: 0.3)
+                    .opacity(style.isGlass ? 0 : 1)
+            }
+    }
+
+    /// Le lavis de la gélule : rien sous le verre, un voile de teinte sinon.
+    private var trackWash: Color {
+        switch style {
+        case .glass: .clear
+        case .tinted(let tint): tint.opacity(colorScheme == .dark ? 0.08 : 0.14)
+        }
     }
 
     /// Le libellé en deux exemplaires superposés : une version sourde, et
@@ -159,6 +241,14 @@ struct SlideToConfirmButton: View {
         // Fait glisser les lettres qui changent à la place du mot entier,
         // qui lui ne bouge pas — le remplacement des glissières système.
         .contentTransition(.numericText())
+        // Une largeur de pastille réservée à chaque bout, et le libellé qui
+        // rétrécit plutôt que d'y entrer. La gélule au repos fait la taille de
+        // la barre d'onglets, et aux corps de texte accessibilité « Démarrer »
+        // y devient assez large pour passer sous la pastille posée à gauche.
+        // La marge est symétrique : elle borne la place du libellé sans le
+        // décentrer, et ne se voit qu'aux tailles où il n'y tenait plus.
+        .minimumScaleFactor(0.5)
+        .padding(.horizontal, height)
         // Centré sur la gélule entière, et non sur ce qu'il en reste une fois
         // la pastille au repos retirée : c'est la forme qu'on voit, donc c'est
         // par rapport à elle que le libellé doit être au milieu. La pastille
@@ -213,7 +303,7 @@ struct SlideToConfirmButton: View {
             .background {
                 Circle()
                     .fill(.clear)
-                    .glassEffect(.clear.tint(tint.opacity(0.1)), in: .circle)
+                    .glassEffect(knobGlass, in: .circle)
                     // Masque inversé : on perce le disque pour ne garder que
                     // son liseré.
                     .mask {
@@ -261,8 +351,8 @@ struct SlideToConfirmButton: View {
 
 #Preview {
     VStack(spacing: 24) {
-        SlideToConfirmButton(title: "Démarrer", systemImage: "play.fill", tint: .green) {}
-        SlideToConfirmButton(title: "Arrêter", systemImage: "stop.fill", tint: .red) {}
+        SlideToConfirmButton(title: "Démarrer", systemImage: "play.fill", style: .glass) {}
+        SlideToConfirmButton(title: "Arrêter", systemImage: "stop.fill", style: .tinted(.red)) {}
     }
     .padding()
     .appBackground()
