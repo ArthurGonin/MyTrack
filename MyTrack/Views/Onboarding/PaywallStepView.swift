@@ -6,30 +6,19 @@
 import StoreKit
 import SwiftUI
 
-private struct PaywallFeature: Identifiable {
-    let id = UUID()
-    let symbolName: String
-    let label: LocalizedStringKey
-}
+/// La couleur de mise en avant de l'écran : le ruban « Meilleure offre », le
+/// liseré de la carte à vie, l'étiquette d'économie de l'annuel.
+///
+/// Le bleu système, et non l'accent : l'accent de l'app est un noir qui devient
+/// blanc (voir `Color.onAccent`), et il dit déjà « ce que tu as choisi » sur le
+/// bouton et sur la coche. Dire « ce qu'on te recommande » avec la même couleur
+/// rendrait les deux états impossibles à distinguer. `.blue` s'adapte au thème,
+/// là où le bleu figé de la maquette resterait pâle sur fond sombre.
+private let highlightColor = Color.blue
 
-private let paywallFeatures: [PaywallFeature] = [
-    PaywallFeature(symbolName: "car.fill", label: "Détection automatique"),
-    PaywallFeature(symbolName: "infinity", label: "Trajets illimités"),
-    PaywallFeature(symbolName: "car.2.fill", label: "Véhicules illimités"),
-    PaywallFeature(symbolName: "doc.text.fill", label: "Rapports PDF inclus"),
-]
-
-// TODO: remplacer par un vrai avis, mot pour mot, une fois l'app publiée et
-// notée sur l'App Store — et retirer les étoiles d'ici là si aucun avis
-// n'existe encore.
-//
-// Une citation inventée présentée sous cinq étoiles se lit comme un avis
-// d'utilisateur : c'est un faux avis, interdit par la directive européenne sur
-// les pratiques commerciales déloyales (transposée en France dans le code de la
-// consommation) et par les règles de l'App Store. Le risque n'est pas
-// théorique : les marchés visés ici sont tous européens.
-private let reviewQuote: LocalizedStringKey =
-    "Elle se lance toute seule quand je prends la voiture. J'ai fini par l'oublier — c'est le plus beau compliment."
+/// Le rayon des cartes de formule, partagé par le fond, le liseré et la zone
+/// tactile — les trois doivent décrire exactement la même forme.
+private let planCornerRadius: CGFloat = 20
 
 struct PaywallStepView: View {
     @Binding var selectedPlan: PricingPlan
@@ -58,6 +47,8 @@ struct PaywallStepView: View {
         (hasAttemptedProductLoad && products.isEmpty) || hasPurchaseFailed
     }
 
+    private var isBusy: Bool { isPurchasing || isRestoring }
+
     private var annualProduct: Product? {
         products.first { $0.id == PurchaseService.annualProductID }
     }
@@ -71,79 +62,19 @@ struct PaywallStepView: View {
     }
 
     var body: some View {
-        VStack(spacing: 16) {
-            // L'argumentaire ne défile pas : comme le reste de l'onboarding, il
-            // tient d'un seul tenant. Le tarif occupe le bas de l'écran, donc ce
-            // qui dépasserait ici passerait sous lui et ne se verrait plus — les
-            // avantages, précisément ce que la paywall a à défendre. D'où des
-            // tailles resserrées plutôt que confortables, et le `Spacer` qui
-            // pousse tout vers le haut au lieu de laisser le bloc s'étirer.
-            VStack(alignment: .leading, spacing: 18) {
-                Text("Pourquoi MyTrack")
-                    .font(.title.bold())
-
-                ReviewQuoteCard(quote: reviewQuote)
-
-                VStack(spacing: 12) {
-                    ForEach(paywallFeatures) { feature in
-                        HStack(spacing: 14) {
-                            Image(systemName: feature.symbolName)
-                                .font(.body)
-                                // Largeur fixe : sans elle, chaque symbole
-                                // pousse son libellé à une abscisse
-                                // différente et la colonne de texte ondule.
-                                .frame(width: 26)
-                                .foregroundStyle(.tint)
-                            Text(feature.label)
-                                .font(.subheadline)
-                            Spacer()
-                        }
-                    }
-                }
-            }
-            .frame(maxWidth: .infinity, alignment: .leading)
-
+        // La page ne défile pas : comme les six autres étapes de l'onboarding,
+        // elle tient d'un seul tenant. Tout ce qui dépasserait passerait sous
+        // le bouton et ne se verrait plus — à commencer par la formule mise en
+        // avant, la dernière des trois. C'est ce qui explique les tailles
+        // serrées de tout ce qui suit : elles sont calées pour que l'écran
+        // entier tienne sur un iPhone 17, marge du ruban comprise.
+        VStack(spacing: 14) {
+            header
+            plans
             Spacer(minLength: 0)
-
-            if isLoadingProducts || isPurchasing || isRestoring {
-                ProgressView()
-                    .frame(maxWidth: .infinity)
-            }
-
-            VStack(spacing: 8) {
-                // Le tarif est collé au bouton d'achat, en bas : c'est sur ce
-                // couple-là que l'écran demande de se prononcer, et il reste
-                // ancré au pouce quoi qu'il arrive à l'argumentaire au-dessus.
-                pricingOptions
-                    .padding(.bottom, 4)
-
-                // maxWidth belongs on the label — on the button it only widens
-                // the surrounding frame and leaves the control hugging "J'y vais".
-                Button { purchase() } label: {
-                    Text("J'y vais").frame(maxWidth: .infinity)
-                }
-                .buttonStyle(.borderedProminent)
-                .foregroundStyle(Color.onAccent)
-                .glassEffect(.clear.interactive())
-                .controlSize(.large)
-
-                Button("Restaurer les achats") { restore() }
-                    .font(.footnote)
-                    .buttonStyle(.plain)
-                    .foregroundStyle(.secondary)
-
-                if isStoreUnreachable {
-                    Button("Continuer sans abonnement") { onContinue() }
-                        .font(.footnote)
-                        .buttonStyle(.plain)
-                        .foregroundStyle(.secondary)
-                }
-
-                legalFooter
-            }
-            .disabled(isLoadingProducts || isPurchasing || isRestoring)
+            footer
         }
-        .padding()
+        .padding(.horizontal, 4)
         // The one load attempt happens at launch; if it came back empty —
         // no network at the time — this is the moment to try again, before
         // concluding the store is out of reach.
@@ -160,6 +91,116 @@ struct PaywallStepView: View {
         } message: {
             Text("Nous n'avons trouvé aucun abonnement actif à restaurer pour ce compte.")
         }
+    }
+
+    private var header: some View {
+        VStack(spacing: 4) {
+            Image("AppMark")
+                .resizable()
+                .scaledToFit()
+                .frame(width: 60, height: 60)
+                .shadow(color: .black.opacity(0.18), radius: 8, y: 4)
+                .accessibilityHidden(true)
+
+            // Le nom de l'app ne se traduit pas : `verbatim` pour qu'il ne
+            // devienne pas une clé de plus dans le catalogue de chaînes.
+            Text(verbatim: "MyTrack")
+                .font(.largeTitle.bold())
+
+            Text("Passe à la vitesse supérieure.")
+                .font(.title.bold())
+                .multilineTextAlignment(.center)
+
+            Text("Choisis le plan qui te convient et débloque tout le potentiel de MyTrack.")
+                .font(.subheadline)
+                .foregroundStyle(.secondary)
+                .multilineTextAlignment(.center)
+        }
+        // Sans ça, un titre de trois lignes — une langue plus longue, un grand
+        // corps de texte — se fait tronquer par la hauteur qu'on lui propose au
+        // lieu de la réclamer.
+        .fixedSize(horizontal: false, vertical: true)
+    }
+
+    private var plans: some View {
+        VStack(spacing: 10) {
+            PlanOptionCard(
+                symbolName: "calendar",
+                title: "Mensuel",
+                subtitle: localized("Accès complet, résiliable à tout moment."),
+                price: PriceDisplay.price(of: monthlyProduct),
+                priceCaption: "/ mois",
+                isPriceKnown: monthlyProduct != nil,
+                savingsLabel: nil,
+                isRecommended: false,
+                isSelected: selectedPlan == .monthly
+            ) {
+                selectedPlan = .monthly
+            }
+
+            PlanOptionCard(
+                symbolName: "calendar.badge.clock",
+                title: "Annuel",
+                subtitle: annualSubtitle,
+                price: PriceDisplay.price(of: annualProduct),
+                priceCaption: "/ an",
+                isPriceKnown: annualProduct != nil,
+                savingsLabel: annualSavingsLabel,
+                isRecommended: false,
+                isSelected: selectedPlan == .annual
+            ) {
+                selectedPlan = .annual
+            }
+
+            PlanOptionCard(
+                symbolName: "infinity",
+                title: "À vie",
+                subtitle: localized("Un seul paiement, pour toujours."),
+                price: PriceDisplay.price(of: lifetimeProduct),
+                priceCaption: "paiement unique",
+                isPriceKnown: lifetimeProduct != nil,
+                savingsLabel: nil,
+                isRecommended: true,
+                isSelected: selectedPlan == .lifetime
+            ) {
+                selectedPlan = .lifetime
+            }
+            // La place que le ruban vient occuper à cheval sur le bord haut de
+            // la carte, pour qu'il ne vienne pas mordre la carte du dessus.
+            .padding(.top, 10)
+        }
+        .animation(.easeInOut(duration: 0.2), value: selectedPlan)
+    }
+
+    private var footer: some View {
+        VStack(spacing: 8) {
+            // maxWidth belongs on the label — on the button it only widens
+            // the surrounding frame and leaves the control hugging its title.
+            Button { purchase() } label: {
+                Group {
+                    if isBusy {
+                        ProgressView().tint(Color.onAccent)
+                    } else {
+                        Text("Continuer")
+                    }
+                }
+                .frame(maxWidth: .infinity)
+            }
+            .buttonStyle(.borderedProminent)
+            .foregroundStyle(Color.onAccent)
+            .glassEffect(.clear.interactive())
+            .controlSize(.large)
+
+            if isStoreUnreachable {
+                Button("Continuer sans abonnement") { onContinue() }
+                    .font(.footnote)
+                    .buttonStyle(.plain)
+                    .foregroundStyle(.secondary)
+            }
+
+            legalFooter
+        }
+        .disabled(isLoadingProducts || isBusy)
     }
 
     private func purchase() {
@@ -191,17 +232,27 @@ struct PaywallStepView: View {
     /// politique de confidentialité. Le texte de reconduction ne doit pas
     /// s'afficher pour l'achat unique : il n'y a rien à reconduire.
     private var legalFooter: some View {
-        VStack(spacing: 6) {
+        VStack(spacing: 8) {
             Text(legalDisclosure)
+                .font(.caption2)
                 .multilineTextAlignment(.center)
 
+            // Les trois liens tiennent sur une ligne, comme dans la maquette.
+            // `minimumScaleFactor` est la soupape des langues plus longues que
+            // le français : mieux vaut un point de moins que trois liens
+            // tronqués.
             HStack(spacing: 6) {
+                Button("Restaurer mes achats") { restore() }
+                    .buttonStyle(.plain)
+                Text(verbatim: "·").accessibilityHidden(true)
                 legalLink("Conditions d'utilisation", url: LegalLinks.termsOfUse)
-                Text("·")
+                Text(verbatim: "·").accessibilityHidden(true)
                 legalLink("Confidentialité", url: LegalLinks.privacyPolicy)
             }
+            .font(.caption2)
+            .lineLimit(1)
+            .minimumScaleFactor(0.75)
         }
-        .font(.caption2)
         .foregroundStyle(.secondary)
     }
 
@@ -224,74 +275,32 @@ struct PaywallStepView: View {
         }
     }
 
-    /// Les deux abonnements se partagent la largeur, l'achat unique occupe
-    /// dessous celle des deux réunis. Toutes les cartes vivent dans le même
-    /// GlassEffectContainer pour que leurs matériaux se fondent les uns dans
-    /// les autres, au lieu d'être trois surfaces de verre indépendantes.
-    private var pricingOptions: some View {
-        GlassEffectContainer(spacing: 12) {
-            VStack(spacing: 12) {
-                HStack(spacing: 12) {
-                    PricingOptionCard(
-                        isSelected: selectedPlan == .annual,
-                        title: annualTitle,
-                        subtitle: annualSubtitle,
-                        isPriceKnown: annualProduct != nil
-                    ) {
-                        selectedPlan = .annual
-                    }
-
-                    PricingOptionCard(
-                        isSelected: selectedPlan == .monthly,
-                        title: monthlyTitle,
-                        subtitle: nil,
-                        isPriceKnown: monthlyProduct != nil
-                    ) {
-                        selectedPlan = .monthly
-                    }
-                }
-
-                LifetimeOptionCard(
-                    isSelected: selectedPlan == .lifetime,
-                    title: lifetimeTitle,
-                    subtitle: lifetimeSubtitle,
-                    isPriceKnown: lifetimeProduct != nil
-                ) {
-                    selectedPlan = .lifetime
-                }
-            }
-        }
+    /// Une chaîne du catalogue, résolue dans la langue que l'app s'est choisie.
+    ///
+    /// Les sous-titres des cartes sont des `String` et non des
+    /// `LocalizedStringKey` — l'annuel compose le sien à partir de la durée
+    /// d'essai — et une chaîne construite hors de SwiftUI ne passe pas d'elle-
+    /// même par le bundle de langue de l'app : sans ces deux arguments, elle
+    /// retomberait dans la langue du système.
+    private func localized(_ key: String.LocalizationValue) -> String {
+        String(localized: key, bundle: localizationBundle, locale: locale)
     }
 
-    /// La durée de l'essai vient de l'offre attachée au produit. Sans produit
-    /// chargé, la valeur rendue ici n'est qu'un gabarit : la carte est alors
-    /// masquée en entier par la redaction, titre compris, puisque les deux
-    /// lignes sortent du même produit absent.
-    private var annualTitle: String {
-        guard let offer = annualProduct?.subscription?.introductoryOffer, offer.paymentMode == .freeTrial else {
-            return freeTrialDaysTitle(days: 7)
-        }
-        return freeTrialTitle(for: offer.period)
-    }
-
-    /// Le prix vient de l'App Store, déjà mis en forme dans la devise et le
-    /// format du compte : seule la phrase autour se traduit.
+    /// Ce que dit la carte annuelle sous son titre : l'essai gratuit quand le
+    /// produit en porte un, la promesse d'économie sinon.
+    ///
+    /// L'essai est ce que la formule a de plus fort à offrir, et il se lit sur
+    /// l'offre attachée au produit — jamais écrit en dur. Tant que StoreKit n'a
+    /// rien livré, on ne sait pas s'il y en a un : la carte s'en tient alors à
+    /// l'engagement annuel plutôt que d'annoncer des jours gratuits qu'on ne
+    /// pourrait pas tenir.
     private var annualSubtitle: String {
-        let price = PriceDisplay.price(of: annualProduct)
-        return String(localized: "puis \(price) / an", bundle: localizationBundle, locale: locale)
-    }
-
-    private var monthlyTitle: String {
-        let price = PriceDisplay.price(of: monthlyProduct)
-        return String(localized: "\(price) / mois", bundle: localizationBundle, locale: locale)
-    }
-
-    private var lifetimeTitle: String {
-        PriceDisplay.price(of: lifetimeProduct)
-    }
-
-    private var lifetimeSubtitle: String {
-        String(localized: "achat unique, à vie", bundle: localizationBundle, locale: locale)
+        guard let offer = annualProduct?.subscription?.introductoryOffer,
+              offer.paymentMode == .freeTrial else {
+            return localized("Économise avec un engagement annuel.")
+        }
+        let trial = freeTrialTitle(for: offer.period)
+        return localized("\(trial), puis engagement annuel.")
     }
 
     private func freeTrialTitle(for period: Product.SubscriptionPeriod) -> String {
@@ -301,150 +310,171 @@ struct PaywallStepView: View {
         // Spelled out in days so a seven-day trial reads "7 jours gratuits"
         // rather than "1 semaine gratuite".
         case .week: return freeTrialDaysTitle(days: count * 7)
-        case .month: return String(localized: "\(count) mois gratuits", bundle: localizationBundle, locale: locale)
-        case .year: return String(localized: "\(count) ans gratuits", bundle: localizationBundle, locale: locale)
-        @unknown default: return String(localized: "Essai gratuit", bundle: localizationBundle, locale: locale)
+        case .month: return localized("\(count) mois gratuits")
+        case .year: return localized("\(count) ans gratuits")
+        @unknown default: return localized("Essai gratuit")
         }
     }
 
     /// Le singulier n'est plus un `if` collé au mot : chaque langue accorde à
     /// sa façon, et c'est le catalogue de chaînes qui porte ses règles.
     private func freeTrialDaysTitle(days: Int) -> String {
-        String(localized: "\(days) jours gratuits", bundle: localizationBundle, locale: locale)
+        localized("\(days) jours gratuits")
+    }
+
+    /// Ce que l'annuel fait économiser sur douze mensualités, calculé sur les
+    /// prix réels de la boutique.
+    ///
+    /// Jamais écrit en dur : un « 30 % » figé dans le code deviendrait faux à
+    /// la première grille tarifaire retouchée, et une remise annoncée à tort
+    /// est exactement le genre de mention que l'App Store refuse. Nil tant que
+    /// les deux prix ne sont pas connus — il n'y a alors rien à comparer.
+    private var annualSavingsLabel: String? {
+        guard let annual = annualProduct, let monthly = monthlyProduct else { return nil }
+        let twelveMonths = monthly.price * 12
+        guard twelveMonths > 0, annual.price < twelveMonths else { return nil }
+
+        let saved = (twelveMonths - annual.price) / twelveMonths
+        let percent = saved.formatted(.percent.precision(.fractionLength(0)).locale(locale))
+        return String(localized: "Économise \(percent)", bundle: localizationBundle, locale: locale)
     }
 }
 
-private struct ReviewQuoteCard: View {
-    let quote: LocalizedStringKey
-
-    var body: some View {
-        VStack(spacing: 10) {
-            HStack(spacing: 5) {
-                ForEach(0..<5, id: \.self) { _ in
-                    Image(systemName: "star.fill")
-                }
-            }
-            .font(.footnote)
-            .foregroundStyle(.yellow)
-            .accessibilityElement()
-            .accessibilityLabel("5 étoiles sur 5")
-
-            Text(quote)
-                .font(.callout.weight(.medium))
-                .multilineTextAlignment(.center)
-                // Sans ça, une citation de trois lignes se fait tronquer par la
-                // hauteur que le ScrollView propose au lieu de la réclamer.
-                .fixedSize(horizontal: false, vertical: true)
-        }
-        .frame(maxWidth: .infinity)
-        .appCard(padding: 18)
-    }
-}
-
-private struct PricingOptionCard: View {
-    let isSelected: Bool
-    let title: String
-    let subtitle: String?
-    /// Faux tant que StoreKit n'a pas livré le produit. Le titre comme le
-    /// sous-titre en sortent tous les deux, donc c'est la carte entière qui
-    /// passe alors sous la barre grise.
-    let isPriceKnown: Bool
-    let action: () -> Void
-
-    var body: some View {
-        Button(action: action) {
-            VStack(spacing: 4) {
-                Text(title)
-                    .font(.headline)
-                    .foregroundStyle(isSelected ? Color.onAccent : .primary)
-                Text(subtitle ?? " ")
-                    .font(.footnote)
-                    .foregroundStyle(isSelected ? Color.onAccent.opacity(0.85) : .secondary)
-                    .opacity(subtitle == nil ? 0 : 1)
-            }
-            .frame(maxWidth: .infinity)
-            .padding(.vertical, 16)
-            .redacted(reason: isPriceKnown ? [] : .placeholder)
-        }
-        .buttonStyle(.plain)
-        // La sélection se lit au matériau lui-même — verre teinté à l'accent
-        // contre verre neutre — plutôt qu'à un liseré dessiné par-dessus.
-        .glassEffect(
-            isSelected ? .regular.tint(.accentColor).interactive() : .regular.interactive(),
-            in: .rect(cornerRadius: 14)
-        )
-    }
-}
-
-/// L'achat unique : pleine largeur sous les deux abonnements, et distinct
-/// d'eux même quand il n'est pas coché.
+/// Une des trois formules.
 ///
-/// C'est la formule que l'écran met en avant, donc elle ne peut pas n'être
-/// qu'une troisième case identique aux autres. Sa mise en avant ne passe pas
-/// par une couleur de plus — l'app est en noir et blanc, une teinte inventée
-/// jurerait — mais par le liseré à l'accent qu'elle garde en permanence et par
-/// son étiquette. Cochée, elle se remplit d'accent comme les autres, si bien
-/// que « mise en avant » et « sélectionnée » restent deux états lisibles.
-private struct LifetimeOptionCard: View {
-    let isSelected: Bool
-    let title: String
+/// Tout le rectangle est le bouton, pas seulement son texte : le fond, le
+/// liseré et le `contentShape` décrivent la même forme, si bien qu'un doigt
+/// posé n'importe où sur la carte — sur l'icône, dans le blanc entre le titre
+/// et le prix, sur le rond — la sélectionne.
+private struct PlanOptionCard: View {
+    let symbolName: String
+    let title: LocalizedStringKey
+    /// Déjà traduit par l'appelant : celui de l'annuel se compose autour de la
+    /// durée d'essai, qui ne se connaît qu'à l'exécution.
     let subtitle: String
-    /// Faux tant que StoreKit n'a pas livré le produit. Ici seul le titre est
-    /// un prix — l'étiquette et « achat unique, à vie » restent vraies sans
-    /// lui — donc la barre grise ne couvre que cette ligne-là.
+    let price: String
+    let priceCaption: LocalizedStringKey
+    /// Faux tant que StoreKit n'a pas livré le produit. Ici seul le montant en
+    /// sort — le titre, la description et la mention de durée restent vrais
+    /// sans lui — donc la barre grise ne couvre que cette ligne-là.
     let isPriceKnown: Bool
+    /// L'étiquette d'économie, quand elle est calculable ; nil sinon.
+    let savingsLabel: String?
+    /// La formule que l'écran met en avant : ruban, fond teinté et liseré, même
+    /// quand elle n'est pas cochée.
+    let isRecommended: Bool
+    let isSelected: Bool
     let action: () -> Void
 
-    /// La couleur du texte courant, selon que la carte est remplie d'accent ou
-    /// laissée en verre clair.
-    private var foreground: Color { isSelected ? Color.onAccent : .primary }
+    private var shape: RoundedRectangle {
+        RoundedRectangle(cornerRadius: planCornerRadius, style: .continuous)
+    }
 
     var body: some View {
         Button(action: action) {
-            // Pas de coche ni de pastille : le remplissage à l'accent dit déjà
-            // laquelle des trois cartes est retenue, et un second indicateur du
-            // même état n'ajoute rien qu'un point de plus à regarder.
-            VStack(alignment: .leading, spacing: 6) {
-                badge
-
-                Text(title)
-                    .font(.title3.bold())
-                    .foregroundStyle(foreground)
-                    .redacted(reason: isPriceKnown ? [] : .placeholder)
-                Text(subtitle)
-                    .font(.footnote)
-                    .foregroundStyle(foreground.opacity(0.75))
+            HStack(spacing: 10) {
+                symbol
+                details
+                Spacer(minLength: 6)
+                priceColumn
+                selectionIndicator
             }
-            .frame(maxWidth: .infinity, alignment: .leading)
-            .padding(16)
+            .padding(.horizontal, 16)
+            .padding(.vertical, 12)
+            .frame(maxWidth: .infinity)
+            .background {
+                shape
+                    .fill(Color(uiColor: .secondarySystemGroupedBackground))
+                    .overlay {
+                        if isRecommended { shape.fill(highlightColor.opacity(0.08)) }
+                    }
+            }
+            .overlay {
+                shape.strokeBorder(borderColor, lineWidth: isSelected ? 2 : 1.5)
+            }
+            .overlay(alignment: .top) {
+                if isRecommended { recommendedRibbon.offset(y: -11) }
+            }
+            .contentShape(shape)
         }
         .buttonStyle(.plain)
-        // Non retenue, la carte garde un gris très léger dans son verre — assez
-        // pour se détacher des deux abonnements au-dessus, pas assez pour se
-        // faire passer pour sélectionnée.
-        .glassEffect(
-            isSelected
-                ? .regular.tint(.accentColor).interactive()
-                : .regular.tint(Color.primary.opacity(0.07)).interactive(),
-            in: .rect(cornerRadius: 14)
-        )
-        .overlay {
-            if !isSelected {
-                RoundedRectangle(cornerRadius: 14, style: .continuous)
-                    .strokeBorder(Color.accentColor.opacity(0.3), lineWidth: 1.5)
+        .accessibilityAddTraits(isSelected ? [.isSelected] : [])
+    }
+
+    /// Le liseré porte les deux états à lui seul : l'accent quand la carte est
+    /// cochée, le bleu de recommandation sinon — jamais les deux, sans quoi
+    /// « choisie » et « conseillée » se confondraient.
+    private var borderColor: Color {
+        if isSelected { return .accentColor }
+        return isRecommended ? highlightColor.opacity(0.45) : .clear
+    }
+
+    private var symbol: some View {
+        Image(systemName: symbolName)
+            .font(.system(size: 19))
+            .foregroundStyle(.secondary)
+            .frame(width: 42, height: 42)
+            .background(Color(uiColor: .tertiarySystemFill), in: .circle)
+    }
+
+    private var details: some View {
+        VStack(alignment: .leading, spacing: 2) {
+            Text(title)
+                .font(.headline)
+            Text(subtitle)
+                .font(.caption)
+                .foregroundStyle(.secondary)
+                .fixedSize(horizontal: false, vertical: true)
+
+            if let savingsLabel {
+                Text(savingsLabel)
+                    .font(.caption.weight(.semibold))
+                    .foregroundStyle(highlightColor)
+                    .padding(.horizontal, 8)
+                    .padding(.vertical, 3)
+                    .background(highlightColor.opacity(0.12), in: .capsule)
+                    .padding(.top, 2)
             }
         }
     }
 
-    /// L'étiquette s'inverse avec la carte : fond accent sur carte claire, fond
-    /// clair sur carte accent. Le contraste est maximal dans les deux sens.
-    private var badge: some View {
-        Text("Sans abonnement")
+    /// `layoutPriority` : sans elle, c'est le montant qui se fait comprimer
+    /// quand la description du dessus est longue — « 24,99 € » finirait tronqué
+    /// pour laisser de la place à une phrase secondaire.
+    private var priceColumn: some View {
+        VStack(spacing: 1) {
+            Text(price)
+                .font(.title3.bold())
+                .redacted(reason: isPriceKnown ? [] : .placeholder)
+            Text(priceCaption)
+                .font(.caption2)
+                .foregroundStyle(.secondary)
+        }
+        .multilineTextAlignment(.center)
+        .fixedSize(horizontal: false, vertical: true)
+        .layoutPriority(1)
+    }
+
+    /// Le rond de sélection. Il n'est pas un bouton à lui seul : c'est la carte
+    /// entière qui coche, il ne fait que montrer laquelle l'est.
+    private var selectionIndicator: some View {
+        Image(systemName: isSelected ? "checkmark.circle.fill" : "circle")
+            .font(.title3)
+            .foregroundStyle(isSelected ? Color.accentColor : Color.secondary.opacity(0.4))
+    }
+
+    /// Le ruban est posé à cheval sur le bord haut de la carte. Blanc sur bleu
+    /// dans les deux thèmes : le bleu système reste assez soutenu pour ça,
+    /// contrairement à l'accent qui, lui, s'inverse.
+    private var recommendedRibbon: some View {
+        Text("Meilleure offre")
+            .textCase(.uppercase)
             .font(.caption2.weight(.bold))
-            .padding(.horizontal, 8)
-            .padding(.vertical, 3)
-            .foregroundStyle(isSelected ? Color.accentColor : Color.onAccent)
-            .background(isSelected ? Color.onAccent : Color.accentColor, in: .capsule)
+            .kerning(0.4)
+            .foregroundStyle(.white)
+            .padding(.horizontal, 12)
+            .padding(.vertical, 4)
+            .background(highlightColor, in: .capsule)
     }
 }
 
@@ -461,5 +491,6 @@ private struct LifetimeOptionCard: View {
         onRetryLoadProducts: {},
         onContinue: {}
     )
+    .padding()
     .appBackground()
 }

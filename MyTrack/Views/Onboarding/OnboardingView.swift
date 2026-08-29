@@ -80,9 +80,10 @@ struct OnboardingView: View {
     }
 
     /// Steps with their own action button (auto-detection's yes/no,
-    /// trip-confirmation's two choices, the paywall's "J'y vais") hide the
+    /// trip-confirmation's two choices, the paywall's buy button) hide the
     /// shared bottom button instead of using it, since a single "Continuer"
-    /// wouldn't fit what they need.
+    /// wouldn't fit what they need — the paywall's own button carries the same
+    /// label but starts a purchase rather than turning the page.
     private var showsGenericContinueButton: Bool {
         switch currentStep {
         case .welcome, .name, .units, .vehicle:
