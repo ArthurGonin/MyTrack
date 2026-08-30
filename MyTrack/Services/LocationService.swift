@@ -17,6 +17,20 @@ import Observation
 final class LocationService: NSObject, CLLocationManagerDelegate {
     private let manager = CLLocationManager()
 
+    /// Depuis quand le suivi actif tourne — l'unique repère qui permette de
+    /// reconnaître un point réellement périmé. Voir `isAcceptable`.
+    private var trackingStartedAt: Date?
+
+    /// Ce qu'on accepte d'antériorité sur le démarrage du suivi.
+    ///
+    /// Un point porte l'heure de la mesure, pas celle de la livraison : la
+    /// toute première position d'un trajet est presque toujours datée d'une
+    /// poignée de secondes avant l'appel à `startUpdatingLocation`. Sans cette
+    /// marge, le premier point — celui qui fixe le lieu de départ du trajet —
+    /// serait jeté. Elle reste très en deçà de l'âge d'une position mise en
+    /// cache, qui se compte en minutes ou en heures.
+    private static let startupTolerance: TimeInterval = 30
+
     private(set) var authorizationStatus: CLAuthorizationStatus
 
     var onLocationUpdate: ((CLLocation) -> Void)?
@@ -88,6 +102,7 @@ final class LocationService: NSObject, CLLocationManagerDelegate {
         manager.activityType = .automotiveNavigation
         manager.distanceFilter = 10
         manager.pausesLocationUpdatesAutomatically = false
+        trackingStartedAt = Date()
         manager.startUpdatingLocation()
         return true
     }
@@ -95,6 +110,7 @@ final class LocationService: NSObject, CLLocationManagerDelegate {
     func stopActiveTracking() {
         manager.stopUpdatingLocation()
         manager.allowsBackgroundLocationUpdates = false
+        trackingStartedAt = nil
     }
 
     /// Low-power baseline used while auto-detection is enabled but no trip is
@@ -118,15 +134,56 @@ final class LocationService: NSObject, CLLocationManagerDelegate {
         AppLog.recording.error("Location manager failed: \(error.localizedDescription, privacy: .public)")
     }
 
+    /// CoreLocation ne livre pas un point à la fois : `locations` est un paquet,
+    /// rangé du plus ancien au plus récent. Au premier plan il n'en contient
+    /// presque toujours qu'un, parce que l'app tourne en continu et que le
+    /// système la réveille à chaque mesure. Écran verrouillé, il en contient
+    /// des dizaines : iOS regroupe les livraisons pour économiser la batterie
+    /// et vide le paquet quand il redonne du temps à l'app.
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
+        var accepted = 0
         for location in locations where isAcceptable(location) {
+            accepted += 1
             onLocationUpdate?(location)
+        }
+
+        // Une ligne par livraison, pas par point : de quoi lire dans la Console
+        // ce que l'arrière-plan reçoit vraiment. Un paquet de plusieurs points
+        // dont le plus ancien a dix ou trente secondes, c'est le regroupement
+        // à l'œuvre — le comportement normal, pas une anomalie.
+        if let oldest = locations.first {
+            let age = Int(-oldest.timestamp.timeIntervalSinceNow)
+            AppLog.recording.debug(
+                "Location delivery: \(locations.count) point(s), \(accepted) kept, oldest \(age)s old."
+            )
         }
     }
 
+    /// Filtre de qualité du signal — et rien d'autre.
+    ///
+    /// Il rejetait aussi tout point livré plus de 5 secondes après sa mesure.
+    /// L'intention était bonne (écarter la position en cache que
+    /// `startUpdatingLocation` livre d'emblée, qui peut dater d'heures et d'un
+    /// autre endroit) mais le critère mesurait la mauvaise chose : l'écart à
+    /// *maintenant*, c'est-à-dire le retard de livraison, pas la péremption du
+    /// point.
+    ///
+    /// Au premier plan les deux se confondent, chaque point étant livré dans la
+    /// seconde : la trace était donc parfaite. En arrière-plan, où le système
+    /// livre par paquets, tous les points sauf le dernier avaient plus de 5
+    /// secondes et étaient jetés — et un paquet livré avec un peu de retard
+    /// l'était en entier. D'où la ligne droite entre deux ouvertures de l'app :
+    /// seuls les points reçus au premier plan survivaient au filtre.
+    ///
+    /// Un point n'est réellement périmé que s'il précède le début du suivi. Son
+    /// retard de livraison, lui, ne dit rien de sa validité : il est daté, et
+    /// c'est cette date que la trace utilise.
     private func isAcceptable(_ location: CLLocation) -> Bool {
         guard location.horizontalAccuracy >= 0, location.horizontalAccuracy <= 50 else { return false }
-        guard abs(location.timestamp.timeIntervalSinceNow) <= 5 else { return false }
+        // Pas de suivi actif : ce qui arrive ici vient de la surveillance des
+        // changements significatifs, qui n'alimente pas de trajet.
+        guard let startedAt = trackingStartedAt else { return false }
+        guard location.timestamp >= startedAt.addingTimeInterval(-Self.startupTolerance) else { return false }
         return true
     }
 }
