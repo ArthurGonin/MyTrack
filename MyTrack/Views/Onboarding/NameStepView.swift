@@ -12,9 +12,9 @@ struct NameStepView: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
             VStack(alignment: .leading, spacing: 8) {
-                Text("Comment tu t'appelles ?")
+                Text("Comment vous appelez-vous ?")
                     .font(.largeTitle.bold())
-                Text("Ton prénom et ton nom")
+                Text("Votre prénom et votre nom")
                     .font(.title3)
                     .foregroundStyle(.secondary)
             }

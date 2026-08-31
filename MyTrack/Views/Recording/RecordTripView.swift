@@ -209,7 +209,7 @@ struct RecordTripView: View {
                 }
                 Button("Annuler", role: .cancel) {}
             } message: {
-                Text("Autorise l'accès à la position dans Réglages pour enregistrer un trajet.")
+                Text("Autorisez l'accès à la position dans Réglages pour enregistrer un trajet.")
             }
             .sheet(isPresented: $isPresentingVehiclePicker) {
                 VehiclePickerView(selectedVehicle: selectedVehicle) { vehicle in
@@ -640,8 +640,8 @@ struct RecordTripView: View {
 
     private var blockedDescription: LocalizedStringKey {
         hasBillingIssue
-            ? "Ton abonnement n'a pas pu être renouvelé : tes trajets ne sont plus enregistrés. Tes trajets et rapports restent accessibles."
-            : "L'enregistrement des trajets nécessite un abonnement actif. Tes trajets et rapports déjà enregistrés restent accessibles."
+            ? "Votre abonnement n'a pas pu être renouvelé : vos trajets ne sont plus enregistrés. Vos trajets et rapports restent accessibles."
+            : "L'enregistrement des trajets nécessite un abonnement actif. Vos trajets et rapports déjà enregistrés restent accessibles."
     }
 
     private var blockedActionTitle: LocalizedStringKey {

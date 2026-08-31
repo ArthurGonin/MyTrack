@@ -11,9 +11,9 @@ struct VehicleStepView: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
             VStack(alignment: .leading, spacing: 8) {
-                Text("Ton véhicule")
+                Text("Votre véhicule")
                     .font(.largeTitle.bold())
-                Text("Pour associer tes trajets")
+                Text("Pour associer vos trajets")
                     .font(.title3)
                     .foregroundStyle(.secondary)
             }

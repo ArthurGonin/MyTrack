@@ -49,7 +49,7 @@ struct VehiclePickerView: View {
                     ContentUnavailableView(
                         "Aucun véhicule",
                         systemImage: "car",
-                        description: Text("Ajoute un véhicule pour l'associer à tes trajets.")
+                        description: Text("Ajoutez un véhicule pour l'associer à vos trajets.")
                     )
                 } else {
                     List {

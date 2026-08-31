@@ -63,7 +63,7 @@ struct SubscriptionStoreSheet: View {
             .alert("Achat impossible", isPresented: $isLifetimePurchaseFailedAlertPresented) {
                 Button("OK", role: .cancel) {}
             } message: {
-                Text("L'achat n'a pas pu être finalisé. Réessaie plus tard.")
+                Text("L'achat n'a pas pu être finalisé. Réessayez plus tard.")
             }
         }
     }

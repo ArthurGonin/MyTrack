@@ -174,7 +174,7 @@ struct ReportExportView: View {
             .alert("Échec de la génération", isPresented: $isGenerationFailedAlertPresented) {
                 Button("OK", role: .cancel) {}
             } message: {
-                Text("Le rapport n'a pas pu être créé. Réessaie plus tard.")
+                Text("Le rapport n'a pas pu être créé. Réessayez plus tard.")
             }
             .sheet(item: $generatedReport) { report in
                 ReportGeneratedView(

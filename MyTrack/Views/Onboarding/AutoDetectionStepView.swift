@@ -19,7 +19,7 @@ struct AutoDetectionStepView: View {
             VStack(alignment: .leading, spacing: 8) {
                 Text("Suivi automatique")
                     .font(.largeTitle.bold())
-                Text("MyTrack peut détecter et enregistrer tes trajets en voiture automatiquement, sans que tu aies à y penser.")
+                Text("MyTrack peut détecter et enregistrer vos trajets en voiture automatiquement, sans que vous ayez à y penser.")
                     .font(.title3)
                     .foregroundStyle(.secondary)
             }

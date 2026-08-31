@@ -65,7 +65,7 @@ struct VehicleFormFields: View {
                 unit: priceUnitSymbol
             )
         } footer: {
-            Text("Facultatif. Sert à estimer le coût de tes trajets.")
+            Text("Facultatif. Sert à estimer le coût de vos trajets.")
         }
     }
 

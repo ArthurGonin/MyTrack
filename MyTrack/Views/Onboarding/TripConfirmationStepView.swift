@@ -19,7 +19,7 @@ struct TripConfirmationStepView: View {
             VStack(alignment: .leading, spacing: 8) {
                 Text("Confirmation des trajets")
                     .font(.largeTitle.bold())
-                Text("Quand MyTrack détecte un trajet, veux-tu le confirmer avant qu'il soit enregistré, ou préfères-tu qu'il soit accepté automatiquement ?")
+                Text("Quand MyTrack détecte un trajet, voulez-vous le confirmer avant qu'il soit enregistré, ou préférez-vous qu'il soit accepté automatiquement ?")
                     .font(.title3)
                     .foregroundStyle(.secondary)
             }

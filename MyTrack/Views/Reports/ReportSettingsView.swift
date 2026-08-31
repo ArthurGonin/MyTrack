@@ -27,7 +27,7 @@ struct ReportSettingsView: View {
                     ContentUnavailableView(
                         "Aucun rapport périodique",
                         systemImage: "doc.badge.clock",
-                        description: Text("Configure un rapport périodique pour générer automatiquement un rapport PDF à intervalle régulier.")
+                        description: Text("Configurez un rapport périodique pour générer automatiquement un rapport PDF à intervalle régulier.")
                     )
                 } else {
                     ForEach(profiles) { profile in

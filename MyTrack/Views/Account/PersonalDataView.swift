@@ -74,7 +74,7 @@ struct PersonalDataView: View {
         .alert("Enregistrement impossible", isPresented: $isSaveFailedAlertPresented) {
             Button("OK", role: .cancel) {}
         } message: {
-            Text("Tes informations n'ont pas pu être enregistrées. Réessaie.")
+            Text("Vos informations n'ont pas pu être enregistrées. Réessayez.")
         }
     }
 

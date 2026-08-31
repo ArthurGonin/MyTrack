@@ -11,7 +11,7 @@ struct UnitStepView: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
             VStack(alignment: .leading, spacing: 8) {
-                Text("Tes distances")
+                Text("Vos distances")
                     .font(.largeTitle.bold())
                 Text("En kilomètres ou en miles ?")
                     .font(.title3)

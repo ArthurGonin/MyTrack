@@ -24,9 +24,9 @@ struct ReportProfileStepView: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
             VStack(alignment: .leading, spacing: 8) {
-                Text("Tes rapports")
+                Text("Vos rapports")
                     .font(.largeTitle.bold())
-                Text("Reçois automatiquement un PDF de tes trajets")
+                Text("Recevez automatiquement un PDF de vos trajets")
                     .font(.title3)
                     .foregroundStyle(.secondary)
             }
@@ -61,7 +61,7 @@ struct ReportProfileStepView: View {
                             .foregroundStyle(.secondary)
                     }
                 } footer: {
-                    Text("Ce rapport couvre tous tes véhicules. Tu pourras le modifier dans les réglages.")
+                    Text("Ce rapport couvre tous vos véhicules. Vous pourrez le modifier dans les réglages.")
                 }
             }
             .contentMargins(.top, 8, for: .scrollContent)

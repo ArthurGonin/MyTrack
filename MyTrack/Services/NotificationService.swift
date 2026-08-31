@@ -156,14 +156,14 @@ final class NotificationService: NSObject, UNUserNotificationCenterDelegate {
         if hasBillingIssue {
             content.title = String(localized: "Problème de paiement", bundle: bundle, locale: locale)
             content.body = String(
-                localized: "Ton abonnement n'a pas pu être renouvelé : tes trajets ne sont plus enregistrés. Mets à jour ton moyen de paiement.",
+                localized: "Votre abonnement n'a pas pu être renouvelé : vos trajets ne sont plus enregistrés. Mettez à jour votre moyen de paiement.",
                 bundle: bundle,
                 locale: locale
             )
         } else {
             content.title = String(localized: "Abonnement expiré", bundle: bundle, locale: locale)
             content.body = String(
-                localized: "Tes trajets ne sont plus enregistrés. Tes trajets et rapports déjà enregistrés restent accessibles.",
+                localized: "Vos trajets ne sont plus enregistrés. Vos trajets et rapports déjà enregistrés restent accessibles.",
                 bundle: bundle,
                 locale: locale
             )

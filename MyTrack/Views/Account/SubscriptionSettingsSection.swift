@@ -201,7 +201,7 @@ struct SubscriptionSettingsSection: View {
         .alert("Achat impossible", isPresented: $isPurchaseFailedAlertPresented) {
             Button("OK", role: .cancel) {}
         } message: {
-            Text("L'achat n'a pas pu être finalisé. Réessaie plus tard.")
+            Text("L'achat n'a pas pu être finalisé. Réessayez plus tard.")
         }
         // App Store ne résilie rien tout seul : sans cette alerte, l'achat
         // réussirait en silence et l'abonnement continuerait de prélever à
@@ -210,7 +210,7 @@ struct SubscriptionSettingsSection: View {
             Button("Gérer l'abonnement") { isManageSubscriptionsPresented = true }
             Button("Plus tard", role: .cancel) {}
         } message: {
-            Text("Ton abonnement n'est pas résilié pour autant : App Store continuera de le reconduire tant que tu ne l'auras pas fait toi-même.")
+            Text("Votre abonnement n'est pas résilié pour autant : App Store continuera de le reconduire tant que vous ne l'aurez pas fait vous-même.")
         }
     }
 
@@ -284,8 +284,8 @@ struct SubscriptionSettingsSection: View {
 
     private var restoreMessage: LocalizedStringKey {
         switch restoreOutcome {
-        case .restoredSubscription: "Ton abonnement a été retrouvé sur ce compte App Store."
-        case .restoredLifetime: "Ton achat unique a été retrouvé sur ce compte App Store."
+        case .restoredSubscription: "Votre abonnement a été retrouvé sur ce compte App Store."
+        case .restoredLifetime: "Votre achat unique a été retrouvé sur ce compte App Store."
         case .notFound, .none: "Aucun abonnement actif n'est associé à ce compte App Store."
         }
     }
@@ -313,8 +313,8 @@ struct SubscriptionSettingsSection: View {
         switch purchaseService.entitlement {
         case nil:
             return purchaseService.hasBillingIssue
-                ? String(localized: "Ton abonnement n'a pas pu être renouvelé : aucun nouveau trajet n'est enregistré. Tes trajets et rapports déjà enregistrés restent accessibles.", bundle: localizationBundle, locale: locale)
-                : String(localized: "Sans abonnement actif, aucun nouveau trajet n'est enregistré. Tes trajets et rapports déjà enregistrés restent accessibles.", bundle: localizationBundle, locale: locale)
+                ? String(localized: "Votre abonnement n'a pas pu être renouvelé : aucun nouveau trajet n'est enregistré. Vos trajets et rapports déjà enregistrés restent accessibles.", bundle: localizationBundle, locale: locale)
+                : String(localized: "Sans abonnement actif, aucun nouveau trajet n'est enregistré. Vos trajets et rapports déjà enregistrés restent accessibles.", bundle: localizationBundle, locale: locale)
 
         case .lifetime:
             // « Sans abonnement ni reconduction » devient un mensonge tant qu'un
@@ -326,11 +326,11 @@ struct SubscriptionSettingsSection: View {
             // Résilié, il n'y a plus rien à reconduire : le rappel n'a plus lieu
             // d'être, même si l'abonnement court encore jusqu'à son terme.
             guard subscription.willAutoRenew == false, let date = subscription.expirationDate else {
-                return String(localized: "Ton accès à vie est acquis. Ton abonnement, lui, court toujours et sera reconduit : résilie-le pour ne pas payer deux fois.", bundle: localizationBundle, locale: locale)
+                return String(localized: "Votre accès à vie est acquis. Votre abonnement, lui, court toujours et sera reconduit : résiliez-le pour ne pas payer deux fois.", bundle: localizationBundle, locale: locale)
             }
             let formattedDate = TripFormatting.longDate(date, locale: locale)
             return String(
-                localized: "Ton accès à vie est acquis. Ton abonnement résilié reste actif jusqu'au \(formattedDate), sans reconduction.",
+                localized: "Votre accès à vie est acquis. Votre abonnement résilié reste actif jusqu'au \(formattedDate), sans reconduction.",
                 bundle: localizationBundle,
                 locale: locale
             )

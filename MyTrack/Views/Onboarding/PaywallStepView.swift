@@ -84,7 +84,7 @@ struct PaywallStepView: View {
         .alert("Achat impossible", isPresented: $isPurchaseFailedAlertPresented) {
             Button("OK", role: .cancel) {}
         } message: {
-            Text("L'achat n'a pas pu être finalisé. Réessaie plus tard.")
+            Text("L'achat n'a pas pu être finalisé. Réessayez plus tard.")
         }
         .alert("Aucun abonnement trouvé", isPresented: $isRestoreFailedAlertPresented) {
             Button("OK", role: .cancel) {}
@@ -107,11 +107,11 @@ struct PaywallStepView: View {
             Text(verbatim: "MyTrack")
                 .font(.largeTitle.bold())
 
-            Text("Passe à la vitesse supérieure.")
+            Text("Passez à la vitesse supérieure.")
                 .font(.title.bold())
                 .multilineTextAlignment(.center)
 
-            Text("Choisis le plan qui te convient et débloque tout le potentiel de MyTrack.")
+            Text("Choisissez le plan qui vous convient et débloquez tout le potentiel de MyTrack.")
                 .font(.subheadline)
                 .foregroundStyle(.secondary)
                 .multilineTextAlignment(.center)
@@ -261,7 +261,7 @@ struct PaywallStepView: View {
     private var legalDisclosure: LocalizedStringKey {
         selectedPlan == .lifetime
             ? "Paiement unique. Ni abonnement, ni reconduction."
-            : "Renouvellement automatique, résiliable à tout moment depuis ton compte App Store."
+            : "Renouvellement automatique, résiliable à tout moment depuis votre compte App Store."
     }
 
     /// Grisé tant que l'URL n'est pas renseignée dans `LegalLinks` : un lien
@@ -297,7 +297,7 @@ struct PaywallStepView: View {
     private var annualSubtitle: String {
         guard let offer = annualProduct?.subscription?.introductoryOffer,
               offer.paymentMode == .freeTrial else {
-            return localized("Économise avec un engagement annuel.")
+            return localized("Économisez avec un engagement annuel.")
         }
         let trial = freeTrialTitle(for: offer.period)
         return localized("\(trial), puis engagement annuel.")
@@ -336,7 +336,7 @@ struct PaywallStepView: View {
 
         let saved = (twelveMonths - annual.price) / twelveMonths
         let percent = saved.formatted(.percent.precision(.fractionLength(0)).locale(locale))
-        return String(localized: "Économise \(percent)", bundle: localizationBundle, locale: locale)
+        return String(localized: "Économisez \(percent)", bundle: localizationBundle, locale: locale)
     }
 }
 

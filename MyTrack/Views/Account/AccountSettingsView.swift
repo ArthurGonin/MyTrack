@@ -182,7 +182,7 @@ struct AccountSettingsView: View {
                         )
                     }
                 } footer: {
-                    Text("Supprime définitivement tous tes trajets, véhicules et réglages. Cette action est irréversible.")
+                    Text("Supprime définitivement tous vos trajets, véhicules et réglages. Cette action est irréversible.")
                 }
             }
             .appBackground()
@@ -204,12 +204,12 @@ struct AccountSettingsView: View {
 
                 Button("Annuler", role: .cancel) {}
             } message: {
-                Text("Tous tes trajets, véhicules, rapports et réglages seront définitivement supprimés. Cette action est irréversible.")
+                Text("Tous vos trajets, véhicules, rapports et réglages seront définitivement supprimés. Cette action est irréversible.")
             }
             .alert("Suppression incomplète", isPresented: $isDeletionFailedAlertPresented) {
                 Button("OK", role: .cancel) {}
             } message: {
-                Text("Tes données n'ont pas pu être entièrement supprimées. Réessaie.")
+                Text("Vos données n'ont pas pu être entièrement supprimées. Réessayez.")
             }
         }
     }
@@ -221,9 +221,9 @@ struct AccountSettingsView: View {
     private var autoDetectionFooter: LocalizedStringKey {
         switch appServices.drivingDetector.status {
         case .off:
-            return "Détecte automatiquement tes trajets en voiture."
+            return "Détecte automatiquement vos trajets en voiture."
         case .running:
-            return "Tes trajets en voiture sont détectés automatiquement."
+            return "Vos trajets en voiture sont détectés automatiquement."
         case .needsAlwaysLocation:
             return "Inactif : le suivi automatique a besoin de l'accès à la position réglé sur « Toujours » pour que l'app soit réveillée au début d'un trajet."
         case .needsMotionAccess:
@@ -237,7 +237,7 @@ struct AccountSettingsView: View {
 
     private var tripConfirmationFooter: LocalizedStringKey {
         appServices.drivingDetector.requiresTripConfirmation
-            ? "MyTrack te demande de confirmer chaque trajet détecté avant de l'enregistrer."
+            ? "MyTrack vous demande de confirmer chaque trajet détecté avant de l'enregistrer."
             : "Les trajets détectés sont enregistrés automatiquement, sans confirmation."
     }
 

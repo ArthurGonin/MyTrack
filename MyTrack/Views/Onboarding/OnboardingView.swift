@@ -24,11 +24,11 @@ private enum MissingAutoDetectionPermission {
     var message: LocalizedStringKey {
         switch self {
         case .location:
-            "Règle l'accès à la position sur « Toujours » dans Réglages pour activer le suivi automatique."
+            "Réglez l'accès à la position sur « Toujours » dans Réglages pour activer le suivi automatique."
         case .motion:
-            "Autorise l'accès à l'activité physique dans Réglages pour activer le suivi automatique."
+            "Autorisez l'accès à l'activité physique dans Réglages pour activer le suivi automatique."
         case .both:
-            "Règle la position sur « Toujours » et autorise l'activité physique dans Réglages pour activer le suivi automatique."
+            "Réglez la position sur « Toujours » et autorisez l'activité physique dans Réglages pour activer le suivi automatique."
         }
     }
 }

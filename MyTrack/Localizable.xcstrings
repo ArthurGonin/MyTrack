@@ -1575,7 +1575,7 @@
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Accesso completo, disdici quando vuoi."
+            "value" : "Accesso completo, disdicibile in qualsiasi momento."
           }
         },
         "pt" : {
@@ -2068,12 +2068,12 @@
         }
       }
     },
-    "Ajoute un véhicule pour l'associer à tes trajets." : {
+    "Ajoutez un véhicule pour l'associer à vos trajets." : {
       "localizations" : {
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Füge ein Fahrzeug hinzu, um es deinen Fahrten zuzuordnen."
+            "value" : "Fügen Sie ein Fahrzeug hinzu, um es Ihren Fahrten zuzuordnen."
           }
         },
         "en" : {
@@ -2085,25 +2085,25 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Añade un vehículo para asociarlo a tus viajes."
+            "value" : "Añada un vehículo para asociarlo a sus viajes."
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Ajoute un véhicule pour l'associer à tes trajets."
+            "value" : "Ajoutez un véhicule pour l'associer à vos trajets."
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Aggiungi un veicolo per associarlo ai tuoi viaggi."
+            "value" : "Aggiunga un veicolo per associarlo ai suoi viaggi."
           }
         },
         "pt" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Adiciona um veículo para o associares às tuas viagens."
+            "value" : "Adicione um veículo para o associar às suas viagens."
           }
         }
       }
@@ -2908,12 +2908,12 @@
         }
       }
     },
-    "Autorise l'accès à l'activité physique dans Réglages pour activer le suivi automatique." : {
+    "Autorisez l'accès à l'activité physique dans Réglages pour activer le suivi automatique." : {
       "localizations" : {
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Erlaube den Zugriff auf körperliche Aktivität in den Einstellungen, um die automatische Erfassung zu aktivieren."
+            "value" : "Erlauben Sie den Zugriff auf körperliche Aktivität in den Einstellungen, um die automatische Erfassung zu aktivieren."
           }
         },
         "en" : {
@@ -2925,25 +2925,25 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Permite el acceso a la actividad física en Ajustes para activar el seguimiento automático."
+            "value" : "Permita el acceso a la actividad física en Ajustes para activar el seguimiento automático."
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Autorise l'accès à l'activité physique dans Réglages pour activer le suivi automatique."
+            "value" : "Autorisez l'accès à l'activité physique dans Réglages pour activer le suivi automatique."
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Consenti l'accesso all'attività fisica in Impostazioni per attivare il rilevamento automatico."
+            "value" : "Consenta l'accesso all'attività fisica in Impostazioni per attivare il rilevamento automatico."
           }
         },
         "pt" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Permite o acesso à atividade física nas Definições para ativar a deteção automática."
+            "value" : "Permita o acesso à atividade física nas Definições para ativar a deteção automática."
           }
         }
       }
@@ -2989,12 +2989,12 @@
         }
       }
     },
-    "Autorise l'accès à la position dans Réglages pour enregistrer un trajet." : {
+    "Autorisez l'accès à la position dans Réglages pour enregistrer un trajet." : {
       "localizations" : {
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Erlaube den Standortzugriff in den Einstellungen, um eine Fahrt aufzuzeichnen."
+            "value" : "Erlauben Sie den Standortzugriff in den Einstellungen, um eine Fahrt aufzuzeichnen."
           }
         },
         "en" : {
@@ -3006,25 +3006,25 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Permite el acceso a la ubicación en Ajustes para registrar un viaje."
+            "value" : "Permita el acceso a la ubicación en Ajustes para registrar un viaje."
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Autorise l'accès à la position dans Réglages pour enregistrer un trajet."
+            "value" : "Autorisez l'accès à la position dans Réglages pour enregistrer un trajet."
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Consenti l'accesso alla posizione in Impostazioni per registrare un viaggio."
+            "value" : "Consenta l'accesso alla posizione in Impostazioni per registrare un viaggio."
           }
         },
         "pt" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Permite o acesso à localização nas Definições para registar uma viagem."
+            "value" : "Permita o acesso à localização nas Definições para registar uma viagem."
           }
         }
       }
@@ -3127,7 +3127,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Te damos la bienvenida"
+            "value" : "Le damos la bienvenida"
           }
         },
         "fr" : {
@@ -3190,12 +3190,12 @@
         }
       }
     },
-    "Ce rapport couvre tous tes véhicules. Tu pourras le modifier dans les réglages." : {
+    "Ce rapport couvre tous vos véhicules. Vous pourrez le modifier dans les réglages." : {
       "localizations" : {
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Dieser Bericht umfasst alle deine Fahrzeuge. Du kannst ihn später in den Einstellungen ändern."
+            "value" : "Dieser Bericht umfasst alle Ihre Fahrzeuge. Sie können ihn später in den Einstellungen ändern."
           }
         },
         "en" : {
@@ -3207,25 +3207,25 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Este informe incluye todos tus vehículos. Podrás cambiarlo en los ajustes."
+            "value" : "Este informe incluye todos sus vehículos. Podrá cambiarlo en los ajustes."
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Ce rapport couvre tous tes véhicules. Tu pourras le modifier dans les réglages."
+            "value" : "Ce rapport couvre tous vos véhicules. Vous pourrez le modifier dans les réglages."
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Questo rapporto include tutti i tuoi veicoli. Potrai modificarlo nelle impostazioni."
+            "value" : "Questo rapporto include tutti i suoi veicoli. Potrà modificarlo nelle impostazioni."
           }
         },
         "pt" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Este relatório abrange todos os teus veículos. Podes alterá-lo nas definições."
+            "value" : "Este relatório abrange todos os seus veículos. Poderá alterá-lo nas definições."
           }
         }
       }
@@ -3270,12 +3270,12 @@
         }
       }
     },
-    "Choisis le plan qui te convient et débloque tout le potentiel de MyTrack." : {
+    "Choisissez le plan qui vous convient et débloquez tout le potentiel de MyTrack." : {
       "localizations" : {
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Wähle den passenden Tarif und hol alles aus MyTrack heraus."
+            "value" : "Wählen Sie den passenden Tarif und holen Sie alles aus MyTrack heraus."
           }
         },
         "en" : {
@@ -3287,25 +3287,25 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Elige el plan que mejor te venga y descubre todo el potencial de MyTrack."
+            "value" : "Elija el plan que mejor le venga y descubra todo el potencial de MyTrack."
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Choisis le plan qui te convient et débloque tout le potentiel de MyTrack."
+            "value" : "Choisissez le plan qui vous convient et débloquez tout le potentiel de MyTrack."
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Scegli il piano che fa per te e sblocca tutto il potenziale di MyTrack."
+            "value" : "Scelga il piano che fa per lei e sblocchi tutto il potenziale di MyTrack."
           }
         },
         "pt" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Escolhe o plano que te convém e desbloqueia todo o potencial do MyTrack."
+            "value" : "Escolha o plano que lhe convém e desbloqueie todo o potencial do MyTrack."
           }
         }
       }
@@ -3327,7 +3327,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Elige tu idioma"
+            "value" : "Elija su idioma"
           }
         },
         "fr" : {
@@ -3339,23 +3339,23 @@
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Scegli la lingua"
+            "value" : "Scelga la lingua"
           }
         },
         "pt" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Escolhe o idioma"
+            "value" : "Escolha o idioma"
           }
         }
       }
     },
-    "Comment tu t'appelles ?" : {
+    "Comment vous appelez-vous ?" : {
       "localizations" : {
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Wie heißt du?"
+            "value" : "Wie heißen Sie?"
           }
         },
         "en" : {
@@ -3367,25 +3367,25 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "¿Cómo te llamas?"
+            "value" : "¿Cómo se llama?"
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Comment tu t'appelles ?"
+            "value" : "Comment vous appelez-vous ?"
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Come ti chiami?"
+            "value" : "Come si chiama?"
           }
         },
         "pt" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Como te chamas?"
+            "value" : "Como se chama?"
           }
         }
       }
@@ -3630,12 +3630,12 @@
         }
       }
     },
-    "Configure un rapport périodique pour générer automatiquement un rapport PDF à intervalle régulier." : {
+    "Configurez un rapport périodique pour générer automatiquement un rapport PDF à intervalle régulier." : {
       "localizations" : {
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Richte einen regelmäßigen Bericht ein, um in festen Abständen automatisch ein PDF zu erstellen."
+            "value" : "Richten Sie einen regelmäßigen Bericht ein, um in festen Abständen automatisch ein PDF zu erstellen."
           }
         },
         "en" : {
@@ -3647,25 +3647,25 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Configura un informe periódico para generar un PDF automáticamente a intervalos regulares."
+            "value" : "Configure un informe periódico para generar un PDF automáticamente a intervalos regulares."
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Configure un rapport périodique pour générer automatiquement un rapport PDF à intervalle régulier."
+            "value" : "Configurez un rapport périodique pour générer automatiquement un rapport PDF à intervalle régulier."
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Configura un rapporto periodico per generare automaticamente un PDF a intervalli regolari."
+            "value" : "Configuri un rapporto periodico per generare automaticamente un PDF a intervalli regolari."
           }
         },
         "pt" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Configura um relatório periódico para gerar automaticamente um PDF em intervalos regulares."
+            "value" : "Configure um relatório periódico para gerar automaticamente um PDF em intervalos regulares."
           }
         }
       }
@@ -4350,12 +4350,12 @@
         }
       }
     },
-    "Détecte automatiquement tes trajets en voiture." : {
+    "Détecte automatiquement vos trajets en voiture." : {
       "localizations" : {
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Erkennt deine Autofahrten automatisch."
+            "value" : "Erkennt Ihre Autofahrten automatisch."
           }
         },
         "en" : {
@@ -4367,25 +4367,25 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Detecta tus viajes en coche automáticamente."
+            "value" : "Detecta sus viajes en coche automáticamente."
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Détecte automatiquement tes trajets en voiture."
+            "value" : "Détecte automatiquement vos trajets en voiture."
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Rileva automaticamente i tuoi viaggi in auto."
+            "value" : "Rileva automaticamente i suoi viaggi in auto."
           }
         },
         "pt" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Deteta automaticamente as tuas viagens de carro."
+            "value" : "Deteta automaticamente as suas viagens de carro."
           }
         }
       }
@@ -4792,12 +4792,12 @@
         }
       }
     },
-    "Économise %@" : {
+    "Économisez %@" : {
       "localizations" : {
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Spare %@"
+            "value" : "Sparen Sie %@"
           }
         },
         "en" : {
@@ -4809,35 +4809,35 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Ahorra %@"
+            "value" : "Ahorre %@"
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Économise %@"
+            "value" : "Économisez %@"
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Risparmia %@"
+            "value" : "Risparmi %@"
           }
         },
         "pt" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Poupa %@"
+            "value" : "Poupe %@"
           }
         }
       }
     },
-    "Économise avec un engagement annuel." : {
+    "Économisez avec un engagement annuel." : {
       "localizations" : {
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Spare mit der Jahreslaufzeit."
+            "value" : "Sparen Sie mit der Jahreslaufzeit."
           }
         },
         "en" : {
@@ -4849,25 +4849,25 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Ahorra con el compromiso anual."
+            "value" : "Ahorre con el compromiso anual."
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Économise avec un engagement annuel."
+            "value" : "Économisez avec un engagement annuel."
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Risparmia con l'impegno annuale."
+            "value" : "Risparmi con l'impegno annuale."
           }
         },
         "pt" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Poupa com o compromisso anual."
+            "value" : "Poupe com o compromisso anual."
           }
         }
       }
@@ -5395,12 +5395,12 @@
         }
       }
     },
-    "Facultatif. Sert à estimer le coût de tes trajets." : {
+    "Facultatif. Sert à estimer le coût de vos trajets." : {
       "localizations" : {
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Optional. Dient dazu, die Kosten deiner Fahrten zu schätzen."
+            "value" : "Optional. Dient dazu, die Kosten Ihrer Fahrten zu schätzen."
           }
         },
         "en" : {
@@ -5412,25 +5412,25 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Opcional. Sirve para estimar el coste de tus viajes."
+            "value" : "Opcional. Sirve para estimar el coste de sus viajes."
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Facultatif. Sert à estimer le coût de tes trajets."
+            "value" : "Facultatif. Sert à estimer le coût de vos trajets."
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Facoltativo. Serve a stimare il costo dei tuoi viaggi."
+            "value" : "Facoltativo. Serve a stimare il costo dei suoi viaggi."
           }
         },
         "pt" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Opcional. Serve para estimar o custo das tuas viagens."
+            "value" : "Opcional. Serve para estimar o custo das suas viagens."
           }
         }
       }
@@ -6237,12 +6237,12 @@
         }
       }
     },
-    "L'achat n'a pas pu être finalisé. Réessaie plus tard." : {
+    "L'achat n'a pas pu être finalisé. Réessayez plus tard." : {
       "localizations" : {
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Der Kauf konnte nicht abgeschlossen werden. Versuche es später erneut."
+            "value" : "Der Kauf konnte nicht abgeschlossen werden. Versuchen Sie es später erneut."
           }
         },
         "en" : {
@@ -6254,30 +6254,30 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "No se ha podido completar la compra. Inténtalo más tarde."
+            "value" : "No se ha podido completar la compra. Inténtelo más tarde."
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "L'achat n'a pas pu être finalisé. Réessaie plus tard."
+            "value" : "L'achat n'a pas pu être finalisé. Réessayez plus tard."
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Non è stato possibile completare l'acquisto. Riprova più tardi."
+            "value" : "Non è stato possibile completare l'acquisto. Riprovi più tardi."
           }
         },
         "pt" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Não foi possível concluir a compra. Tenta novamente mais tarde."
+            "value" : "Não foi possível concluir a compra. Tente novamente mais tarde."
           }
         }
       }
     },
-    "L'enregistrement des trajets nécessite un abonnement actif. Tes trajets et rapports déjà enregistrés restent accessibles." : {
+    "L'enregistrement des trajets nécessite un abonnement actif. Vos trajets et rapports déjà enregistrés restent accessibles." : {
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -6294,13 +6294,13 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Registrar viajes requiere una suscripción activa. Los viajes e informes que ya has guardado siguen disponibles."
+            "value" : "Registrar viajes requiere una suscripción activa. Los viajes e informes que ya ha guardado siguen disponibles."
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "L'enregistrement des trajets nécessite un abonnement actif. Tes trajets et rapports déjà enregistrés restent accessibles."
+            "value" : "L'enregistrement des trajets nécessite un abonnement actif. Vos trajets et rapports déjà enregistrés restent accessibles."
           }
         },
         "it" : {
@@ -6558,12 +6558,12 @@
         }
       }
     },
-    "Le rapport n'a pas pu être créé. Réessaie plus tard." : {
+    "Le rapport n'a pas pu être créé. Réessayez plus tard." : {
       "localizations" : {
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Der Bericht konnte nicht erstellt werden. Versuche es später erneut."
+            "value" : "Der Bericht konnte nicht erstellt werden. Versuchen Sie es später erneut."
           }
         },
         "en" : {
@@ -6575,25 +6575,25 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "No se ha podido crear el informe. Inténtalo más tarde."
+            "value" : "No se ha podido crear el informe. Inténtelo más tarde."
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Le rapport n'a pas pu être créé. Réessaie plus tard."
+            "value" : "Le rapport n'a pas pu être créé. Réessayez plus tard."
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Non è stato possibile creare il rapporto. Riprova più tardi."
+            "value" : "Non è stato possibile creare il rapporto. Riprovi più tardi."
           }
         },
         "pt" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Não foi possível criar o relatório. Tenta novamente mais tarde."
+            "value" : "Não foi possível criar o relatório. Tente novamente mais tarde."
           }
         }
       }
@@ -7283,12 +7283,12 @@
     "MyTrack" : {
 
     },
-    "MyTrack peut détecter et enregistrer tes trajets en voiture automatiquement, sans que tu aies à y penser." : {
+    "MyTrack peut détecter et enregistrer vos trajets en voiture automatiquement, sans que vous ayez à y penser." : {
       "localizations" : {
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "MyTrack kann deine Autofahrten automatisch erkennen und aufzeichnen, ganz ohne dein Zutun."
+            "value" : "MyTrack kann Ihre Autofahrten automatisch erkennen und aufzeichnen, ganz ohne Ihr Zutun."
           }
         },
         "en" : {
@@ -7300,35 +7300,35 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "MyTrack puede detectar y registrar tus viajes en coche automáticamente, sin que tengas que pensar en ello."
+            "value" : "MyTrack puede detectar y registrar sus viajes en coche automáticamente, sin que tenga que pensar en ello."
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "MyTrack peut détecter et enregistrer tes trajets en voiture automatiquement, sans que tu aies à y penser."
+            "value" : "MyTrack peut détecter et enregistrer vos trajets en voiture automatiquement, sans que vous ayez à y penser."
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "MyTrack può rilevare e registrare i tuoi viaggi in auto automaticamente, senza che tu debba pensarci."
+            "value" : "MyTrack può rilevare e registrare i suoi viaggi in auto automaticamente, senza che debba pensarci."
           }
         },
         "pt" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "MyTrack pode detetar e registar as tuas viagens de carro automaticamente, sem que tenhas de pensar nisso."
+            "value" : "MyTrack pode detetar e registar as suas viagens de carro automaticamente, sem que tenha de pensar nisso."
           }
         }
       }
     },
-    "MyTrack te demande de confirmer chaque trajet détecté avant de l'enregistrer." : {
+    "MyTrack vous demande de confirmer chaque trajet détecté avant de l'enregistrer." : {
       "localizations" : {
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "MyTrack bittet dich, jede erkannte Fahrt zu bestätigen, bevor sie gespeichert wird."
+            "value" : "MyTrack bittet Sie, jede erkannte Fahrt zu bestätigen, bevor sie gespeichert wird."
           }
         },
         "en" : {
@@ -7340,25 +7340,25 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "MyTrack te pide que confirmes cada viaje detectado antes de guardarlo."
+            "value" : "MyTrack le pide que confirme cada viaje detectado antes de guardarlo."
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "MyTrack te demande de confirmer chaque trajet détecté avant de l'enregistrer."
+            "value" : "MyTrack vous demande de confirmer chaque trajet détecté avant de l'enregistrer."
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "MyTrack ti chiede di confermare ogni viaggio rilevato prima di salvarlo."
+            "value" : "MyTrack le chiede di confermare ogni viaggio rilevato prima di salvarlo."
           }
         },
         "pt" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "O MyTrack pede-te para confirmares cada viagem detetada antes de a guardar."
+            "value" : "O MyTrack pede-lhe para confirmar cada viagem detetada antes de a guardar."
           }
         }
       }
@@ -8087,12 +8087,12 @@
         }
       }
     },
-    "Passe à la vitesse supérieure." : {
+    "Passez à la vitesse supérieure." : {
       "localizations" : {
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Schalte einen Gang höher."
+            "value" : "Schalten Sie einen Gang höher."
           }
         },
         "en" : {
@@ -8104,25 +8104,25 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Sube de marcha."
+            "value" : "Suba de marcha."
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Passe à la vitesse supérieure."
+            "value" : "Passez à la vitesse supérieure."
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Passa alla marcia superiore."
+            "value" : "Passi alla marcia superiore."
           }
         },
         "pt" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Passa a uma velocidade superior."
+            "value" : "Passe a uma velocidade superior."
           }
         }
       }
@@ -8647,12 +8647,12 @@
         }
       }
     },
-    "Pour associer tes trajets" : {
+    "Pour associer vos trajets" : {
       "localizations" : {
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Um deine Fahrten zuzuordnen"
+            "value" : "Um Ihre Fahrten zuzuordnen"
           }
         },
         "en" : {
@@ -8664,25 +8664,25 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Para asociar tus viajes"
+            "value" : "Para asociar sus viajes"
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Pour associer tes trajets"
+            "value" : "Pour associer vos trajets"
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Per associare i tuoi viaggi"
+            "value" : "Per associare i suoi viaggi"
           }
         },
         "pt" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Para associar as tuas viagens"
+            "value" : "Para associar as suas viagens"
           }
         }
       }
@@ -9050,12 +9050,12 @@
         }
       }
     },
-    "Quand MyTrack détecte un trajet, veux-tu le confirmer avant qu'il soit enregistré, ou préfères-tu qu'il soit accepté automatiquement ?" : {
+    "Quand MyTrack détecte un trajet, voulez-vous le confirmer avant qu'il soit enregistré, ou préférez-vous qu'il soit accepté automatiquement ?" : {
       "localizations" : {
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Wenn MyTrack eine Fahrt erkennt, möchtest du sie bestätigen, bevor sie gespeichert wird, oder soll sie automatisch übernommen werden?"
+            "value" : "Wenn MyTrack eine Fahrt erkennt, möchten Sie sie bestätigen, bevor sie gespeichert wird, oder soll sie automatisch übernommen werden?"
           }
         },
         "en" : {
@@ -9067,25 +9067,25 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Cuando MyTrack detecta un viaje, ¿quieres confirmarlo antes de que se guarde, o prefieres que se acepte automáticamente?"
+            "value" : "Cuando MyTrack detecta un viaje, ¿quiere confirmarlo antes de que se guarde, o prefiere que se acepte automáticamente?"
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Quand MyTrack détecte un trajet, veux-tu le confirmer avant qu'il soit enregistré, ou préfères-tu qu'il soit accepté automatiquement ?"
+            "value" : "Quand MyTrack détecte un trajet, voulez-vous le confirmer avant qu'il soit enregistré, ou préférez-vous qu'il soit accepté automatiquement ?"
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Quando MyTrack rileva un viaggio, vuoi confermarlo prima che venga salvato, o preferisci che venga accettato automaticamente?"
+            "value" : "Quando MyTrack rileva un viaggio, vuole confermarlo prima che venga salvato, o preferisce che venga accettato automaticamente?"
           }
         },
         "pt" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Quando o MyTrack deteta uma viagem, queres confirmá-la antes de ser guardada, ou preferes que seja aceite automaticamente?"
+            "value" : "Quando o MyTrack deteta uma viagem, quer confirmá-la antes de ser guardada, ou prefere que seja aceite automaticamente?"
           }
         }
       }
@@ -9291,12 +9291,12 @@
         }
       }
     },
-    "Reçois automatiquement un PDF de tes trajets" : {
+    "Recevez automatiquement un PDF de vos trajets" : {
       "localizations" : {
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Erhalte automatisch ein PDF deiner Fahrten"
+            "value" : "Erhalten Sie automatisch ein PDF Ihrer Fahrten"
           }
         },
         "en" : {
@@ -9308,25 +9308,25 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Recibe automáticamente un PDF de tus viajes"
+            "value" : "Reciba automáticamente un PDF de sus viajes"
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Reçois automatiquement un PDF de tes trajets"
+            "value" : "Recevez automatiquement un PDF de vos trajets"
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Ricevi automaticamente un PDF dei tuoi viaggi"
+            "value" : "Riceva automaticamente un PDF dei suoi viaggi"
           }
         },
         "pt" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Recebe automaticamente um PDF das tuas viagens"
+            "value" : "Receba automaticamente um PDF das suas viagens"
           }
         }
       }
@@ -9411,12 +9411,12 @@
         }
       }
     },
-    "Règle l'accès à la position sur « Toujours » dans Réglages pour activer le suivi automatique." : {
+    "Réglez l'accès à la position sur « Toujours » dans Réglages pour activer le suivi automatique." : {
       "localizations" : {
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Stelle den Standortzugriff in den Einstellungen auf „Immer“, um die automatische Erfassung zu aktivieren."
+            "value" : "Stellen Sie den Standortzugriff in den Einstellungen auf „Immer“, um die automatische Erfassung zu aktivieren."
           }
         },
         "en" : {
@@ -9428,35 +9428,35 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Configura el acceso a la ubicación en «Siempre» en Ajustes para activar el seguimiento automático."
+            "value" : "Configure el acceso a la ubicación en «Siempre» en Ajustes para activar el seguimiento automático."
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Règle l'accès à la position sur « Toujours » dans Réglages pour activer le suivi automatique."
+            "value" : "Réglez l'accès à la position sur « Toujours » dans Réglages pour activer le suivi automatique."
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Imposta l'accesso alla posizione su “Sempre” in Impostazioni per attivare il rilevamento automatico."
+            "value" : "Imposti l'accesso alla posizione su “Sempre” in Impostazioni per attivare il rilevamento automatico."
           }
         },
         "pt" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Define o acesso à localização como «Sempre» nas Definições para ativar a deteção automática."
+            "value" : "Defina o acesso à localização como «Sempre» nas Definições para ativar a deteção automática."
           }
         }
       }
     },
-    "Règle la position sur « Toujours » et autorise l'activité physique dans Réglages pour activer le suivi automatique." : {
+    "Réglez la position sur « Toujours » et autorisez l'activité physique dans Réglages pour activer le suivi automatique." : {
       "localizations" : {
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Stelle den Standort auf „Immer“ und erlaube die körperliche Aktivität in den Einstellungen, um die automatische Erfassung zu aktivieren."
+            "value" : "Stellen Sie den Standort auf „Immer“ und erlauben Sie die körperliche Aktivität in den Einstellungen, um die automatische Erfassung zu aktivieren."
           }
         },
         "en" : {
@@ -9468,35 +9468,35 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Configura la ubicación en «Siempre» y permite la actividad física en Ajustes para activar el seguimiento automático."
+            "value" : "Configure la ubicación en «Siempre» y permita la actividad física en Ajustes para activar el seguimiento automático."
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Règle la position sur « Toujours » et autorise l'activité physique dans Réglages pour activer le suivi automatique."
+            "value" : "Réglez la position sur « Toujours » et autorisez l'activité physique dans Réglages pour activer le suivi automatique."
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Imposta la posizione su “Sempre” e consenti l'attività fisica in Impostazioni per attivare il rilevamento automatico."
+            "value" : "Imposti la posizione su “Sempre” e consenta l'attività fisica in Impostazioni per attivare il rilevamento automatico."
           }
         },
         "pt" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Define a localização como «Sempre» e permite a atividade física nas Definições para ativar a deteção automática."
+            "value" : "Defina a localização como «Sempre» e permita a atividade física nas Definições para ativar a deteção automática."
           }
         }
       }
     },
-    "Renouvellement automatique, résiliable à tout moment depuis ton compte App Store." : {
+    "Renouvellement automatique, résiliable à tout moment depuis votre compte App Store." : {
       "localizations" : {
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Verlängert sich automatisch, jederzeit über dein App-Store-Konto kündbar."
+            "value" : "Verlängert sich automatisch, jederzeit über Ihr App-Store-Konto kündbar."
           }
         },
         "en" : {
@@ -9508,25 +9508,25 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Se renueva automáticamente y puedes cancelarla en cualquier momento desde tu cuenta de App Store."
+            "value" : "Se renueva automáticamente y puede cancelarla en cualquier momento desde su cuenta de App Store."
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Renouvellement automatique, résiliable à tout moment depuis ton compte App Store."
+            "value" : "Renouvellement automatique, résiliable à tout moment depuis votre compte App Store."
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Si rinnova automaticamente e puoi disdirlo in qualsiasi momento dal tuo account App Store."
+            "value" : "Si rinnova automaticamente e può disdirlo in qualsiasi momento dal suo account App Store."
           }
         },
         "pt" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Renova-se automaticamente e podes cancelar a qualquer momento na tua conta App Store."
+            "value" : "Renova-se automaticamente e pode cancelar a qualquer momento na sua conta App Store."
           }
         }
       }
@@ -9773,7 +9773,7 @@
         }
       }
     },
-    "Sans abonnement actif, aucun nouveau trajet n'est enregistré. Tes trajets et rapports déjà enregistrés restent accessibles." : {
+    "Sans abonnement actif, aucun nouveau trajet n'est enregistré. Vos trajets et rapports déjà enregistrés restent accessibles." : {
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -9796,7 +9796,7 @@
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Sans abonnement actif, aucun nouveau trajet n'est enregistré. Tes trajets et rapports déjà enregistrés restent accessibles."
+            "value" : "Sans abonnement actif, aucun nouveau trajet n'est enregistré. Vos trajets et rapports déjà enregistrés restent accessibles."
           }
         },
         "it" : {
@@ -10214,12 +10214,12 @@
         }
       }
     },
-    "Supprime définitivement tous tes trajets, véhicules et réglages. Cette action est irréversible." : {
+    "Supprime définitivement tous vos trajets, véhicules et réglages. Cette action est irréversible." : {
       "localizations" : {
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Löscht alle deine Fahrten, Fahrzeuge und Einstellungen endgültig. Das lässt sich nicht rückgängig machen."
+            "value" : "Löscht alle Ihre Fahrten, Fahrzeuge und Einstellungen endgültig. Das lässt sich nicht rückgängig machen."
           }
         },
         "en" : {
@@ -10231,25 +10231,25 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Elimina definitivamente todos tus viajes, vehículos y ajustes. Esta acción no se puede deshacer."
+            "value" : "Elimina definitivamente todos sus viajes, vehículos y ajustes. Esta acción no se puede deshacer."
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Supprime définitivement tous tes trajets, véhicules et réglages. Cette action est irréversible."
+            "value" : "Supprime définitivement tous vos trajets, véhicules et réglages. Cette action est irréversible."
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Elimina definitivamente tutti i tuoi viaggi, veicoli e impostazioni. L'operazione è irreversibile."
+            "value" : "Elimina definitivamente tutti i suoi viaggi, veicoli e impostazioni. L'operazione è irreversibile."
           }
         },
         "pt" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Elimina definitivamente todas as tuas viagens, veículos e definições. Esta ação é irreversível."
+            "value" : "Elimina definitivamente todas as suas viagens, veículos e definições. Esta ação é irreversível."
           }
         }
       }
@@ -10494,12 +10494,12 @@
         }
       }
     },
-    "Tes distances" : {
+    "Vos distances" : {
       "localizations" : {
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Deine Distanzen"
+            "value" : "Ihre Distanzen"
           }
         },
         "en" : {
@@ -10511,35 +10511,35 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Tus distancias"
+            "value" : "Sus distancias"
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Tes distances"
+            "value" : "Vos distances"
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Le tue distanze"
+            "value" : "Le sue distanze"
           }
         },
         "pt" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "As tuas distâncias"
+            "value" : "As suas distâncias"
           }
         }
       }
     },
-    "Tes données n'ont pas pu être entièrement supprimées. Réessaie." : {
+    "Vos données n'ont pas pu être entièrement supprimées. Réessayez." : {
       "localizations" : {
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Deine Daten konnten nicht vollständig gelöscht werden. Versuche es erneut."
+            "value" : "Ihre Daten konnten nicht vollständig gelöscht werden. Versuchen Sie es erneut."
           }
         },
         "en" : {
@@ -10551,35 +10551,35 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "No se han podido eliminar todos tus datos. Inténtalo de nuevo."
+            "value" : "No se han podido eliminar todos sus datos. Inténtelo de nuevo."
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Tes données n'ont pas pu être entièrement supprimées. Réessaie."
+            "value" : "Vos données n'ont pas pu être entièrement supprimées. Réessayez."
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Non è stato possibile eliminare tutti i tuoi dati. Riprova."
+            "value" : "Non è stato possibile eliminare tutti i suoi dati. Riprovi."
           }
         },
         "pt" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Não foi possível eliminar todos os teus dados. Tenta novamente."
+            "value" : "Não foi possível eliminar todos os seus dados. Tente novamente."
           }
         }
       }
     },
-    "Tes informations n'ont pas pu être enregistrées. Réessaie." : {
+    "Vos informations n'ont pas pu être enregistrées. Réessayez." : {
       "localizations" : {
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Deine Daten konnten nicht gesichert werden. Versuche es erneut."
+            "value" : "Ihre Daten konnten nicht gesichert werden. Versuchen Sie es erneut."
           }
         },
         "en" : {
@@ -10591,35 +10591,35 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "No se han podido guardar tus datos. Inténtalo de nuevo."
+            "value" : "No se han podido guardar sus datos. Inténtelo de nuevo."
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Tes informations n'ont pas pu être enregistrées. Réessaie."
+            "value" : "Vos informations n'ont pas pu être enregistrées. Réessayez."
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Non è stato possibile salvare i tuoi dati. Riprova."
+            "value" : "Non è stato possibile salvare i suoi dati. Riprovi."
           }
         },
         "pt" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Não foi possível guardar os teus dados. Tenta novamente."
+            "value" : "Não foi possível guardar os seus dados. Tente novamente."
           }
         }
       }
     },
-    "Tes rapports" : {
+    "Vos rapports" : {
       "localizations" : {
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Deine Berichte"
+            "value" : "Ihre Berichte"
           }
         },
         "en" : {
@@ -10631,35 +10631,35 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Tus informes"
+            "value" : "Sus informes"
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Tes rapports"
+            "value" : "Vos rapports"
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "I tuoi rapporti"
+            "value" : "I suoi rapporti"
           }
         },
         "pt" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Os teus relatórios"
+            "value" : "Os seus relatórios"
           }
         }
       }
     },
-    "Tes trajets en voiture sont détectés automatiquement." : {
+    "Vos trajets en voiture sont détectés automatiquement." : {
       "localizations" : {
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Deine Autofahrten werden automatisch erkannt."
+            "value" : "Ihre Autofahrten werden automatisch erkannt."
           }
         },
         "en" : {
@@ -10671,35 +10671,35 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Tus viajes en coche se detectan automáticamente."
+            "value" : "Sus viajes en coche se detectan automáticamente."
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Tes trajets en voiture sont détectés automatiquement."
+            "value" : "Vos trajets en voiture sont détectés automatiquement."
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "I tuoi viaggi in auto vengono rilevati automaticamente."
+            "value" : "I suoi viaggi in auto vengono rilevati automaticamente."
           }
         },
         "pt" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "As tuas viagens de carro são detetadas automaticamente."
+            "value" : "As suas viagens de carro são detetadas automaticamente."
           }
         }
       }
     },
-    "Tes trajets ne sont plus enregistrés. Tes trajets et rapports déjà enregistrés restent accessibles." : {
+    "Vos trajets ne sont plus enregistrés. Vos trajets et rapports déjà enregistrés restent accessibles." : {
       "localizations" : {
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Deine Fahrten werden nicht mehr aufgezeichnet. Bereits gespeicherte Fahrten und Berichte bleiben verfügbar."
+            "value" : "Ihre Fahrten werden nicht mehr aufgezeichnet. Bereits gespeicherte Fahrten und Berichte bleiben verfügbar."
           }
         },
         "en" : {
@@ -10711,25 +10711,25 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Tus viajes ya no se registran. Los viajes e informes ya guardados siguen disponibles."
+            "value" : "Sus viajes ya no se registran. Los viajes e informes ya guardados siguen disponibles."
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Tes trajets ne sont plus enregistrés. Tes trajets et rapports déjà enregistrés restent accessibles."
+            "value" : "Vos trajets ne sont plus enregistrés. Vos trajets et rapports déjà enregistrés restent accessibles."
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "I tuoi viaggi non vengono più registrati. I viaggi e i rapporti già salvati restano accessibili."
+            "value" : "I suoi viaggi non vengono più registrati. I viaggi e i rapporti già salvati restano accessibili."
           }
         },
         "pt" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "As tuas viagens já não são registadas. As viagens e relatórios já guardados continuam acessíveis."
+            "value" : "As suas viagens já não são registadas. As viagens e relatórios já guardados continuam acessíveis."
           }
         }
       }
@@ -10774,12 +10774,12 @@
         }
       }
     },
-    "Ton abonnement a été retrouvé sur ce compte App Store." : {
+    "Votre abonnement a été retrouvé sur ce compte App Store." : {
       "localizations" : {
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Dein Abo wurde für dieses App-Store-Konto gefunden."
+            "value" : "Ihr Abo wurde für dieses App-Store-Konto gefunden."
           }
         },
         "en" : {
@@ -10791,35 +10791,35 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Hemos encontrado tu suscripción en esta cuenta de App Store."
+            "value" : "Hemos encontrado su suscripción en esta cuenta de App Store."
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Ton abonnement a été retrouvé sur ce compte App Store."
+            "value" : "Votre abonnement a été retrouvé sur ce compte App Store."
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Il tuo abbonamento è stato trovato su questo account App Store."
+            "value" : "Il suo abbonamento è stato trovato su questo account App Store."
           }
         },
         "pt" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "A tua subscrição foi encontrada nesta conta App Store."
+            "value" : "A sua subscrição foi encontrada nesta conta App Store."
           }
         }
       }
     },
-    "Ton abonnement n'a pas pu être renouvelé : aucun nouveau trajet n'est enregistré. Tes trajets et rapports déjà enregistrés restent accessibles." : {
+    "Votre abonnement n'a pas pu être renouvelé : aucun nouveau trajet n'est enregistré. Vos trajets et rapports déjà enregistrés restent accessibles." : {
       "localizations" : {
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Dein Abo konnte nicht verlängert werden: Es werden keine neuen Fahrten aufgezeichnet. Bereits gespeicherte Fahrten und Berichte bleiben verfügbar."
+            "value" : "Ihr Abo konnte nicht verlängert werden: Es werden keine neuen Fahrten aufgezeichnet. Bereits gespeicherte Fahrten und Berichte bleiben verfügbar."
           }
         },
         "en" : {
@@ -10831,35 +10831,35 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "No se ha podido renovar tu suscripción: no se registra ningún viaje nuevo. Los viajes e informes ya guardados siguen disponibles."
+            "value" : "No se ha podido renovar su suscripción: no se registra ningún viaje nuevo. Los viajes e informes ya guardados siguen disponibles."
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Ton abonnement n'a pas pu être renouvelé : aucun nouveau trajet n'est enregistré. Tes trajets et rapports déjà enregistrés restent accessibles."
+            "value" : "Votre abonnement n'a pas pu être renouvelé : aucun nouveau trajet n'est enregistré. Vos trajets et rapports déjà enregistrés restent accessibles."
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Non è stato possibile rinnovare il tuo abbonamento: nessun nuovo viaggio viene registrato. I viaggi e i rapporti già salvati restano accessibili."
+            "value" : "Non è stato possibile rinnovare il suo abbonamento: nessun nuovo viaggio viene registrato. I viaggi e i rapporti già salvati restano accessibili."
           }
         },
         "pt" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Não foi possível renovar a tua subscrição: não é registada nenhuma viagem nova. As viagens e relatórios já guardados continuam acessíveis."
+            "value" : "Não foi possível renovar a sua subscrição: não é registada nenhuma viagem nova. As viagens e relatórios já guardados continuam acessíveis."
           }
         }
       }
     },
-    "Ton abonnement n'a pas pu être renouvelé : tes trajets ne sont plus enregistrés. Mets à jour ton moyen de paiement." : {
+    "Votre abonnement n'a pas pu être renouvelé : vos trajets ne sont plus enregistrés. Mettez à jour votre moyen de paiement." : {
       "localizations" : {
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Dein Abo konnte nicht verlängert werden: Deine Fahrten werden nicht mehr aufgezeichnet. Aktualisiere deine Zahlungsmethode."
+            "value" : "Ihr Abo konnte nicht verlängert werden: Ihre Fahrten werden nicht mehr aufgezeichnet. Aktualisieren Sie Ihre Zahlungsmethode."
           }
         },
         "en" : {
@@ -10871,35 +10871,35 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "No se ha podido renovar tu suscripción: tus viajes ya no se registran. Actualiza tu método de pago."
+            "value" : "No se ha podido renovar su suscripción: sus viajes ya no se registran. Actualice su método de pago."
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Ton abonnement n'a pas pu être renouvelé : tes trajets ne sont plus enregistrés. Mets à jour ton moyen de paiement."
+            "value" : "Votre abonnement n'a pas pu être renouvelé : vos trajets ne sont plus enregistrés. Mettez à jour votre moyen de paiement."
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Non è stato possibile rinnovare il tuo abbonamento: i tuoi viaggi non vengono più registrati. Aggiorna il metodo di pagamento."
+            "value" : "Non è stato possibile rinnovare il suo abbonamento: i suoi viaggi non vengono più registrati. Aggiorni il metodo di pagamento."
           }
         },
         "pt" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Não foi possível renovar a tua subscrição: as tuas viagens já não são registadas. Atualiza o teu método de pagamento."
+            "value" : "Não foi possível renovar a sua subscrição: as suas viagens já não são registadas. Atualize o seu método de pagamento."
           }
         }
       }
     },
-    "Ton abonnement n'a pas pu être renouvelé : tes trajets ne sont plus enregistrés. Tes trajets et rapports restent accessibles." : {
+    "Votre abonnement n'a pas pu être renouvelé : vos trajets ne sont plus enregistrés. Vos trajets et rapports restent accessibles." : {
       "localizations" : {
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Dein Abo konnte nicht verlängert werden: Deine Fahrten werden nicht mehr aufgezeichnet. Deine Fahrten und Berichte bleiben verfügbar."
+            "value" : "Ihr Abo konnte nicht verlängert werden: Ihre Fahrten werden nicht mehr aufgezeichnet. Ihre Fahrten und Berichte bleiben verfügbar."
           }
         },
         "en" : {
@@ -10911,35 +10911,35 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "No se ha podido renovar tu suscripción: tus viajes ya no se registran. Tus viajes e informes siguen disponibles."
+            "value" : "No se ha podido renovar su suscripción: sus viajes ya no se registran. Sus viajes e informes siguen disponibles."
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Ton abonnement n'a pas pu être renouvelé : tes trajets ne sont plus enregistrés. Tes trajets et rapports restent accessibles."
+            "value" : "Votre abonnement n'a pas pu être renouvelé : vos trajets ne sont plus enregistrés. Vos trajets et rapports restent accessibles."
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Non è stato possibile rinnovare il tuo abbonamento: i tuoi viaggi non vengono più registrati. I tuoi viaggi e rapporti restano accessibili."
+            "value" : "Non è stato possibile rinnovare il suo abbonamento: i suoi viaggi non vengono più registrati. I suoi viaggi e rapporti restano accessibili."
           }
         },
         "pt" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Não foi possível renovar a tua subscrição: as tuas viagens já não são registadas. As tuas viagens e relatórios continuam acessíveis."
+            "value" : "Não foi possível renovar a sua subscrição: as suas viagens já não são registadas. As suas viagens e relatórios continuam acessíveis."
           }
         }
       }
     },
-    "Ton abonnement n'est pas résilié pour autant : App Store continuera de le reconduire tant que tu ne l'auras pas fait toi-même." : {
+    "Votre abonnement n'est pas résilié pour autant : App Store continuera de le reconduire tant que vous ne l'aurez pas fait vous-même." : {
       "localizations" : {
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Dein Abo ist damit nicht gekündigt: Der App Store verlängert es weiter, bis du es selbst kündigst."
+            "value" : "Ihr Abo ist damit nicht gekündigt: Der App Store verlängert es weiter, bis Sie es selbst kündigen."
           }
         },
         "en" : {
@@ -10951,35 +10951,35 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Eso no cancela tu suscripción: App Store seguirá renovándola hasta que la canceles."
+            "value" : "Eso no cancela su suscripción: App Store seguirá renovándola hasta que la cancele."
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Ton abonnement n'est pas résilié pour autant : App Store continuera de le reconduire tant que tu ne l'auras pas fait toi-même."
+            "value" : "Votre abonnement n'est pas résilié pour autant : App Store continuera de le reconduire tant que vous ne l'aurez pas fait vous-même."
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Questo non annulla il tuo abbonamento: App Store continuerà a rinnovarlo finché non lo disdici."
+            "value" : "Questo non annulla il suo abbonamento: App Store continuerà a rinnovarlo finché non lo disdice."
           }
         },
         "pt" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Isso não cancela a tua subscrição: a App Store vai continuar a renová-la até que a canceles."
+            "value" : "Isso não cancela a sua subscrição: a App Store vai continuar a renová-la até que a cancele."
           }
         }
       }
     },
-    "Ton accès à vie est acquis. Ton abonnement résilié reste actif jusqu'au %@, sans reconduction." : {
+    "Votre accès à vie est acquis. Votre abonnement résilié reste actif jusqu'au %@, sans reconduction." : {
       "localizations" : {
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Dein lebenslanger Zugang ist gesichert. Dein gekündigtes Abo bleibt bis %@ aktiv, ohne Verlängerung."
+            "value" : "Ihr lebenslanger Zugang ist gesichert. Ihr gekündigtes Abo bleibt bis %@ aktiv, ohne Verlängerung."
           }
         },
         "en" : {
@@ -10991,35 +10991,35 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Tu acceso de por vida está asegurado. Tu suscripción cancelada sigue activa hasta el %@, sin renovación."
+            "value" : "Su acceso de por vida está asegurado. Su suscripción cancelada sigue activa hasta el %@, sin renovación."
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Ton accès à vie est acquis. Ton abonnement résilié reste actif jusqu'au %@, sans reconduction."
+            "value" : "Votre accès à vie est acquis. Votre abonnement résilié reste actif jusqu'au %@, sans reconduction."
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Il tuo accesso a vita è acquisito. L'abbonamento disdetto resta attivo fino al %@, senza rinnovo."
+            "value" : "Il suo accesso a vita è acquisito. L'abbonamento disdetto resta attivo fino al %@, senza rinnovo."
           }
         },
         "pt" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "O teu acesso vitalício está garantido. A tua subscrição cancelada mantém-se ativa até %@, sem renovação."
+            "value" : "O seu acesso vitalício está garantido. A sua subscrição cancelada mantém-se ativa até %@, sem renovação."
           }
         }
       }
     },
-    "Ton accès à vie est acquis. Ton abonnement, lui, court toujours et sera reconduit : résilie-le pour ne pas payer deux fois." : {
+    "Votre accès à vie est acquis. Votre abonnement, lui, court toujours et sera reconduit : résiliez-le pour ne pas payer deux fois." : {
       "localizations" : {
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Dein lebenslanger Zugang ist gesichert. Dein Abo läuft aber weiter und wird verlängert: Kündige es, damit du nicht doppelt zahlst."
+            "value" : "Ihr lebenslanger Zugang ist gesichert. Ihr Abo läuft aber weiter und wird verlängert: Kündigen Sie es, damit Sie nicht doppelt zahlen."
           }
         },
         "en" : {
@@ -11031,35 +11031,35 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Tu acceso de por vida está asegurado. Tu suscripción sigue activa y se renovará: cancélala para no pagar dos veces."
+            "value" : "Su acceso de por vida está asegurado. Su suscripción sigue activa y se renovará: cancélela para no pagar dos veces."
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Ton accès à vie est acquis. Ton abonnement, lui, court toujours et sera reconduit : résilie-le pour ne pas payer deux fois."
+            "value" : "Votre accès à vie est acquis. Votre abonnement, lui, court toujours et sera reconduit : résiliez-le pour ne pas payer deux fois."
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Il tuo accesso a vita è acquisito. L'abbonamento però è ancora attivo e si rinnoverà: disdicilo per non pagare due volte."
+            "value" : "Il suo accesso a vita è acquisito. L'abbonamento però è ancora attivo e si rinnoverà: lo disdica per non pagare due volte."
           }
         },
         "pt" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "O teu acesso vitalício está garantido. A tua subscrição continua ativa e será renovada: cancela-a para não pagares duas vezes."
+            "value" : "O seu acesso vitalício está garantido. A sua subscrição continua ativa e será renovada: cancele-a para não pagar duas vezes."
           }
         }
       }
     },
-    "Ton achat unique a été retrouvé sur ce compte App Store." : {
+    "Votre achat unique a été retrouvé sur ce compte App Store." : {
       "localizations" : {
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Dein Einmalkauf wurde für dieses App-Store-Konto gefunden."
+            "value" : "Ihr Einmalkauf wurde für dieses App-Store-Konto gefunden."
           }
         },
         "en" : {
@@ -11071,35 +11071,35 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Hemos encontrado tu compra única en esta cuenta de App Store."
+            "value" : "Hemos encontrado su compra única en esta cuenta de App Store."
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Ton achat unique a été retrouvé sur ce compte App Store."
+            "value" : "Votre achat unique a été retrouvé sur ce compte App Store."
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Il tuo acquisto unico è stato trovato su questo account App Store."
+            "value" : "Il suo acquisto unico è stato trovato su questo account App Store."
           }
         },
         "pt" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "A tua compra única foi encontrada nesta conta App Store."
+            "value" : "A sua compra única foi encontrada nesta conta App Store."
           }
         }
       }
     },
-    "Ton prénom et ton nom" : {
+    "Votre prénom et votre nom" : {
       "localizations" : {
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Dein Vor- und Nachname"
+            "value" : "Ihr Vor- und Nachname"
           }
         },
         "en" : {
@@ -11111,35 +11111,35 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Tu nombre y apellidos"
+            "value" : "Su nombre y apellidos"
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Ton prénom et ton nom"
+            "value" : "Votre prénom et votre nom"
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Il tuo nome e cognome"
+            "value" : "Il suo nome e cognome"
           }
         },
         "pt" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "O teu nome e apelido"
+            "value" : "O seu nome e apelido"
           }
         }
       }
     },
-    "Ton véhicule" : {
+    "Votre véhicule" : {
       "localizations" : {
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Dein Fahrzeug"
+            "value" : "Ihr Fahrzeug"
           }
         },
         "en" : {
@@ -11151,25 +11151,25 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Tu vehículo"
+            "value" : "Su vehículo"
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Ton véhicule"
+            "value" : "Votre véhicule"
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Il tuo veicolo"
+            "value" : "Il suo veicolo"
           }
         },
         "pt" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "O teu veículo"
+            "value" : "O seu veículo"
           }
         }
       }
@@ -11478,12 +11478,12 @@
         }
       }
     },
-    "Tous tes trajets, véhicules, rapports et réglages seront définitivement supprimés. Cette action est irréversible." : {
+    "Tous vos trajets, véhicules, rapports et réglages seront définitivement supprimés. Cette action est irréversible." : {
       "localizations" : {
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Alle deine Fahrten, Fahrzeuge, Berichte und Einstellungen werden endgültig gelöscht. Das lässt sich nicht rückgängig machen."
+            "value" : "Alle Ihre Fahrten, Fahrzeuge, Berichte und Einstellungen werden endgültig gelöscht. Das lässt sich nicht rückgängig machen."
           }
         },
         "en" : {
@@ -11495,25 +11495,25 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Todos tus viajes, vehículos, informes y ajustes se eliminarán definitivamente. Esta acción no se puede deshacer."
+            "value" : "Todos sus viajes, vehículos, informes y ajustes se eliminarán definitivamente. Esta acción no se puede deshacer."
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Tous tes trajets, véhicules, rapports et réglages seront définitivement supprimés. Cette action est irréversible."
+            "value" : "Tous vos trajets, véhicules, rapports et réglages seront définitivement supprimés. Cette action est irréversible."
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Tutti i tuoi viaggi, veicoli, rapporti e impostazioni saranno eliminati definitivamente. L'operazione è irreversibile."
+            "value" : "Tutti i suoi viaggi, veicoli, rapporti e impostazioni saranno eliminati definitivamente. L'operazione è irreversibile."
           }
         },
         "pt" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Todas as tuas viagens, veículos, relatórios e definições serão eliminados definitivamente. Esta ação é irreversível."
+            "value" : "Todas as suas viagens, veículos, relatórios e definições serão eliminados definitivamente. Esta ação é irreversível."
           }
         }
       }
@@ -12246,7 +12246,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Dein Bericht ist fertig"
+            "value" : "Ihr Bericht ist fertig"
           }
         },
         "en" : {
@@ -12258,7 +12258,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Tu informe está listo"
+            "value" : "Su informe está listo"
           }
         },
         "fr" : {
@@ -12270,13 +12270,13 @@
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Il tuo rapporto è pronto"
+            "value" : "Il suo rapporto è pronto"
           }
         },
         "pt" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "O teu relatório está pronto"
+            "value" : "O seu relatório está pronto"
           }
         }
       }
