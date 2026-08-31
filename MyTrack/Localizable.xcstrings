@@ -2588,6 +2588,46 @@
         }
       }
     },
+    "Aucun trajet pour ce véhicule" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Keine Fahrt mit diesem Fahrzeug"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No trips with this vehicle"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ningún viaje con este vehículo"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aucun trajet pour ce véhicule"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nessun viaggio con questo veicolo"
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nenhuma viagem com este veículo"
+          }
+        }
+      }
+    },
     "Aucun trajet supprimé" : {
       "localizations" : {
         "de" : {

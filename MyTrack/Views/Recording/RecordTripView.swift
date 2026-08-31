@@ -141,32 +141,10 @@ struct RecordTripView: View {
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .principal) {
-                    Button {
+                    // Le même bouton que dans la liste des trajets, au mot près :
+                    // voir `VehicleToolbarButton`.
+                    VehicleToolbarButton(vehicle: selectedVehicle, placeholder: "Aucun véhicule") {
                         isPresentingVehiclePicker = true
-                    } label: {
-                        VStack(spacing: 2) {
-                            HStack(spacing: 4) {
-                                // `??` produirait un `String`, que SwiftUI rendrait
-                                // tel quel : le texte de remplacement resterait en
-                                // français. Le nom du véhicule, lui, est une donnée.
-                                Group {
-                                    if let name = selectedVehicle?.name {
-                                        Text(name)
-                                    } else {
-                                        Text("Aucun véhicule")
-                                    }
-                                }
-                                    .font(.headline)
-                                Image(systemName: "chevron.down")
-                                    .font(.caption2)
-                            }
-                            if let plate = selectedVehicle?.licensePlate {
-                                Text(plate)
-                                    .font(.caption)
-                                    .foregroundStyle(.secondary)
-                            }
-                        }
-                        .foregroundStyle(.primary)
                     }
                 }
             }

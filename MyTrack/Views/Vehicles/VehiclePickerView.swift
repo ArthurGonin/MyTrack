@@ -19,6 +19,14 @@ import SwiftData
 
 struct VehiclePickerView: View {
     let selectedVehicle: Vehicle?
+    /// Fournie par les écrans où « aucun véhicule » veut dire « tous » — la
+    /// liste des trajets, qui filtre. Une ligne « Tous les véhicules » s'ouvre
+    /// alors en tête. Ailleurs — l'accueil, un trajet à réattribuer — ce mot
+    /// n'aurait rien derrière lui, et la ligne n'existe pas.
+    ///
+    /// Déclarée avant `onSelect` pour que la fermeture finale des appels
+    /// continue de se rattacher à celui-ci.
+    var onSelectAllVehicles: (() -> Void)?
     let onSelect: (Vehicle) -> Void
 
     @Environment(AppServices.self) private var appServices
@@ -45,6 +53,9 @@ struct VehiclePickerView: View {
                     )
                 } else {
                     List {
+                        if let onSelectAllVehicles {
+                            allVehiclesRow(onSelectAllVehicles)
+                        }
                         ForEach(vehicles) { vehicle in
                             row(vehicle)
                         }
@@ -78,6 +89,31 @@ struct VehiclePickerView: View {
                 EditVehicleView(vehicle: vehicle)
             }
         }
+    }
+
+    /// « Tous les véhicules » : la ligne du haut, sans ⓘ — il n'y a pas de
+    /// fiche à ouvrir derrière. Son symbole reste dans la même colonne que ceux
+    /// des véhicules pour que les noms s'alignent tous.
+    private func allVehiclesRow(_ action: @escaping () -> Void) -> some View {
+        Button {
+            action()
+            dismiss()
+        } label: {
+            HStack(spacing: 12) {
+                Image(systemName: "car.2")
+                    .font(.body)
+                    .foregroundStyle(.secondary)
+                    .frame(width: 26)
+                    .accessibilityHidden(true)
+                Text("Tous les véhicules")
+                Spacer()
+                if selectedVehicle == nil {
+                    Image(systemName: "checkmark")
+                }
+            }
+            .contentShape(.rect)
+        }
+        .buttonStyle(.plain)
     }
 
     /// Deux boutons côte à côte plutôt qu'un bouton dans un bouton : imbriqués,

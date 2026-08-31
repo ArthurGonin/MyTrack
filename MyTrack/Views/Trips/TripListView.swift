@@ -23,10 +23,37 @@ struct TripListView: View {
     /// que cet écran et que personne d'autre n'a besoin de le lire.
     @AppStorage("tripSortOrder") private var sortOrder: TripSortOrder = .default
 
+    /// Le véhicule qu'on regarde, ou nil pour tous — l'état de départ à chaque
+    /// lancement. Dans la vue et non dans les réglages, contrairement à l'ordre
+    /// de tri : un tri retrouvé au lancement se voit, un filtre retrouvé se
+    /// confond avec des trajets disparus.
+    @State private var filterVehicle: Vehicle?
+    @State private var isPresentingVehiclePicker = false
+
+    @Query(sort: \Vehicle.name) private var vehicles: [Vehicle]
+
+    /// Le filtre effectivement appliqué. Il retombe sur « tous » quand le
+    /// véhicule filtré n'existe plus : la feuille permet de le supprimer alors
+    /// qu'on filtre dessus, ce qui laisserait sinon une liste vide filtrée sur
+    /// un véhicule effacé.
+    private var activeVehicle: Vehicle? {
+        guard let filterVehicle, vehicles.contains(where: { $0 === filterVehicle }) else {
+            return nil
+        }
+        return filterVehicle
+    }
+
+    /// Les trajets confirmés, tous véhicules confondus : ce qui distingue une
+    /// liste vide d'un filtre qui ne rend rien.
+    private var confirmedTrips: [Trip] {
+        allTrips.filter { $0.confirmationStatus == .confirmed }
+    }
+
     private var trips: [Trip] {
-        viewModel.sorted(
-            allTrips.filter { $0.confirmationStatus == .confirmed }, by: sortOrder
-        )
+        let filtered = activeVehicle.map { vehicle in
+            confirmedTrips.filter { $0.vehicle === vehicle }
+        } ?? confirmedTrips
+        return viewModel.sorted(filtered, by: sortOrder)
     }
 
     private var deletedTripsCount: Int {
@@ -38,7 +65,7 @@ struct TripListView: View {
     var body: some View {
         NavigationStack {
             Group {
-                if trips.isEmpty && deletedTripsCount == 0 {
+                if confirmedTrips.isEmpty && deletedTripsCount == 0 {
                     ContentUnavailableView(
                         "Aucun trajet",
                         systemImage: "map",
@@ -59,6 +86,16 @@ struct TripListView: View {
                                         viewModel.moveToTrash(trips[index], in: modelContext)
                                     }
                                 }
+                            }
+                        } else if !confirmedTrips.isEmpty {
+                            // Un filtre qui ne rend rien le dit sur place plutôt
+                            // que de renvoyer à l'écran vide : la corbeille et le
+                            // sélecteur de véhicule doivent rester à portée.
+                            Section {
+                                Text("Aucun trajet pour ce véhicule")
+                                    .foregroundStyle(.secondary)
+                                    .frame(maxWidth: .infinity, alignment: .center)
+                                    .appCardRow()
                             }
                         }
                         Section {
@@ -89,17 +126,38 @@ struct TripListView: View {
                 }
             }
             .appBackground()
+            // Le titre reste posé bien qu'invisible — le sélecteur de véhicule
+            // prend sa place au centre : c'est lui qui nomme le bouton de retour
+            // des écrans poussés depuis cette liste.
             .localizedNavigationTitle("Trajets")
+            // Même raison que sur l'accueil : sans `.inline`, la barre réserve
+            // la hauteur d'un grand titre que le sélecteur remplace déjà.
+            .navigationBarTitleDisplayMode(.inline)
             .navigationDestination(for: Trip.self) { trip in
                 TripDetailView(trip: trip)
             }
             .toolbar {
+                ToolbarItem(placement: .principal) {
+                    // Le même bouton que sur l'accueil, au mot près : voir
+                    // `VehicleToolbarButton`. Ici il filtre au lieu de choisir.
+                    VehicleToolbarButton(vehicle: activeVehicle, placeholder: "Tous les véhicules") {
+                        isPresentingVehiclePicker = true
+                    }
+                }
                 // Rien à trier tant qu'il n'y a pas de trajet : le bouton
                 // n'apparaît qu'avec la liste.
                 if !trips.isEmpty {
                     ToolbarItem(placement: .primaryAction) {
                         sortMenu
                     }
+                }
+            }
+            .sheet(isPresented: $isPresentingVehiclePicker) {
+                VehiclePickerView(
+                    selectedVehicle: activeVehicle,
+                    onSelectAllVehicles: { filterVehicle = nil }
+                ) { vehicle in
+                    filterVehicle = vehicle
                 }
             }
             .accountToolbar()
