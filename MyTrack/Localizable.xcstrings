@@ -169,42 +169,42 @@
         }
       }
     },
-    "%@ en %@. Enregistrer ce trajet ?" : {
+    "%@ en %@. Voulez-vous l'enregistrer ?" : {
       "localizations" : {
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%1$@ in %2$@. Diese Fahrt speichern?"
+            "value" : "%1$@ in %2$@. Möchten Sie sie speichern?"
           }
         },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%1$@ in %2$@. Save this trip?"
+            "value" : "%1$@ in %2$@. Do you want to save it?"
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%1$@ en %2$@. ¿Guardar este viaje?"
+            "value" : "%1$@ en %2$@. ¿Desea guardarlo?"
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%@ en %@. Enregistrer ce trajet ?"
+            "value" : "%@ en %@. Voulez-vous l'enregistrer ?"
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%1$@ in %2$@. Salvare questo viaggio?"
+            "value" : "%1$@ in %2$@. Vuole salvarlo?"
           }
         },
         "pt" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%1$@ em %2$@. Guardar esta viagem?"
+            "value" : "%1$@ em %2$@. Pretende guardá-la?"
           }
         }
       }
@@ -11598,46 +11598,6 @@
         }
       }
     },
-    "Trajet terminé" : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Fahrt beendet"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Trip finished"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Viaje finalizado"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Trajet terminé"
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Viaggio terminato"
-          }
-        },
-        "pt" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Viagem terminada"
-          }
-        }
-      }
-    },
     "Trajets" : {
       "localizations" : {
         "de" : {
@@ -11995,6 +11955,46 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Um só pagamento, para sempre."
+          }
+        }
+      }
+    },
+    "Un trajet a été détecté" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Eine Fahrt wurde erkannt"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "A trip was detected"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Se ha detectado un viaje"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Un trajet a été détecté"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "È stato rilevato un viaggio"
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Foi detetada uma viagem"
           }
         }
       }

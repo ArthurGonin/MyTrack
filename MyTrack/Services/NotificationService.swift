@@ -103,10 +103,13 @@ final class NotificationService: NSObject, UNUserNotificationCenterDelegate {
         registerCategory()
 
         let content = UNMutableNotificationContent()
-        content.title = String(localized: "Trajet terminé", bundle: bundle, locale: locale)
+        content.title = String(localized: "Un trajet a été détecté", bundle: bundle, locale: locale)
         let distance = trip.formattedDistance(in: unitSettingsService.distanceUnit, locale: locale)
         let duration = trip.formattedDuration(locale: locale)
-        content.body = String(localized: "\(distance) en \(duration). Enregistrer ce trajet ?", bundle: bundle, locale: locale)
+        // La distance et la durée restent dans le corps : ce sont elles qui
+        // permettent de répondre depuis l'écran verrouillé, sans ouvrir l'app
+        // pour savoir de quel trajet il s'agit.
+        content.body = String(localized: "\(distance) en \(duration). Voulez-vous l'enregistrer ?", bundle: bundle, locale: locale)
         content.sound = .default
         content.categoryIdentifier = Self.confirmCategoryIdentifier
         content.userInfo = [Self.tripIDKey: trip.id.uuidString]
