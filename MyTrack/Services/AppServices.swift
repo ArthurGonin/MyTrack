@@ -19,6 +19,7 @@ final class AppServices {
     let userProfileService = UserProfileService()
     let reportProfileService = ReportProfileService()
     let unitSettingsService = UnitSettingsService()
+    let tripCostSnapshotService = TripCostSnapshotService()
     let onboardingService = OnboardingService()
     let languageService = LanguageService()
     let locationService = LocationService()

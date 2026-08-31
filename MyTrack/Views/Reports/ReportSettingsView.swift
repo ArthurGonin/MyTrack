@@ -75,6 +75,7 @@ struct ReportSettingsView: View {
     private func label(for profile: ReportProfile) -> String {
         switch profile.periodicity {
         case .none: return String(localized: "Désactivé", bundle: localizationBundle, locale: locale)
+        case .weekly: return String(localized: "Hebdomadaire", bundle: localizationBundle, locale: locale)
         case .monthly: return String(localized: "Mensuel", bundle: localizationBundle, locale: locale)
         case .quarterly: return String(localized: "Trimestriel", bundle: localizationBundle, locale: locale)
         case .yearly: return String(localized: "Annuel", bundle: localizationBundle, locale: locale)

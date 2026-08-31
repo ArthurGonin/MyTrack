@@ -58,6 +58,32 @@ nonisolated enum TripFormatting {
         return (value, measurement.unit.symbol)
     }
 
+    /// Un montant dans la devise de la région : « 1,51 CHF », « 12,40 € ».
+    ///
+    /// La devise vient de la région de l'appareil et non de la langue de l'app —
+    /// un Suisse qui lit l'app en anglais paie toujours en francs. Sans région
+    /// connue, le montant s'écrit nu plutôt qu'avec un symbole deviné.
+    ///
+    /// Deux décimales comme un ticket de caisse ; le prix d'un litre en demande
+    /// une troisième (1,859 €/L), d'où le paramètre.
+    static func currency(
+        _ amount: Double, locale: Locale, fractionLength: ClosedRange<Int> = 2...2
+    ) -> String {
+        guard let currencyCode = locale.currency?.identifier else {
+            return amount.formatted(.number.precision(.fractionLength(fractionLength)).locale(locale))
+        }
+        return amount.formatted(
+            .currency(code: currencyCode).precision(.fractionLength(fractionLength)).locale(locale)
+        )
+    }
+
+    /// « 0,81 L », « 12,4 kWh », « 6,5 L/100 km » : le nombre suit la langue de
+    /// l'app, le symbole est une notation technique qui ne se traduit pas.
+    static func energy(_ amount: Double, unitSymbol: String, locale: Locale) -> String {
+        let value = amount.formatted(.number.precision(.fractionLength(0...2)).locale(locale))
+        return "\(value) \(unitSymbol)"
+    }
+
     /// « 45min », « 1h 5min » — la mise en forme vient de Foundation plutôt que
     /// d'un `String(format: "%dh%02d")` maison, parce que chaque langue abrège
     /// ses unités à sa façon (« 1 Std. 5 Min. » en allemand). `narrow` plutôt

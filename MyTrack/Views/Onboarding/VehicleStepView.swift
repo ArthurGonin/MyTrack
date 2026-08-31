@@ -6,8 +6,7 @@
 import SwiftUI
 
 struct VehicleStepView: View {
-    @Binding var vehicleName: String
-    @Binding var licensePlate: String
+    @Binding var draft: VehicleDraft
 
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
@@ -21,19 +20,17 @@ struct VehicleStepView: View {
             .padding(.horizontal)
 
             Form {
-                Section {
-                    TextField("Nom du véhicule", text: $vehicleName)
-                        .textInputAutocapitalization(.words)
-                    TextField("Immatriculation (optionnel)", text: $licensePlate)
-                        .textInputAutocapitalization(.characters)
-                }
+                VehicleFormFields(draft: $draft)
             }
             .contentMargins(.top, 8, for: .scrollContent)
+            .scrollDismissesKeyboard(.interactively)
         }
     }
 }
 
 #Preview {
-    VehicleStepView(vehicleName: .constant(""), licensePlate: .constant(""))
+    @Previewable @State var draft = VehicleDraft()
+
+    VehicleStepView(draft: $draft)
         .appBackground()
 }

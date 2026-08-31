@@ -139,13 +139,34 @@ struct SlideToConfirmButton: View {
         }
     }
 
+    /// Le voile posé sur tout le disque de la pastille, sous son liseré.
+    ///
+    /// Le verre seul ne suffit pas au repos. Il vit de ce qu'il réfracte, et là
+    /// il n'a rien : le fond de l'app est un gris uni, la gélule sous la
+    /// pastille en est un autre. Il ne reste alors du disque qu'un liseré que
+    /// l'œil ne trouve pas, et un bouton dont on ne voit pas la poignée n'a pas
+    /// l'air de se glisser. Un gris translucide lui rend une surface — assez
+    /// pour qu'on lise un rond posé là, assez peu pour qu'on continue de voir
+    /// le libellé au travers, sans quoi la lentille n'aurait plus rien à
+    /// déformer. Plus dense en thème sombre, où un voile clair sur du noir se
+    /// perd plus vite que son inverse sur du gris clair.
+    ///
+    /// Rien en teinté : la couleur de la gélule désigne déjà la pastille, et un
+    /// voile de plus ne ferait que l'empâter.
+    private var knobWash: Color {
+        switch style {
+        case .glass: colorScheme == .dark ? .white.opacity(0.14) : .black.opacity(0.07)
+        case .tinted: .clear
+        }
+    }
+
     var body: some View {
         GeometryReader { proxy in
             let travel = max(proxy.size.width - height, 1)
 
             ZStack(alignment: .leading) {
                 track
-                label
+                label(travel: travel)
                 knob(travel: travel)
             }
             .animation(.spring(response: 0.3, dampingFraction: 0.5), value: isActive)
@@ -168,8 +189,13 @@ struct SlideToConfirmButton: View {
         .task(id: completions) {
             guard completions > 0 else { return }
             try? await Task.sleep(for: .milliseconds(600))
-            withAnimation(.smooth) { offsetX = 0 }
-            hasReachedEnd = false
+            // Les deux ensemble : `hasReachedEnd` est ce qui tient la pastille
+            // au bout, et le lâcher hors de l'animation la ferait sauter au
+            // départ au lieu d'y revenir.
+            withAnimation(.smooth) {
+                offsetX = 0
+                hasReachedEnd = false
+            }
         }
         // Rejoue chaque changement de `title` dans son propre `withAnimation`,
         // pour la raison détaillée à `displayedTitle` : ignorer le ressort
@@ -226,8 +252,13 @@ struct SlideToConfirmButton: View {
     /// L'effet de lentille porte sur ce bloc-là uniquement, et non sur la
     /// gélule entière : c'est le texte qui doit se déformer sous la pastille,
     /// pas le contour qui la contient.
-    private var label: some View {
-        ZStack(alignment: .leading) {
+    private func label(travel: CGFloat) -> some View {
+        // Relevée ici plutôt que dans le calque : la lentille est la pastille
+        // vue par le texte, et les deux doivent lire la même position — sinon
+        // la déformation se décroche du verre qui la cause.
+        let position = knobPosition(travel: travel)
+
+        return ZStack(alignment: .leading) {
             Text(displayedTitle)
                 .foregroundStyle(ink.opacity(restingTextOpacity))
 
@@ -254,11 +285,11 @@ struct SlideToConfirmButton: View {
         // par rapport à elle que le libellé doit être au milieu. La pastille
         // lui passe dessus, elle ne lui prend pas sa place.
         .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .visualEffect { [isActive, offsetX, height] content, proxy in
+        .visualEffect { [isActive, position, height] content, proxy in
             // La pastille grossit sous le doigt, et la lentille grossit avec
             // elle : c'est le même rectangle qui décrit les deux.
             let scale: CGFloat = isActive ? 1.15 : 0.9
-            let lens = CGRect(x: offsetX, y: 0, width: height, height: height)
+            let lens = CGRect(x: position, y: 0, width: height, height: height)
                 .insetBy(dx: height * (1 - scale) / 2, dy: height * (1 - scale) / 2)
 
             return content.layerEffect(
@@ -302,26 +333,44 @@ struct SlideToConfirmButton: View {
             .clipShape(.circle)
             .background {
                 Circle()
-                    .fill(.clear)
-                    .glassEffect(knobGlass, in: .circle)
-                    // Masque inversé : on perce le disque pour ne garder que
-                    // son liseré.
-                    .mask {
-                        Rectangle().overlay {
-                            Circle()
-                                .padding(2)
-                                .blur(radius: 2)
-                                .blendMode(.destinationOut)
-                        }
+                    .fill(knobWash)
+                    .overlay {
+                        Circle()
+                            .fill(.clear)
+                            .glassEffect(knobGlass, in: .circle)
+                            // Masque inversé : on perce le disque pour ne
+                            // garder que son liseré.
+                            .mask {
+                                Rectangle().overlay {
+                                    Circle()
+                                        .padding(2)
+                                        .blur(radius: 2)
+                                        .blendMode(.destinationOut)
+                                }
+                            }
                     }
             }
             .contentShape(.circle)
             .scaleEffect(isActive ? 1.15 : 0.9)
-            // Borné à la course du moment : la gélule rétrécit quand la feuille
-            // s'ouvre autour d'elle, et la pastille — restée au bout le temps
-            // que l'écran change — dépasserait sinon du bord droit.
-            .offset(x: min(offsetX, travel))
+            .offset(x: knobPosition(travel: travel))
             .highPriorityGesture(drag(travel: travel))
+    }
+
+    /// Où se tient la pastille sur sa course, en points depuis le bord gauche.
+    ///
+    /// Tant qu'on la mène, c'est le doigt qui décide — borné à la course, qui
+    /// n'est pas la même selon la taille du moment.
+    ///
+    /// Une fois le bout atteint, elle s'accroche à ce bout-là plutôt qu'à la
+    /// distance parcourue. Toute la différence est dans la seconde qui suit :
+    /// le glissement mené à terme ouvre la feuille, la gélule quitte la taille
+    /// de la barre d'onglets pour la pleine largeur, et une pastille restée à
+    /// la mesure d'avant se retrouverait plantée au milieu du bouton rouge le
+    /// temps qu'il s'étire. Accrochée au bout, elle s'écarte avec lui et reste
+    /// au bord. Dans l'autre sens — la feuille qui se referme et le bouton qui
+    /// rapetisse — c'est ce qui l'empêche de dépasser du bord droit.
+    private func knobPosition(travel: CGFloat) -> CGFloat {
+        hasReachedEnd ? travel : min(offsetX, travel)
     }
 
     private func drag(travel: CGFloat) -> some Gesture {

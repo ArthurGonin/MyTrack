@@ -12,15 +12,54 @@ final class Vehicle {
     var licensePlate: String?
     var isSelected: Bool
 
+    /// L'énergie du véhicule, telle qu'elle est stockée. Se lit par
+    /// `energyType`.
+    ///
+    /// Optionnelle, et non pas non-optionnelle avec une valeur par défaut : les
+    /// deux compilent, mais la seconde plante à l'ouverture d'un magasin
+    /// existant. SwiftData ajoute bien la colonne aux véhicules déjà
+    /// enregistrés — c'est une migration légère, il n'y a rien à écrire pour ça
+    /// — mais il la laisse vide, sans y reporter la valeur par défaut. La
+    /// première lecture terminait alors sur « Could not cast value of type
+    /// Swift.Optional<Any> to VehicleEnergyType », c'est-à-dire l'app qui se
+    /// ferme au premier écran montrant un véhicule d'avant la mise à jour.
+    private var storedEnergyType: VehicleEnergyType?
+
+    /// La consommation moyenne, en L/100 km ou en kWh/100 km selon
+    /// `energyType`. Nil tant qu'elle n'a pas été renseignée : le champ est
+    /// facultatif, et zéro ne voudrait pas dire la même chose.
+    var consumption: Double?
+
+    /// Le prix d'un litre ou d'un kilowattheure, dans la devise de la région.
+    var energyPrice: Double?
+
+    /// L'énergie du véhicule. Un véhicule enregistré avant que le champ existe
+    /// n'en a aucune : il se lit thermique, la plus répandue, et l'écran de
+    /// modification permet de le corriger.
+    var energyType: VehicleEnergyType {
+        get { storedEnergyType ?? .combustion }
+        set { storedEnergyType = newValue }
+    }
+
     @Relationship(deleteRule: .nullify, inverse: \Trip.vehicle)
     var trips: [Trip]? = []
 
     @Relationship(inverse: \ReportProfile.vehicles)
     var reportProfiles: [ReportProfile]? = []
 
-    init(name: String, licensePlate: String? = nil, isSelected: Bool = false) {
+    init(
+        name: String,
+        licensePlate: String? = nil,
+        isSelected: Bool = false,
+        energyType: VehicleEnergyType = .combustion,
+        consumption: Double? = nil,
+        energyPrice: Double? = nil
+    ) {
         self.name = name
         self.licensePlate = licensePlate
         self.isSelected = isSelected
+        self.storedEnergyType = energyType
+        self.consumption = consumption
+        self.energyPrice = energyPrice
     }
 }

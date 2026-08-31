@@ -42,13 +42,35 @@ nonisolated enum TripReportPDFRenderer {
     /// Only widths are declared; the x offsets are derived by `laidOut` so that
     /// widening one column doesn't mean re-deriving the position of every
     /// column after it by hand. The widths add up to the printable width
-    /// (`pageWidth - 2 * margin`).
-    private static let columns: [Column] = laidOut([
-        Column(titleKey: "Date", width: 150),
-        Column(titleKey: "Véhicule", width: 175.2),
-        Column(titleKey: "Distance", width: 100),
-        Column(titleKey: "Durée", width: 90),
-    ])
+    /// (`pageWidth - 2 * margin`, soit 515,2).
+    ///
+    /// Les deux colonnes du coût — le prix de l'énergie et ce qu'il donne — ne
+    /// sont là que si le rapport a de quoi les remplir : deux colonnes entières
+    /// de tirets n'apprendraient rien au lecteur, et prendraient aux quatre
+    /// autres une place qui leur sert. Les largeurs sont donc reprises d'un
+    /// tableau à l'autre, et non pas rognées d'un seul côté.
+    private static func columns(withCost: Bool) -> [Column] {
+        guard withCost else {
+            return laidOut([
+                Column(titleKey: "Date", width: 150),
+                Column(titleKey: "Véhicule", width: 175.2),
+                Column(titleKey: "Distance", width: 100),
+                Column(titleKey: "Durée", width: 90),
+            ])
+        }
+        // Réparties d'après la ligne de total, plus large que les lignes qu'elle
+        // additionne : elle est en gras, et « 142h 30min » ou « CHF 1 234.56 »
+        // tiennent plus de place que la durée et le coût d'un seul trajet. Une
+        // colonne taillée sur les lignes seules aurait rogné le total.
+        return laidOut([
+            Column(titleKey: "Date", width: 120),
+            Column(titleKey: "Véhicule", width: 90),
+            Column(titleKey: "Distance", width: 66),
+            Column(titleKey: "Durée", width: 72),
+            Column(titleKey: "Prix", width: 82),
+            Column(titleKey: "Coût", width: 85.2),
+        ])
+    }
 
     private static func laidOut(_ columns: [Column]) -> [Column] {
         var x = margin
@@ -89,7 +111,8 @@ nonisolated enum TripReportPDFRenderer {
             pendingTripCount: pendingTripCount,
             // Looked up once, outside the drawing passes: it's the same image
             // on every page, and the lookup reaches into the bundle.
-            icon: appIcon()
+            icon: appIcon(),
+            columns: columns(withCost: rows.contains { $0.costAmount != nil })
         )
 
         // "1/3" can't be written before the last page is known, and a PDF page
@@ -137,6 +160,11 @@ nonisolated enum TripReportPDFRenderer {
         let vehicleNames: [String]
         let pendingTripCount: Int
         let icon: UIImage?
+        /// Les colonnes du tableau, arrêtées une fois pour les deux passes de
+        /// tracé — elles dépendent du contenu (voir `columns(withCost:)`) et
+        /// deux passes qui n'en auraient pas la même liste ne compteraient pas
+        /// les mêmes pages.
+        let columns: [Column]
     }
 
     /// Lays the whole report out and returns how many pages it took.
@@ -163,14 +191,19 @@ nonisolated enum TripReportPDFRenderer {
             generatedAt: document.generatedAt, vehicleNames: document.vehicleNames,
             locale: document.locale, bundle: document.bundle
         )
-        y = drawTableHeader(at: y, locale: document.locale, bundle: document.bundle)
+        y = drawTableHeader(
+            at: y, columns: document.columns, locale: document.locale, bundle: document.bundle
+        )
 
         // Continuing the table on a fresh page repeats the column titles, so a
         // page read on its own still says what each column holds.
         func continueOnNewPageIfNeeded(for height: CGFloat) {
             guard y + height > contentBottom else { return }
             beginPage()
-            y = drawTableHeader(at: margin, locale: document.locale, bundle: document.bundle)
+            y = drawTableHeader(
+                at: margin, columns: document.columns,
+                locale: document.locale, bundle: document.bundle
+            )
         }
 
         // The totals and the note qualifying them close the report as one
@@ -183,12 +216,12 @@ nonisolated enum TripReportPDFRenderer {
         } else {
             for row in document.rows {
                 continueOnNewPageIfNeeded(for: rowHeight)
-                draw(row, at: y)
+                draw(row, at: y, columns: document.columns)
                 y += rowHeight
             }
             continueOnNewPageIfNeeded(for: totalsHeight + noticeHeight)
             y = drawTotals(
-                at: y, rows: document.rows,
+                at: y, rows: document.rows, columns: document.columns,
                 distanceUnit: document.distanceUnit,
                 locale: document.locale, bundle: document.bundle
             )
@@ -334,7 +367,9 @@ nonisolated enum TripReportPDFRenderer {
     // MARK: - Table
 
     @discardableResult
-    private static func drawTableHeader(at y: CGFloat, locale: Locale, bundle: Bundle) -> CGFloat {
+    private static func drawTableHeader(
+        at y: CGFloat, columns: [Column], locale: Locale, bundle: Bundle
+    ) -> CGFloat {
         let headerAttributes: [NSAttributedString.Key: Any] = [
             .font: UIFont.boldSystemFont(ofSize: 11),
             .foregroundColor: UIColor.darkGray,
@@ -350,10 +385,13 @@ nonisolated enum TripReportPDFRenderer {
         return y + rowHeight
     }
 
-    private static func draw(_ row: TripReportRow, at y: CGFloat) {
+    private static func draw(_ row: TripReportRow, at y: CGFloat, columns: [Column]) {
         draw(
-            values: [row.date, row.vehicleName, row.distance, row.duration],
+            values: [
+                row.date, row.vehicleName, row.distance, row.duration, row.energyPrice, row.cost,
+            ],
             at: y,
+            columns: columns,
             attributes: [.font: UIFont.systemFont(ofSize: 11)]
         )
     }
@@ -362,7 +400,7 @@ nonisolated enum TripReportPDFRenderer {
     /// each figure sits directly under the column it sums, so the total
     /// distance reads down the Distance column and the total time down Durée.
     private static func drawTotals(
-        at y: CGFloat, rows: [TripReportRow], distanceUnit: DistanceUnit,
+        at y: CGFloat, rows: [TripReportRow], columns: [Column], distanceUnit: DistanceUnit,
         locale: Locale, bundle: Bundle
     ) -> CGFloat {
         var y = y + 4
@@ -371,21 +409,37 @@ nonisolated enum TripReportPDFRenderer {
 
         let totalDistanceMeters = rows.reduce(0) { $0 + $1.distanceMeters }
         let totalDuration = rows.reduce(0.0) { $0 + $1.durationSeconds }
+        // La somme de ce qui est connu : les trajets dont le coût n'a pas pu
+        // être estimé portent un tiret dans leur colonne, et le lecteur voit
+        // donc à quoi ce total se rapporte.
+        let costs = rows.compactMap(\.costAmount)
         draw(
             values: [
                 String(localized: "Total (\(rows.count) trajets)", bundle: bundle, locale: locale),
                 "",
                 TripFormatting.distance(meters: totalDistanceMeters, unit: distanceUnit, locale: locale),
                 TripFormatting.duration(totalDuration, locale: locale),
+                // Rien sous les prix unitaires : additionner des prix au litre
+                // ne donnerait aucun nombre qui veuille dire quelque chose.
+                "",
+                costs.isEmpty ? "" : TripFormatting.currency(costs.reduce(0, +), locale: locale),
             ],
             at: y,
+            columns: columns,
             attributes: [.font: UIFont.boldSystemFont(ofSize: 12)]
         )
         return y + rowHeight
     }
 
     /// One value per column, in column order.
-    private static func draw(values: [String], at y: CGFloat, attributes: [NSAttributedString.Key: Any]) {
+    ///
+    /// Les appelants passent toujours la valeur du coût, même quand la colonne
+    /// n'est pas là : `zip` s'arrête sur la plus courte des deux listes, et la
+    /// valeur en trop tombe d'elle-même.
+    private static func draw(
+        values: [String], at y: CGFloat, columns: [Column],
+        attributes: [NSAttributedString.Key: Any]
+    ) {
         for (column, value) in zip(columns, values) {
             value.draw(
                 in: CGRect(x: column.x, y: y, width: column.width, height: rowHeight),

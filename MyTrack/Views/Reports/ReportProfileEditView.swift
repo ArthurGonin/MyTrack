@@ -36,7 +36,7 @@ struct ReportProfileEditView: View {
                     set: { updatePeriodicity($0) }
                 )) {
                     ForEach(ReportPeriodicity.allCases, id: \.self) { periodicity in
-                        Text(label(for: periodicity)).tag(periodicity)
+                        Text(periodicity.label).tag(periodicity)
                     }
                 }
                 if profile.periodicity != .none, profile.periodicity != .custom, let nextDueDate = profile.nextDueDate {
@@ -175,16 +175,6 @@ struct ReportProfileEditView: View {
         appServices.notificationService.cancelReportReadyNotification(profileID: profile.id)
         appServices.reportProfileService.deleteProfile(profile, in: modelContext)
         dismiss()
-    }
-
-    private func label(for periodicity: ReportPeriodicity) -> LocalizedStringKey {
-        switch periodicity {
-        case .none: return "Désactivé"
-        case .monthly: return "Mensuel"
-        case .quarterly: return "Trimestriel"
-        case .yearly: return "Annuel"
-        case .custom: return "Personnalisé"
-        }
     }
 }
 

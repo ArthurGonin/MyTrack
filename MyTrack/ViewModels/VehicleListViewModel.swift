@@ -9,14 +9,9 @@ import SwiftData
 struct VehicleListViewModel {
     let vehicleService: VehicleService
 
-    func addVehicle(name: String, licensePlate: String?, in context: ModelContext) {
-        let trimmedName = name.trimmingCharacters(in: .whitespacesAndNewlines)
-        guard !trimmedName.isEmpty else { return }
-        let trimmedPlate = licensePlate?.trimmingCharacters(in: .whitespacesAndNewlines)
-        let vehicle = Vehicle(
-            name: trimmedName,
-            licensePlate: (trimmedPlate?.isEmpty ?? true) ? nil : trimmedPlate
-        )
+    func addVehicle(_ draft: VehicleDraft, in context: ModelContext) {
+        guard draft.isValid else { return }
+        let vehicle = draft.makeVehicle()
         context.insert(vehicle)
         context.saveOrLog()
 

@@ -14,19 +14,14 @@ struct AddVehicleView: View {
     @Environment(\.locale) private var locale
     @Environment(\.localizationBundle) private var localizationBundle
 
-    @State private var name = ""
-    @State private var licensePlate = ""
-
-    private var isNameValid: Bool {
-        !name.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
-    }
+    @State private var draft = VehicleDraft()
 
     var body: some View {
         NavigationStack {
             Form {
-                TextField("Nom du véhicule", text: $name)
-                TextField("Immatriculation (optionnel)", text: $licensePlate)
+                VehicleFormFields(draft: $draft)
             }
+            .scrollDismissesKeyboard(.interactively)
             .appBackground()
             .localizedNavigationTitle("Nouveau véhicule")
             .toolbar {
@@ -37,10 +32,10 @@ struct AddVehicleView: View {
                     // Voir PersonalDataView : clé explicite, parce que le mot
                     // « Enregistrer » couvre deux sens différents dans l'app.
                     Button(String(localized: "action.save", defaultValue: "Enregistrer", bundle: localizationBundle, locale: locale)) {
-                        viewModel.addVehicle(name: name, licensePlate: licensePlate, in: modelContext)
+                        viewModel.addVehicle(draft, in: modelContext)
                         dismiss()
                     }
-                    .disabled(!isNameValid)
+                    .disabled(!draft.isValid)
                 }
             }
         }

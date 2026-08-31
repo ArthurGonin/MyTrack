@@ -104,6 +104,13 @@ struct ReportsView: View {
                             unit: appServices.unitSettingsService.distanceUnit,
                             locale: locale
                         ))
+                        // Le coût, lui, est figé : c'est celui qu'a écrit le
+                        // PDF, avec les prix du jour où il a été produit. Rien
+                        // n'est affiché pour un rapport qui n'en avait pas.
+                        if let totalEnergyCost = report.totalEnergyCost {
+                            Text("·")
+                            Text(TripFormatting.currency(totalEnergyCost, locale: locale))
+                        }
                     }
                     .font(.caption)
                     .foregroundStyle(.secondary)

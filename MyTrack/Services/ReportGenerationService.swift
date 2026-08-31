@@ -63,6 +63,11 @@ final class ReportGenerationService {
         let rows = trips
             .sorted { $0.startDate < $1.startDate }
             .map { TripReportRow(trip: $0, unit: distanceUnit, locale: locale) }
+        // Nil, et non zéro, quand aucun trajet n'a de coût estimable : la liste
+        // des rapports n'affiche alors rien plutôt qu'un « 0,00 CHF » qui
+        // ferait croire à des trajets gratuits.
+        let costs = rows.compactMap(\.costAmount)
+        let totalEnergyCost = costs.isEmpty ? nil : costs.reduce(0, +)
 
         let directory = try reportsDirectory()
         let userProfile = userProfileService.currentProfile(in: context)
@@ -92,7 +97,8 @@ final class ReportGenerationService {
             totalDistanceMeters: totalDistanceMeters,
             source: source,
             profileName: profileName,
-            includedVehicleNames: includedVehicleNames
+            includedVehicleNames: includedVehicleNames,
+            totalEnergyCost: totalEnergyCost
         )
         context.insert(report)
         try context.save()

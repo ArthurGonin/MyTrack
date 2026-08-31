@@ -7,6 +7,12 @@
 //  globally active vehicle, TripDetailView uses it to reassign a single past
 //  trip, and neither has to know about the other's meaning of "selected".
 //
+//  Chaque ligne porte aussi ce qu'on sait du véhicule — énergie, consommation,
+//  prix — et le bouton ⓘ ouvre sa fiche pour le modifier. C'est la disposition
+//  des Réglages (le Wi-Fi, par exemple) : toucher la ligne choisit, le bouton
+//  au bout ouvre les détails. Les deux sens tiennent ainsi dans une seule
+//  liste, sans qu'un appui destiné à l'un déclenche l'autre.
+//
 
 import SwiftUI
 import SwiftData
@@ -18,8 +24,11 @@ struct VehiclePickerView: View {
     @Environment(AppServices.self) private var appServices
     @Environment(\.modelContext) private var modelContext
     @Environment(\.dismiss) private var dismiss
+    @Environment(\.locale) private var locale
+    @Environment(\.localizationBundle) private var localizationBundle
     @Query(sort: \Vehicle.name) private var vehicles: [Vehicle]
     @State private var isPresentingAddVehicle = false
+    @State private var vehicleBeingEdited: Vehicle?
 
     private var viewModel: VehicleListViewModel {
         VehicleListViewModel(vehicleService: appServices.vehicleService)
@@ -37,26 +46,7 @@ struct VehiclePickerView: View {
                 } else {
                     List {
                         ForEach(vehicles) { vehicle in
-                            Button {
-                                onSelect(vehicle)
-                                dismiss()
-                            } label: {
-                                HStack {
-                                    VStack(alignment: .leading) {
-                                        Text(vehicle.name)
-                                        if let plate = vehicle.licensePlate {
-                                            Text(plate)
-                                                .font(.caption)
-                                                .foregroundStyle(.secondary)
-                                        }
-                                    }
-                                    Spacer()
-                                    if vehicle === selectedVehicle {
-                                        Image(systemName: "checkmark")
-                                    }
-                                }
-                            }
-                            .buttonStyle(.plain)
+                            row(vehicle)
                         }
                         .onDelete { indexSet in
                             for index in indexSet {
@@ -84,7 +74,80 @@ struct VehiclePickerView: View {
             .sheet(isPresented: $isPresentingAddVehicle) {
                 AddVehicleView(viewModel: viewModel)
             }
+            .sheet(item: $vehicleBeingEdited) { vehicle in
+                EditVehicleView(vehicle: vehicle)
+            }
         }
+    }
+
+    /// Deux boutons côte à côte plutôt qu'un bouton dans un bouton : imbriqués,
+    /// c'est la ligne entière qui répondrait au ⓘ.
+    private func row(_ vehicle: Vehicle) -> some View {
+        HStack(spacing: 12) {
+            Button {
+                onSelect(vehicle)
+                dismiss()
+            } label: {
+                HStack(spacing: 12) {
+                    // L'énergie du véhicule, d'un coup d'œil. Largeur fixée
+                    // pour que les trois symboles — pompe, éclair, voiture —
+                    // alignent les noms qui les suivent malgré leurs chasses
+                    // différentes.
+                    Image(systemName: vehicle.energyType.symbolName)
+                        .font(.body)
+                        .foregroundStyle(.secondary)
+                        .frame(width: 26)
+                        .accessibilityHidden(true)
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text(vehicle.name)
+                        ForEach(detailLines(for: vehicle), id: \.self) { line in
+                            Text(line)
+                                .font(.caption)
+                                .foregroundStyle(.secondary)
+                        }
+                    }
+                    Spacer()
+                    if vehicle === selectedVehicle {
+                        Image(systemName: "checkmark")
+                    }
+                }
+                // Sans ça, seul le texte est tapable : la ligne entière doit
+                // répondre, y compris l'espace vide à droite.
+                .contentShape(.rect)
+            }
+            .buttonStyle(.plain)
+
+            Button {
+                vehicleBeingEdited = vehicle
+            } label: {
+                Image(systemName: "info.circle")
+                    .foregroundStyle(.tint)
+            }
+            .buttonStyle(.plain)
+            .accessibilityLabel("Modifier le véhicule")
+        }
+    }
+
+    /// Ce que la ligne dit du véhicule sous son nom : son identité
+    /// (« AB-123-CD · Thermique ») puis ses chiffres (« 6,5 L/100 km ·
+    /// 1,85 €/L »). Deux lignes plutôt qu'une seule : tout bout à bout, un
+    /// véhicule entièrement renseigné débordait et repassait à la ligne
+    /// n'importe où.
+    ///
+    /// Ce qui manque disparaît, la ligne entière comprise quand il n'en reste
+    /// rien. L'énergie, elle, est toujours là : un véhicule en a forcément une.
+    private func detailLines(for vehicle: Vehicle) -> [String] {
+        let identity = [
+            vehicle.licensePlate,
+            vehicle.energyType.label(bundle: localizationBundle, locale: locale),
+        ]
+        let figures = [
+            vehicle.formattedConsumption(locale: locale),
+            vehicle.formattedEnergyPrice(locale: locale),
+        ]
+        return [identity, figures]
+            .map { $0.compactMap { $0 }.joined(separator: " · ") }
+            .filter { !$0.isEmpty }
     }
 }
 

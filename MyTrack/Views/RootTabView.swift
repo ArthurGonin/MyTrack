@@ -55,6 +55,10 @@ struct RootTabView: View {
             // must not be cancelled by leaving the tab, or a PDF could be
             // written with no matching record ever created for it.
             Task { await generatePeriodicReportsIfDue() }
+            // Une fois par lancement : les trajets d'avant le calcul du coût y
+            // gagnent les chiffres de leur véhicule, et cessent donc de suivre
+            // ses prix futurs (voir TripCostSnapshotService).
+            appServices.tripCostSnapshotService.freezeMissingFigures(in: modelContext)
         }
         .sheet(isPresented: $isPendingReviewPresented) {
             PendingTripsReviewView()

@@ -29,6 +29,14 @@ final class GeneratedReport {
     /// with no migration plan needed.
     var openedAt: Date?
 
+    /// Ce que les trajets de la période ont coûté en énergie, tel que le PDF
+    /// l'a écrit. Nil quand aucun trajet n'avait de quoi l'estimer — et nil,
+    /// aussi, sur les rapports produits avant que le coût existe : une
+    /// propriété optionnelle est la seule qu'un magasin déjà rempli reprend
+    /// sans plan de migration (voir la remarque sur `openedAt`, et
+    /// `Vehicle.storedEnergyType` pour le cas inverse).
+    var totalEnergyCost: Double?
+
     init(
         periodStart: Date,
         periodEnd: Date,
@@ -37,7 +45,8 @@ final class GeneratedReport {
         totalDistanceMeters: Double,
         source: ReportSource,
         profileName: String? = nil,
-        includedVehicleNames: [String] = []
+        includedVehicleNames: [String] = [],
+        totalEnergyCost: Double? = nil
     ) {
         self.id = UUID()
         self.createdAt = .now
@@ -49,5 +58,6 @@ final class GeneratedReport {
         self.source = source
         self.profileName = profileName
         self.includedVehicleNames = includedVehicleNames
+        self.totalEnergyCost = totalEnergyCost
     }
 }

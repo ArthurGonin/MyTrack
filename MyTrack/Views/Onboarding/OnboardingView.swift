@@ -38,6 +38,8 @@ private enum OnboardingStep: Int, CaseIterable {
     case name
     case units
     case vehicle
+    /// Skippable: see `showsSkipButton`.
+    case reportProfile
     case autoDetection
     /// Skipped when auto-detection wasn't just enabled — see `isStepVisible`.
     case tripConfirmation
@@ -50,8 +52,8 @@ struct OnboardingView: View {
     @State private var currentStepIndex = 0
     @State private var firstName = ""
     @State private var lastName = ""
-    @State private var vehicleName = ""
-    @State private var licensePlate = ""
+    @State private var vehicleDraft = VehicleDraft()
+    @State private var reportProfileDraft = ReportProfileDraft()
     /// Non nil quand l'alerte est à l'écran, et porte ce qu'elle a à dire.
     @State private var missingPermission: MissingAutoDetectionPermission?
     @State private var isRequestingAutoDetectionPermissions = false
@@ -73,7 +75,9 @@ struct OnboardingView: View {
         case .units:
             return true
         case .vehicle:
-            return !vehicleName.trimmingCharacters(in: .whitespaces).isEmpty
+            return vehicleDraft.isValid
+        case .reportProfile:
+            return reportProfileDraft.isValid
         case .autoDetection, .tripConfirmation, .paywall:
             return true
         }
@@ -86,7 +90,7 @@ struct OnboardingView: View {
     /// label but starts a purchase rather than turning the page.
     private var showsGenericContinueButton: Bool {
         switch currentStep {
-        case .welcome, .name, .units, .vehicle:
+        case .welcome, .name, .units, .vehicle, .reportProfile:
             return true
         case .autoDetection, .tripConfirmation, .paywall:
             return false
@@ -116,6 +120,9 @@ struct OnboardingView: View {
                         .opacity(currentStepIndex > 0 ? 1 : 0)
                         .disabled(!canGoBack)
                     Spacer()
+                    if showsSkipButton {
+                        skipButton
+                    }
                 }
             }
 
@@ -128,7 +135,11 @@ struct OnboardingView: View {
                     Text("Continuer").frame(maxWidth: .infinity)
                 }
                 .buttonStyle(.borderedProminent)
-                .foregroundStyle(Color.onAccent)
+                // `Color.onAccent` n'a de sens que sur le fond de l'accent :
+                // désactivé, le bouton passe au gris clair et un libellé forcé
+                // en blanc y devient invisible. On rend alors la main au
+                // système, qui grise le texte de façon lisible.
+                .foregroundStyle(canContinue ? Color.onAccent : Color.secondary)
                 .glassEffect(.clear.interactive())
                 .controlSize(.large)
                 .disabled(!canContinue)
@@ -188,6 +199,33 @@ struct OnboardingView: View {
         .accessibilityLabel("Retour")
     }
 
+    /// Seule l'étape des rapports se passe : les autres sont soit obligatoires,
+    /// soit déjà pourvues de leur propre échappatoire (« Non, peut-être plus
+    /// tard » pour le suivi automatique).
+    private var showsSkipButton: Bool {
+        currentStep == .reportProfile
+    }
+
+    /// Le verre de `backButton` et d'`AccountButton`, à la même hauteur (28pt de
+    /// contenu + 6pt de marge) — en gélule plutôt qu'en cercle parce qu'il porte
+    /// un mot et non un chevron.
+    private var skipButton: some View {
+        Button {
+            // Passer, c'est ne rien créer : le brouillon repart à neuf pour que
+            // `finish()` n'ait aucun drapeau à consulter.
+            reportProfileDraft = ReportProfileDraft()
+            advanceStep()
+        } label: {
+            Text("Passer")
+                .font(.body.weight(.semibold))
+                .frame(height: 28)
+                .padding(.horizontal, 14)
+                .padding(.vertical, 6)
+        }
+        .buttonStyle(.plain)
+        .glassEffect(.regular.interactive(), in: .capsule)
+    }
+
     @ViewBuilder
     private func stepContent(for step: OnboardingStep) -> some View {
         switch step {
@@ -200,7 +238,9 @@ struct OnboardingView: View {
             @Bindable var unitSettings = appServices.unitSettingsService
             UnitStepView(distanceUnit: $unitSettings.distanceUnit)
         case .vehicle:
-            VehicleStepView(vehicleName: $vehicleName, licensePlate: $licensePlate)
+            VehicleStepView(draft: $vehicleDraft)
+        case .reportProfile:
+            ReportProfileStepView(draft: $reportProfileDraft)
         case .autoDetection:
             AutoDetectionStepView(
                 isRequestingPermissions: isRequestingAutoDetectionPermissions,
@@ -344,15 +384,21 @@ struct OnboardingView: View {
         profile.firstName = firstName.trimmingCharacters(in: .whitespaces)
         profile.lastName = lastName.trimmingCharacters(in: .whitespaces)
 
-        let trimmedPlate = licensePlate.trimmingCharacters(in: .whitespaces)
-        let vehicle = Vehicle(
-            name: vehicleName.trimmingCharacters(in: .whitespaces),
-            licensePlate: trimmedPlate.isEmpty ? nil : trimmedPlate,
-            isSelected: true
-        )
-        modelContext.insert(vehicle)
+        modelContext.insert(vehicleDraft.makeVehicle(isSelected: true))
+
+        // Nil quand l'étape a été passée — il n'y a alors aucun profil à créer.
+        let reportProfile = reportProfileDraft.makeProfile()
+        if let reportProfile {
+            modelContext.insert(reportProfile)
+        }
 
         modelContext.saveOrLog()
+
+        // Lues avant le `Task` : un `@Model` n'est pas `Sendable`, et de toute
+        // façon seules ces trois valeurs y servent.
+        let reportProfileID = reportProfile?.id
+        let reportProfileName = reportProfile?.name
+        let reportProfileDueDate = reportProfile?.nextDueDate
 
         // Requested here — once, at the true end of onboarding — rather than
         // tied to the auto-detection step, since more steps may still follow
@@ -361,7 +407,24 @@ struct OnboardingView: View {
         // Détaché : la réponse n'a rien à décider ici, l'onboarding se termine
         // qu'elle soit oui ou non. Les réglages portent la ligne qui permettra
         // de revenir dessus.
-        Task { await appServices.notificationService.requestAuthorization() }
+        //
+        // Le rappel du premier rapport ne peut se poser qu'après cette réponse,
+        // et seulement si elle est oui. Refusée, il ne manque rien d'essentiel :
+        // `RootTabView.generatePeriodicReportsIfDue()` génère le rapport au
+        // lancement suivant l'échéance, notification ou pas.
+        Task {
+            let granted = await appServices.notificationService.requestAuthorization()
+            guard granted,
+                  let reportProfileID,
+                  let reportProfileName,
+                  let reportProfileDueDate
+            else { return }
+            appServices.notificationService.scheduleReportReadyNotification(
+                for: reportProfileDueDate,
+                profileID: reportProfileID,
+                profileName: reportProfileName
+            )
+        }
 
         appServices.onboardingService.hasCompletedOnboarding = true
     }
@@ -369,7 +432,7 @@ struct OnboardingView: View {
 
 #Preview {
     let container = try! ModelContainer(
-        for: Trip.self, Vehicle.self, UserProfile.self,
+        for: Trip.self, Vehicle.self, UserProfile.self, ReportProfile.self,
         configurations: ModelConfiguration(isStoredInMemoryOnly: true)
     )
     return OnboardingView()

@@ -13,6 +13,7 @@ struct TripDetailView: View {
     @Environment(AppServices.self) private var appServices
     @Environment(\.locale) private var locale
     @State private var isPresentingVehiclePicker = false
+    @State private var isPresentingVehicleEditor = false
 
     private var sourceLabel: LocalizedStringKey {
         trip.source == .automatic ? "Automatique" : "Manuel"
@@ -33,6 +34,7 @@ struct TripDetailView: View {
                     )
                 )
             }
+            costSection
             Section("Détails") {
                 Button {
                     isPresentingVehiclePicker = true
@@ -68,8 +70,55 @@ struct TripDetailView: View {
         .localizedNavigationTitle("Détail du trajet")
         .sheet(isPresented: $isPresentingVehiclePicker) {
             VehiclePickerView(selectedVehicle: trip.vehicle) { vehicle in
-                trip.vehicle = vehicle
+                trip.assignVehicle(vehicle)
                 modelContext.saveOrLog()
+            }
+        }
+        .sheet(isPresented: $isPresentingVehicleEditor) {
+            if let vehicle = trip.vehicle {
+                EditVehicleView(vehicle: vehicle)
+            }
+        }
+    }
+
+    /// Ce que le trajet a coûté, et de quoi ce chiffre est tiré : la
+    /// consommation du véhicule, puis l'énergie qu'il en découle pour cette
+    /// distance. Le détail plutôt que le seul montant, parce qu'un coût estimé
+    /// qu'on ne peut pas refaire de tête n'inspire aucune confiance.
+    ///
+    /// Rien tant qu'aucun véhicule n'est associé : c'est lui qui porte la
+    /// consommation, et la ligne « Véhicule » juste en dessous est déjà là pour
+    /// en choisir un. S'il en manque une partie, la section mène à sa fiche
+    /// plutôt que de rester une promesse vide.
+    @ViewBuilder
+    private var costSection: some View {
+        if trip.vehicle != nil {
+            // Un en-tête en fermeture plutôt qu'en chaîne : `Section(_:)` et
+            // `footer:` ne se combinent pas, il n'existe pas d'initialiseur qui
+            // prenne les deux.
+            Section {
+                if let consumption = trip.formattedConsumption(locale: locale) {
+                    LabeledContent("Consommation", value: consumption)
+                }
+                if let price = trip.formattedEnergyPrice(locale: locale) {
+                    LabeledContent("Prix", value: price)
+                }
+                if let energyUsed = trip.formattedEnergyUsed(locale: locale) {
+                    LabeledContent("Énergie", value: energyUsed)
+                }
+                if let cost = trip.formattedEnergyCost(locale: locale) {
+                    LabeledContent("Coût", value: cost)
+                } else {
+                    Button("Compléter la fiche du véhicule") {
+                        isPresentingVehicleEditor = true
+                    }
+                }
+            } header: {
+                Text("Coût")
+            } footer: {
+                if trip.energyCost != nil {
+                    Text("Estimation d'après les chiffres du véhicule au moment du trajet.")
+                }
             }
         }
     }

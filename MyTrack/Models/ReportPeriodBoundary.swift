@@ -24,6 +24,8 @@ enum ReportPeriodBoundary {
         switch periodicity {
         case .none:
             return nil
+        case .weekly:
+            return nextWeeklyDueDate(after: referenceDate, calendar: calendar)
         case .monthly:
             return nextAlignedDueDate(after: referenceDate, everyMonths: 1, calendar: calendar)
         case .quarterly:
@@ -48,6 +50,8 @@ enum ReportPeriodBoundary {
         switch periodicity {
         case .none:
             start = dueDate
+        case .weekly:
+            start = calendar.date(byAdding: .weekOfYear, value: -1, to: dueDate) ?? dueDate
         case .monthly:
             start = calendar.date(byAdding: .month, value: -1, to: dueDate) ?? dueDate
         case .quarterly:
@@ -58,6 +62,16 @@ enum ReportPeriodBoundary {
             start = calendar.date(byAdding: .day, value: -max(1, customIntervalDays), to: dueDate) ?? dueDate
         }
         return (start, dueDate)
+    }
+
+    /// Start of the week that follows `referenceDate`, pinned to `dueHour`.
+    /// Aligned on the calendar's own first weekday — lundi ici, dimanche
+    /// ailleurs — comme les mois le sont sur le 1er.
+    private static func nextWeeklyDueDate(after referenceDate: Date, calendar: Calendar) -> Date {
+        guard let weekStart = calendar.dateInterval(of: .weekOfYear, for: referenceDate)?.start,
+              let nextWeekStart = calendar.date(byAdding: .weekOfYear, value: 1, to: weekStart)
+        else { return referenceDate }
+        return atDueHour(nextWeekStart, calendar: calendar)
     }
 
     /// Start of the next period aligned to January (so quarters land on
