@@ -36,6 +36,11 @@ struct RecordTripView: View {
     /// que le bouton Démarrer épouse au repos. `nil` tant qu'on ne l'a pas lue
     /// — ou si elle est introuvable, auquel cas le bouton garde sa pleine
     /// taille, celle qu'il avait avant.
+    /// La taille du grand nombre. `@ScaledMetric` plutôt qu'une constante :
+    /// une taille en points ne suit pas les réglages d'accessibilité, et ce
+    /// nombre-là est ce qu'on vient lire.
+    @ScaledMetric(relativeTo: .largeTitle) private var odometerSize: CGFloat = 64
+
     @State private var tabBarSize: CGSize?
     /// La largeur que le bouton prend en trajet, relevée sur la feuille.
     @State private var fullButtonWidth: CGFloat?
@@ -88,7 +93,12 @@ struct RecordTripView: View {
                     // aurait rien à réfracter.
                     ZStack(alignment: .bottom) {
                         VStack(spacing: 20) {
-                            monthlyStats
+                            // Toute la place libre passe au-dessus de l'arc :
+                            // il descend vers la voiture, qu'il coiffe de près,
+                            // au lieu de rester collé sous la salutation avec
+                            // un vide entre eux.
+                            Spacer(minLength: 20)
+                            monthlyHeader
                             carIllustration
                             // La place que le bouton occupe au repos, gardée
                             // vide : la voiture s'arrête juste au-dessus de lui
@@ -237,66 +247,113 @@ struct RecordTripView: View {
         return name.isEmpty ? nil : name
     }
 
-    /// Les quatre cases de verre : ce que le véhicule a fait ce mois-ci.
+    /// Le kilométrage du mois, coiffé de son arc.
     ///
-    /// Le mois en cours et non le total de toujours — c'est le chiffre qu'on
-    /// vient regarder, celui qui bouge encore. Le total, lui, ne dit plus rien
-    /// après la première année.
+    /// L'arc garde ses deux extrémités sur les bords de l'écran, mais son rayon
+    /// est plus grand que la largeur : la courbe s'aplatit, ne monte plus qu'à
+    /// une quarantaine de points, et laisse le haut de l'écran respirer. Un
+    /// demi-cercle vrai — rayon égal à la demi-largeur — grimpait à près de
+    /// deux cents points et écrasait tout le reste.
     ///
-    /// Du verre plutôt que les cartes blanches du reste de l'app : elles se
-    /// posent sur la voiture, et c'est ce qu'on veut voir au travers.
-    private var monthlyStats: some View {
-        VStack(alignment: .leading, spacing: 8) {
-            // La période se dit une fois, au-dessus : sans elle, « 165 km » ne
-            // dit pas de quel mois il s'agit, et répéter « ce mois-ci » dans
-            // chacune des quatre cases prendrait la place du chiffre.
-            Text("Ce mois-ci")
-                .font(.caption)
-                .foregroundStyle(.secondary)
-            statGrid
-        }
-        // Les cases prennent la place que la voiture ne prend pas : elles
-        // remplissent la bande entre la salutation et le capot, au lieu de
-        // laisser un vide au milieu de l'écran.
-        .frame(maxHeight: .infinity)
-    }
-
-    private var statGrid: some View {
-        Grid(horizontalSpacing: Self.statSpacing, verticalSpacing: Self.statSpacing) {
-            GridRow {
-                statCard("Distance") { Text(monthlyDistance) }
-                statCard("Coût") { Text(monthlyCost ?? Self.noValue) }
-            }
-            GridRow {
-                statCard("Durée") { Text(monthlyDuration) }
-                // La quatrième attend ce qu'on y mettra : elle garde la place
-                // et l'équilibre de la grille en attendant.
-                statCard(nil) { EmptyView() }
+    /// Le chiffre se pose dessous. Le nombre et son unité sont deux textes et
+    /// non un seul : c'est le nombre qu'on lit d'un coup d'œil, le « km » n'est
+    /// là que pour le qualifier.
+    private var monthlyHeader: some View {
+        VStack(spacing: Self.domeToValueSpacing) {
+            distanceArc
+            VStack(spacing: 0) {
+                Text("Ce mois-ci")
+                    .font(.subheadline)
+                    .foregroundStyle(.secondary)
+                HStack(alignment: .firstTextBaseline, spacing: 4) {
+                    Text(monthlyDistance.value)
+                        .font(.system(size: odometerSize, weight: .light))
+                        .lineLimit(1)
+                        .minimumScaleFactor(0.4)
+                    Text(monthlyDistance.symbol)
+                        .font(.title2)
+                        .foregroundStyle(.secondary)
+                }
             }
         }
     }
 
-    /// Une case : le chiffre en grand, son intitulé dessous — la disposition de
-    /// `StatView`, la même que les deux chiffres de la feuille en trajet.
-    private func statCard<Value: View>(
-        _ label: LocalizedStringKey?, @ViewBuilder value: () -> Value
-    ) -> some View {
-        Group {
-            if let label {
-                StatView(label, value: value)
-            } else {
-                // Une case vide garde quand même la hauteur des autres : c'est
-                // la grille qui l'aligne, pas son contenu.
-                StatView("", value: { EmptyView() }).opacity(0)
+    /// L'arc, en deux traits superposés : un gris clair sur toute sa longueur,
+    /// et par-dessus, depuis la gauche, la part déjà parcourue en noir. Un
+    /// point marque la jonction — c'est lui qu'on suit d'un mois à l'autre.
+    ///
+    /// La marge négative annule celle de l'écran : le trait touche les deux
+    /// bords, il ne s'arrête pas seize points avant.
+    private var distanceArc: some View {
+        ZStack {
+            Dome(geometry: Self.domeGeometry)
+                .stroke(style: Self.domeStroke)
+                .foregroundStyle(.tertiary)
+            Dome(geometry: Self.domeGeometry)
+                .trim(from: 0, to: monthlyProgress)
+                .stroke(style: Self.domeStroke)
+                .foregroundStyle(.primary)
+            // Rien à marquer tant que rien n'est parcouru : un point seul,
+            // posé au départ, se lirait comme une erreur d'affichage.
+            if monthlyProgress > 0 {
+                DomeMarker(
+                    geometry: Self.domeGeometry,
+                    progress: monthlyProgress,
+                    diameter: Self.domeMarkerDiameter
+                )
+                .foregroundStyle(.primary)
             }
         }
-        .padding(.horizontal, 14)
-        .padding(.vertical, 12)
-        // La case prend toute la hauteur de sa rangée : c'est le verre qui
-        // remplit la bande, pas un vide autour de lui. Le chiffre se pose au
-        // milieu, à gauche.
-        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .leading)
-        .glassEffect(.regular, in: .rect(cornerRadius: Self.statCornerRadius, style: .continuous))
+        // Le rapport largeur / flèche de la corde : c'est lui qui donne au
+        // cadre la hauteur exacte que l'arc occupe, sans marge morte.
+        .aspectRatio(1 / Self.domeGeometry.riseRatio, contentMode: .fit)
+        .padding(.horizontal, -Self.pageMargin)
+        // Le noir avance quand la distance monte, y compris pendant un trajet.
+        .animation(.smooth, value: monthlyProgress)
+        .accessibilityHidden(true)
+    }
+
+    /// Les trajets d'un mois donné, pour le véhicule choisi.
+    ///
+    /// Les trajets confirmés seulement : un trajet détecté que personne n'a
+    /// encore validé n'en est pas encore un, et un trajet supprimé n'en est
+    /// plus un. Sans véhicule sélectionné il n'y a rien à distinguer, et le
+    /// compteur additionne alors tout ce qui a roulé.
+    private func distanceMeters(inMonthContaining date: Date) -> Double {
+        guard let month = Calendar.current.dateInterval(of: .month, for: date) else { return 0 }
+        return trips.reduce(0) { total, trip in
+            guard trip.confirmationStatus == .confirmed,
+                  selectedVehicle == nil || trip.vehicle === selectedVehicle,
+                  month.contains(trip.startDate)
+            else { return total }
+            return total + trip.distanceMeters
+        }
+    }
+
+    private var monthlyDistance: (value: String, symbol: String) {
+        TripFormatting.distanceParts(
+            meters: distanceMeters(inMonthContaining: Date()),
+            unit: appServices.unitSettingsService.distanceUnit,
+            locale: locale
+        )
+    }
+
+    /// La part de l'arc déjà noircie : ce mois-ci rapporté au mois d'avant.
+    ///
+    /// Une jauge a besoin d'un plein, et l'app n'a pas encore d'objectif
+    /// mensuel à viser. Le mois précédent est la seule référence qu'elle
+    /// possède déjà, et celle qui répond à « est-ce que je roule plus que
+    /// d'habitude ? ».
+    ///
+    /// Plafonnée à 1 : un mois deux fois plus chargé remplit l'arc, il ne le
+    /// déborde pas. Nulle tant qu'il n'y a pas de mois précédent à comparer —
+    /// un arc rempli au premier lancement ne voudrait rien dire.
+    private var monthlyProgress: CGFloat {
+        guard let lastMonth = Calendar.current.date(byAdding: .month, value: -1, to: Date())
+        else { return 0 }
+        let reference = distanceMeters(inMonthContaining: lastMonth)
+        guard reference > 0 else { return 0 }
+        return min(1, CGFloat(distanceMeters(inMonthContaining: Date()) / reference))
     }
 
     /// La voiture, en dessin plutôt qu'en photo de fond : elle est un objet de
@@ -321,49 +378,6 @@ struct RecordTripView: View {
             // donne, et c'est ce qu'elle laisse qui revient à la grille.
             .layoutPriority(1)
             .accessibilityHidden(true)
-    }
-
-    /// Les trajets du mois en cours, pour le véhicule choisi.
-    ///
-    /// Les trajets confirmés seulement : un trajet détecté que personne n'a
-    /// encore validé n'en est pas encore un, et un trajet supprimé n'en est
-    /// plus un. Sans véhicule sélectionné il n'y a rien à distinguer, et les
-    /// cases additionnent alors tout ce qui a roulé.
-    private var monthlyTrips: [Trip] {
-        guard let month = Calendar.current.dateInterval(of: .month, for: Date()) else { return [] }
-        return trips.filter { trip in
-            trip.confirmationStatus == .confirmed
-                && (selectedVehicle == nil || trip.vehicle === selectedVehicle)
-                && month.contains(trip.startDate)
-        }
-    }
-
-    private var monthlyDistance: String {
-        TripFormatting.distance(
-            meters: monthlyTrips.reduce(0) { $0 + $1.distanceMeters },
-            unit: appServices.unitSettingsService.distanceUnit,
-            locale: locale,
-            fractionDigits: 0
-        )
-    }
-
-    /// Nil quand aucun trajet du mois n'a de coût estimable — un véhicule sans
-    /// consommation ni prix renseignés n'en donne pas (voir `Trip+Cost`). Un
-    /// zéro se lirait comme « ça n'a rien coûté », ce qui est autre chose.
-    private var monthlyCost: String? {
-        let costs = monthlyTrips.compactMap(\.energyCost)
-        guard !costs.isEmpty else { return nil }
-        return TripFormatting.currency(costs.reduce(0, +), locale: locale)
-    }
-
-    /// Le temps passé au volant ce mois-ci. Un trajet en cours compte jusqu'à
-    /// maintenant, comme partout ailleurs dans l'app.
-    private var monthlyDuration: String {
-        let now = Date()
-        let total = monthlyTrips.reduce(0.0) { total, trip in
-            total + (trip.endDate ?? now).timeIntervalSince(trip.startDate)
-        }
-        return TripFormatting.duration(total, locale: locale)
     }
 
     /// La feuille qui s'ouvre autour du bouton le temps d'un trajet.
@@ -626,9 +640,24 @@ struct RecordTripView: View {
     /// n'a pas la même hauteur au repos qu'en trajet, l'arrondi le suit.
     private var sheetCornerRadius: CGFloat { buttonHeight / 2 + Self.sheetPadding }
 
-    /// L'écart entre les quatre cases, et l'arrondi de leurs coins.
-    private static let statSpacing: CGFloat = 10
-    private static let statCornerRadius: CGFloat = 22
+    /// La marge de l'écran, celle que `padding()` pose. Reprise ici en négatif
+    /// par l'arc, qui doit toucher les deux bords.
+    private static let pageMargin: CGFloat = 16
+
+    /// Le cercle dont l'arc est tiré. Le rayon se compte en largeurs d'écran :
+    /// à 0,5 c'est un demi-cercle, qui monte d'une demi-largeur — beaucoup trop
+    /// haut. Au-delà, la courbe s'aplatit sans lâcher les bords.
+    private static let domeGeometry = DomeGeometry(radiusRatio: 1)
+
+    /// Le trait de l'arc : plein, à bouts ronds, le même pour le gris clair et
+    /// pour le noir qui le recouvre — sans quoi l'un dépasserait de l'autre.
+    private static let domeStroke = StrokeStyle(lineWidth: 6, lineCap: .round)
+
+    /// Le point posé à la jonction des deux traits.
+    private static let domeMarkerDiameter: CGFloat = 13
+
+    /// L'écart entre l'arc et le chiffre qu'il coiffe.
+    private static let domeToValueSpacing: CGFloat = 20
 
     /// Ce que la voiture déborde de chaque côté, au-delà de la marge de
     /// l'écran.
@@ -638,9 +667,6 @@ struct RecordTripView: View {
     /// pendant que la voiture, elle, va d'un bord à l'autre de l'écran.
     private static let carBleed: CGFloat = 28
 
-    /// Ce qui s'écrit à la place d'un chiffre qu'on ne peut pas calculer. Un
-    /// tiret et non un zéro : « rien de connu » n'est pas « rien dépensé ».
-    private static let noValue = "—"
 
     /// Prend toute la place du bouton Démarrer plutôt que de s'ajouter à côté
     /// de lui : le bouton ne ferait plus rien de toute façon, et c'est cet
@@ -734,4 +760,82 @@ struct RecordTripView: View {
     return RecordTripView()
         .environment(AppServices(modelContext: container.mainContext))
         .modelContainer(container)
+}
+
+/// La géométrie de l'arc de l'accueil : le cercle dont il est tiré, et les
+/// deux vues qui le dessinent — le trait et le point qui le termine. Toutes
+/// deux lisent le même cercle, sinon le point se décrocherait du trait.
+///
+/// La clé de voûte touche le haut du cadre et les deux extrémités en touchent
+/// les coins du bas : l'arc tient donc exactement dans un cadre dont la hauteur
+/// est la flèche de la corde, ce que `riseRatio` donne.
+private struct DomeGeometry {
+    /// Le rayon, compté en largeurs de cadre. Doit dépasser 0,5, sans quoi le
+    /// cercle est trop petit pour joindre les deux coins du bas.
+    let radiusRatio: CGFloat
+
+    /// La hauteur occupée pour une largeur de 1 : R − √(R² − ¼).
+    var riseRatio: CGFloat { radiusRatio - sqrt(radiusRatio * radiusRatio - 0.25) }
+
+    func radius(in rect: CGRect) -> CGFloat { rect.width * radiusRatio }
+
+    /// Le demi-angle sous lequel la corde — la largeur du cadre — est vue
+    /// depuis le centre. C'est lui qui dit où l'arc entre et où il ressort.
+    func halfAngle(in rect: CGRect) -> CGFloat {
+        asin(min(1, rect.width / 2 / radius(in: rect)))
+    }
+
+    /// Le centre, posé un rayon plus bas que la clé de voûte.
+    func center(in rect: CGRect) -> CGPoint {
+        CGPoint(x: rect.midX, y: radius(in: rect))
+    }
+
+    /// L'angle atteint après `progress` de la course, comptée depuis la gauche.
+    func angle(at progress: CGFloat, in rect: CGRect) -> CGFloat {
+        let half = halfAngle(in: rect)
+        return 3 * .pi / 2 - half + progress * 2 * half
+    }
+
+    func point(at progress: CGFloat, in rect: CGRect) -> CGPoint {
+        let angle = angle(at: progress, in: rect)
+        let center = center(in: rect), radius = radius(in: rect)
+        return CGPoint(x: center.x + radius * cos(angle), y: center.y + radius * sin(angle))
+    }
+}
+
+/// L'arc : du bord gauche à la clé de voûte, puis jusqu'au bord droit, à la
+/// même hauteur.
+private struct Dome: Shape {
+    let geometry: DomeGeometry
+
+    func path(in rect: CGRect) -> Path {
+        var path = Path()
+        path.addArc(
+            center: geometry.center(in: rect),
+            radius: geometry.radius(in: rect),
+            startAngle: .radians(Double(geometry.angle(at: 0, in: rect))),
+            endAngle: .radians(Double(geometry.angle(at: 1, in: rect))),
+            clockwise: false
+        )
+        return path
+    }
+}
+
+/// Le point qui marque où le noir s'arrête.
+private struct DomeMarker: Shape {
+    let geometry: DomeGeometry
+    let progress: CGFloat
+    let diameter: CGFloat
+
+    func path(in rect: CGRect) -> Path {
+        let point = geometry.point(at: progress, in: rect)
+        return Path(
+            ellipseIn: CGRect(
+                x: point.x - diameter / 2,
+                y: point.y - diameter / 2,
+                width: diameter,
+                height: diameter
+            )
+        )
+    }
 }
