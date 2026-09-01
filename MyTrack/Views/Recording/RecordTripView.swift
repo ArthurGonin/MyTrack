@@ -53,10 +53,6 @@ struct RecordTripView: View {
     /// l'œil ne suit que lui. Isolé ici, ce trajet-là suit la courbe qu'on lui
     /// donne, et la feuille garde son rebond.
     @State private var sheetDrop: CGFloat = RecordTripView.restingDrop
-    /// La taille du grand nombre du compteur. `@ScaledMetric` plutôt
-    /// qu'une constante : une taille en points ne suit pas les réglages
-    /// d'accessibilité, et ce nombre-là est ce qu'on vient lire.
-    @ScaledMetric(relativeTo: .largeTitle) private var odometerSize: CGFloat = 64
 
     private var selectedVehicle: Vehicle? {
         vehicles.first { $0.isSelected }
@@ -84,25 +80,29 @@ struct RecordTripView: View {
                 // route, et il n'est pas question de laisser l'utilisateur sans
                 // moyen de terminer l'enregistrement qu'il a lancé.
                 if viewModel.isRecording || canRecordTrips {
-                    // Au repos, le compteur en haut et la photo derrière lui.
-                    // Pendant un trajet, la feuille prend toute la place :
-                    // elle s'ouvre jusque sous le « Bon retour », et il n'y a
-                    // plus rien entre les deux.
-                    if !viewModel.isRecording {
-                        odometer
+                    // Une pile de calques et non une colonne : la feuille passe
+                    // par-dessus le décor au lieu de lui prendre sa place. Les
+                    // cases et la voiture restent donc exactement où elles
+                    // étaient quand un trajet démarre — c'est elles qu'on voit
+                    // se déformer à travers le verre, et sans elles il n'y
+                    // aurait rien à réfracter.
+                    ZStack(alignment: .bottom) {
+                        VStack(spacing: 20) {
+                            monthlyStats
+                            carIllustration
+                            // La place que le bouton occupe au repos, gardée
+                            // vide : la voiture s'arrête juste au-dessus de lui
+                            // au lieu de passer dessous. Toujours celle du
+                            // repos, même en trajet — le décor ne doit pas
+                            // bouger d'un point pendant que la feuille s'ouvre.
+                            Color.clear.frame(height: restingSheetHeight)
+                        }
+                        // Une marge négative et non un décalage : le bouton
+                        // change vraiment de place dans la pile, il ne se
+                        // contente pas de se dessiner plus bas.
+                        recordingSheet
+                            .padding(.bottom, -sheetDrop)
                     }
-                    // Ce qui pousse la feuille en bas quand elle n'y arrive
-                    // pas d'elle-même. Pas de ressort tant que la carte est
-                    // là : elle est déjà élastique, et les deux se
-                    // partageraient la place au lieu de la lui laisser.
-                    if !viewModel.isRecording || isSheetCollapsed {
-                        Spacer(minLength: 0)
-                    }
-                    // Une marge négative et non un décalage : le bouton change
-                    // vraiment de place dans la pile, il ne se contente pas de
-                    // se dessiner plus bas.
-                    recordingSheet
-                        .padding(.bottom, -sheetDrop)
                 } else {
                     subscriptionRequiredView
                         .frame(maxHeight: .infinity)
@@ -117,20 +117,9 @@ struct RecordTripView: View {
             .frame(maxHeight: .infinity, alignment: .bottom)
             // L'ouverture et la fermeture de la feuille, en un seul endroit :
             // c'est le même changement d'état qui la fait grandir depuis le
-            // bouton, effacer le compteur et retourner le bouton.
+            // bouton et qui retourne celui-ci.
             .animation(Self.sheetAnimation, value: viewModel.isRecording)
             .padding()
-            // La photo se glisse entre le contenu et le fond de l'app : elle
-            // apporte son propre décor, qui recouvre le gris sans le remplacer.
-            // Elle reste là pendant un trajet, sous la feuille — c'est elle
-            // qu'on voit à travers le verre, et sans elle il n'y aurait rien à
-            // réfracter. Seul l'écran d'abonnement expiré s'en passe : il ne
-            // parle plus que de ça.
-            .background {
-                if canRecordTrips {
-                    carBackdrop.ignoresSafeArea()
-                }
-            }
             .appBackground()
             // Cet écran n'a pas de `navigationTitle` — le sélecteur de véhicule
             // occupe le centre de la barre. Sans titre, le mode reste
@@ -248,82 +237,133 @@ struct RecordTripView: View {
         return name.isEmpty ? nil : name
     }
 
-    /// Le compteur : tout ce que la voiture a parcouru, écrit en grand
-    /// au-dessus d'elle.
+    /// Les quatre cases de verre : ce que le véhicule a fait ce mois-ci.
     ///
-    /// Le nombre et son unité sont deux textes et non un seul, parce qu'ils
-    /// n'ont pas la même taille — c'est le nombre qu'on lit d'un coup d'œil, le
-    /// « km » n'est là que pour le qualifier.
-    private var odometer: some View {
-        VStack(alignment: .leading, spacing: 0) {
-            Text("Distance totale")
-                .font(.subheadline)
+    /// Le mois en cours et non le total de toujours — c'est le chiffre qu'on
+    /// vient regarder, celui qui bouge encore. Le total, lui, ne dit plus rien
+    /// après la première année.
+    ///
+    /// Du verre plutôt que les cartes blanches du reste de l'app : elles se
+    /// posent sur la voiture, et c'est ce qu'on veut voir au travers.
+    private var monthlyStats: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            // La période se dit une fois, au-dessus : sans elle, « 165 km » ne
+            // dit pas de quel mois il s'agit, et répéter « ce mois-ci » dans
+            // chacune des quatre cases prendrait la place du chiffre.
+            Text("Ce mois-ci")
+                .font(.caption)
                 .foregroundStyle(.secondary)
-            HStack(alignment: .firstTextBaseline, spacing: 4) {
-                Text(totalDistance.value)
-                    .font(.system(size: odometerSize, weight: .light))
-                    .lineLimit(1)
-                    .minimumScaleFactor(0.4)
-                Text(totalDistance.symbol)
-                    .font(.title2)
-                    .foregroundStyle(.secondary)
+            statGrid
+        }
+        // Les cases prennent la place que la voiture ne prend pas : elles
+        // remplissent la bande entre la salutation et le capot, au lieu de
+        // laisser un vide au milieu de l'écran.
+        .frame(maxHeight: .infinity)
+    }
+
+    private var statGrid: some View {
+        Grid(horizontalSpacing: Self.statSpacing, verticalSpacing: Self.statSpacing) {
+            GridRow {
+                statCard("Distance") { Text(monthlyDistance) }
+                statCard("Coût") { Text(monthlyCost ?? Self.noValue) }
+            }
+            GridRow {
+                statCard("Durée") { Text(monthlyDuration) }
+                // La quatrième attend ce qu'on y mettra : elle garde la place
+                // et l'équilibre de la grille en attendant.
+                statCard(nil) { EmptyView() }
             }
         }
-        .frame(maxWidth: .infinity, alignment: .leading)
     }
 
-    private var totalDistance: (value: String, symbol: String) {
-        TripFormatting.distanceParts(
-            meters: totalDistanceMeters,
-            unit: appServices.unitSettingsService.distanceUnit,
-            locale: locale
-        )
+    /// Une case : le chiffre en grand, son intitulé dessous — la disposition de
+    /// `StatView`, la même que les deux chiffres de la feuille en trajet.
+    private func statCard<Value: View>(
+        _ label: LocalizedStringKey?, @ViewBuilder value: () -> Value
+    ) -> some View {
+        Group {
+            if let label {
+                StatView(label, value: value)
+            } else {
+                // Une case vide garde quand même la hauteur des autres : c'est
+                // la grille qui l'aligne, pas son contenu.
+                StatView("", value: { EmptyView() }).opacity(0)
+            }
+        }
+        .padding(.horizontal, 14)
+        .padding(.vertical, 12)
+        // La case prend toute la hauteur de sa rangée : c'est le verre qui
+        // remplit la bande, pas un vide autour de lui. Le chiffre se pose au
+        // milieu, à gauche.
+        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .leading)
+        .glassEffect(.regular, in: .rect(cornerRadius: Self.statCornerRadius, style: .continuous))
     }
 
-    /// Ce que le véhicule sélectionné a parcouru depuis toujours.
+    /// La voiture, en dessin plutôt qu'en photo de fond : elle est un objet de
+    /// l'écran, posée entre les cases et le bouton, et non un décor derrière
+    /// tout le reste. Le PNG est détouré, donc c'est le dégradé de l'app qu'on
+    /// voit autour d'elle.
+    ///
+    /// Elle déborde des marges de l'écran de quelques points : une voiture
+    /// coupée par le bord a l'air posée devant l'écran plutôt que dedans.
+    private var carIllustration: some View {
+        Image("HomeCar")
+            .resizable()
+            .scaledToFit()
+            // Une largeur, pas de hauteur : la voiture prend celle que ses
+            // proportions lui donnent, et rien de plus. Lui laisser la hauteur
+            // disponible lui ferait garder le vide pour elle, alors que c'est
+            // aux cases de le remplir. `scaledToFit` la fait quand même
+            // rapetisser sur un écran trop court, au lieu de déborder.
+            .frame(maxWidth: .infinity)
+            .padding(.horizontal, -Self.carBleed)
+            // Servie avant les cases : elle prend la hauteur que sa largeur lui
+            // donne, et c'est ce qu'elle laisse qui revient à la grille.
+            .layoutPriority(1)
+            .accessibilityHidden(true)
+    }
+
+    /// Les trajets du mois en cours, pour le véhicule choisi.
     ///
     /// Les trajets confirmés seulement : un trajet détecté que personne n'a
     /// encore validé n'en est pas encore un, et un trajet supprimé n'en est
-    /// plus un. Sans véhicule sélectionné il n'y a rien à distinguer, et le
-    /// compteur additionne alors tout ce qui a été parcouru.
-    private var totalDistanceMeters: Double {
-        trips.reduce(0) { total, trip in
-            guard trip.confirmationStatus == .confirmed else { return total }
-            guard selectedVehicle == nil || trip.vehicle === selectedVehicle else { return total }
-            return total + trip.distanceMeters
+    /// plus un. Sans véhicule sélectionné il n'y a rien à distinguer, et les
+    /// cases additionnent alors tout ce qui a roulé.
+    private var monthlyTrips: [Trip] {
+        guard let month = Calendar.current.dateInterval(of: .month, for: Date()) else { return [] }
+        return trips.filter { trip in
+            trip.confirmationStatus == .confirmed
+                && (selectedVehicle == nil || trip.vehicle === selectedVehicle)
+                && month.contains(trip.startDate)
         }
     }
 
-    /// La photo de la voiture, peinte en fond d'écran.
-    ///
-    /// Le cadrage se calcule au lieu de se régler à l'œil, parce que ce qu'on
-    /// place est la voiture et non l'image : la photo est bien plus grande
-    /// qu'elle, et la marge autour change d'une photo à l'autre. Les deux
-    /// réglages qui comptent portent donc sur la voiture — la largeur qu'elle
-    /// occupe et la hauteur où ses roues se posent — et l'image s'en déduit.
-    private var carBackdrop: some View {
-        GeometryReader { proxy in
-            let imageWidth = proxy.size.width * Self.carWidthRatio / Self.carWidthInImage
-            let imageHeight = imageWidth * Self.carImageAspectRatio
-            let wheels = proxy.size.height * Self.carBaseline
+    private var monthlyDistance: String {
+        TripFormatting.distance(
+            meters: monthlyTrips.reduce(0) { $0 + $1.distanceMeters },
+            unit: appServices.unitSettingsService.distanceUnit,
+            locale: locale,
+            fractionDigits: 0
+        )
+    }
 
-            // Le gris de la photo, étendu au-delà d'elle : selon la taille de
-            // l'écran, le cadrage peut la laisser plus courte, et cette
-            // couleur-là fait que le raccord ne se voit pas. Elle est rangée
-            // dans le catalogue à côté de l'image parce qu'elle est la sienne :
-            // les deux se remplacent ensemble.
-            Color("HomeCarPaper")
-                .overlay(alignment: .topLeading) {
-                    Image("HomeCar")
-                        .resizable()
-                        .frame(width: imageWidth, height: imageHeight)
-                        .offset(
-                            x: (proxy.size.width - imageWidth) / 2,
-                            y: wheels - Self.carBottomInImage * imageHeight
-                        )
-                }
-                .clipped()
+    /// Nil quand aucun trajet du mois n'a de coût estimable — un véhicule sans
+    /// consommation ni prix renseignés n'en donne pas (voir `Trip+Cost`). Un
+    /// zéro se lirait comme « ça n'a rien coûté », ce qui est autre chose.
+    private var monthlyCost: String? {
+        let costs = monthlyTrips.compactMap(\.energyCost)
+        guard !costs.isEmpty else { return nil }
+        return TripFormatting.currency(costs.reduce(0, +), locale: locale)
+    }
+
+    /// Le temps passé au volant ce mois-ci. Un trajet en cours compte jusqu'à
+    /// maintenant, comme partout ailleurs dans l'app.
+    private var monthlyDuration: String {
+        let now = Date()
+        let total = monthlyTrips.reduce(0.0) { total, trip in
+            total + (trip.endDate ?? now).timeIntervalSince(trip.startDate)
         }
+        return TripFormatting.duration(total, locale: locale)
     }
 
     /// La feuille qui s'ouvre autour du bouton le temps d'un trajet.
@@ -509,6 +549,16 @@ struct RecordTripView: View {
         return tabBarSize.height
     }
 
+    /// Ce que la feuille occupe au repos, une fois descendue contre la barre
+    /// d'onglets : la hauteur du bouton, ses deux marges, moins ce qu'elle
+    /// descend. Lue sur la barre d'onglets comme le bouton lui-même, et jamais
+    /// sur l'état en cours — c'est la place à garder sous la voiture, et elle
+    /// ne doit pas changer parce qu'un trajet a démarré.
+    private var restingSheetHeight: CGFloat {
+        (tabBarSize?.height ?? SlideToConfirmButton.fullHeight)
+            + 2 * Self.sheetPadding - Self.restingDrop
+    }
+
     /// `nil` seulement à la toute première image, avant que la feuille ait été
     /// mesurée : le bouton prend alors la largeur qu'on lui propose, qui est
     /// celle qu'il aura de toute façon en trajet.
@@ -576,23 +626,21 @@ struct RecordTripView: View {
     /// n'a pas la même hauteur au repos qu'en trajet, l'arrondi le suit.
     private var sheetCornerRadius: CGFloat { buttonHeight / 2 + Self.sheetPadding }
 
-    /// Les proportions de la photo, 1024 × 1536.
-    private static let carImageAspectRatio: CGFloat = 1536.0 / 1024.0
+    /// L'écart entre les quatre cases, et l'arrondi de leurs coins.
+    private static let statSpacing: CGFloat = 10
+    private static let statCornerRadius: CGFloat = 22
 
-    /// La place de la voiture dans la photo, relevée dessus : elle en occupe un
-    /// peu plus des trois quarts en largeur, et ses roues touchent le sol à
-    /// 58 % de la hauteur. Deux nombres à reprendre en même temps que l'image.
-    private static let carWidthInImage: CGFloat = 0.758
-    private static let carBottomInImage: CGFloat = 0.581
+    /// Ce que la voiture déborde de chaque côté, au-delà de la marge de
+    /// l'écran.
+    ///
+    /// Le PNG porte sa lueur avec lui, et la carrosserie n'en occupe que 85 %
+    /// de la largeur : ce débord-là est celui de la lueur, qui sort du cadre
+    /// pendant que la voiture, elle, va d'un bord à l'autre de l'écran.
+    private static let carBleed: CGFloat = 28
 
-    /// Combien de largeurs d'écran la voiture occupe. Au-delà de 1 les deux
-    /// pare-chocs sortent du cadre, et c'est bien ce qu'on veut : une voiture
-    /// qui déborde a l'air posée devant l'écran plutôt que dedans.
-    private static let carWidthRatio: CGFloat = 1.4
-
-    /// La hauteur d'écran où les roues se posent, comptée depuis le haut :
-    /// juste au-dessus du bouton Démarrer.
-    private static let carBaseline: CGFloat = 0.74
+    /// Ce qui s'écrit à la place d'un chiffre qu'on ne peut pas calculer. Un
+    /// tiret et non un zéro : « rien de connu » n'est pas « rien dépensé ».
+    private static let noValue = "—"
 
     /// Prend toute la place du bouton Démarrer plutôt que de s'ajouter à côté
     /// de lui : le bouton ne ferait plus rien de toute façon, et c'est cet

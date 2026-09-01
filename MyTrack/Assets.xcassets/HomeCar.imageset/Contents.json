@@ -1,17 +1,7 @@
 {
   "images" : [
     {
-      "filename" : "car-light.png",
-      "idiom" : "universal"
-    },
-    {
-      "appearances" : [
-        {
-          "appearance" : "luminosity",
-          "value" : "dark"
-        }
-      ],
-      "filename" : "car-dark.png",
+      "filename" : "home-car.png",
       "idiom" : "universal"
     }
   ],

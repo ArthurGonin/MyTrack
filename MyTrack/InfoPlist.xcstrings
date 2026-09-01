@@ -14,6 +14,7 @@
       }
     },
     "NSLocationAlwaysAndWhenInUseUsageDescription" : {
+      "comment" : "Privacy - Location Always and When In Use Usage Description",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -54,6 +55,7 @@
       }
     },
     "NSLocationWhenInUseUsageDescription" : {
+      "comment" : "Privacy - Location When In Use Usage Description",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -94,6 +96,7 @@
       }
     },
     "NSMotionUsageDescription" : {
+      "comment" : "Privacy - Motion Usage Description",
       "localizations" : {
         "de" : {
           "stringUnit" : {
