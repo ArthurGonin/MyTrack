@@ -96,6 +96,21 @@ nonisolated enum TripFormatting {
             .formatted(.units(allowed: [.hours, .minutes], width: .narrow).locale(locale))
     }
 
+    /// « 18:40 » — la même durée, dite comme une horloge.
+    ///
+    /// Réservée aux tuiles de l'accueil. `duration` y donnerait « 18h 40min »
+    /// en français et « 18 Std. 40 Min. » en allemand, qui ne tiennent pas à la
+    /// taille où le chiffre doit se lire : la tuile le rapetisserait jusqu'à
+    /// lui faire perdre ce qu'on est venu chercher. Ce format-là s'écrit pareil
+    /// dans les six langues, et c'est justement ce qui le rend court.
+    ///
+    /// Il ne se lit que sous son intitulé — « temps de conduite » — sans quoi
+    /// on croirait à une heure de la journée.
+    static func clockDuration(_ interval: TimeInterval, locale: Locale) -> String {
+        Duration.seconds(max(0, interval))
+            .formatted(.time(pattern: .hourMinute).locale(locale))
+    }
+
     /// Les trois formats de date de l'app, regroupés ici pour la même raison
     /// que le reste : `Date.formatted` suit `Locale.current`, donc la langue du
     /// système, et pas celle que l'utilisateur a choisie dans l'app.
