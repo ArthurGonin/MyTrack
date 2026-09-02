@@ -22,12 +22,20 @@
 //  se poursuit sans elle — voir `VehiclePhotoProcessingService` — et se raconte
 //  dans une pastille en haut de l'app.
 //
-//  Elle descend jusqu'au bord de l'iPhone, et ses coins du bas épousent ceux
-//  de l'écran : `ConcentricRectangle` prend l'arrondi du matériel et lui retire
-//  la marge, de sorte que les deux courbes restent parallèles quel que soit
-//  l'appareil. Un rayon écrit en dur aurait été juste sur un modèle et faux sur
-//  tous les autres — et sur un iPhone à bouton, dont l'écran a des coins
-//  droits, c'est le minimum demandé qui s'applique.
+//  Elle va jusqu'aux bords de l'écran en bas, à gauche et à droite, et ses
+//  coins du bas sont carrés : c'est l'écran lui-même qui les arrondit. Ils
+//  épousent donc exactement le matériel, sur n'importe quel iPhone, sans qu'un
+//  seul rayon soit écrit ici.
+//
+//  Ce n'est pas le premier essai. Une carte flottant à dix points du bord avait
+//  meilleure allure, mais son coin ne pouvait pas suivre celui de l'écran :
+//  `ConcentricRectangle` se raccorde au contenant le plus proche, et ici ce
+//  contenant est la feuille qui porte la liste des véhicules, non l'écran. Le
+//  coin obtenu mesurait 38 points là où l'écran en fait 61 — visiblement plus
+//  serré, et l'écart se voyait d'autant plus près du coin. Aucune API publique
+//  ne donne l'arrondi de l'écran pour corriger le tir, et un nombre en dur
+//  serait faux partout ailleurs : les iPhone vont de 0 (ceux à bouton) à une
+//  soixantaine de points. Toucher le bord est la seule façon de l'épouser.
 //
 //  La carte est au format exact du cliché (3:4, celui de `sessionPreset =
 //  .photo`). Ce n'est pas une coquetterie : plein écran, l'aperçu rognait ce
@@ -72,11 +80,22 @@ struct VehiclePhotoCaptureView: View {
     /// trop tôt.
     @State private var dragOffset: CGFloat = 0
 
-    /// La marge autour de la carte — la même en bas que sur les côtés, sans
-    /// quoi les coins du bas ne pourraient pas rester parallèles à ceux de
-    /// l'écran — et l'arrondi de ses coins du haut.
-    private static let margin: CGFloat = 10
+    /// L'arrondi des coins du haut. Ceux du bas n'en ont pas : ils sont taillés
+    /// par l'écran.
     private static let corner: CGFloat = 34
+
+    /// Le retrait des commandes depuis les côtés de la carte.
+    ///
+    /// Plus large que les seize points d'usage, parce que la carte touche
+    /// maintenant les bords : au ras du coin, l'écran rentre d'une vingtaine de
+    /// points, et une pastille posée à seize points s'y ferait rogner.
+    private static let controlInset: CGFloat = 26
+
+    /// Leur retrait depuis le bas, qui n'obéit pas à la même contrainte : c'est
+    /// la barre d'accueil qu'il faut dégager, pas la courbe du coin. D'où
+    /// l'encoche elle-même, et un plancher pour les iPhone qui n'en ont pas —
+    /// des commandes collées au bord y seraient tout aussi mal posées.
+    private static var bottomControlInset: CGFloat { max(bottomInset, 24) }
     /// Le format d'un cliché : `sessionPreset = .photo` rend du 3:4, et
     /// l'aperçu le prend tel quel.
     private static let aspectRatio: CGFloat = 3.0 / 4.0
@@ -103,8 +122,6 @@ struct VehiclePhotoCaptureView: View {
 
     var body: some View {
         viewfinder
-            .padding(.horizontal, Self.margin)
-            .padding(.bottom, Self.margin)
             // Descendue jusqu'au bord du matériel, par-dessus la barre
             // d'accueil. Un décalage et non `ignoresSafeArea` : celui-ci
             // n'agit que sur une vue qui remplit son contenant, et la carte,
@@ -165,16 +182,18 @@ struct VehiclePhotoCaptureView: View {
         .environment(\.colorScheme, .dark)
     }
 
-    /// Le haut à l'arrondi de l'app, le bas à celui de l'iPhone.
+    /// Le haut arrondi, le bas carré — et c'est l'écran qui le taille.
     ///
-    /// `.concentric` lit l'arrondi du contenant — l'écran — et lui retire la
-    /// marge, ce qui garde les deux courbes parallèles. Le minimum sert aux
-    /// appareils dont l'écran n'est pas arrondi : les coins du bas y valent
-    /// alors ceux du haut, plutôt que de se casser à angle droit.
+    /// Des coins droits qui débordent de la courbe du matériel : ce qui reste
+    /// visible est exactement la forme de l'iPhone, y compris sur ceux dont
+    /// l'écran a de vrais angles droits, où il n'y a alors rien à tailler.
     private static var cardShape: some Shape {
-        ConcentricRectangle(
-            uniformTopCorners: .fixed(corner),
-            uniformBottomCorners: .concentric(minimum: .fixed(corner))
+        UnevenRoundedRectangle(
+            topLeadingRadius: corner,
+            bottomLeadingRadius: 0,
+            bottomTrailingRadius: 0,
+            topTrailingRadius: corner,
+            style: .continuous
         )
     }
 
@@ -199,8 +218,8 @@ struct VehiclePhotoCaptureView: View {
                 }
             }
         }
-        .padding(.horizontal, 16)
-        .padding(.bottom, 16)
+        .padding(.horizontal, Self.controlInset)
+        .padding(.bottom, Self.bottomControlInset)
     }
 
     /// Le déclencheur des appareils photo d'iOS : un disque blanc cerclé de
