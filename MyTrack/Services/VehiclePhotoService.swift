@@ -12,7 +12,9 @@
 //
 //  Deux voies pour l'atteindre : le proxy, qui détient la clé, et — en
 //  compilation Debug seulement — un appel direct pour essayer sans rien
-//  déployer. Voir `StudioCutoutConfiguration`.
+//  déployer. Voir `StudioCutoutConfiguration`. Les deux rendent la même chose,
+//  le JSON d'OpenAI : le proxy relaie sans lire, pour ne pas dépenser en
+//  décodage le peu de processeur que son hébergeur lui accorde.
 //
 //  Ce qui revient passe ensuite par le normalisateur : le modèle cadre au
 //  jugé, et c'est le code qui garantit que toutes les voitures se posent au
@@ -69,7 +71,8 @@ final class VehiclePhotoService {
         throw VehiclePhotoError.notConfigured
     }
 
-    /// Le chemin de production : le proxy rend le PNG déjà détouré.
+    /// Le chemin de production : le proxy pose la clé sur l'appel et rend la
+    /// réponse d'OpenAI sans y toucher.
     private func viaProxy(_ jpeg: Data) async throws -> CGImage {
         guard let url = StudioCutoutConfiguration.endpointURL else {
             throw VehiclePhotoError.notConfigured
@@ -86,7 +89,7 @@ final class VehiclePhotoService {
         )
         // Ce que le proxy compte pour plafonner : un appareil, pas une personne.
         request.setValue(
-            await UIDevice.current.identifierForVendor?.uuidString ?? "inconnu",
+            UIDevice.current.identifierForVendor?.uuidString ?? "inconnu",
             forHTTPHeaderField: "X-MyTrack-Device"
         )
         request.httpBody = Self.multipartBody(
@@ -98,9 +101,25 @@ final class VehiclePhotoService {
             throw VehiclePhotoError.serviceUnavailable
         }
         if status == 429 { throw VehiclePhotoError.quotaReached }
-        guard status == 200, let image = UIImage(data: data)?.cgImage else {
-            throw VehiclePhotoError.serviceUnavailable
+        guard status == 200 else { throw VehiclePhotoError.serviceUnavailable }
+        return try Self.image(fromOpenAIPayload: data)
+    }
+
+    /// L'image que porte une réponse d'OpenAI.
+    ///
+    /// Le modèle la rend en base64 dans du JSON, jamais en octets bruts ni
+    /// derrière une adresse. Les deux chemins reçoivent donc le même corps, et
+    /// le lisent ici.
+    private static func image(fromOpenAIPayload data: Data) throws -> CGImage {
+        struct Payload: Decodable {
+            struct Image: Decodable { let b64_json: String? }
+            let data: [Image]
         }
+        guard let payload = try? JSONDecoder().decode(Payload.self, from: data),
+              let base64 = payload.data.first?.b64_json,
+              let bytes = Data(base64Encoded: base64),
+              let image = UIImage(data: bytes)?.cgImage
+        else { throw VehiclePhotoError.processingFailed }
         return image
     }
 
@@ -122,7 +141,7 @@ final class VehiclePhotoService {
         request.httpBody = Self.multipartBody(
             boundary: boundary,
             parts: [
-                .field(name: "model", value: "gpt-image-1"),
+                .field(name: "model", value: "gpt-image-2"),
                 .file(name: "image", jpeg: jpeg),
                 .field(name: "prompt", value: StudioCutoutConfiguration.prompt),
                 .field(name: "size", value: "1536x1024"),
@@ -145,17 +164,7 @@ final class VehiclePhotoService {
             )
             throw status == 429 ? VehiclePhotoError.quotaReached : VehiclePhotoError.serviceUnavailable
         }
-
-        struct Payload: Decodable {
-            struct Image: Decodable { let b64_json: String? }
-            let data: [Image]
-        }
-        guard let payload = try? JSONDecoder().decode(Payload.self, from: data),
-              let base64 = payload.data.first?.b64_json,
-              let bytes = Data(base64Encoded: base64),
-              let image = UIImage(data: bytes)?.cgImage
-        else { throw VehiclePhotoError.processingFailed }
-        return image
+        return try Self.image(fromOpenAIPayload: data)
     }
     #endif
 
@@ -169,6 +178,11 @@ final class VehiclePhotoService {
         do {
             return try await URLSession.shared.data(for: request)
         } catch {
+            // Renoncer n'est pas une panne. `URLSession` rend l'annulation sous
+            // son propre nom (`URLError.cancelled`) ; la rendre ici telle
+            // qu'elle est évite que l'écran annonce « le service n'a pas
+            // répondu » à quelqu'un qui vient d'appuyer sur « Annuler ».
+            if Task.isCancelled { throw CancellationError() }
             throw VehiclePhotoError.serviceUnavailable
         }
     }

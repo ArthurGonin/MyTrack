@@ -12,12 +12,23 @@
 //  `stop()` en partant. Une session laissée tourner garde la caméra allumée et
 //  la pastille verte avec.
 //
+//  Le déclenchement se joue à deux : le contrôleur, qui vit sur le fil principal
+//  comme tout ce qui touche à l'interface, et un délégué à part qui reçoit la
+//  photo — parce qu'AVFoundation ne rappelle pas sur ce fil-là. Voir
+//  `PhotoCaptureDelegate`.
+//
 
-import AVFoundation
+// `@preconcurrency` : AVFoundation n'est pas encore annoté pour la concurrence
+// stricte, et ses objets de session y passent pour impartageables alors qu'ils
+// sont faits pour être menés depuis une file de service. Sans lui, la ligne qui
+// confie la prise à `queue` se plaint de l'`AVCapturePhotoOutput` qu'elle
+// emporte.
+@preconcurrency import AVFoundation
+import Synchronization
 import SwiftUI
 
 @Observable
-final class CameraController: NSObject, AVCapturePhotoCaptureDelegate {
+final class CameraController {
     /// Ce que l'aperçu affiche. Nue au premier affichage : c'est `start()` qui
     /// la garnit, une fois l'autorisation obtenue.
     let session = AVCaptureSession()
@@ -30,7 +41,15 @@ final class CameraController: NSObject, AVCapturePhotoCaptureDelegate {
     /// La session se configure et démarre hors du fil principal : `startRunning`
     /// bloque le temps que la caméra s'ouvre, et l'interface se figerait avec.
     private let queue = DispatchQueue(label: "MyTrack.camera")
-    private var captureContinuation: CheckedContinuation<UIImage, Error>?
+
+    /// Les prises en cours, chacune avec le délégué qui l'attend.
+    ///
+    /// C'est ici qu'elles tiennent en vie : `AVCapturePhotoOutput` ne retient
+    /// son délégué que faiblement, et un délégué désalloué est une photo qui ne
+    /// revient jamais — l'écran resterait sur « Analyse du véhicule… » sans
+    /// fin. Rangées sous l'identifiant que porte chaque réglage, pour que deux
+    /// appuis rapprochés ne se chassent pas l'un l'autre.
+    private var pendingCaptures: [Int64: PhotoCaptureDelegate] = [:]
 
     func start() async {
         // L'autorisation ne se demande qu'à un appareil qui a de quoi filmer :
@@ -59,28 +78,72 @@ final class CameraController: NSObject, AVCapturePhotoCaptureDelegate {
     /// La photo prise, une fois que le capteur a rendu sa copie.
     func capturePhoto() async throws -> UIImage {
         try await withCheckedThrowingContinuation { continuation in
-            captureContinuation = continuation
+            let settings = AVCapturePhotoSettings()
+            let identifier = settings.uniqueID
+            let delegate = PhotoCaptureDelegate { [weak self] result in
+                // Le délégué a fini de servir ; le contrôleur peut le lâcher.
+                // Repris dans une constante d'abord : une référence faible reste
+                // une variable, et une variable ne se relit pas depuis un autre
+                // fil.
+                if let self {
+                    Task { @MainActor in self.pendingCaptures[identifier] = nil }
+                }
+                continuation.resume(with: result)
+            }
+            pendingCaptures[identifier] = delegate
             queue.async { [output] in
-                output.capturePhoto(with: AVCapturePhotoSettings(), delegate: self)
+                output.capturePhoto(with: settings, delegate: delegate)
             }
         }
     }
 
+    /// La session montée, prête à tourner.
+    ///
+    /// Un `commitConfiguration` par chemin, et pas un de plus : la configuration
+    /// se referme avant `startRunning`, qui lève une `NSGenericException` s'il en
+    /// reste une d'ouverte (`AVCaptureSession.h`). C'est aussi pourquoi il n'y a
+    /// pas de `defer` ici — il aurait fermé une seconde fois, après coup, ce qui
+    /// était déjà refermé.
     private func configureSession() -> Bool {
         session.beginConfiguration()
         session.sessionPreset = .photo
-        defer { session.commitConfiguration() }
 
         guard let device = AVCaptureDevice.default(for: .video),
               let input = try? AVCaptureDeviceInput(device: device),
               session.canAddInput(input), session.canAddOutput(output)
-        else { return false }
+        else {
+            session.commitConfiguration()
+            return false
+        }
 
         session.addInput(input)
         session.addOutput(output)
         session.commitConfiguration()
+
         session.startRunning()
         return true
+    }
+}
+
+/// Le receveur de la photo, tenu à part du contrôleur.
+///
+/// À part, parce qu'AVFoundation appelle ses méthodes « on a common dispatch
+/// queue — not necessarily the main queue », dit l'en-tête d'`AVCapturePhotoOutput`.
+/// Le contrôleur, lui, vit sur le fil principal : lui faire porter ces appels-là
+/// était une course de données — deux fils sur la même continuation — et le mode
+/// Swift 6 refuse d'ailleurs de la compiler.
+///
+/// `nonisolated` pour la même raison : sans ce mot, le projet le rattacherait au
+/// fil principal comme tout le reste (`SWIFT_DEFAULT_ACTOR_ISOLATION`).
+private nonisolated final class PhotoCaptureDelegate: NSObject, AVCapturePhotoCaptureDelegate, Sendable {
+    /// Ce qu'il reste à faire de la photo, vidé au premier appel : reprendre
+    /// deux fois la même continuation ferme l'app, et rien ne promet
+    /// qu'AVFoundation n'appellera qu'une fois.
+    private let pending: Mutex<(@Sendable (Result<UIImage, Error>) -> Void)?>
+
+    init(onPhoto: @escaping @Sendable (Result<UIImage, Error>) -> Void) {
+        pending = Mutex(onPhoto)
+        super.init()
     }
 
     func photoOutput(
@@ -88,15 +151,22 @@ final class CameraController: NSObject, AVCapturePhotoCaptureDelegate {
         didFinishProcessingPhoto photo: AVCapturePhoto,
         error: Error?
     ) {
-        let continuation = captureContinuation
-        captureContinuation = nil
-        if let error {
-            continuation?.resume(throwing: error)
-        } else if let data = photo.fileDataRepresentation(), let image = UIImage(data: data) {
-            continuation?.resume(returning: image)
-        } else {
-            continuation?.resume(throwing: VehiclePhotoError.processingFailed)
+        let result: Result<UIImage, Error> =
+            if let error {
+                .failure(error)
+            } else if let data = photo.fileDataRepresentation(), let image = UIImage(data: data) {
+                .success(image)
+            } else {
+                .failure(VehiclePhotoError.processingFailed)
+            }
+
+        // Repris hors du verrou : ce que fait l'appelant ne doit pas se dérouler
+        // pendant qu'il est tenu.
+        let onPhoto = pending.withLock { pending in
+            defer { pending = nil }
+            return pending
         }
+        onPhoto?(result)
     }
 }
 

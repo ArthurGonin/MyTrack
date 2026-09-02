@@ -6,4 +6,4 @@ compatibility_date = "2026-01-01"
 # « wrangler kv namespace create QUOTA » affiche — à recopier ici.
 [[kv_namespaces]]
 binding = "QUOTA"
-id = "À REMPLACER"
+id = "dc11363f1db948ac918c13d306840c78"

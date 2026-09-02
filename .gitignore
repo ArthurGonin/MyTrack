@@ -1,0 +1,2 @@
+# Le cache local de wrangler, refait à chaque déploiement.
+.wrangler/

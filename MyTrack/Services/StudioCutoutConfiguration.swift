@@ -27,10 +27,10 @@ import Foundation
 enum StudioCutoutConfiguration {
     /// L'adresse du proxy, par exemple
     /// « https://mytrack-studio.votre-compte.workers.dev ».
-    static let endpoint = ""
+    static let endpoint = "https://mytrack-studio.studio-cutout.workers.dev"
 
     /// Le même mot que celui posé côté proxy sous `MYTRACK_SHARED_SECRET`.
-    static let sharedSecret = ""
+    static let sharedSecret = "f5341d8941d762780049fc3ee1bcf1d299ea9f6e4c77b7e4"
 
     /// Vrai quand les deux sont renseignés. Un seul des deux ne sert à rien :
     /// le proxy refuserait l'appel, et l'app aurait attendu pour rien.

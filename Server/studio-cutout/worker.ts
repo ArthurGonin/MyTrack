@@ -8,6 +8,12 @@
  *
  * Le prompt aussi vit ici, et c'est délibéré : l'améliorer ne demandera pas de
  * republier sur l'App Store, juste un « wrangler deploy ».
+ *
+ * Il ne lit jamais l'image qu'il transporte. La réponse d'OpenAI repart telle
+ * quelle, en flux, et c'est l'app qui la décode. Ce n'est pas de la paresse :
+ * le plan gratuit de Cloudflare accorde dix millisecondes de processeur par
+ * requête — l'attente du réseau n'y compte pas, mais décoder plusieurs
+ * mégaoctets de base64, si. Un relais qui ne fait que relayer en consomme deux.
  */
 
 export interface Env {
@@ -86,7 +92,7 @@ export default {
     }
 
     const form = new FormData();
-    form.append("model", "gpt-image-1");
+    form.append("model", "gpt-image-2");
     form.append("image", photo, "photo.jpg");
     form.append("prompt", PROMPT);
     form.append("size", "1536x1024");
@@ -104,19 +110,16 @@ export default {
       return new Response(await upstream.text(), { status: 502 });
     }
 
-    const payload = (await upstream.json()) as { data?: { b64_json?: string }[] };
-    const base64 = payload.data?.[0]?.b64_json;
-    if (!base64) {
-      return new Response("No image returned", { status: 502 });
-    }
-
     // Le compteur ne monte qu'une fois l'image obtenue : un appel raté ne doit
-    // pas coûter son quota à quelqu'un.
+    // pas coûter son quota à quelqu'un. Le statut suffit à en juger — OpenAI ne
+    // rend 200 que lorsqu'il a produit une image.
     await env.QUOTA.put(quotaKey, String(used + 1), { expirationTtl: 60 * 60 * 26 });
 
-    const bytes = Uint8Array.from(atob(base64), (character) => character.charCodeAt(0));
-    return new Response(bytes, {
-      headers: { "Content-Type": "image/png", "Cache-Control": "no-store" },
+    // Le corps est passé sans être lu : c'est ce qui garde le proxy dans son
+    // budget de processeur, et l'app sait déjà décoder ce JSON — c'est celui
+    // qu'elle reçoit en mode debug, quand elle appelle OpenAI elle-même.
+    return new Response(upstream.body, {
+      headers: { "Content-Type": "application/json", "Cache-Control": "no-store" },
     });
   },
 };

@@ -9,6 +9,10 @@
 //  véhicule. Pas d'écran de validation entre les deux — un détourage raté se
 //  reprend depuis la liste des véhicules, en touchant la vignette.
 //
+//  L'attente n'enferme personne : « Annuler » l'interrompt et rend le cadrage.
+//  Le service met dix à trente secondes, davantage sous charge — un plein écran
+//  sans porte de sortie serait un écran bloqué.
+//
 //  La silhouette de guidage est l'illustration de l'accueil elle-même, posée en
 //  transparence : elle montre exactement le cadrage visé — la voiture de face,
 //  occupant la largeur — et elle suivra le dessin si celui-ci change un jour.
@@ -19,6 +23,7 @@
 //
 
 import PhotosUI
+import SwiftData
 import SwiftUI
 
 struct VehiclePhotoCaptureView: View {
@@ -34,6 +39,8 @@ struct VehiclePhotoCaptureView: View {
     @State private var capturedPhoto: UIImage?
     @State private var libraryItem: PhotosPickerItem?
     @State private var failure: Failure?
+    /// L'analyse en cours, tenue pour pouvoir y renoncer.
+    @State private var analysis: Task<Void, Never>?
 
     /// Ce qui a pu manquer, dit à l'utilisateur plutôt qu'au journal. Le
     /// distinguo compte : « réessayez demain » et « recadrez la voiture » ne
@@ -206,8 +213,20 @@ struct VehiclePhotoCaptureView: View {
                 .ignoresSafeArea()
                 .overlay(.black.opacity(0.25))
             PhotoAnalysisOverlay().ignoresSafeArea()
-            VStack {
+            VStack(spacing: 0) {
+                // À la place exacte de celui du cadrage, mais pas dans le même
+                // sens : ici on renonce à l'analyse et on revient viser. Qui
+                // voulait sortir ferme d'un second appui.
+                HStack {
+                    Button("Annuler") { cancelAnalysis() }
+                        .foregroundStyle(.white)
+                    Spacer()
+                }
+                .padding(.horizontal, 20)
+                .padding(.top, 8)
+
                 Spacer()
+
                 HStack(spacing: 10) {
                     ProgressView().tint(.white)
                     Text("Analyse du véhicule…")
@@ -242,15 +261,22 @@ struct VehiclePhotoCaptureView: View {
         process(photo)
     }
 
-    /// La photo passe à l'analyse, et n'en revient que rangée sur le véhicule.
+    /// La photo passe à l'analyse, et n'en revient que rangée sur le véhicule —
+    /// ou pas du tout, si on a renoncé entre-temps.
     private func process(_ photo: UIImage) {
         capturedPhoto = photo
-        Task {
+        analysis = Task {
             do {
                 let data = try await appServices.vehiclePhotoService.processedPhoto(from: photo)
+                // L'appel a beau être revenu, l'envie a pu passer : rien ne se
+                // range sur un véhicule que personne n'attend plus.
+                try Task.checkCancellation()
                 vehicle.photoData = data
                 modelContext.saveOrLog()
                 dismiss()
+            } catch is CancellationError {
+                // Renoncer n'est pas échouer : `cancelAnalysis` a déjà rendu le
+                // cadrage, il n'y a rien à annoncer.
             } catch {
                 // Retour au cadrage : l'alerte se lit par-dessus l'aperçu, et le
                 // déclencheur est déjà sous le pouce pour reprendre le cliché.
@@ -258,5 +284,20 @@ struct VehiclePhotoCaptureView: View {
                 failure = Failure(error)
             }
         }
+    }
+
+    /// L'analyse abandonnée, et le cadrage rendu.
+    ///
+    /// La tâche annulée, l'appel en cours se referme de lui-même : `URLSession`
+    /// écoute l'annulation, et le service la laisse remonter telle quelle plutôt
+    /// que de la faire passer pour une panne.
+    ///
+    /// La tâche n'est pas remise à nil par elle-même en finissant : elle
+    /// effacerait celle d'une reprise entamée pendant qu'elle se terminait, et
+    /// avec elle le moyen d'y renoncer.
+    private func cancelAnalysis() {
+        analysis?.cancel()
+        analysis = nil
+        capturedPhoto = nil
     }
 }
