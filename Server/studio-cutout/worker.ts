@@ -98,7 +98,7 @@ export default {
     form.append("size", "1536x1024");
     form.append("background", "transparent");
     form.append("output_format", "png");
-    form.append("quality", "high");
+    form.append("quality", "medium");
     form.append("n", "1");
 
     const upstream = await fetch("https://api.openai.com/v1/images/edits", {
