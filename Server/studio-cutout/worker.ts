@@ -98,7 +98,13 @@ export default {
     form.append("size", "1536x1024");
     form.append("background", "transparent");
     form.append("output_format", "png");
-    form.append("quality", "medium");
+    // « low » plutôt que « medium » : huit fois moins cher ($0,005 contre $0,041
+    // l'image en 1536 × 1024, tarif du 2 septembre 2026) pour un dessin qui ne
+    // dépasse jamais 1290 pixels de large sur l'iPhone le plus grand. Le seul
+    // risque est ailleurs que dans le détail : des bords d'alpha qui bavent
+    // fausseraient la mesure du normalisateur autant qu'ils se verraient sur
+    // fond noir. C'est ce qu'il faut regarder si on revient à « medium ».
+    form.append("quality", "low");
     form.append("n", "1");
 
     const upstream = await fetch("https://api.openai.com/v1/images/edits", {

@@ -147,7 +147,7 @@ final class VehiclePhotoService {
                 .field(name: "size", value: "1536x1024"),
                 .field(name: "background", value: "transparent"),
                 .field(name: "output_format", value: "png"),
-                .field(name: "quality", value: "medium"),
+                .field(name: "quality", value: "low"),
                 .field(name: "n", value: "1"),
             ]
         )

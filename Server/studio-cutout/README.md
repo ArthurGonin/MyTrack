@@ -101,7 +101,7 @@ Confronté à la documentation d'OpenAI le **2 septembre 2026** :
 
 - `gpt-image-1`, sur quoi ce proxy était écrit, **s'arrête le 23 octobre 2026**. D'où
   `gpt-image-2`, son remplaçant désigné, ici comme dans le mode debug de l'app.
-- Les paramètres tiennent tels quels : `size=1536x1024`, `quality=high`, `background=transparent`,
+- Les paramètres tiennent tels quels : `size=1536x1024`, `quality=low`, `background=transparent`,
   `output_format=png`. Le fond transparent demande toujours du PNG (ou du WebP), jamais du JPEG.
 - `input_fidelity` n'a pas à être envoyé : `gpt-image-2` ne le laisse pas régler.
 
