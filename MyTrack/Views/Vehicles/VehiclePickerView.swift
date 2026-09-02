@@ -37,14 +37,10 @@ struct VehiclePickerView: View {
     @Query(sort: \Vehicle.name) private var vehicles: [Vehicle]
     @State private var isPresentingAddVehicle = false
     @State private var vehicleBeingEdited: Vehicle?
-    /// Le véhicule qu'on s'apprête à photographier. Plein écran et non feuille :
-    /// l'appareil photo prend tout, et le cadrage a besoin de toute la place.
+    /// Le véhicule qu'on s'apprête à photographier. Ni feuille ni plein écran :
+    /// la carte de l'appareil photo se pose sur cette liste, qui reste entière
+    /// et lisible au-dessus d'elle — voir `VehiclePhotoCaptureView`.
     @State private var vehicleBeingPhotographed: Vehicle?
-    /// Ce qui relie la vignette d'une ligne à l'écran d'appareil photo qu'elle
-    /// ouvre : l'une grandit en l'autre, et rétrécit pour revenir. C'est la
-    /// transition du système (`.zoom`), celle des photos et des applications
-    /// qui s'ouvrent depuis leur icône.
-    @Namespace private var photoTransition
 
     private var viewModel: VehicleListViewModel {
         VehicleListViewModel(vehicleService: appServices.vehicleService)
@@ -96,12 +92,6 @@ struct VehiclePickerView: View {
             .sheet(item: $vehicleBeingEdited) { vehicle in
                 EditVehicleView(vehicle: vehicle)
             }
-            .fullScreenCover(item: $vehicleBeingPhotographed) { vehicle in
-                VehiclePhotoCaptureView(vehicle: vehicle)
-                    .navigationTransition(
-                        .zoom(sourceID: vehicle.persistentModelID, in: photoTransition)
-                    )
-            }
             // Posée sur le contenu et non sur la pile : sur la pile, la
             // pastille viendrait se lire par-dessus le titre « Véhicules ».
             // Ici plutôt qu'à la seule racine de l'app, parce que c'est cette
@@ -109,6 +99,23 @@ struct VehiclePickerView: View {
             // surimpression posée dessous ne la traverserait pas.
             .vehiclePhotoToast()
         }
+        // Sur la pile et non sur son contenu, cette fois : la carte se pose au
+        // bas de la feuille entière, barre de navigation comprise. Elle n'occupe
+        // que sa propre place — la liste au-dessus reste au doigt.
+        .overlay(alignment: .bottom) {
+            if let vehicle = vehicleBeingPhotographed {
+                VehiclePhotoCaptureView(vehicle: vehicle, onClose: closeCamera)
+                    .transition(.move(edge: .bottom).combined(with: .opacity))
+            }
+        }
+    }
+
+    private func openCamera(for vehicle: Vehicle) {
+        withAnimation(VehiclePhotoCaptureView.motion) { vehicleBeingPhotographed = vehicle }
+    }
+
+    private func closeCamera() {
+        withAnimation(VehiclePhotoCaptureView.motion) { vehicleBeingPhotographed = nil }
     }
 
     /// « Tous les véhicules » : la ligne du haut, sans ⓘ — il n'y a pas de
@@ -200,7 +207,7 @@ struct VehiclePickerView: View {
     private func photoButton(for vehicle: Vehicle) -> some View {
         if let data = vehicle.photoData, let photo = UIImage(data: data) {
             Button {
-                vehicleBeingPhotographed = vehicle
+                openCamera(for: vehicle)
             } label: {
                 Image(uiImage: photo)
                     .resizable()
@@ -210,7 +217,6 @@ struct VehiclePickerView: View {
             }
             .buttonStyle(.plain)
             .accessibilityLabel("Reprendre la photo")
-            .matchedTransitionSource(id: vehicle.persistentModelID, in: photoTransition)
             .contextMenu {
                 Button("Supprimer la photo", systemImage: "trash", role: .destructive) {
                     vehicle.photoData = nil
@@ -219,7 +225,7 @@ struct VehiclePickerView: View {
             }
         } else {
             Button {
-                vehicleBeingPhotographed = vehicle
+                openCamera(for: vehicle)
             } label: {
                 Image(systemName: "camera")
                     .foregroundStyle(.tint)
@@ -227,7 +233,6 @@ struct VehiclePickerView: View {
             }
             .buttonStyle(.plain)
             .accessibilityLabel("Photographier le véhicule")
-            .matchedTransitionSource(id: vehicle.persistentModelID, in: photoTransition)
         }
     }
 

@@ -2,31 +2,42 @@
 //  VehiclePhotoCaptureView.swift
 //  MyTrack
 //
-//  L'écran qui prend le véhicule en photo. Il ne fait plus que ça.
+//  L'appareil photo du véhicule : une carte qui monte par-dessus l'app.
 //
-//  Un seul temps désormais : on cadre, on déclenche, l'écran se referme. Le
-//  détourage se poursuit sans lui — voir `VehiclePhotoProcessingService` — et
-//  se raconte dans une pastille en haut de l'app. Il n'y a donc plus d'écran
-//  d'attente : dix à trente secondes devant un voile animé, c'est dix à trente
-//  secondes pendant lesquelles l'app est prise en otage pour une photo de
-//  voiture.
+//  Elle ne prend pas l'écran. L'app reste là, entière et vivante autour d'elle :
+//  visible, non voilée, et toujours au doigt — la carte ne reçoit les touchers
+//  que là où elle est. Prendre une photo de sa voiture ne justifie pas de faire
+//  disparaître tout le reste.
 //
-//  L'aperçu est une carte à coins arrondis posée sur du noir, au format exact
-//  du cliché (3:4, celui de `sessionPreset = .photo`). Ce format n'est pas une
-//  coquetterie : plein écran, l'aperçu rognait ce que le capteur voyait
-//  vraiment, et on cadrait donc à l'aveugle une photo plus large que ce qu'on
-//  avait sous les yeux. Ici, ce qu'on voit est ce qui part.
+//  Une surimpression et non une feuille, alors que la feuille serait le geste
+//  système. Trois choses l'ont écartée : elle voile ce qu'elle recouvre (et
+//  dévoiler, côté système, c'est la même manette que rendre traversable), elle
+//  fait reculer et rétrécir la feuille d'où elle sort — la liste des véhicules
+//  se serait mise à flotter en petit derrière l'appareil photo —, et elle
+//  dessine son propre cadre, avec son ombre et son arrondi, sous celui de la
+//  carte. Trois cadres pour une seule carte. Ici, ce qui est derrière ne bouge
+//  pas d'un point.
 //
-//  Plus de silhouette de voiture en surimpression. Elle salissait l'aperçu
-//  pour redire ce que la situation dit déjà : on photographie une voiture, on
-//  se met devant. Une ligne de texte au-dessus de la carte suffit à préciser
-//  « de face », et elle ne recouvre rien.
+//  Un seul temps : on cadre, on déclenche, la feuille redescend. Le détourage
+//  se poursuit sans elle — voir `VehiclePhotoProcessingService` — et se raconte
+//  dans une pastille en haut de l'app.
 //
-//  Les trois commandes sont des pastilles de verre posées dans le bas de
-//  l'aperçu : fermer à gauche, déclencher au centre, flash et photothèque à
-//  droite. Le déclencheur est dans une pile à part pour rester au milieu de la
-//  carte quoi qu'il arrive à ses voisins — un côté à un bouton, l'autre à deux,
-//  une rangée simple l'aurait décalé.
+//  La carte est au format exact du cliché (3:4, celui de `sessionPreset =
+//  .photo`). Ce n'est pas une coquetterie : plein écran, l'aperçu rognait ce
+//  que le capteur voyait vraiment, et on cadrait donc à l'aveugle une photo
+//  plus large que celle qu'on avait sous les yeux. Ici, ce qu'on voit est ce
+//  qui part.
+//
+//  Rien par-dessus l'aperçu : ni silhouette de voiture, ni consigne, ni nom du
+//  véhicule. On vient de toucher sa ligne, on sait de quelle voiture il s'agit,
+//  et on a compris qu'on la photographie de face. Tout ce qui s'ajouterait là
+//  salirait la seule chose qu'on est venu regarder.
+//
+//  Les commandes sont des pastilles de verre dans le bas de l'aperçu : fermer à
+//  gauche, déclencher au centre, flash et photothèque à droite. Le déclencheur
+//  est dans une pile à part pour rester au milieu de la carte quoi qu'il arrive
+//  à ses voisins — un côté à un bouton, l'autre à deux, une rangée simple
+//  l'aurait décalé.
 //
 //  Sans appareil photo — le simulateur — la photothèque prend le relais. Ce
 //  n'est pas qu'une commodité de développement : c'est aussi la porte de sortie
@@ -38,16 +49,21 @@ import SwiftUI
 
 struct VehiclePhotoCaptureView: View {
     let vehicle: Vehicle
+    /// Ce que fait l'écran hôte pour retirer la carte. À lui de l'animer : la
+    /// carte ne connaît ni l'état qui la porte ni le ressort qui la remonte.
+    let onClose: () -> Void
 
     @Environment(AppServices.self) private var appServices
-    @Environment(\.dismiss) private var dismiss
 
     @State private var camera = CameraController()
     @State private var libraryItem: PhotosPickerItem?
     @State private var hasCaptureFailed = false
     /// Monte à chaque déclenchement, pour que le doigt sente la prise. La photo
-    /// elle-même ne se voit pas partir : l'écran se ferme dans la seconde.
+    /// elle-même ne se voit pas partir : la carte redescend dans la seconde.
     @State private var shutterCount = 0
+    /// Ce que le doigt a déjà emporté vers le bas. Rendu à zéro si on lâche
+    /// trop tôt.
+    @State private var dragOffset: CGFloat = 0
 
     /// La marge autour de la carte, et l'arrondi de ses coins.
     private static let margin: CGFloat = 10
@@ -56,50 +72,49 @@ struct VehiclePhotoCaptureView: View {
     /// l'aperçu le prend tel quel.
     private static let aspectRatio: CGFloat = 3.0 / 4.0
 
+    /// Le ressort qui la fait monter et redescendre. Tenu ici, avec elle, pour
+    /// que les deux écrans qui la posent la fassent apparaître de la même
+    /// façon — sinon l'un des deux dérive au premier réglage.
+    static let motion: Animation = .snappy(duration: 0.38)
+
     var body: some View {
-        ZStack {
-            Color.black.ignoresSafeArea()
-            VStack(spacing: 14) {
-                Spacer(minLength: 0)
-                caption
-                viewfinder
-            }
+        viewfinder
             .padding(.horizontal, Self.margin)
             .padding(.bottom, Self.margin)
-        }
-        // L'écran est noir de bout en bout : l'heure et la batterie doivent
-        // s'écrire en blanc, et le verre des pastilles se teinter pour du sombre.
-        .preferredColorScheme(.dark)
-        .task { await camera.start() }
-        .onDisappear { camera.stop() }
-        .onChange(of: libraryItem) { _, item in
-            guard let item else { return }
-            Task { await loadFromLibrary(item) }
-        }
-        .sensoryFeedback(.impact(weight: .medium), trigger: shutterCount)
-        // Sans bouton déclaré, SwiftUI en pose un « OK » traduit par le
-        // système. Il n'y a rien d'autre à proposer : on est déjà devant
-        // l'appareil photo, reprendre est un appui sur le déclencheur.
-        .alert("La photo n'a pas pu être prise.", isPresented: $hasCaptureFailed) {}
+            .offset(y: dragOffset)
+            .gesture(dismissDrag)
+            .task { await camera.start() }
+            .onDisappear { camera.stop() }
+            .onChange(of: libraryItem) { _, item in
+                guard let item else { return }
+                Task { await loadFromLibrary(item) }
+            }
+            .sensoryFeedback(.impact(weight: .medium), trigger: shutterCount)
+            // Sans bouton déclaré, SwiftUI en pose un « OK » traduit par le
+            // système. Il n'y a rien d'autre à proposer : on est déjà devant
+            // l'appareil photo, reprendre est un appui sur le déclencheur.
+            .alert("La photo n'a pas pu être prise.", isPresented: $hasCaptureFailed) {}
+    }
+
+    /// Ce qui a monté redescend en le poussant. Le geste qu'on fait sans y
+    /// penser devant quelque chose qui est arrivé par le bas — et la croix
+    /// reste là pour qui ne le fait pas.
+    ///
+    /// La vitesse compte autant que la distance : un coup sec et court referme,
+    /// là où un glissement lent doit aller plus loin pour valoir décision.
+    private var dismissDrag: some Gesture {
+        DragGesture()
+            .onChanged { dragOffset = max(0, $0.translation.height) }
+            .onEnded { value in
+                if value.translation.height > 110 || value.predictedEndTranslation.height > 260 {
+                    onClose()
+                } else {
+                    withAnimation(.snappy) { dragOffset = 0 }
+                }
+            }
     }
 
     // MARK: - Cadrage
-
-    /// Le nom du véhicule, puis la consigne : de quoi savoir laquelle de ses
-    /// voitures on est en train de photographier, ce qu'un écran sans barre de
-    /// navigation ne dit nulle part ailleurs. Les deux ensemble, juste au-dessus
-    /// de la carte, plutôt que chacun perdu dans le noir.
-    private var caption: some View {
-        VStack(spacing: 3) {
-            Text(vehicle.name)
-                .font(.headline)
-                .foregroundStyle(.white)
-            Text("Cadrez le véhicule de face.")
-                .font(.subheadline)
-                .foregroundStyle(.white.opacity(0.7))
-        }
-        .multilineTextAlignment(.center)
-    }
 
     private var viewfinder: some View {
         ZStack {
@@ -115,6 +130,10 @@ struct VehiclePhotoCaptureView: View {
         // Posées après le rognage, donc jamais coupées par le coin : l'anneau
         // du déclencheur déborde de sa pastille.
         .overlay(alignment: .bottom) { controls }
+        // Le verre et les symboles se règlent sur ce qu'ils recouvrent — une
+        // image de caméra, sombre par nature — et non sur le thème de l'app.
+        // En clair, un symbole blanc sur du verre clair ne se lirait plus.
+        .environment(\.colorScheme, .dark)
     }
 
     private var controls: some View {
@@ -123,7 +142,7 @@ struct VehiclePhotoCaptureView: View {
                 shutter
             }
             HStack(spacing: 0) {
-                Button { dismiss() } label: { symbol("xmark") }
+                Button(action: onClose) { symbol("xmark") }
                     .buttonStyle(.plain)
                     .glassEffect(.regular.interactive(), in: .circle)
                     .accessibilityLabel("Fermer l'appareil photo")
@@ -230,13 +249,13 @@ struct VehiclePhotoCaptureView: View {
         hand(photo)
     }
 
-    /// La photo confiée au service, et l'écran refermé dans la foulée.
+    /// La photo confiée au service, et la carte refermée dans la foulée.
     ///
     /// Dans cet ordre et sans rien attendre entre les deux : le détourage dure
     /// dix à trente secondes, et c'est justement ce qu'on ne fait plus attendre.
     /// Ce qu'il en advient se dit dans une pastille, où que soit l'utilisateur.
     private func hand(_ photo: UIImage) {
         appServices.vehiclePhotoProcessingService.process(photo, for: vehicle)
-        dismiss()
+        onClose()
     }
 }

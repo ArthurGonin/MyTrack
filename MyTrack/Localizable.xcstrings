@@ -4,806 +4,6 @@
     "" : {
 
     },
-    "Activer le flash" : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Blitz einschalten"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Turn on the flash"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Activar el flash"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Activer le flash"
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Attiva il flash"
-          }
-        },
-        "pt" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Ligar o flash"
-          }
-        }
-      }
-    },
-    "Cadrez le véhicule de face." : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Nehmen Sie das Fahrzeug frontal ins Bild."
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Frame the vehicle head-on."
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Encuadre el vehículo de frente."
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Cadrez le véhicule de face."
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Inquadri il veicolo di fronte."
-          }
-        },
-        "pt" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Enquadre o veículo de frente."
-          }
-        }
-      }
-    },
-    "Choisir une photo" : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Foto auswählen"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Choose a photo"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Elegir una foto"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Choisir une photo"
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Scegliere una foto"
-          }
-        },
-        "pt" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Escolher uma fotografia"
-          }
-        }
-      }
-    },
-    "Désactiver le flash" : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Blitz ausschalten"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Turn off the flash"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Desactivar el flash"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Désactiver le flash"
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Disattiva il flash"
-          }
-        },
-        "pt" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Desligar o flash"
-          }
-        }
-      }
-    },
-    "Fermer l'appareil photo" : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Kamera schließen"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Close the camera"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Cerrar la cámara"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Fermer l'appareil photo"
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Chiudi la fotocamera"
-          }
-        },
-        "pt" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Fechar a câmara"
-          }
-        }
-      }
-    },
-    "L'appareil photo n'est pas disponible ici." : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Hier ist keine Kamera verfügbar."
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "No camera is available here."
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Aquí no hay cámara disponible."
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "L'appareil photo n'est pas disponible ici."
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Qui non è disponibile alcuna fotocamera."
-          }
-        },
-        "pt" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Não há câmara disponível aqui."
-          }
-        }
-      }
-    },
-    "La photo n'a pas pu être prise." : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Das Foto konnte nicht aufgenommen werden."
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "The photo couldn't be taken."
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "No se ha podido tomar la foto."
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "La photo n'a pas pu être prise."
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Non è stato possibile scattare la foto."
-          }
-        },
-        "pt" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Não foi possível tirar a fotografia."
-          }
-        }
-      }
-    },
-    "Le service n'a pas répondu" : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Der Dienst hat nicht geantwortet"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "The service didn't respond"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "El servicio no ha respondido"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Le service n'a pas répondu"
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Il servizio non ha risposto"
-          }
-        },
-        "pt" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "O serviço não respondeu"
-          }
-        }
-      }
-    },
-    "Limite de photos atteinte" : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Tageslimit an Fotos erreicht"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Daily photo limit reached"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Límite de fotos alcanzado"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Limite de photos atteinte"
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Limite di foto raggiunto"
-          }
-        },
-        "pt" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Limite de fotografias atingido"
-          }
-        }
-      }
-    },
-    "Photo" : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Foto"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Photo"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Foto"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Photo"
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Foto"
-          }
-        },
-        "pt" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Fotografia"
-          }
-        }
-      }
-    },
-    "Photo du véhicule" : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Foto des Fahrzeugs"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Vehicle photo"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Foto del vehículo"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Photo du véhicule"
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Foto del veicolo"
-          }
-        },
-        "pt" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Fotografia do veículo"
-          }
-        }
-      }
-    },
-    "Photo non traitée" : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Foto nicht verarbeitet"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Photo not processed"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Foto no procesada"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Photo non traitée"
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Foto non elaborata"
-          }
-        },
-        "pt" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Fotografia não processada"
-          }
-        }
-      }
-    },
-    "Photo prête" : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Foto fertig"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Photo ready"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Foto lista"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Photo prête"
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Foto pronta"
-          }
-        },
-        "pt" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Fotografia pronta"
-          }
-        }
-      }
-    },
-    "Photographier le véhicule" : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Fahrzeug fotografieren"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Photograph the vehicle"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Fotografiar el vehículo"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Photographier le véhicule"
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Fotografare il veicolo"
-          }
-        },
-        "pt" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Fotografar o veículo"
-          }
-        }
-      }
-    },
-    "Prendre la photo" : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Foto aufnehmen"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Take the photo"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Hacer la foto"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Prendre la photo"
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Scattare la foto"
-          }
-        },
-        "pt" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Tirar a fotografia"
-          }
-        }
-      }
-    },
-    "Reprendre la photo" : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Foto neu aufnehmen"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Retake the photo"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Repetir la foto"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Reprendre la photo"
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Rifare la foto"
-          }
-        },
-        "pt" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Repetir a fotografia"
-          }
-        }
-      }
-    },
-    "Retouche photo indisponible" : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Fotobearbeitung nicht verfügbar"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Retouching unavailable"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Retoque no disponible"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Retouche photo indisponible"
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Ritocco non disponibile"
-          }
-        },
-        "pt" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Retoque indisponível"
-          }
-        }
-      }
-    },
-    "Réessayez demain." : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Versuchen Sie es morgen erneut."
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Try again tomorrow."
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Inténtelo de nuevo mañana."
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Réessayez demain."
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Riprovi domani."
-          }
-        },
-        "pt" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Tente novamente amanhã."
-          }
-        }
-      }
-    },
-    "Supprimer la photo" : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Foto löschen"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Delete the photo"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Eliminar la foto"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Supprimer la photo"
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Eliminare la foto"
-          }
-        },
-        "pt" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Eliminar a fotografia"
-          }
-        }
-      }
-    },
-    "Traitement de la photo…" : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Foto wird verarbeitet…"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Processing the photo…"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Procesando la foto…"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Traitement de la photo…"
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Elaborazione della foto…"
-          }
-        },
-        "pt" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "A processar a fotografia…"
-          }
-        }
-      }
-    },
     "·" : {
 
     },
@@ -2787,6 +1987,46 @@
         }
       }
     },
+    "Activer le flash" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Blitz einschalten"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Turn on the flash"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Activar el flash"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Activer le flash"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Attiva il flash"
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ligar o flash"
+          }
+        }
+      }
+    },
     "Activité physique" : {
       "localizations" : {
         "de" : {
@@ -2908,46 +2148,6 @@
         }
       }
     },
-    "Ajoutez un véhicule pour l'associer à vos trajets." : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Fügen Sie ein Fahrzeug hinzu, um es Ihren Fahrten zuzuordnen."
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Add a vehicle to link it to your trips."
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Añada un vehículo para asociarlo a sus viajes."
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Ajoutez un véhicule pour l'associer à vos trajets."
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Aggiunga un veicolo per associarlo ai suoi viaggi."
-          }
-        },
-        "pt" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Adicione um veículo para o associar às suas viagens."
-          }
-        }
-      }
-    },
     "Ajouter un véhicule" : {
       "localizations" : {
         "de" : {
@@ -2984,6 +2184,46 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Adicionar um veículo"
+          }
+        }
+      }
+    },
+    "Ajoutez un véhicule pour l'associer à vos trajets." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Fügen Sie ein Fahrzeug hinzu, um es Ihren Fahrten zuzuordnen."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Add a vehicle to link it to your trips."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Añada un vehículo para asociarlo a sus viajes."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ajoutez un véhicule pour l'associer à vos trajets."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aggiunga un veicolo per associarlo ai suoi viaggi."
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Adicione um veículo para o associar às suas viagens."
           }
         }
       }
@@ -3748,46 +2988,6 @@
         }
       }
     },
-    "Autorisez l'accès à l'activité physique dans Réglages pour activer le suivi automatique." : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Erlauben Sie den Zugriff auf körperliche Aktivität in den Einstellungen, um die automatische Erfassung zu aktivieren."
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Allow physical activity access in Settings to turn on automatic tracking."
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Permita el acceso a la actividad física en Ajustes para activar el seguimiento automático."
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Autorisez l'accès à l'activité physique dans Réglages pour activer le suivi automatique."
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Consenta l'accesso all'attività fisica in Impostazioni per attivare il rilevamento automatico."
-          }
-        },
-        "pt" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Permita o acesso à atividade física nas Definições para ativar a deteção automática."
-          }
-        }
-      }
-    },
     "Autorise l'accès à la position dans Réglages pour activer le suivi automatique." : {
       "extractionState" : "stale",
       "localizations" : {
@@ -3829,46 +3029,6 @@
         }
       }
     },
-    "Autorisez l'accès à la position dans Réglages pour enregistrer un trajet." : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Erlauben Sie den Standortzugriff in den Einstellungen, um eine Fahrt aufzuzeichnen."
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Allow location access in Settings to record a trip."
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Permita el acceso a la ubicación en Ajustes para registrar un viaje."
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Autorisez l'accès à la position dans Réglages pour enregistrer un trajet."
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Consenta l'accesso alla posizione in Impostazioni per registrare un viaggio."
-          }
-        },
-        "pt" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Permita o acesso à localização nas Definições para registar uma viagem."
-          }
-        }
-      }
-    },
     "Autoriser" : {
       "localizations" : {
         "de" : {
@@ -3905,6 +3065,86 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Permitir"
+          }
+        }
+      }
+    },
+    "Autorisez l'accès à l'activité physique dans Réglages pour activer le suivi automatique." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Erlauben Sie den Zugriff auf körperliche Aktivität in den Einstellungen, um die automatische Erfassung zu aktivieren."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Allow physical activity access in Settings to turn on automatic tracking."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Permita el acceso a la actividad física en Ajustes para activar el seguimiento automático."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Autorisez l'accès à l'activité physique dans Réglages pour activer le suivi automatique."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Consenta l'accesso all'attività fisica in Impostazioni per attivare il rilevamento automatico."
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Permita o acesso à atividade física nas Definições para ativar a deteção automática."
+          }
+        }
+      }
+    },
+    "Autorisez l'accès à la position dans Réglages pour enregistrer un trajet." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Erlauben Sie den Standortzugriff in den Einstellungen, um eine Fahrt aufzuzeichnen."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Allow location access in Settings to record a trip."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Permita el acceso a la ubicación en Ajustes para registrar un viaje."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Autorisez l'accès à la position dans Réglages pour enregistrer un trajet."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Consenta l'accesso alla posizione in Impostazioni per registrare un viaggio."
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Permita o acesso à localização nas Definições para registar uma viagem."
           }
         }
       }
@@ -4030,46 +3270,6 @@
         }
       }
     },
-    "Ce rapport couvre tous vos véhicules. Vous pourrez le modifier dans les réglages." : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Dieser Bericht umfasst alle Ihre Fahrzeuge. Sie können ihn später in den Einstellungen ändern."
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "This report covers all your vehicles. You can change it later in Settings."
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Este informe incluye todos sus vehículos. Podrá cambiarlo en los ajustes."
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Ce rapport couvre tous vos véhicules. Vous pourrez le modifier dans les réglages."
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Questo rapporto include tutti i suoi veicoli. Potrà modificarlo nelle impostazioni."
-          }
-        },
-        "pt" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Este relatório abrange todos os seus veículos. Poderá alterá-lo nas definições."
-          }
-        }
-      }
-    },
     "Ce mois-ci" : {
       "localizations" : {
         "de" : {
@@ -4106,6 +3306,46 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Este mês"
+          }
+        }
+      }
+    },
+    "Ce rapport couvre tous vos véhicules. Vous pourrez le modifier dans les réglages." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dieser Bericht umfasst alle Ihre Fahrzeuge. Sie können ihn später in den Einstellungen ändern."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "This report covers all your vehicles. You can change it later in Settings."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Este informe incluye todos sus vehículos. Podrá cambiarlo en los ajustes."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ce rapport couvre tous vos véhicules. Vous pourrez le modifier dans les réglages."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Questo rapporto include tutti i suoi veicoli. Potrà modificarlo nelle impostazioni."
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Este relatório abrange todos os seus veículos. Poderá alterá-lo nas definições."
           }
         }
       }
@@ -4150,42 +3390,42 @@
         }
       }
     },
-    "Choisissez le plan qui vous convient et débloquez tout le potentiel de MyTrack." : {
+    "Choisir une photo" : {
       "localizations" : {
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Wählen Sie den passenden Tarif und holen Sie alles aus MyTrack heraus."
+            "value" : "Foto auswählen"
           }
         },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Choose the plan that suits you and unlock everything MyTrack can do."
+            "value" : "Choose a photo"
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Elija el plan que mejor le venga y descubra todo el potencial de MyTrack."
+            "value" : "Elegir una foto"
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Choisissez le plan qui vous convient et débloquez tout le potentiel de MyTrack."
+            "value" : "Choisir une photo"
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Scelga il piano che fa per lei e sblocchi tutto il potenziale di MyTrack."
+            "value" : "Scegliere una foto"
           }
         },
         "pt" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Escolha o plano que lhe convém e desbloqueie todo o potencial do MyTrack."
+            "value" : "Escolher uma fotografia"
           }
         }
       }
@@ -4226,6 +3466,46 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Escolha o idioma"
+          }
+        }
+      }
+    },
+    "Choisissez le plan qui vous convient et débloquez tout le potentiel de MyTrack." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Wählen Sie den passenden Tarif und holen Sie alles aus MyTrack heraus."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Choose the plan that suits you and unlock everything MyTrack can do."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Elija el plan que mejor le venga y descubra todo el potencial de MyTrack."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Choisissez le plan qui vous convient et débloquez tout le potentiel de MyTrack."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Scelga il piano che fa per lei e sblocchi tutto il potenziale di MyTrack."
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Escolha o plano que lhe convém e desbloqueie todo o potencial do MyTrack."
           }
         }
       }
@@ -4510,46 +3790,6 @@
         }
       }
     },
-    "Configurez un rapport périodique pour générer automatiquement un rapport PDF à intervalle régulier." : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Richten Sie einen regelmäßigen Bericht ein, um in festen Abständen automatisch ein PDF zu erstellen."
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Set up a scheduled report to generate a PDF automatically at regular intervals."
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Configure un informe periódico para generar un PDF automáticamente a intervalos regulares."
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Configurez un rapport périodique pour générer automatiquement un rapport PDF à intervalle régulier."
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Configuri un rapporto periodico per generare automaticamente un PDF a intervalli regolari."
-          }
-        },
-        "pt" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Configure um relatório periódico para gerar automaticamente um PDF em intervalos regulares."
-          }
-        }
-      }
-    },
     "Configurer un nouveau rapport périodique" : {
       "localizations" : {
         "de" : {
@@ -4586,6 +3826,46 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Configurar um novo relatório periódico"
+          }
+        }
+      }
+    },
+    "Configurez un rapport périodique pour générer automatiquement un rapport PDF à intervalle régulier." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Richten Sie einen regelmäßigen Bericht ein, um in festen Abständen automatisch ein PDF zu erstellen."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Set up a scheduled report to generate a PDF automatically at regular intervals."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Configure un informe periódico para generar un PDF automáticamente a intervalos regulares."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Configurez un rapport périodique pour générer automatiquement un rapport PDF à intervalle régulier."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Configuri un rapporto periodico per generare automaticamente un PDF a intervalli regolari."
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Configure um relatório periódico para gerar automaticamente um PDF em intervalos regulares."
           }
         }
       }
@@ -5146,6 +4426,46 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Desativado"
+          }
+        }
+      }
+    },
+    "Désactiver le flash" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Blitz ausschalten"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Turn off the flash"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Desactivar el flash"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Désactiver le flash"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Disattiva il flash"
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Desligar o flash"
           }
         }
       }
@@ -6395,6 +5715,46 @@
         }
       }
     },
+    "Fermer l'appareil photo" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kamera schließen"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Close the camera"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cerrar la cámara"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Fermer l'appareil photo"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Chiudi la fotocamera"
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Fechar a câmara"
+          }
+        }
+      }
+    },
     "Fin" : {
       "localizations" : {
         "de" : {
@@ -7197,6 +6557,46 @@
         }
       }
     },
+    "L'appareil photo n'est pas disponible ici." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hier ist keine Kamera verfügbar."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No camera is available here."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aquí no hay cámara disponible."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "L'appareil photo n'est pas disponible ici."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Qui non è disponibile alcuna fotocamera."
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Não há câmara disponível aqui."
+          }
+        }
+      }
+    },
     "L'enregistrement des trajets nécessite un abonnement actif. Vos trajets et rapports déjà enregistrés restent accessibles." : {
       "localizations" : {
         "de" : {
@@ -7233,6 +6633,46 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Registar viagens requer uma subscrição ativa. As viagens e relatórios já guardados continuam acessíveis."
+          }
+        }
+      }
+    },
+    "La photo n'a pas pu être prise." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Das Foto konnte nicht aufgenommen werden."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The photo couldn't be taken."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No se ha podido tomar la foto."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "La photo n'a pas pu être prise."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Non è stato possibile scattare la foto."
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Não foi possível tirar a fotografia."
           }
         }
       }
@@ -7518,6 +6958,46 @@
         }
       }
     },
+    "Le service n'a pas répondu" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Der Dienst hat nicht geantwortet"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The service didn't respond"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "El servicio no ha respondido"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Le service n'a pas répondu"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Il servizio non ha risposto"
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "O serviço não respondeu"
+          }
+        }
+      }
+    },
     "Le suivi automatique a besoin de la position réglée sur « Toujours » pour réveiller l'app au départ d'un trajet, et de l'activité physique pour reconnaître la conduite. Les notifications servent à confirmer un trajet détecté et à prévenir qu'un rapport est prêt. Une autorisation refusée ne peut plus se rétablir que dans les Réglages d'iOS." : {
       "localizations" : {
         "de" : {
@@ -7755,6 +7235,46 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "As viagens eliminadas aparecem aqui."
+          }
+        }
+      }
+    },
+    "Limite de photos atteinte" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tageslimit an Fotos erreicht"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Daily photo limit reached"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Límite de fotos alcanzado"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Limite de photos atteinte"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Limite di foto raggiunto"
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Limite de fotografias atingido"
           }
         }
       }
@@ -9007,46 +8527,6 @@
         }
       }
     },
-    "Passez à la vitesse supérieure." : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Schalten Sie einen Gang höher."
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Shift into high gear."
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Suba de marcha."
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Passez à la vitesse supérieure."
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Passi alla marcia superiore."
-          }
-        },
-        "pt" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Passe a uma velocidade superior."
-          }
-        }
-      }
-    },
     "Passer" : {
       "localizations" : {
         "de" : {
@@ -9123,6 +8603,46 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Mudar para a compra única"
+          }
+        }
+      }
+    },
+    "Passez à la vitesse supérieure." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Schalten Sie einen Gang höher."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Shift into high gear."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Suba de marcha."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Passez à la vitesse supérieure."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Passi alla marcia superiore."
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Passe a uma velocidade superior."
           }
         }
       }
@@ -9243,6 +8763,206 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Personalizado"
+          }
+        }
+      }
+    },
+    "Photo" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Foto"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Photo"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Foto"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Photo"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Foto"
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Fotografia"
+          }
+        }
+      }
+    },
+    "Photo du véhicule" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Foto des Fahrzeugs"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Vehicle photo"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Foto del vehículo"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Photo du véhicule"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Foto del veicolo"
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Fotografia do veículo"
+          }
+        }
+      }
+    },
+    "Photo non traitée" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Foto nicht verarbeitet"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Photo not processed"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Foto no procesada"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Photo non traitée"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Foto non elaborata"
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Fotografia não processada"
+          }
+        }
+      }
+    },
+    "Photo prête" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Foto fertig"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Photo ready"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Foto lista"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Photo prête"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Foto pronta"
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Fotografia pronta"
+          }
+        }
+      }
+    },
+    "Photographier le véhicule" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Fahrzeug fotografieren"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Photograph the vehicle"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Fotografiar el vehículo"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Photographier le véhicule"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Fotografare il veicolo"
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Fotografar o veículo"
           }
         }
       }
@@ -9684,6 +9404,46 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Primeiro relatório"
+          }
+        }
+      }
+    },
+    "Prendre la photo" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Foto aufnehmen"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Take the photo"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hacer la foto"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Prendre la photo"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Scattare la foto"
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tirar a fotografia"
           }
         }
       }
@@ -10251,6 +10011,47 @@
         }
       }
     },
+    "Réessayez demain." : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Versuchen Sie es morgen erneut."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Try again tomorrow."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Inténtelo de nuevo mañana."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Réessayez demain."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Riprovi domani."
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tente novamente amanhã."
+          }
+        }
+      }
+    },
     "Refusé" : {
       "localizations" : {
         "de" : {
@@ -10411,6 +10212,47 @@
         }
       }
     },
+    "Renouvellement automatique, résiliable à tout moment depuis ton compte App Store. Sans résiliation au moins 24 h avant la fin de l'essai, l'abonnement devient payant." : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Verlängert sich automatisch, jederzeit über dein App-Store-Konto kündbar. Wird nicht mindestens 24 Stunden vor Ende der Testphase gekündigt, wird das Abo kostenpflichtig."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Renews automatically; cancel any time from your App Store account. Unless you cancel at least 24 hours before the trial ends, the subscription becomes paid."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Se renueva automáticamente y puedes cancelarla en cualquier momento desde tu cuenta de App Store. Si no la cancelas al menos 24 horas antes de que termine la prueba, la suscripción pasa a ser de pago."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Renouvellement automatique, résiliable à tout moment depuis ton compte App Store. Sans résiliation au moins 24 h avant la fin de l'essai, l'abonnement devient payant."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Si rinnova automaticamente e puoi disdirlo in qualsiasi momento dal tuo account App Store. Se non disdici almeno 24 ore prima della fine della prova, l'abbonamento diventa a pagamento."
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Renova-se automaticamente e podes cancelar a qualquer momento na tua conta App Store. Se não cancelares pelo menos 24 horas antes do fim do período experimental, a subscrição passa a ser paga."
+          }
+        }
+      }
+    },
     "Renouvellement automatique, résiliable à tout moment depuis votre compte App Store." : {
       "localizations" : {
         "de" : {
@@ -10451,43 +10293,42 @@
         }
       }
     },
-    "Renouvellement automatique, résiliable à tout moment depuis ton compte App Store. Sans résiliation au moins 24 h avant la fin de l'essai, l'abonnement devient payant." : {
-      "extractionState" : "stale",
+    "Reprendre la photo" : {
       "localizations" : {
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Verlängert sich automatisch, jederzeit über dein App-Store-Konto kündbar. Wird nicht mindestens 24 Stunden vor Ende der Testphase gekündigt, wird das Abo kostenpflichtig."
+            "value" : "Foto neu aufnehmen"
           }
         },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Renews automatically; cancel any time from your App Store account. Unless you cancel at least 24 hours before the trial ends, the subscription becomes paid."
+            "value" : "Retake the photo"
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Se renueva automáticamente y puedes cancelarla en cualquier momento desde tu cuenta de App Store. Si no la cancelas al menos 24 horas antes de que termine la prueba, la suscripción pasa a ser de pago."
+            "value" : "Repetir la foto"
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Renouvellement automatique, résiliable à tout moment depuis ton compte App Store. Sans résiliation au moins 24 h avant la fin de l'essai, l'abonnement devient payant."
+            "value" : "Reprendre la photo"
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Si rinnova automaticamente e puoi disdirlo in qualsiasi momento dal tuo account App Store. Se non disdici almeno 24 ore prima della fine della prova, l'abbonamento diventa a pagamento."
+            "value" : "Rifare la foto"
           }
         },
         "pt" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Renova-se automaticamente e podes cancelar a qualquer momento na tua conta App Store. Se não cancelares pelo menos 24 horas antes do fim do período experimental, a subscrição passa a ser paga."
+            "value" : "Repetir a fotografia"
           }
         }
       }
@@ -10608,6 +10449,46 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Restaurar as minhas compras"
+          }
+        }
+      }
+    },
+    "Retouche photo indisponible" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Fotobearbeitung nicht verfügbar"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Retouching unavailable"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Retoque no disponible"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Retouche photo indisponible"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ritocco non disponibile"
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Retoque indisponível"
           }
         }
       }
@@ -11294,6 +11175,46 @@
         }
       }
     },
+    "Supprimer la photo" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Foto löschen"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Delete the photo"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Eliminar la foto"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Supprimer la photo"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Eliminare la foto"
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Eliminar a fotografia"
+          }
+        }
+      }
+    },
     "Supprimer le compte" : {
       "localizations" : {
         "de" : {
@@ -11454,246 +11375,6 @@
         }
       }
     },
-    "Vos distances" : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Ihre Distanzen"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Your distances"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Sus distancias"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Vos distances"
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Le sue distanze"
-          }
-        },
-        "pt" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "As suas distâncias"
-          }
-        }
-      }
-    },
-    "Vos données n'ont pas pu être entièrement supprimées. Réessayez." : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Ihre Daten konnten nicht vollständig gelöscht werden. Versuchen Sie es erneut."
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Your data couldn't be fully deleted. Try again."
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "No se han podido eliminar todos sus datos. Inténtelo de nuevo."
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Vos données n'ont pas pu être entièrement supprimées. Réessayez."
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Non è stato possibile eliminare tutti i suoi dati. Riprovi."
-          }
-        },
-        "pt" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Não foi possível eliminar todos os seus dados. Tente novamente."
-          }
-        }
-      }
-    },
-    "Vos informations n'ont pas pu être enregistrées. Réessayez." : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Ihre Daten konnten nicht gesichert werden. Versuchen Sie es erneut."
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Your details couldn't be saved. Try again."
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "No se han podido guardar sus datos. Inténtelo de nuevo."
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Vos informations n'ont pas pu être enregistrées. Réessayez."
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Non è stato possibile salvare i suoi dati. Riprovi."
-          }
-        },
-        "pt" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Não foi possível guardar os seus dados. Tente novamente."
-          }
-        }
-      }
-    },
-    "Vos rapports" : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Ihre Berichte"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Your reports"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Sus informes"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Vos rapports"
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "I suoi rapporti"
-          }
-        },
-        "pt" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Os seus relatórios"
-          }
-        }
-      }
-    },
-    "Vos trajets en voiture sont détectés automatiquement." : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Ihre Autofahrten werden automatisch erkannt."
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Your car trips are being detected automatically."
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Sus viajes en coche se detectan automáticamente."
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Vos trajets en voiture sont détectés automatiquement."
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "I suoi viaggi in auto vengono rilevati automaticamente."
-          }
-        },
-        "pt" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "As suas viagens de carro são detetadas automaticamente."
-          }
-        }
-      }
-    },
-    "Vos trajets ne sont plus enregistrés. Vos trajets et rapports déjà enregistrés restent accessibles." : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Ihre Fahrten werden nicht mehr aufgezeichnet. Bereits gespeicherte Fahrten und Berichte bleiben verfügbar."
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Your trips are no longer being recorded. The trips and reports you've already saved remain available."
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Sus viajes ya no se registran. Los viajes e informes ya guardados siguen disponibles."
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Vos trajets ne sont plus enregistrés. Vos trajets et rapports déjà enregistrés restent accessibles."
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "I suoi viaggi non vengono più registrati. I viaggi e i rapporti già salvati restano accessibili."
-          }
-        },
-        "pt" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "As suas viagens já não são registadas. As viagens e relatórios já guardados continuam acessíveis."
-          }
-        }
-      }
-    },
     "Thermique" : {
       "localizations" : {
         "de" : {
@@ -11730,406 +11411,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Combustão"
-          }
-        }
-      }
-    },
-    "Votre abonnement a été retrouvé sur ce compte App Store." : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Ihr Abo wurde für dieses App-Store-Konto gefunden."
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Your subscription was found on this App Store account."
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Hemos encontrado su suscripción en esta cuenta de App Store."
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Votre abonnement a été retrouvé sur ce compte App Store."
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Il suo abbonamento è stato trovato su questo account App Store."
-          }
-        },
-        "pt" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "A sua subscrição foi encontrada nesta conta App Store."
-          }
-        }
-      }
-    },
-    "Votre abonnement n'a pas pu être renouvelé : aucun nouveau trajet n'est enregistré. Vos trajets et rapports déjà enregistrés restent accessibles." : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Ihr Abo konnte nicht verlängert werden: Es werden keine neuen Fahrten aufgezeichnet. Bereits gespeicherte Fahrten und Berichte bleiben verfügbar."
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Your subscription couldn't be renewed, so no new trips are being recorded. The trips and reports you've already saved remain available."
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "No se ha podido renovar su suscripción: no se registra ningún viaje nuevo. Los viajes e informes ya guardados siguen disponibles."
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Votre abonnement n'a pas pu être renouvelé : aucun nouveau trajet n'est enregistré. Vos trajets et rapports déjà enregistrés restent accessibles."
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Non è stato possibile rinnovare il suo abbonamento: nessun nuovo viaggio viene registrato. I viaggi e i rapporti già salvati restano accessibili."
-          }
-        },
-        "pt" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Não foi possível renovar a sua subscrição: não é registada nenhuma viagem nova. As viagens e relatórios já guardados continuam acessíveis."
-          }
-        }
-      }
-    },
-    "Votre abonnement n'a pas pu être renouvelé : vos trajets ne sont plus enregistrés. Mettez à jour votre moyen de paiement." : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Ihr Abo konnte nicht verlängert werden: Ihre Fahrten werden nicht mehr aufgezeichnet. Aktualisieren Sie Ihre Zahlungsmethode."
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Your subscription couldn't be renewed, so your trips are no longer being recorded. Update your payment method."
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "No se ha podido renovar su suscripción: sus viajes ya no se registran. Actualice su método de pago."
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Votre abonnement n'a pas pu être renouvelé : vos trajets ne sont plus enregistrés. Mettez à jour votre moyen de paiement."
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Non è stato possibile rinnovare il suo abbonamento: i suoi viaggi non vengono più registrati. Aggiorni il metodo di pagamento."
-          }
-        },
-        "pt" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Não foi possível renovar a sua subscrição: as suas viagens já não são registadas. Atualize o seu método de pagamento."
-          }
-        }
-      }
-    },
-    "Votre abonnement n'a pas pu être renouvelé : vos trajets ne sont plus enregistrés. Vos trajets et rapports restent accessibles." : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Ihr Abo konnte nicht verlängert werden: Ihre Fahrten werden nicht mehr aufgezeichnet. Ihre Fahrten und Berichte bleiben verfügbar."
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Your subscription couldn't be renewed, so your trips are no longer being recorded. Your trips and reports remain available."
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "No se ha podido renovar su suscripción: sus viajes ya no se registran. Sus viajes e informes siguen disponibles."
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Votre abonnement n'a pas pu être renouvelé : vos trajets ne sont plus enregistrés. Vos trajets et rapports restent accessibles."
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Non è stato possibile rinnovare il suo abbonamento: i suoi viaggi non vengono più registrati. I suoi viaggi e rapporti restano accessibili."
-          }
-        },
-        "pt" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Não foi possível renovar a sua subscrição: as suas viagens já não são registadas. As suas viagens e relatórios continuam acessíveis."
-          }
-        }
-      }
-    },
-    "Votre abonnement n'est pas résilié pour autant : App Store continuera de le reconduire tant que vous ne l'aurez pas fait vous-même." : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Ihr Abo ist damit nicht gekündigt: Der App Store verlängert es weiter, bis Sie es selbst kündigen."
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "That does not cancel your subscription: the App Store will keep renewing it until you cancel it yourself."
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Eso no cancela su suscripción: App Store seguirá renovándola hasta que la cancele."
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Votre abonnement n'est pas résilié pour autant : App Store continuera de le reconduire tant que vous ne l'aurez pas fait vous-même."
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Questo non annulla il suo abbonamento: App Store continuerà a rinnovarlo finché non lo disdice."
-          }
-        },
-        "pt" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Isso não cancela a sua subscrição: a App Store vai continuar a renová-la até que a cancele."
-          }
-        }
-      }
-    },
-    "Votre accès à vie est acquis. Votre abonnement résilié reste actif jusqu'au %@, sans reconduction." : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Ihr lebenslanger Zugang ist gesichert. Ihr gekündigtes Abo bleibt bis %@ aktiv, ohne Verlängerung."
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Your lifetime access is secured. Your cancelled subscription stays active until %@, with no renewal."
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Su acceso de por vida está asegurado. Su suscripción cancelada sigue activa hasta el %@, sin renovación."
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Votre accès à vie est acquis. Votre abonnement résilié reste actif jusqu'au %@, sans reconduction."
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Il suo accesso a vita è acquisito. L'abbonamento disdetto resta attivo fino al %@, senza rinnovo."
-          }
-        },
-        "pt" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "O seu acesso vitalício está garantido. A sua subscrição cancelada mantém-se ativa até %@, sem renovação."
-          }
-        }
-      }
-    },
-    "Votre accès à vie est acquis. Votre abonnement, lui, court toujours et sera reconduit : résiliez-le pour ne pas payer deux fois." : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Ihr lebenslanger Zugang ist gesichert. Ihr Abo läuft aber weiter und wird verlängert: Kündigen Sie es, damit Sie nicht doppelt zahlen."
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Your lifetime access is secured. Your subscription is still running and will renew: cancel it so you don't pay twice."
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Su acceso de por vida está asegurado. Su suscripción sigue activa y se renovará: cancélela para no pagar dos veces."
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Votre accès à vie est acquis. Votre abonnement, lui, court toujours et sera reconduit : résiliez-le pour ne pas payer deux fois."
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Il suo accesso a vita è acquisito. L'abbonamento però è ancora attivo e si rinnoverà: lo disdica per non pagare due volte."
-          }
-        },
-        "pt" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "O seu acesso vitalício está garantido. A sua subscrição continua ativa e será renovada: cancele-a para não pagar duas vezes."
-          }
-        }
-      }
-    },
-    "Votre achat unique a été retrouvé sur ce compte App Store." : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Ihr Einmalkauf wurde für dieses App-Store-Konto gefunden."
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Your one-time purchase was found on this App Store account."
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Hemos encontrado su compra única en esta cuenta de App Store."
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Votre achat unique a été retrouvé sur ce compte App Store."
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Il suo acquisto unico è stato trovato su questo account App Store."
-          }
-        },
-        "pt" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "A sua compra única foi encontrada nesta conta App Store."
-          }
-        }
-      }
-    },
-    "Votre prénom et votre nom" : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Ihr Vor- und Nachname"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Your first and last name"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Su nombre y apellidos"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Votre prénom et votre nom"
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Il suo nome e cognome"
-          }
-        },
-        "pt" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "O seu nome e apelido"
-          }
-        }
-      }
-    },
-    "Votre véhicule" : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Ihr Fahrzeug"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Your vehicle"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Su vehículo"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Votre véhicule"
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Il suo veicolo"
-          }
-        },
-        "pt" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "O seu veículo"
           }
         }
       }
@@ -12514,6 +11795,46 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Tudo em dia"
+          }
+        }
+      }
+    },
+    "Traitement de la photo…" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Foto wird verarbeitet…"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Processing the photo…"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Procesando la foto…"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Traitement de la photo…"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Elaborazione della foto…"
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "A processar a fotografia…"
           }
         }
       }
@@ -13241,6 +12562,606 @@
         }
       }
     },
+    "Vos distances" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ihre Distanzen"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Your distances"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sus distancias"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Vos distances"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Le sue distanze"
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "As suas distâncias"
+          }
+        }
+      }
+    },
+    "Vos données n'ont pas pu être entièrement supprimées. Réessayez." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ihre Daten konnten nicht vollständig gelöscht werden. Versuchen Sie es erneut."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Your data couldn't be fully deleted. Try again."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No se han podido eliminar todos sus datos. Inténtelo de nuevo."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Vos données n'ont pas pu être entièrement supprimées. Réessayez."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Non è stato possibile eliminare tutti i suoi dati. Riprovi."
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Não foi possível eliminar todos os seus dados. Tente novamente."
+          }
+        }
+      }
+    },
+    "Vos informations n'ont pas pu être enregistrées. Réessayez." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ihre Daten konnten nicht gesichert werden. Versuchen Sie es erneut."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Your details couldn't be saved. Try again."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No se han podido guardar sus datos. Inténtelo de nuevo."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Vos informations n'ont pas pu être enregistrées. Réessayez."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Non è stato possibile salvare i suoi dati. Riprovi."
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Não foi possível guardar os seus dados. Tente novamente."
+          }
+        }
+      }
+    },
+    "Vos rapports" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ihre Berichte"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Your reports"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sus informes"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Vos rapports"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "I suoi rapporti"
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Os seus relatórios"
+          }
+        }
+      }
+    },
+    "Vos trajets en voiture sont détectés automatiquement." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ihre Autofahrten werden automatisch erkannt."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Your car trips are being detected automatically."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sus viajes en coche se detectan automáticamente."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Vos trajets en voiture sont détectés automatiquement."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "I suoi viaggi in auto vengono rilevati automaticamente."
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "As suas viagens de carro são detetadas automaticamente."
+          }
+        }
+      }
+    },
+    "Vos trajets ne sont plus enregistrés. Vos trajets et rapports déjà enregistrés restent accessibles." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ihre Fahrten werden nicht mehr aufgezeichnet. Bereits gespeicherte Fahrten und Berichte bleiben verfügbar."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Your trips are no longer being recorded. The trips and reports you've already saved remain available."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sus viajes ya no se registran. Los viajes e informes ya guardados siguen disponibles."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Vos trajets ne sont plus enregistrés. Vos trajets et rapports déjà enregistrés restent accessibles."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "I suoi viaggi non vengono più registrati. I viaggi e i rapporti già salvati restano accessibili."
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "As suas viagens já não são registadas. As viagens e relatórios já guardados continuam acessíveis."
+          }
+        }
+      }
+    },
+    "Votre abonnement a été retrouvé sur ce compte App Store." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ihr Abo wurde für dieses App-Store-Konto gefunden."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Your subscription was found on this App Store account."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hemos encontrado su suscripción en esta cuenta de App Store."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Votre abonnement a été retrouvé sur ce compte App Store."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Il suo abbonamento è stato trovato su questo account App Store."
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "A sua subscrição foi encontrada nesta conta App Store."
+          }
+        }
+      }
+    },
+    "Votre abonnement n'a pas pu être renouvelé : aucun nouveau trajet n'est enregistré. Vos trajets et rapports déjà enregistrés restent accessibles." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ihr Abo konnte nicht verlängert werden: Es werden keine neuen Fahrten aufgezeichnet. Bereits gespeicherte Fahrten und Berichte bleiben verfügbar."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Your subscription couldn't be renewed, so no new trips are being recorded. The trips and reports you've already saved remain available."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No se ha podido renovar su suscripción: no se registra ningún viaje nuevo. Los viajes e informes ya guardados siguen disponibles."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Votre abonnement n'a pas pu être renouvelé : aucun nouveau trajet n'est enregistré. Vos trajets et rapports déjà enregistrés restent accessibles."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Non è stato possibile rinnovare il suo abbonamento: nessun nuovo viaggio viene registrato. I viaggi e i rapporti già salvati restano accessibili."
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Não foi possível renovar a sua subscrição: não é registada nenhuma viagem nova. As viagens e relatórios já guardados continuam acessíveis."
+          }
+        }
+      }
+    },
+    "Votre abonnement n'a pas pu être renouvelé : vos trajets ne sont plus enregistrés. Mettez à jour votre moyen de paiement." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ihr Abo konnte nicht verlängert werden: Ihre Fahrten werden nicht mehr aufgezeichnet. Aktualisieren Sie Ihre Zahlungsmethode."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Your subscription couldn't be renewed, so your trips are no longer being recorded. Update your payment method."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No se ha podido renovar su suscripción: sus viajes ya no se registran. Actualice su método de pago."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Votre abonnement n'a pas pu être renouvelé : vos trajets ne sont plus enregistrés. Mettez à jour votre moyen de paiement."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Non è stato possibile rinnovare il suo abbonamento: i suoi viaggi non vengono più registrati. Aggiorni il metodo di pagamento."
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Não foi possível renovar a sua subscrição: as suas viagens já não são registadas. Atualize o seu método de pagamento."
+          }
+        }
+      }
+    },
+    "Votre abonnement n'a pas pu être renouvelé : vos trajets ne sont plus enregistrés. Vos trajets et rapports restent accessibles." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ihr Abo konnte nicht verlängert werden: Ihre Fahrten werden nicht mehr aufgezeichnet. Ihre Fahrten und Berichte bleiben verfügbar."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Your subscription couldn't be renewed, so your trips are no longer being recorded. Your trips and reports remain available."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No se ha podido renovar su suscripción: sus viajes ya no se registran. Sus viajes e informes siguen disponibles."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Votre abonnement n'a pas pu être renouvelé : vos trajets ne sont plus enregistrés. Vos trajets et rapports restent accessibles."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Non è stato possibile rinnovare il suo abbonamento: i suoi viaggi non vengono più registrati. I suoi viaggi e rapporti restano accessibili."
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Não foi possível renovar a sua subscrição: as suas viagens já não são registadas. As suas viagens e relatórios continuam acessíveis."
+          }
+        }
+      }
+    },
+    "Votre abonnement n'est pas résilié pour autant : App Store continuera de le reconduire tant que vous ne l'aurez pas fait vous-même." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ihr Abo ist damit nicht gekündigt: Der App Store verlängert es weiter, bis Sie es selbst kündigen."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "That does not cancel your subscription: the App Store will keep renewing it until you cancel it yourself."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Eso no cancela su suscripción: App Store seguirá renovándola hasta que la cancele."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Votre abonnement n'est pas résilié pour autant : App Store continuera de le reconduire tant que vous ne l'aurez pas fait vous-même."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Questo non annulla il suo abbonamento: App Store continuerà a rinnovarlo finché non lo disdice."
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Isso não cancela a sua subscrição: a App Store vai continuar a renová-la até que a cancele."
+          }
+        }
+      }
+    },
+    "Votre accès à vie est acquis. Votre abonnement résilié reste actif jusqu'au %@, sans reconduction." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ihr lebenslanger Zugang ist gesichert. Ihr gekündigtes Abo bleibt bis %@ aktiv, ohne Verlängerung."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Your lifetime access is secured. Your cancelled subscription stays active until %@, with no renewal."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Su acceso de por vida está asegurado. Su suscripción cancelada sigue activa hasta el %@, sin renovación."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Votre accès à vie est acquis. Votre abonnement résilié reste actif jusqu'au %@, sans reconduction."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Il suo accesso a vita è acquisito. L'abbonamento disdetto resta attivo fino al %@, senza rinnovo."
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "O seu acesso vitalício está garantido. A sua subscrição cancelada mantém-se ativa até %@, sem renovação."
+          }
+        }
+      }
+    },
+    "Votre accès à vie est acquis. Votre abonnement, lui, court toujours et sera reconduit : résiliez-le pour ne pas payer deux fois." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ihr lebenslanger Zugang ist gesichert. Ihr Abo läuft aber weiter und wird verlängert: Kündigen Sie es, damit Sie nicht doppelt zahlen."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Your lifetime access is secured. Your subscription is still running and will renew: cancel it so you don't pay twice."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Su acceso de por vida está asegurado. Su suscripción sigue activa y se renovará: cancélela para no pagar dos veces."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Votre accès à vie est acquis. Votre abonnement, lui, court toujours et sera reconduit : résiliez-le pour ne pas payer deux fois."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Il suo accesso a vita è acquisito. L'abbonamento però è ancora attivo e si rinnoverà: lo disdica per non pagare due volte."
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "O seu acesso vitalício está garantido. A sua subscrição continua ativa e será renovada: cancele-a para não pagar duas vezes."
+          }
+        }
+      }
+    },
+    "Votre achat unique a été retrouvé sur ce compte App Store." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ihr Einmalkauf wurde für dieses App-Store-Konto gefunden."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Your one-time purchase was found on this App Store account."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hemos encontrado su compra única en esta cuenta de App Store."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Votre achat unique a été retrouvé sur ce compte App Store."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Il suo acquisto unico è stato trovato su questo account App Store."
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "A sua compra única foi encontrada nesta conta App Store."
+          }
+        }
+      }
+    },
+    "Votre prénom et votre nom" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ihr Vor- und Nachname"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Your first and last name"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Su nombre y apellidos"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Votre prénom et votre nom"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Il suo nome e cognome"
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "O seu nome e apelido"
+          }
+        }
+      }
+    },
     "Votre rapport est prêt" : {
       "localizations" : {
         "de" : {
@@ -13277,6 +13198,46 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "O seu relatório está pronto"
+          }
+        }
+      }
+    },
+    "Votre véhicule" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ihr Fahrzeug"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Your vehicle"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Su vehículo"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Votre véhicule"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Il suo veicolo"
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "O seu veículo"
           }
         }
       }

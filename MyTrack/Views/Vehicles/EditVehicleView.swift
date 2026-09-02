@@ -32,10 +32,6 @@ struct EditVehicleView: View {
     @State private var draft = VehicleDraft()
     @State private var hasLoadedDraft = false
     @State private var isPresentingCamera = false
-    /// La ligne « Photographier » grandit en l'écran d'appareil photo, et
-    /// rétrécit pour revenir — la transition `.zoom` du système, la même que
-    /// depuis la vignette de la liste des véhicules.
-    @Namespace private var photoTransition
 
     var body: some View {
         NavigationStack {
@@ -71,18 +67,23 @@ struct EditVehicleView: View {
                 draft = VehicleDraft(vehicle: vehicle, locale: locale)
                 hasLoadedDraft = true
             }
-            .fullScreenCover(isPresented: $isPresentingCamera) {
-                VehiclePhotoCaptureView(vehicle: vehicle)
-                    .navigationTransition(
-                        .zoom(sourceID: vehicle.persistentModelID, in: photoTransition)
-                    )
-            }
             // Sur le formulaire et non sur la pile : sur la pile, la pastille
             // se lirait par-dessus le nom du véhicule. Et ici en plus de la
             // racine de l'app, parce que c'est cette fiche qu'on retrouve en
             // sortant de l'appareil photo — une surimpression posée dessous ne
             // traverserait pas la feuille.
             .vehiclePhotoToast()
+        }
+        // La carte se pose au bas de la fiche, qui reste lisible au-dessus
+        // d'elle. Voir `VehiclePhotoCaptureView` pour le choix d'une
+        // surimpression plutôt que d'une feuille.
+        .overlay(alignment: .bottom) {
+            if isPresentingCamera {
+                VehiclePhotoCaptureView(vehicle: vehicle) {
+                    withAnimation(VehiclePhotoCaptureView.motion) { isPresentingCamera = false }
+                }
+                .transition(.move(edge: .bottom).combined(with: .opacity))
+            }
         }
     }
 
@@ -106,14 +107,13 @@ struct EditVehicleView: View {
             }
 
             Button {
-                isPresentingCamera = true
+                withAnimation(VehiclePhotoCaptureView.motion) { isPresentingCamera = true }
             } label: {
                 Label(
                     vehicle.photoData == nil ? "Photographier le véhicule" : "Reprendre la photo",
                     systemImage: "camera"
                 )
             }
-            .matchedTransitionSource(id: vehicle.persistentModelID, in: photoTransition)
 
             if vehicle.photoData != nil {
                 Button("Supprimer la photo", systemImage: "trash", role: .destructive) {
