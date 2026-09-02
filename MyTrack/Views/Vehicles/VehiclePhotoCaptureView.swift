@@ -22,6 +22,13 @@
 //  se poursuit sans elle — voir `VehiclePhotoProcessingService` — et se raconte
 //  dans une pastille en haut de l'app.
 //
+//  Elle descend jusqu'au bord de l'iPhone, et ses coins du bas épousent ceux
+//  de l'écran : `ConcentricRectangle` prend l'arrondi du matériel et lui retire
+//  la marge, de sorte que les deux courbes restent parallèles quel que soit
+//  l'appareil. Un rayon écrit en dur aurait été juste sur un modèle et faux sur
+//  tous les autres — et sur un iPhone à bouton, dont l'écran a des coins
+//  droits, c'est le minimum demandé qui s'applique.
+//
 //  La carte est au format exact du cliché (3:4, celui de `sessionPreset =
 //  .photo`). Ce n'est pas une coquetterie : plein écran, l'aperçu rognait ce
 //  que le capteur voyait vraiment, et on cadrait donc à l'aveugle une photo
@@ -65,12 +72,29 @@ struct VehiclePhotoCaptureView: View {
     /// trop tôt.
     @State private var dragOffset: CGFloat = 0
 
-    /// La marge autour de la carte, et l'arrondi de ses coins.
+    /// La marge autour de la carte — la même en bas que sur les côtés, sans
+    /// quoi les coins du bas ne pourraient pas rester parallèles à ceux de
+    /// l'écran — et l'arrondi de ses coins du haut.
     private static let margin: CGFloat = 10
     private static let corner: CGFloat = 34
     /// Le format d'un cliché : `sessionPreset = .photo` rend du 3:4, et
     /// l'aperçu le prend tel quel.
     private static let aspectRatio: CGFloat = 3.0 / 4.0
+
+    /// L'encoche du bas de l'écran, celle qu'il faut franchir pour aller
+    /// toucher le bord.
+    ///
+    /// Lue sur la fenêtre, comme `TabBarMetrics` lit la barre d'onglets : une
+    /// surimpression posée au bas d'un écran est disposée à l'intérieur de la
+    /// zone sûre, et rien dans SwiftUI ne publie de combien. Zéro là où il n'y
+    /// a pas d'encoche — un iPhone à bouton — et la carte y est déjà au bord.
+    private static var bottomInset: CGFloat {
+        UIApplication.shared.connectedScenes
+            .compactMap { $0 as? UIWindowScene }
+            .flatMap(\.windows)
+            .first { $0.isKeyWindow }?
+            .safeAreaInsets.bottom ?? 0
+    }
 
     /// Le ressort qui la fait monter et redescendre. Tenu ici, avec elle, pour
     /// que les deux écrans qui la posent la fassent apparaître de la même
@@ -81,7 +105,12 @@ struct VehiclePhotoCaptureView: View {
         viewfinder
             .padding(.horizontal, Self.margin)
             .padding(.bottom, Self.margin)
-            .offset(y: dragOffset)
+            // Descendue jusqu'au bord du matériel, par-dessus la barre
+            // d'accueil. Un décalage et non `ignoresSafeArea` : celui-ci
+            // n'agit que sur une vue qui remplit son contenant, et la carte,
+            // elle, a la taille que son format lui donne. Le décalage emporte
+            // aussi la zone sensible au doigt, ce qu'il faut ici.
+            .offset(y: Self.bottomInset + dragOffset)
             .gesture(dismissDrag)
             .task { await camera.start() }
             .onDisappear { camera.stop() }
@@ -126,7 +155,7 @@ struct VehiclePhotoCaptureView: View {
             }
         }
         .aspectRatio(Self.aspectRatio, contentMode: .fit)
-        .clipShape(.rect(cornerRadius: Self.corner, style: .continuous))
+        .clipShape(Self.cardShape)
         // Posées après le rognage, donc jamais coupées par le coin : l'anneau
         // du déclencheur déborde de sa pastille.
         .overlay(alignment: .bottom) { controls }
@@ -134,6 +163,19 @@ struct VehiclePhotoCaptureView: View {
         // image de caméra, sombre par nature — et non sur le thème de l'app.
         // En clair, un symbole blanc sur du verre clair ne se lirait plus.
         .environment(\.colorScheme, .dark)
+    }
+
+    /// Le haut à l'arrondi de l'app, le bas à celui de l'iPhone.
+    ///
+    /// `.concentric` lit l'arrondi du contenant — l'écran — et lui retire la
+    /// marge, ce qui garde les deux courbes parallèles. Le minimum sert aux
+    /// appareils dont l'écran n'est pas arrondi : les coins du bas y valent
+    /// alors ceux du haut, plutôt que de se casser à angle droit.
+    private static var cardShape: some Shape {
+        ConcentricRectangle(
+            uniformTopCorners: .fixed(corner),
+            uniformBottomCorners: .concentric(minimum: .fixed(corner))
+        )
     }
 
     private var controls: some View {
