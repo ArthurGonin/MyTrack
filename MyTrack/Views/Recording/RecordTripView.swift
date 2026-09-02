@@ -44,9 +44,12 @@ struct RecordTripView: View {
 
     /// Celle des chiffres des tuiles. Même raison qu'au-dessus : une taille en
     /// points ne suivrait pas les réglages d'accessibilité.
-    @ScaledMetric(relativeTo: .title) private var tileValueSize: CGFloat = 26
+    @ScaledMetric(relativeTo: .title) private var tileValueSize: CGFloat = 32
 
     @State private var tabBarSize: CGSize?
+    /// La hauteur des trois tuiles, relevée sur elles : c'est jusque-là que la
+    /// feuille repliée doit descendre pour les cacher.
+    @State private var tilesHeight: CGFloat = 0
     /// La largeur que le bouton prend en trajet, relevée sur la feuille.
     @State private var fullButtonWidth: CGFloat?
     /// De combien la feuille est descendue vers la barre d'onglets : tout au
@@ -331,6 +334,9 @@ struct RecordTripView: View {
             }
         }
         .padding(.horizontal, Self.tileRowInset)
+        // Relevée plutôt que calculée : la hauteur d'une tuile dépend des
+        // polices du système, qui changent avec les réglages d'accessibilité.
+        .onGeometryChange(for: CGFloat.self) { $0.size.height } action: { tilesHeight = $0 }
     }
 
     /// Une tuile : son symbole dans une pastille ronde, le chiffre, son
@@ -341,18 +347,22 @@ struct RecordTripView: View {
         label: LocalizedStringKey,
         @ViewBuilder value: () -> Value
     ) -> some View {
-        VStack(spacing: 8) {
+        VStack(spacing: Self.tileContentSpacing) {
             Image(systemName: symbolName)
-                .font(.subheadline)
+                .font(.footnote)
                 .foregroundStyle(.secondary)
-                .frame(width: 34, height: 34)
+                .frame(width: Self.tileSymbolDiameter, height: Self.tileSymbolDiameter)
                 .background(Color(uiColor: .tertiarySystemFill), in: .circle)
                 .accessibilityHidden(true)
             value()
+            // Une seule ligne, et petit : c'est le chiffre qu'on vient lire,
+            // l'intitulé ne fait que le nommer. « temps de conduite » est le
+            // plus long des trois et c'est lui qui fixe la taille — les deux
+            // autres la suivent pour que les trois se lisent pareil.
             Text(label)
-                .font(.footnote)
+                .font(.caption)
                 .lineLimit(1)
-                .minimumScaleFactor(0.7)
+                .minimumScaleFactor(0.8)
         }
         .frame(maxWidth: .infinity)
         .padding(.vertical, Self.tileVerticalPadding)
@@ -504,7 +514,16 @@ struct RecordTripView: View {
             if viewModel.isRecording {
                 VStack(spacing: 16) {
                     grabber
+                    // Repliée, la feuille est bien plus haute que ses deux
+                    // chiffres : ces ressorts les posent au milieu du verre
+                    // plutôt que collés sous la poignée.
+                    if isSheetCollapsed {
+                        Spacer(minLength: 0)
+                    }
                     liveStats
+                    if isSheetCollapsed {
+                        Spacer(minLength: 0)
+                    }
                     if !isSheetCollapsed {
                         LiveTripMapView()
                             .frame(maxWidth: .infinity, maxHeight: .infinity)
@@ -532,6 +551,11 @@ struct RecordTripView: View {
                 // taille et sa place quoi qu'il arrive au-dessus de lui.
                 .layoutPriority(1)
         }
+        // Repliée, elle descend jusqu'à couvrir les trois tuiles — voir
+        // `collapsedSheetContentHeight`. Une hauteur ferme et non un minimum :
+        // les ressorts qui centrent les chiffres prendraient sinon toute la
+        // hauteur proposée, et la feuille couvrirait la voiture avec.
+        .frame(height: collapsedSheetContentHeight)
         // La feuille garde toute la largeur dans les deux états. Au repos elle
         // est invisible — verre éteint, fond transparent — et c'est le bouton
         // seul qui rétrécit ; sans ça, elle se refermerait sur lui et la carte
@@ -660,6 +684,22 @@ struct RecordTripView: View {
         return tabBarSize.height
     }
 
+    /// La hauteur que la feuille prend quand la carte est rangée.
+    ///
+    /// Assez pour cacher les trois tuiles, pas assez pour mordre sur la
+    /// voiture : la place du bouton, l'écart qui la sépare des tuiles, les
+    /// tuiles elles-mêmes, et six points pour finir dans le vide qui les
+    /// surmonte. Les marges de la feuille sont retranchées parce que la mesure
+    /// porte sur son contenu, avant qu'elles ne s'ajoutent autour.
+    ///
+    /// Nil hors de ce cas : la feuille ouverte prend toute la hauteur, et au
+    /// repos elle se réduit au bouton.
+    private var collapsedSheetContentHeight: CGFloat? {
+        guard viewModel.isRecording, isSheetCollapsed, tilesHeight > 0 else { return nil }
+        return restingSheetHeight + Self.decorSpacing + tilesHeight
+            + Self.tileCoverMargin - 2 * Self.sheetPadding
+    }
+
     /// Ce que la feuille occupe au repos, une fois descendue contre la barre
     /// d'onglets : la hauteur du bouton, ses deux marges, moins ce qu'elle
     /// descend. Lue sur la barre d'onglets comme le bouton lui-même, et jamais
@@ -744,12 +784,23 @@ struct RecordTripView: View {
     /// L'écart entre les trois tuiles, ce dont la rangée se retire des marges
     /// de l'écran, et l'arrondi de leurs coins.
     private static let tileSpacing: CGFloat = 12
-    private static let tileRowInset: CGFloat = 10
+    /// La rangée ne se retire presque plus des marges : l'intitulé tient sur
+    /// une ligne, et chaque point de largeur gagné est un point qu'il n'a pas
+    /// à rapetisser.
+    private static let tileRowInset: CGFloat = 6
     private static let tileCornerRadius: CGFloat = 22
 
-    /// Ce qui donne aux tuiles leur hauteur : le chiffre est grand, il lui faut
-    /// de l'air au-dessus et en dessous.
-    private static let tileVerticalPadding: CGFloat = 20
+    /// Ce qui donne aux tuiles leur hauteur : le symbole, le chiffre, les deux
+    /// lignes de l'intitulé, et ces trois écarts-là. Resserré autant que le
+    /// texte le permet — la tuile ne doit pas prendre la moitié de la place que
+    /// la voiture laisse.
+    private static let tileVerticalPadding: CGFloat = 12
+    private static let tileContentSpacing: CGFloat = 6
+    private static let tileSymbolDiameter: CGFloat = 30
+
+    /// Ce que la feuille repliée dépasse le haut des tuiles : juste de quoi ne
+    /// pas laisser un liseré dépasser, et pas de quoi atteindre les roues.
+    private static let tileCoverMargin: CGFloat = 6
 
     /// Ce qui sépare les trois étages du décor : le chiffre, la voiture, les
     /// tuiles. Serré : les trois doivent tenir entre la salutation et le
