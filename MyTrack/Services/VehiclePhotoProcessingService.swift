@@ -66,6 +66,8 @@ final class VehiclePhotoProcessingService {
     /// La minuterie qui efface la pastille. À part de `work` : elle court
     /// justement après que celui-ci a fini.
     private var expiry: Task<Void, Never>?
+    /// Le sursis demandé au système pour finir même si l'app passe derrière.
+    private var grace: UIBackgroundTaskIdentifier = .invalid
 
     init(photoService: VehiclePhotoService, modelContext: ModelContext) {
         self.photoService = photoService
@@ -79,8 +81,10 @@ final class VehiclePhotoProcessingService {
         work?.cancel()
         expiry?.cancel()
         state = .processing
+        beginGrace()
 
         work = Task {
+            defer { endGrace() }
             do {
                 let data = try await photoService.processedPhoto(from: photo)
                 try Task.checkCancellation()
@@ -96,12 +100,51 @@ final class VehiclePhotoProcessingService {
                 modelContext.saveOrLog()
                 show(.succeeded, for: .seconds(2.5))
             } catch is CancellationError {
-                // Remplacée par une autre prise : c'est la nouvelle qui parle
-                // désormais, et elle a déjà posé sa pastille.
+                // Deux façons d'en arriver là, et ni l'une ni l'autre n'a rien
+                // à dire ici : une autre prise a remplacé celle-ci, et sa
+                // pastille est déjà posée ; ou le sursis a expiré, et c'est la
+                // main du système qui a posé la sienne. Annoncer quoi que ce
+                // soit maintenant écraserait l'une ou l'autre.
             } catch {
                 show(.failed(Failure(error)), for: .seconds(4))
             }
         }
+    }
+
+    // MARK: - Le sursis
+
+    /// Le temps que le système accorde à une app qui passe derrière avec du
+    /// travail sur les bras.
+    ///
+    /// Sans lui, une app mise en arrière-plan est suspendue en quelques
+    /// secondes, et une requête en vol se fige avec elle : jeter un œil à une
+    /// notification pendant le détourage suffirait à perdre la photo — et
+    /// l'appel à OpenAI aurait quand même été facturé. Le sursis dure une
+    /// trentaine de secondes, ce qui couvre le coup d'œil, pas la pause café.
+    ///
+    /// Le rendre est obligatoire : le système ferme l'app d'un « was killed for
+    /// not calling endBackgroundTask » si le délai passe sans qu'on ait rendu.
+    /// D'où le `defer` sur la tâche, et le renoncement dans la main du système
+    /// à l'expiration — une requête qui n'a pas abouti à temps n'aboutira pas.
+    private func beginGrace() {
+        endGrace()
+        grace = UIApplication.shared.beginBackgroundTask(withName: "Détourage de la photo") {
+            [weak self] in
+            guard let self else { return }
+            work?.cancel()
+            // Dit avant de rendre la main, sans quoi la pastille tournerait
+            // pour toujours : la tâche annulée, plus personne ne parle. Le
+            // texte est celui de l'attente déçue, et c'est bien ce qui s'est
+            // passé — la réponse n'est pas venue à temps.
+            show(.failed(.unavailable), for: .seconds(4))
+            endGrace()
+        }
+    }
+
+    private func endGrace() {
+        guard grace != .invalid else { return }
+        UIApplication.shared.endBackgroundTask(grace)
+        grace = .invalid
     }
 
     /// La pastille posée, puis retirée d'elle-même.
