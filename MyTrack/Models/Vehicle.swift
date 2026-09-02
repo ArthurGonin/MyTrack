@@ -33,6 +33,19 @@ final class Vehicle {
     /// Le prix d'un litre ou d'un kilowattheure, dans la devise de la région.
     var energyPrice: Double?
 
+    /// La photo du véhicule, détourée et normalisée, telle qu'elle s'affiche sur
+    /// l'accueil quand ce véhicule est choisi. Un PNG à fond transparent, au
+    /// cadre que `VehiclePhotoNormalizer` impose à toutes.
+    ///
+    /// Optionnelle pour la raison dite plus haut sur `storedEnergyType` : une
+    /// propriété ajoutée à un `@Model` déjà en base doit l'être, sans quoi la
+    /// première lecture d'une ligne existante ferme l'app.
+    ///
+    /// `.externalStorage` la range dans un fichier à part plutôt que dans la
+    /// base : un PNG d'un mégaoctet et demi n'a rien à faire au milieu de
+    /// colonnes qu'on relit à chaque écran.
+    @Attribute(.externalStorage) var photoData: Data?
+
     /// L'énergie du véhicule. Un véhicule enregistré avant que le champ existe
     /// n'en a aucune : il se lit thermique, la plus répandue, et l'écran de
     /// modification permet de le corriger.

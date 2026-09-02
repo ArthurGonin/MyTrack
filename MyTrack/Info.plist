@@ -20,12 +20,14 @@
 	<string>$(CURRENT_PROJECT_VERSION)</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
+	<key>NSCameraUsageDescription</key>
+	<string>MyTrack utilise l'appareil photo pour prendre votre véhicule en photo et l'afficher sur l'écran d'accueil.</string>
 	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
-	<string>MyTrack utilise ta position, y compris en arrière-plan, pour détecter et enregistrer automatiquement tes trajets en voiture.</string>
+	<string>MyTrack utilise votre position, y compris en arrière-plan, pour détecter et enregistrer automatiquement vos trajets en voiture.</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
-	<string>MyTrack utilise ta position pour enregistrer le tracé et la distance de tes trajets.</string>
+	<string>MyTrack utilise votre position pour enregistrer le tracé et la distance de vos trajets.</string>
 	<key>NSMotionUsageDescription</key>
-	<string>MyTrack utilise les données de mouvement pour détecter automatiquement le début et la fin de tes trajets en voiture.</string>
+	<string>MyTrack utilise les données de mouvement pour détecter automatiquement le début et la fin de vos trajets en voiture.</string>
 	<key>UIApplicationSceneManifest</key>
 	<dict>
 		<key>UIApplicationSupportsMultipleScenes</key>

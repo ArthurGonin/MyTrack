@@ -24,6 +24,7 @@ final class AppServices {
     let languageService = LanguageService()
     let locationService = LocationService()
     let motionActivityService = MotionActivityService()
+    let vehiclePhotoService = VehiclePhotoService()
     let reportGenerationService: ReportGenerationService
     let notificationService: NotificationService
     let purchaseService = PurchaseService()

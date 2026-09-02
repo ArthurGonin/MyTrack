@@ -37,6 +37,9 @@ struct VehiclePickerView: View {
     @Query(sort: \Vehicle.name) private var vehicles: [Vehicle]
     @State private var isPresentingAddVehicle = false
     @State private var vehicleBeingEdited: Vehicle?
+    /// Le véhicule qu'on s'apprête à photographier. Plein écran et non feuille :
+    /// l'appareil photo prend tout, et le cadrage a besoin de toute la place.
+    @State private var vehicleBeingPhotographed: Vehicle?
 
     private var viewModel: VehicleListViewModel {
         VehicleListViewModel(vehicleService: appServices.vehicleService)
@@ -87,6 +90,9 @@ struct VehiclePickerView: View {
             }
             .sheet(item: $vehicleBeingEdited) { vehicle in
                 EditVehicleView(vehicle: vehicle)
+            }
+            .fullScreenCover(item: $vehicleBeingPhotographed) { vehicle in
+                VehiclePhotoCaptureView(vehicle: vehicle)
             }
         }
     }
@@ -153,6 +159,8 @@ struct VehiclePickerView: View {
             }
             .buttonStyle(.plain)
 
+            photoButton(for: vehicle)
+
             Button {
                 vehicleBeingEdited = vehicle
             } label: {
@@ -163,6 +171,48 @@ struct VehiclePickerView: View {
             .accessibilityLabel("Modifier le véhicule")
         }
     }
+
+    /// L'appareil photo, ou la photo déjà prise.
+    ///
+    /// C'est ici que la voiture de l'accueil se donne : à côté du véhicule
+    /// qu'elle représente, dans la feuille où on le choisit. Une fois la photo
+    /// faite, la vignette prend la place du symbole — et c'est elle qu'on
+    /// retouche, un appui proposant de la reprendre ou de l'effacer.
+    @ViewBuilder
+    private func photoButton(for vehicle: Vehicle) -> some View {
+        if let data = vehicle.photoData, let photo = UIImage(data: data) {
+            Menu {
+                Button("Reprendre la photo", systemImage: "camera") {
+                    vehicleBeingPhotographed = vehicle
+                }
+                Button("Supprimer la photo", systemImage: "trash", role: .destructive) {
+                    vehicle.photoData = nil
+                    modelContext.saveOrLog()
+                }
+            } label: {
+                Image(uiImage: photo)
+                    .resizable()
+                    .scaledToFit()
+                    .frame(width: Self.thumbnailWidth)
+                    .clipShape(.rect(cornerRadius: 6))
+            }
+            .accessibilityLabel("Photo du véhicule")
+        } else {
+            Button {
+                vehicleBeingPhotographed = vehicle
+            } label: {
+                Image(systemName: "camera")
+                    .foregroundStyle(.tint)
+                    .frame(width: Self.thumbnailWidth)
+            }
+            .buttonStyle(.plain)
+            .accessibilityLabel("Photographier le véhicule")
+        }
+    }
+
+    /// La largeur réservée à la vignette, la même que celle du symbole d'appareil
+    /// photo : la colonne ne bouge pas selon que le véhicule a sa photo ou non.
+    private static let thumbnailWidth: CGFloat = 44
 
     /// Ce que la ligne dit du véhicule sous son nom : son identité
     /// (« AB-123-CD · Thermique ») puis ses chiffres (« 6,5 L/100 km ·

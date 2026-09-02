@@ -463,6 +463,16 @@ struct RecordTripView: View {
         abs(ratio).formatted(.percent.precision(.fractionLength(0)).locale(locale))
     }
 
+    /// La voiture du véhicule choisi si elle a été photographiée, le dessin
+    /// sinon. Les deux sortent du même normalisateur, donc du même cadre : le
+    /// bloc garde sa hauteur et rien ne saute en changeant de véhicule.
+    private var carImage: Image {
+        if let data = selectedVehicle?.photoData, let photo = UIImage(data: data) {
+            return Image(uiImage: photo)
+        }
+        return Image("HomeCar")
+    }
+
     /// La voiture, en dessin plutôt qu'en photo de fond : elle est un objet de
     /// l'écran, posée entre les cases et le bouton, et non un décor derrière
     /// tout le reste. Le PNG est détouré, donc c'est le dégradé de l'app qu'on
@@ -471,7 +481,7 @@ struct RecordTripView: View {
     /// Elle déborde des marges de l'écran de quelques points : une voiture
     /// coupée par le bord a l'air posée devant l'écran plutôt que dedans.
     private var carIllustration: some View {
-        Image("HomeCar")
+        carImage
             .resizable()
             .scaledToFit()
             // Une largeur, pas de hauteur : la voiture prend celle que ses

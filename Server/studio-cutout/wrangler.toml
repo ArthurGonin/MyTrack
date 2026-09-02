@@ -1,0 +1,9 @@
+name = "mytrack-studio"
+main = "worker.ts"
+compatibility_date = "2026-01-01"
+
+# Le compteur de photos par appareil et par jour. L'identifiant est celui que
+# « wrangler kv namespace create QUOTA » affiche — à recopier ici.
+[[kv_namespaces]]
+binding = "QUOTA"
+id = "À REMPLACER"

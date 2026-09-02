@@ -13,6 +13,47 @@
         }
       }
     },
+    "NSCameraUsageDescription" : {
+      "comment" : "Privacy - Camera Usage Description",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "MyTrack verwendet die Kamera, um Ihr Fahrzeug zu fotografieren und es auf dem Startbildschirm anzuzeigen."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "MyTrack uses the camera to photograph your vehicle and show it on the home screen."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "MyTrack usa la cámara para fotografiar su vehículo y mostrarlo en la pantalla de inicio."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "MyTrack utilise l'appareil photo pour prendre votre véhicule en photo et l'afficher sur l'écran d'accueil."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "MyTrack usa la fotocamera per fotografare il suo veicolo e mostrarlo nella schermata principale."
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "MyTrack usa a câmara para fotografar o seu veículo e mostrá-lo no ecrã principal."
+          }
+        }
+      }
+    },
     "NSLocationAlwaysAndWhenInUseUsageDescription" : {
       "comment" : "Privacy - Location Always and When In Use Usage Description",
       "localizations" : {
