@@ -42,6 +42,11 @@ struct RootTabView: View {
             }
             .badge(unopenedReportCount)
         }
+        // La pastille du détourage de photo, posée au plus haut : le travail
+        // survit à l'écran qui l'a lancé, et il doit pouvoir se raconter
+        // n'importe où dans l'app. Les feuilles d'où l'on photographie la
+        // posent aussi de leur côté — voir `vehiclePhotoToast()`.
+        .vehiclePhotoToast()
         .onAppear {
             if hasPendingTrips {
                 isPendingReviewPresented = true

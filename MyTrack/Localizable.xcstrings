@@ -4,42 +4,82 @@
     "" : {
 
     },
-    "Analyse du véhicule…" : {
+    "Activer le flash" : {
       "localizations" : {
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Fahrzeug wird analysiert…"
+            "value" : "Blitz einschalten"
           }
         },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Analysing the vehicle…"
+            "value" : "Turn on the flash"
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Analizando el vehículo…"
+            "value" : "Activar el flash"
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Analyse du véhicule…"
+            "value" : "Activer le flash"
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Analisi del veicolo…"
+            "value" : "Attiva il flash"
           }
         },
         "pt" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "A analisar o veículo…"
+            "value" : "Ligar o flash"
+          }
+        }
+      }
+    },
+    "Cadrez le véhicule de face." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nehmen Sie das Fahrzeug frontal ins Bild."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Frame the vehicle head-on."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Encuadre el vehículo de frente."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cadrez le véhicule de face."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Inquadri il veicolo di fronte."
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Enquadre o veículo de frente."
           }
         }
       }
@@ -84,6 +124,86 @@
         }
       }
     },
+    "Désactiver le flash" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Blitz ausschalten"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Turn off the flash"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Desactivar el flash"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Désactiver le flash"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Disattiva il flash"
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Desligar o flash"
+          }
+        }
+      }
+    },
+    "Fermer l'appareil photo" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kamera schließen"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Close the camera"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cerrar la cámara"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Fermer l'appareil photo"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Chiudi la fotocamera"
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Fechar a câmara"
+          }
+        }
+      }
+    },
     "L'appareil photo n'est pas disponible ici." : {
       "localizations" : {
         "de" : {
@@ -124,162 +244,162 @@
         }
       }
     },
-    "La photo n'a pas pu être traitée." : {
+    "La photo n'a pas pu être prise." : {
       "localizations" : {
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Das Foto konnte nicht verarbeitet werden."
+            "value" : "Das Foto konnte nicht aufgenommen werden."
           }
         },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "The photo couldn't be processed."
+            "value" : "The photo couldn't be taken."
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "No se ha podido procesar la foto."
+            "value" : "No se ha podido tomar la foto."
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "La photo n'a pas pu être traitée."
+            "value" : "La photo n'a pas pu être prise."
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Non è stato possibile elaborare la foto."
+            "value" : "Non è stato possibile scattare la foto."
           }
         },
         "pt" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Não foi possível processar a fotografia."
+            "value" : "Não foi possível tirar a fotografia."
           }
         }
       }
     },
-    "La retouche photo n'est pas disponible." : {
+    "Le service n'a pas répondu" : {
       "localizations" : {
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Die Fotobearbeitung ist nicht verfügbar."
+            "value" : "Der Dienst hat nicht geantwortet"
           }
         },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Photo retouching isn't available."
+            "value" : "The service didn't respond"
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "El retoque de fotos no está disponible."
+            "value" : "El servicio no ha respondido"
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "La retouche photo n'est pas disponible."
+            "value" : "Le service n'a pas répondu"
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Il ritocco delle foto non è disponibile."
+            "value" : "Il servizio non ha risposto"
           }
         },
         "pt" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "O retoque de fotografias não está disponível."
+            "value" : "O serviço não respondeu"
           }
         }
       }
     },
-    "Le service n'a pas répondu." : {
+    "Limite de photos atteinte" : {
       "localizations" : {
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Der Dienst hat nicht geantwortet."
+            "value" : "Tageslimit an Fotos erreicht"
           }
         },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "The service didn't respond."
+            "value" : "Daily photo limit reached"
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "El servicio no ha respondido."
+            "value" : "Límite de fotos alcanzado"
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Le service n'a pas répondu."
+            "value" : "Limite de photos atteinte"
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Il servizio non ha risposto."
+            "value" : "Limite di foto raggiunto"
           }
         },
         "pt" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "O serviço não respondeu."
+            "value" : "Limite de fotografias atingido"
           }
         }
       }
     },
-    "Le service qui détoure les photos n'est pas configuré dans cette version." : {
+    "Photo" : {
       "localizations" : {
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Der Dienst, der die Fotos freistellt, ist in dieser Version nicht eingerichtet."
+            "value" : "Foto"
           }
         },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "The service that cuts out photos isn't set up in this version."
+            "value" : "Photo"
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "El servicio que recorta las fotos no está configurado en esta versión."
+            "value" : "Foto"
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Le service qui détoure les photos n'est pas configuré dans cette version."
+            "value" : "Photo"
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Il servizio che scontorna le foto non è configurato in questa versione."
+            "value" : "Foto"
           }
         },
         "pt" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "O serviço que recorta as fotografias não está configurado nesta versão."
+            "value" : "Fotografia"
           }
         }
       }
@@ -324,6 +444,86 @@
         }
       }
     },
+    "Photo non traitée" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Foto nicht verarbeitet"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Photo not processed"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Foto no procesada"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Photo non traitée"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Foto non elaborata"
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Fotografia não processada"
+          }
+        }
+      }
+    },
+    "Photo prête" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Foto fertig"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Photo ready"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Foto lista"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Photo prête"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Foto pronta"
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Fotografia pronta"
+          }
+        }
+      }
+    },
     "Photographier le véhicule" : {
       "localizations" : {
         "de" : {
@@ -360,46 +560,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Fotografar o veículo"
-          }
-        }
-      }
-    },
-    "Placez le véhicule dans la silhouette, vu de face." : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Platzieren Sie das Fahrzeug frontal in der Silhouette."
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Line the vehicle up with the outline, seen from the front."
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Sitúe el vehículo en la silueta, visto de frente."
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Placez le véhicule dans la silhouette, vu de face."
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Allinei il veicolo alla sagoma, visto di fronte."
-          }
-        },
-        "pt" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Coloque o veículo na silhueta, visto de frente."
           }
         }
       }
@@ -444,46 +604,6 @@
         }
       }
     },
-    "Reculez un peu, cadrez le véhicule de face, et réessayez." : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Treten Sie etwas zurück, nehmen Sie das Fahrzeug frontal ins Bild und versuchen Sie es erneut."
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Step back a little, frame the vehicle head-on, and try again."
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Aléjese un poco, encuadre el vehículo de frente e inténtelo de nuevo."
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Reculez un peu, cadrez le véhicule de face, et réessayez."
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Si allontani un poco, inquadri il veicolo di fronte e riprovi."
-          }
-        },
-        "pt" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Afaste-se um pouco, enquadre o veículo de frente e tente novamente."
-          }
-        }
-      }
-    },
     "Reprendre la photo" : {
       "localizations" : {
         "de" : {
@@ -524,42 +644,42 @@
         }
       }
     },
-    "Réessayer" : {
+    "Retouche photo indisponible" : {
       "localizations" : {
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Erneut versuchen"
+            "value" : "Fotobearbeitung nicht verfügbar"
           }
         },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Try again"
+            "value" : "Retouching unavailable"
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Reintentar"
+            "value" : "Retoque no disponible"
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Réessayer"
+            "value" : "Retouche photo indisponible"
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Riprova"
+            "value" : "Ritocco non disponibile"
           }
         },
         "pt" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Tentar novamente"
+            "value" : "Retoque indisponível"
           }
         }
       }
@@ -644,82 +764,42 @@
         }
       }
     },
-    "Vérifiez votre connexion, puis réessayez dans un instant." : {
+    "Traitement de la photo…" : {
       "localizations" : {
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Prüfen Sie Ihre Verbindung und versuchen Sie es gleich noch einmal."
+            "value" : "Foto wird verarbeitet…"
           }
         },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Check your connection, then try again in a moment."
+            "value" : "Processing the photo…"
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Compruebe su conexión y vuelva a intentarlo en un momento."
+            "value" : "Procesando la foto…"
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Vérifiez votre connexion, puis réessayez dans un instant."
+            "value" : "Traitement de la photo…"
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Controlli la connessione e riprovi tra un istante."
+            "value" : "Elaborazione della foto…"
           }
         },
         "pt" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Verifique a sua ligação e tente novamente daqui a pouco."
-          }
-        }
-      }
-    },
-    "Vous avez atteint la limite de photos du jour." : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Sie haben das Tageslimit an Fotos erreicht."
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "You've reached today's photo limit."
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Ha alcanzado el límite de fotos de hoy."
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Vous avez atteint la limite de photos du jour."
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Ha raggiunto il limite di foto di oggi."
-          }
-        },
-        "pt" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Atingiu o limite de fotografias de hoje."
+            "value" : "A processar a fotografia…"
           }
         }
       }

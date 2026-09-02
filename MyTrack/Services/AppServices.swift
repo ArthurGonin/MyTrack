@@ -25,6 +25,7 @@ final class AppServices {
     let locationService = LocationService()
     let motionActivityService = MotionActivityService()
     let vehiclePhotoService = VehiclePhotoService()
+    let vehiclePhotoProcessingService: VehiclePhotoProcessingService
     let reportGenerationService: ReportGenerationService
     let notificationService: NotificationService
     let purchaseService = PurchaseService()
@@ -32,6 +33,11 @@ final class AppServices {
     let drivingDetector: DrivingDetector
 
     init(modelContext: ModelContext) {
+        // Le détourage survit à l'écran qui l'a lancé, donc il vit ici : la
+        // vue de l'appareil photo se ferme à l'instant du déclenchement.
+        vehiclePhotoProcessingService = VehiclePhotoProcessingService(
+            photoService: vehiclePhotoService, modelContext: modelContext
+        )
         reportGenerationService = ReportGenerationService(
             userProfileService: userProfileService,
             unitSettingsService: unitSettingsService,

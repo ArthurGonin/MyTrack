@@ -40,6 +40,11 @@ struct VehiclePickerView: View {
     /// Le véhicule qu'on s'apprête à photographier. Plein écran et non feuille :
     /// l'appareil photo prend tout, et le cadrage a besoin de toute la place.
     @State private var vehicleBeingPhotographed: Vehicle?
+    /// Ce qui relie la vignette d'une ligne à l'écran d'appareil photo qu'elle
+    /// ouvre : l'une grandit en l'autre, et rétrécit pour revenir. C'est la
+    /// transition du système (`.zoom`), celle des photos et des applications
+    /// qui s'ouvrent depuis leur icône.
+    @Namespace private var photoTransition
 
     private var viewModel: VehicleListViewModel {
         VehicleListViewModel(vehicleService: appServices.vehicleService)
@@ -93,7 +98,16 @@ struct VehiclePickerView: View {
             }
             .fullScreenCover(item: $vehicleBeingPhotographed) { vehicle in
                 VehiclePhotoCaptureView(vehicle: vehicle)
+                    .navigationTransition(
+                        .zoom(sourceID: vehicle.persistentModelID, in: photoTransition)
+                    )
             }
+            // Posée sur le contenu et non sur la pile : sur la pile, la
+            // pastille viendrait se lire par-dessus le titre « Véhicules ».
+            // Ici plutôt qu'à la seule racine de l'app, parce que c'est cette
+            // feuille qu'on retrouve en sortant de l'appareil photo, et qu'une
+            // surimpression posée dessous ne la traverserait pas.
+            .vehiclePhotoToast()
         }
     }
 
@@ -176,19 +190,17 @@ struct VehiclePickerView: View {
     ///
     /// C'est ici que la voiture de l'accueil se donne : à côté du véhicule
     /// qu'elle représente, dans la feuille où on le choisit. Une fois la photo
-    /// faite, la vignette prend la place du symbole — et c'est elle qu'on
-    /// retouche, un appui proposant de la reprendre ou de l'effacer.
+    /// faite, la vignette prend la place du symbole.
+    ///
+    /// Et elle mène au même endroit que lui : un appui rouvre l'appareil photo.
+    /// Un détourage qui a mal tourné se reprend donc là où on le voit, sans
+    /// menu à traverser d'abord — c'est le geste qu'on fait spontanément devant
+    /// une photo ratée. L'effacer, plus rare, passe par l'appui long.
     @ViewBuilder
     private func photoButton(for vehicle: Vehicle) -> some View {
         if let data = vehicle.photoData, let photo = UIImage(data: data) {
-            Menu {
-                Button("Reprendre la photo", systemImage: "camera") {
-                    vehicleBeingPhotographed = vehicle
-                }
-                Button("Supprimer la photo", systemImage: "trash", role: .destructive) {
-                    vehicle.photoData = nil
-                    modelContext.saveOrLog()
-                }
+            Button {
+                vehicleBeingPhotographed = vehicle
             } label: {
                 Image(uiImage: photo)
                     .resizable()
@@ -196,7 +208,15 @@ struct VehiclePickerView: View {
                     .frame(width: Self.thumbnailWidth)
                     .clipShape(.rect(cornerRadius: 6))
             }
-            .accessibilityLabel("Photo du véhicule")
+            .buttonStyle(.plain)
+            .accessibilityLabel("Reprendre la photo")
+            .matchedTransitionSource(id: vehicle.persistentModelID, in: photoTransition)
+            .contextMenu {
+                Button("Supprimer la photo", systemImage: "trash", role: .destructive) {
+                    vehicle.photoData = nil
+                    modelContext.saveOrLog()
+                }
+            }
         } else {
             Button {
                 vehicleBeingPhotographed = vehicle
@@ -207,6 +227,7 @@ struct VehiclePickerView: View {
             }
             .buttonStyle(.plain)
             .accessibilityLabel("Photographier le véhicule")
+            .matchedTransitionSource(id: vehicle.persistentModelID, in: photoTransition)
         }
     }
 

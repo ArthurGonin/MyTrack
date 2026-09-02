@@ -5,8 +5,8 @@
 //  L'appareil photo de l'app : la session, l'aperçu, le déclenchement.
 //
 //  Une session AVFoundation plutôt que `UIImagePickerController`, qui aurait
-//  suffi à prendre une photo mais pas à poser la silhouette de guidage
-//  par-dessus l'aperçu — et c'est elle qui décide de la qualité du détourage.
+//  suffi à prendre une photo mais pas à la cadrer dans une carte à nous, ni à
+//  poser des pastilles de verre dans son aperçu, ni à choisir le flash.
 //
 //  Rien ne démarre tout seul : la vue appelle `start()` en paraissant et
 //  `stop()` en partant. Une session laissée tourner garde la caméra allumée et
@@ -37,6 +37,15 @@ final class CameraController {
     /// autorisation refusée. L'écran propose alors la photothèque.
     private(set) var isReady = false
 
+    /// Faux quand l'appareil n'a pas de flash — le simulateur, la caméra avant
+    /// de certains modèles. Le bouton disparaît alors plutôt que de rester là
+    /// sans effet.
+    private(set) var hasFlash = false
+
+    /// Le flash, tel que l'utilisateur l'a réglé. Éteint par défaut : voir le
+    /// bouton dans `VehiclePhotoCaptureView`.
+    var isFlashOn = false
+
     private let output = AVCapturePhotoOutput()
     /// La session se configure et démarre hors du fil principal : `startRunning`
     /// bloque le temps que la caméra s'ouvre, et l'interface se figerait avec.
@@ -46,9 +55,9 @@ final class CameraController {
     ///
     /// C'est ici qu'elles tiennent en vie : `AVCapturePhotoOutput` ne retient
     /// son délégué que faiblement, et un délégué désalloué est une photo qui ne
-    /// revient jamais — l'écran resterait sur « Analyse du véhicule… » sans
-    /// fin. Rangées sous l'identifiant que porte chaque réglage, pour que deux
-    /// appuis rapprochés ne se chassent pas l'un l'autre.
+    /// revient jamais — la pastille resterait sur « Traitement de la photo… »
+    /// sans fin. Rangées sous l'identifiant que porte chaque réglage, pour que
+    /// deux appuis rapprochés ne se chassent pas l'un l'autre.
     private var pendingCaptures: [Int64: PhotoCaptureDelegate] = [:]
 
     func start() async {
@@ -66,6 +75,10 @@ final class CameraController {
             }
         }
         isReady = configured
+        // Lu sur l'appareil plutôt que sur la sortie : `supportedFlashModes`
+        // n'a de sens qu'une fois la prise engagée, alors que le bouton, lui,
+        // doit savoir s'afficher tout de suite.
+        hasFlash = configured && (AVCaptureDevice.default(for: .video)?.hasFlash ?? false)
     }
 
     func stop() {
@@ -77,7 +90,10 @@ final class CameraController {
 
     /// La photo prise, une fois que le capteur a rendu sa copie.
     func capturePhoto() async throws -> UIImage {
-        try await withCheckedThrowingContinuation { continuation in
+        // Relevé ici, sur le fil principal, parce que c'est là qu'il vit : la
+        // file de la session ne peut pas relire une propriété de l'interface.
+        let wantsFlash = isFlashOn
+        return try await withCheckedThrowingContinuation { continuation in
             let settings = AVCapturePhotoSettings()
             let identifier = settings.uniqueID
             let delegate = PhotoCaptureDelegate { [weak self] result in
@@ -92,6 +108,13 @@ final class CameraController {
             }
             pendingCaptures[identifier] = delegate
             queue.async { [output] in
+                // Le mode se pose ici et pas plus tôt : `supportedFlashModes`
+                // se lit sur la sortie, donc sur cette file — et poser un mode
+                // qui n'y est pas lève une exception qui ferme l'app.
+                let mode: AVCaptureDevice.FlashMode = wantsFlash ? .on : .off
+                if output.supportedFlashModes.contains(mode) {
+                    settings.flashMode = mode
+                }
                 output.capturePhoto(with: settings, delegate: delegate)
             }
         }
@@ -179,8 +202,10 @@ struct CameraPreview: UIViewRepresentable {
     func makeUIView(context: Context) -> PreviewView {
         let view = PreviewView()
         view.previewLayer.session = session
-        // La caméra remplit le cadre quitte à déborder : des bandes noires
-        // fausseraient le jugement de cadrage que la silhouette demande.
+        // La carte qui accueille cet aperçu est au format du cliché, si bien
+        // que « remplir » et « tenir dedans » reviennent au même. Remplir reste
+        // le bon choix des deux : le jour où ce format bougerait, mieux vaut un
+        // aperçu débordant qu'un aperçu bordé de noir.
         view.previewLayer.videoGravity = .resizeAspectFill
         return view
     }
