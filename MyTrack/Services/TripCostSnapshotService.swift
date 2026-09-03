@@ -39,6 +39,10 @@ final class TripCostSnapshotService {
 
         var didFreeze = false
         for trip in trips {
+            // Un trajet fusionné tire son coût de ses composants, jamais de
+            // chiffres à lui : lui en graver n'aurait aucun effet visible, et
+            // laisserait croire le contraire à la prochaine lecture.
+            guard !trip.isMerged else { continue }
             guard let vehicle = trip.vehicle, let consumption = vehicle.consumption else { continue }
             trip.recordedConsumption = consumption
             trip.recordedEnergyPrice = vehicle.energyPrice

@@ -12,14 +12,61 @@ struct TripDetailView: View {
     @Environment(\.modelContext) private var modelContext
     @Environment(AppServices.self) private var appServices
     @Environment(\.locale) private var locale
+    @Environment(\.dismiss) private var dismiss
     @State private var isPresentingVehiclePicker = false
     @State private var isPresentingVehicleEditor = false
 
+    /// Vrai dès que « Séparer les trajets » a été touché.
+    ///
+    /// La séparation efface le trajet que cet écran montre, mais l'écran, lui,
+    /// met le temps d'une animation à se retirer — et SwiftUI le redessine
+    /// pendant ce temps-là. Relire alors la moindre propriété d'un trajet
+    /// effacé ferme l'app : SwiftData n'a plus de quoi répondre et s'arrête net
+    /// (« This model instance was invalidated because its backing data could no
+    /// longer be found the store »).
+    ///
+    /// D'où ce drapeau : le corps se vide d'un coup, il n'y a plus rien à
+    /// relire, et ce qui glisse hors de l'écran est le fond gris de l'app.
+    @State private var isSeparated = false
+
+    /// D'où vient ce trajet. « Fusionné » l'emporte sur les deux autres : un
+    /// trajet né d'une fusion n'a été ni détecté ni saisi, et ses composants
+    /// disent chacun le leur juste en dessous.
     private var sourceLabel: LocalizedStringKey {
-        trip.source == .automatic ? "Automatique" : "Manuel"
+        if trip.isMerged { return "Fusionné" }
+        return trip.source == .automatic ? "Automatique" : "Manuel"
+    }
+
+    /// Ce que la carte trace : la trace du trajet, ou celle de chacun de ses
+    /// composants quand il en a (voir `TripRouteMapView`).
+    private var routeSegments: [[RoutePoint]] {
+        trip.isMerged ? trip.orderedComponents.map(\.routePoints) : [trip.routePoints]
     }
 
     var body: some View {
+        Group {
+            if isSeparated {
+                Color.clear
+            } else {
+                details
+            }
+        }
+        .appBackground()
+        .localizedNavigationTitle("Détail du trajet")
+        .sheet(isPresented: $isPresentingVehiclePicker) {
+            VehiclePickerView(selectedVehicle: trip.vehicle) { vehicle in
+                trip.assignVehicle(vehicle)
+                modelContext.saveOrLog()
+            }
+        }
+        .sheet(isPresented: $isPresentingVehicleEditor) {
+            if let vehicle = trip.vehicle {
+                EditVehicleView(vehicle: vehicle)
+            }
+        }
+    }
+
+    private var details: some View {
         List {
             Section("Trajet") {
                 LabeledContent("Début", value: TripFormatting.dateAndTime(trip.startDate, locale: locale))
@@ -60,23 +107,45 @@ struct TripDetailView: View {
                     Text(trip.routePoints.count, format: .number)
                 }
             }
+            mergedComponentsSection
             Section("Itinéraire") {
-                TripRouteMapView(routePoints: trip.routePoints)
+                TripRouteMapView(routeSegments: routeSegments)
                     .frame(height: 260)
                     .listRowInsets(EdgeInsets())
             }
         }
-        .appBackground()
-        .localizedNavigationTitle("Détail du trajet")
-        .sheet(isPresented: $isPresentingVehiclePicker) {
-            VehiclePickerView(selectedVehicle: trip.vehicle) { vehicle in
-                trip.assignVehicle(vehicle)
-                modelContext.saveOrLog()
-            }
-        }
-        .sheet(isPresented: $isPresentingVehicleEditor) {
-            if let vehicle = trip.vehicle {
-                EditVehicleView(vehicle: vehicle)
+    }
+
+    /// Les trajets que ce trajet rassemble, chacun tel qu'il était avant la
+    /// fusion — sa date, son véhicule, sa distance, son coût — et menant à son
+    /// propre écran de détail.
+    ///
+    /// Rien pour un trajet ordinaire : la section n'existe que là où elle a
+    /// quelque chose à montrer.
+    @ViewBuilder
+    private var mergedComponentsSection: some View {
+        if trip.isMerged {
+            Section {
+                ForEach(trip.orderedComponents) { component in
+                    NavigationLink(value: component) {
+                        TripRow(
+                            trip: component,
+                            distanceUnit: appServices.unitSettingsService.distanceUnit
+                        )
+                    }
+                }
+                Button("Séparer les trajets") {
+                    // Dans cet ordre, et pas un autre : le corps cesse de lire
+                    // le trajet, l'écran se retire, et le trajet s'efface enfin.
+                    // L'inverse fermait l'app — voir `isSeparated`.
+                    isSeparated = true
+                    dismiss()
+                    trip.separate(in: modelContext)
+                }
+            } header: {
+                Text("Trajets fusionnés")
+            } footer: {
+                Text("Ces trajets ne figurent plus dans la liste : celui-ci les représente. Les séparer les y ramène tels qu'ils étaient.")
             }
         }
     }
