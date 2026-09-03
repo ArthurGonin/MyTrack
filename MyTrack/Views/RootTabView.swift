@@ -47,6 +47,13 @@ struct RootTabView: View {
         // pouvoir se raconter n'importe où dans l'app. Elle se dessine dans
         // une fenêtre à elle, donc au-dessus même des feuilles d'où l'on
         // photographie — voir `vehiclePhotoToast()`.
+        //
+        // Ici et non à la racine de l'app, bien que l'onboarding photographie
+        // lui aussi : c'est précisément là qu'on n'en veut pas. La pastille y
+        // recouvrirait la barre de progression, et surtout elle annoncerait la
+        // voiture que l'accueil doit révéler. Le détourage court quand même —
+        // il ne dépend pas de cette fenêtre — et la voiture est simplement là
+        // en arrivant.
         .vehiclePhotoToast()
         .onAppear {
             if hasPendingTrips {

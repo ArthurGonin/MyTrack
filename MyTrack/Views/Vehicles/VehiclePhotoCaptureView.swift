@@ -64,6 +64,14 @@ import SwiftUI
 
 struct VehiclePhotoCaptureView: View {
     let vehicle: Vehicle
+    /// Appelé au déclenchement, juste avant `onClose`, quand l'écran hôte a
+    /// besoin de savoir qu'une photo a bien été prise.
+    ///
+    /// Rien par défaut : les écrans qui se contentent de refermer la carte n'en
+    /// ont que faire. L'onboarding, lui, tourne la page à ce moment-là, et il ne
+    /// peut pas le déduire de `onClose`, qui répond aussi bien au bouton de
+    /// fermeture qu'au glissement vers le bas.
+    var onCapture: () -> Void = {}
     /// Ce que fait l'écran hôte pour retirer la carte. À lui de l'animer : la
     /// carte ne connaît ni l'état qui la porte ni le ressort qui la remonte.
     let onClose: () -> Void
@@ -317,6 +325,7 @@ struct VehiclePhotoCaptureView: View {
     /// Ce qu'il en advient se dit dans une pastille, où que soit l'utilisateur.
     private func hand(_ photo: UIImage) {
         appServices.vehiclePhotoProcessingService.process(photo, for: vehicle)
+        onCapture()
         onClose()
     }
 }
