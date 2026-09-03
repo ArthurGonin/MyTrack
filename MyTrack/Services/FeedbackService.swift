@@ -4,9 +4,10 @@
 //
 //  Du message écrit dans les réglages au courrier électronique reçu.
 //
-//  Deux voies pour l'envoyer, décrites dans `FeedbackConfiguration` : le
-//  relais, qui détient la clé Resend, et — en compilation Debug seulement — un
-//  appel direct pour essayer sans rien déployer.
+//  Une seule voie, décrite dans `FeedbackConfiguration` : le relais, qui envoie
+//  le courrier lui-même. Il n'y a pas de chemin de secours, et c'est voulu — un
+//  second mécanisme d'envoi serait un second jeu de pannes à connaître, pour un
+//  relais qui se déploie en deux minutes.
 //
 //  Ce que le service ajoute au message, il l'ajoute au vu et au su de celui qui
 //  écrit : la version de l'app, celle d'iOS et le modèle de l'appareil sont
@@ -21,7 +22,7 @@ import UIKit
 /// Ce qui peut manquer en chemin. Sans texte : c'est la vue qui parle, elle
 /// seule connaît la langue de l'app.
 enum FeedbackError: Error {
-    /// Ni relais ni clé d'essai : il n'y a personne à qui envoyer le message.
+    /// Pas de relais renseigné : il n'y a personne à qui envoyer le message.
     case notConfigured
     /// Le service n'a pas répondu, ou pas à temps.
     case serviceUnavailable
@@ -35,21 +36,16 @@ struct FeedbackService {
         let subject = "MyTrack — " + subject.trimmingCharacters(in: .whitespacesAndNewlines)
         let body = message.trimmingCharacters(in: .whitespacesAndNewlines) + "\n\n" + Self.signature
 
-        if FeedbackConfiguration.isConfigured {
-            return try await viaRelay(subject: subject, body: body)
+        guard FeedbackConfiguration.isConfigured else {
+            throw FeedbackError.notConfigured
         }
-        #if DEBUG
-        if FeedbackConfiguration.hasDebugKey {
-            return try await directlyToResend(subject: subject, body: body)
-        }
-        #endif
-        throw FeedbackError.notConfigured
+        try await viaRelay(subject: subject, body: body)
     }
 
-    // MARK: - Les deux voies
+    // MARK: - Le relais
 
-    /// Le chemin de production : le relais pose la clé, l'expéditeur et le
-    /// destinataire sur l'appel. L'app ne lui confie que ce qui a été écrit.
+    /// Le relais pose l'expéditeur et le destinataire sur l'envoi. L'app ne lui
+    /// confie que ce qui a été écrit — voir `FeedbackConfiguration`.
     private func viaRelay(subject: String, body: String) async throws {
         guard let url = FeedbackConfiguration.endpointURL else {
             throw FeedbackError.notConfigured
@@ -70,37 +66,6 @@ struct FeedbackService {
 
         try await Self.send(request)
     }
-
-    #if DEBUG
-    /// Le chemin d'essai : l'app parle à Resend elle-même, avec une clé posée à
-    /// la main. Absent des compilations Release — voir `FeedbackConfiguration`.
-    private func directlyToResend(subject: String, body: String) async throws {
-        struct Payload: Encodable {
-            let from: String
-            let to: [String]
-            let subject: String
-            let text: String
-        }
-
-        var request = URLRequest(url: URL(string: "https://api.resend.com/emails")!)
-        request.httpMethod = "POST"
-        request.timeoutInterval = Self.timeout
-        request.setValue(
-            "Bearer \(FeedbackConfiguration.debugResendKey)", forHTTPHeaderField: "Authorization"
-        )
-        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-        request.httpBody = try? JSONEncoder().encode(
-            Payload(
-                from: FeedbackConfiguration.debugSender,
-                to: [FeedbackConfiguration.debugRecipient],
-                subject: subject,
-                text: body
-            )
-        )
-
-        try await Self.send(request)
-    }
-    #endif
 
     // MARK: - Plomberie HTTP
 

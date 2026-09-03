@@ -1,0 +1,34 @@
+name = "mytrack-feedback"
+main = "worker.ts"
+compatibility_date = "2026-09-03"
+
+# Le lien qui envoie le courrier. Sans adresse écrite ici, volontairement : le
+# destinataire arrive par le secret `FEEDBACK_RECIPIENT`, pour qu'une boîte
+# personnelle n'ait pas à vivre dans un dépôt — l'historique git la garderait
+# même après coup. La restriction n'est pas perdue pour autant : sans attribut,
+# le lien ne peut écrire qu'aux adresses de destination vérifiées du compte.
+[[send_email]]
+name = "EMAIL"
+
+# Le compteur de messages par empreinte et par jour. Le titre du namespace est
+# « FEEDBACK_QUOTA », le nom du lien reste « QUOTA » — c'est ce dernier que lit le
+# worker. Les deux diffèrent parce que les titres sont uniques à l'échelle d'un
+# compte, et que « QUOTA » est déjà pris par le relais du détourage.
+#
+# Cet identifiant-ci appartient au compte qui héberge kiwijuice.dev : c'est de ce
+# compte-là que le worker doit être déployé, sinon il n'a pas le droit d'émettre
+# depuis le domaine — voir le README.
+[[kv_namespaces]]
+binding = "QUOTA"
+id = "a775fab94389454e979de47d5c8eb967"
+
+# Le coupe-rafale, qui bouche ce que KV ne peut pas : sa cohérence éventuelle
+# laisserait passer cent requêtes lancées en même temps. `period` ne vaut que 10
+# ou 60 secondes, d'où un plafond à la minute en plus de celui du jour.
+#
+# Facultatif : si « wrangler deploy » refuse ce bloc, le retirer suffit — le
+# worker le lit sous « if (env.BURST) » et tourne à l'identique sans lui.
+[[ratelimits]]
+name = "BURST"
+namespace_id = "1"
+simple = { limit = 3, period = 60 }

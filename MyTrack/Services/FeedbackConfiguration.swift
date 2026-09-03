@@ -4,36 +4,41 @@
 //
 //  Où part le message que l'utilisateur écrit depuis les réglages.
 //
-//  Même partage des rôles que pour les photos de véhicule (voir
-//  `StudioCutoutConfiguration`), et pour la même raison : une clé d'API posée
-//  dans l'app se lit dans le bundle en deux minutes, et une clé Resend
-//  extraite, c'est du courrier envoyé depuis votre domaine par n'importe qui.
+//  Un relais, comme pour les photos de véhicule (voir `StudioCutoutConfiguration`),
+//  mais pour une raison de plus. Celle qu'on attend d'abord : rien qui ressemble
+//  à une clé ne peut vivre dans l'app, où elle se lirait dans le bundle en deux
+//  minutes. Ici il n'y en a même pas — c'est Cloudflare qui envoie le courrier,
+//  par le lien `send_email` d'Email Routing, sans service de messagerie tiers ni
+//  clé d'API d'aucune sorte.
 //
-//  **Le relais**, pour de vrai. Il détient la clé Resend, l'expéditeur vérifié
-//  et la boîte qui reçoit ; l'app ne lui envoie qu'un titre et un texte. C'est
-//  ce qui empêche d'en faire un relais ouvert : le destinataire n'est pas dans
-//  la requête, donc personne ne peut s'en servir pour écrire ailleurs.
+//  L'autre raison est celle qui compte vraiment : l'app n'envoie jamais de
+//  destinataire. Elle poste un titre et un texte, rien d'autre. L'expéditeur et
+//  la boîte qui reçoit vivent dans les secrets du relais. C'est ce qui l'empêche
+//  de servir à écrire ailleurs — même le secret partagé en main, on ne peut rien
+//  faire de plus que nous écrire.
 //
-//  **La clé directe**, pour essayer. Elle appelle Resend depuis le téléphone,
-//  sans rien déployer. Elle n'existe qu'en configuration Debug (`#if DEBUG`) :
-//  une compilation Release n'en contient pas une ligne, donc elle ne peut pas
-//  partir sur l'App Store même en l'oubliant remplie.
+//  Le relais et sa mise en service sont dans `Server/feedback/`.
+//
+//  L'adresse ci-dessous n'est pas sur le même compte Cloudflare que celle du
+//  détourage, et ce n'est pas un hasard : un Worker n'a le droit d'émettre que
+//  depuis un domaine de son propre compte, donc celui-ci est déployé là où vit
+//  `kiwijuice.dev`. Envoyer le relais sur l'autre compte le ferait répondre
+//  « Envoi refusé : E_SENDER_DOMAIN_NOT_AVAILABLE ».
 //
 
 import Foundation
 
 enum FeedbackConfiguration {
-    /// L'adresse du relais, par exemple
-    /// « https://mytrack-feedback.votre-compte.workers.dev ».
-    ///
-    /// TODO: à renseigner. Tant qu'elle est vide, la feuille s'ouvre et se
-    /// remplit mais l'envoi répond « pas disponible » plutôt que d'avaler le
-    /// message en silence.
-    static let endpoint = ""
+    /// L'adresse du relais, en service depuis le 3 septembre 2026.
+    static let endpoint = "https://mytrack-feedback.8ghn2w9p7k.workers.dev"
 
-    /// Le même mot que celui posé côté relais. Il n'authentifie personne — il
-    /// est dans l'app, donc extractible — il écarte les appels au hasard.
-    static let sharedSecret = ""
+    /// Le même mot que celui posé côté relais, et volontairement différent de
+    /// celui du détourage : deux relais, deux mots, pour qu'un seul divulgué
+    /// n'ouvre pas l'autre.
+    ///
+    /// Il n'authentifie personne — il est dans l'app, donc extractible — il
+    /// écarte les appels au hasard.
+    static let sharedSecret = "2b410d1f3073d65e782cd3a34ec1f8c53f6cd72c0dd76cfa"
 
     /// Vrai quand les deux sont renseignés. Un seul des deux ne sert à rien :
     /// le relais refuserait l'appel.
@@ -45,21 +50,4 @@ enum FeedbackConfiguration {
         guard isConfigured else { return nil }
         return URL(string: endpoint)
     }
-
-    #if DEBUG
-    /// Une clé Resend (« re_… »), le temps d'un essai depuis Xcode. À vider
-    /// avant de pousser sur un dépôt partagé — et de toute façon absente des
-    /// compilations Release.
-    static let debugResendKey = ""
-
-    /// L'expéditeur, qui doit être sur un domaine vérifié chez Resend
-    /// (« MyTrack <bonjour@votre-domaine.app> »), et la boîte qui reçoit.
-    /// En production, ces deux-là vivent dans le relais et non ici.
-    static let debugSender = ""
-    static let debugRecipient = ""
-
-    static var hasDebugKey: Bool {
-        !debugResendKey.isEmpty && !debugSender.isEmpty && !debugRecipient.isEmpty
-    }
-    #endif
 }
