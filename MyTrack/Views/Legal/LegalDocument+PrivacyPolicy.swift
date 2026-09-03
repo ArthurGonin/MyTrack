@@ -26,7 +26,7 @@ extension LegalDocument {
                 heading: "En bref",
                 paragraphs: [
                     "MyTrack enregistre vos trajets sur votre iPhone, et ils y restent. L'app n'a pas de compte à créer, pas de serveur où vos trajets seraient recopiés, aucune publicité et aucun traceur.",
-                    "Une seule chose quitte votre appareil, et seulement si vous la demandez : la photo de votre véhicule, envoyée pour être détourée. Tout le reste — positions, distances, véhicules, rapports — ne sort jamais de l'iPhone.",
+                    "Deux choses seulement peuvent en partir, et chaque fois parce que vous l'avez demandé : la photo de votre véhicule, envoyée pour être détourée, et le commentaire que vous nous écrivez depuis les réglages. Tout le reste — positions, distances, véhicules, rapports — ne sort jamais de l'iPhone.",
                 ]
             ),
             Section(
@@ -63,6 +63,13 @@ extension LegalDocument {
                     "Le relais ne conserve pas la photo : il la transmet et vous renvoie le résultat. Il garde seulement un compteur — l'identifiant que votre appareil donne à l'éditeur, et la date du jour — pour limiter le service à cinq photos quotidiennes. Ce compteur s'efface au bout de vingt-six heures, et cet identifiant change si vous supprimez puis réinstallez l'app.",
                     "OpenAI traite la photo aux États-Unis pour produire l'image et, selon la politique de son interface de programmation, peut la conserver un temps limité à des fins de sécurité, sans s'en servir pour entraîner ses modèles.",
                     "Photographiez votre voiture, pas les gens autour d'elle. Et si vous préférez ne rien envoyer, ne prenez pas de photo : l'app fonctionne très bien avec le dessin de voiture par défaut.",
+                ]
+            ),
+            Section(
+                heading: "Le commentaire que vous nous écrivez",
+                paragraphs: [
+                    "Les réglages permettent de nous écrire. Le titre et le message que vous tapez partent alors vers notre service d'envoi de courrier, accompagnés de la version de MyTrack, de celle d'iOS et du modèle de votre iPhone, de quoi situer ce que vous décrivez. Rien d'autre n'est joint : ni vos trajets, ni vos véhicules, ni votre profil.",
+                    "Ce message ne part qu'au moment où vous appuyez sur « Envoyer », et il ne sert qu'à corriger ou à améliorer ce que vous signalez.",
                 ]
             ),
             Section(

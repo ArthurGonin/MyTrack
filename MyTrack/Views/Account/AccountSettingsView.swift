@@ -14,6 +14,7 @@ struct AccountSettingsView: View {
 
     @State private var isDeleteConfirmationPresented = false
     @State private var isDeletionFailedAlertPresented = false
+    @State private var isFeedbackPresented = false
 
     // TODO: renseigner l'App Store ID réel une fois l'app publiée sur App Store
     // Connect. Tant qu'il vaut nil, la ligne « Laisser un avis » reste
@@ -159,6 +160,20 @@ struct AccountSettingsView: View {
                 SubscriptionSettingsSection()
 
                 Section {
+                    // Au-dessus de l'avis, et c'est l'ordre qui compte : nous
+                    // écrire d'abord, noter publiquement ensuite. Quelqu'un
+                    // qu'une chose agace doit croiser le moyen de nous le dire
+                    // avant celui de le dire à l'App Store.
+                    Button {
+                        isFeedbackPresented = true
+                    } label: {
+                        SettingsRowLabel(
+                            "Envoyer un commentaire",
+                            systemImage: "text.bubble.fill",
+                            tint: .teal
+                        )
+                    }
+
                     Button {
                         if let appStoreReviewURL {
                             UIApplication.shared.open(appStoreReviewURL)
@@ -193,6 +208,9 @@ struct AccountSettingsView: View {
                         dismiss()
                     }
                 }
+            }
+            .sheet(isPresented: $isFeedbackPresented) {
+                FeedbackView()
             }
             .alert(
                 "Supprimer le compte ?",

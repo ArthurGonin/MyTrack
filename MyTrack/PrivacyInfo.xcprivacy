@@ -12,7 +12,8 @@
 	<!-- « Collecté » au sens d'Apple veut dire « sorti de l'appareil et gardé
 	     au-delà de la requête ». Ne sont donc listés ici que la photo et
 	     l'identifiant d'appareil qui l'accompagne — voir VehiclePhotoService et
-	     Server/studio-cutout/worker.ts. Les trajets, les positions, le profil et
+	     Server/studio-cutout/worker.ts — et le commentaire écrit depuis les
+	     réglages, voir FeedbackService. Les trajets, les positions, le profil et
 	     les rapports ne sortent jamais : ils n'ont rien à faire dans cette
 	     liste, et l'y mettre serait aussi faux que de les taire. -->
 	<key>NSPrivacyCollectedDataTypes</key>
@@ -36,6 +37,23 @@
 			     une collecte au sens d'Apple. -->
 			<key>NSPrivacyCollectedDataType</key>
 			<string>NSPrivacyCollectedDataTypeDeviceID</string>
+			<key>NSPrivacyCollectedDataTypeLinked</key>
+			<false/>
+			<key>NSPrivacyCollectedDataTypeTracking</key>
+			<false/>
+			<key>NSPrivacyCollectedDataTypePurposes</key>
+			<array>
+				<string>NSPrivacyCollectedDataTypePurposeAppFunctionality</string>
+			</array>
+		</dict>
+		<dict>
+			<!-- Le titre et le message écrits dans « Envoyer un commentaire »,
+			     plus les trois lignes techniques annoncées sous le champ. Ils
+			     arrivent dans une boîte aux lettres, donc ils y restent : c'est
+			     une collecte, et le type prévu par Apple pour ce cas est celui
+			     du support. -->
+			<key>NSPrivacyCollectedDataType</key>
+			<string>NSPrivacyCollectedDataTypeCustomerSupport</string>
 			<key>NSPrivacyCollectedDataTypeLinked</key>
 			<false/>
 			<key>NSPrivacyCollectedDataTypeTracking</key>

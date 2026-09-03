@@ -16282,46 +16282,6 @@
         }
       }
     },
-    "Une seule chose quitte votre appareil, et seulement si vous la demandez : la photo de votre véhicule, envoyée pour être détourée. Tout le reste — positions, distances, véhicules, rapports — ne sort jamais de l'iPhone." : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Nur eines verlässt Ihr Gerät, und auch das nur auf Ihren Wunsch: das Foto Ihres Fahrzeugs, das zum Freistellen gesendet wird. Alles andere – Positionen, Entfernungen, Fahrzeuge, Berichte – verlässt das iPhone nie."
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Only one thing leaves your device, and only if you ask for it: the photo of your vehicle, sent to be cut out. Everything else — locations, distances, vehicles, reports — never leaves the iPhone."
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Solo una cosa sale de su dispositivo, y solo si usted lo pide: la foto de su vehículo, enviada para recortarla. Todo lo demás —posiciones, distancias, vehículos, informes— nunca sale del iPhone."
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Une seule chose quitte votre appareil, et seulement si vous la demandez : la photo de votre véhicule, envoyée pour être détourée. Tout le reste — positions, distances, véhicules, rapports — ne sort jamais de l'iPhone."
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Una sola cosa lascia il tuo dispositivo, e solo se lo chiedi: la foto del tuo veicolo, inviata per essere scontornata. Tutto il resto — posizioni, distanze, veicoli, resoconti — non esce mai dall'iPhone."
-          }
-        },
-        "pt" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Só uma coisa sai do seu dispositivo, e apenas se a pedir: a fotografia do seu veículo, enviada para ser recortada. Todo o resto — posições, distâncias, veículos, relatórios — nunca sai do iPhone."
-          }
-        }
-      }
-    },
     "Vos données ne sont ni vendues, ni louées, ni partagées, et ne servent à établir aucun profil." : {
       "localizations" : {
         "de" : {
@@ -16678,6 +16638,566 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Pode deixar de utilizar a MyTrack a qualquer momento eliminando a app; o cancelamento de uma subscrição, esse, faz-se nas definições da sua conta App Store. A KiwiJuice pode deixar de oferecer a app ou uma das suas funções, avisando-o com um prazo razoável sempre que possível."
+          }
+        }
+      }
+    },
+    "Ce message ne part qu'au moment où vous appuyez sur « Envoyer », et il ne sert qu'à corriger ou à améliorer ce que vous signalez." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Diese Nachricht geht erst in dem Moment ab, in dem Sie auf „Senden“ tippen, und sie dient allein dazu, das zu beheben oder zu verbessern, was Sie melden."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "This message is sent only when you tap “Send”, and it serves only to fix or improve what you report."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Este mensaje solo se envía en el momento en que pulsa «Enviar», y únicamente sirve para corregir o mejorar lo que nos señala."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ce message ne part qu'au moment où vous appuyez sur « Envoyer », et il ne sert qu'à corriger ou à améliorer ce que vous signalez."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Questo messaggio parte solo nel momento in cui premi «Invia», e serve unicamente a correggere o migliorare ciò che segnali."
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Esta mensagem só parte no momento em que toca em «Enviar», e serve apenas para corrigir ou melhorar o que assinala."
+          }
+        }
+      }
+    },
+    "Deux choses seulement peuvent en partir, et chaque fois parce que vous l'avez demandé : la photo de votre véhicule, envoyée pour être détourée, et le commentaire que vous nous écrivez depuis les réglages. Tout le reste — positions, distances, véhicules, rapports — ne sort jamais de l'iPhone." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nur zwei Dinge können es verlassen, und jedes Mal, weil Sie es verlangt haben: das Foto Ihres Fahrzeugs, das zum Freistellen gesendet wird, und die Rückmeldung, die Sie uns aus den Einstellungen schreiben. Alles andere – Positionen, Entfernungen, Fahrzeuge, Berichte – verlässt das iPhone nie."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Only two things can leave it, and each time because you asked: the photo of your vehicle, sent to be cut out, and the feedback you write to us from Settings. Everything else — locations, distances, vehicles, reports — never leaves the iPhone."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Solo dos cosas pueden salir de él, y cada vez porque usted lo ha pedido: la foto de su vehículo, enviada para recortarla, y el comentario que nos escribe desde los ajustes. Todo lo demás —posiciones, distancias, vehículos, informes— nunca sale del iPhone."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Deux choses seulement peuvent en partir, et chaque fois parce que vous l'avez demandé : la photo de votre véhicule, envoyée pour être détourée, et le commentaire que vous nous écrivez depuis les réglages. Tout le reste — positions, distances, véhicules, rapports — ne sort jamais de l'iPhone."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Solo due cose possono uscirne, e ogni volta perché l'hai chiesto: la foto del tuo veicolo, inviata per essere scontornata, e il commento che ci scrivi dalle impostazioni. Tutto il resto — posizioni, distanze, veicoli, resoconti — non esce mai dall'iPhone."
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Só duas coisas podem sair dele, e de cada vez porque o pediu: a fotografia do seu veículo, enviada para ser recortada, e o comentário que nos escreve a partir das definições. Todo o resto — posições, distâncias, veículos, relatórios — nunca sai do iPhone."
+          }
+        }
+      }
+    },
+    "Envoi impossible" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Senden nicht möglich"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Couldn't send"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No se ha podido enviar"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Envoi impossible"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Invio impossibile"
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Não foi possível enviar"
+          }
+        }
+      }
+    },
+    "Envoyer" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Senden"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Send"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Enviar"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Envoyer"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Invia"
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Enviar"
+          }
+        }
+      }
+    },
+    "Envoyer un commentaire" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Rückmeldung senden"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Send feedback"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Enviar un comentario"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Envoyer un commentaire"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Inviare un commento"
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Enviar um comentário"
+          }
+        }
+      }
+    },
+    "L'envoi de commentaires n'est pas disponible dans cette version." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Das Senden von Rückmeldungen ist in dieser Version nicht verfügbar."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sending feedback isn't available in this version."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "El envío de comentarios no está disponible en esta versión."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "L'envoi de commentaires n'est pas disponible dans cette version."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "L'invio di commenti non è disponibile in questa versione."
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "O envio de comentários não está disponível nesta versão."
+          }
+        }
+      }
+    },
+    "Le commentaire que vous nous écrivez" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Die Rückmeldung, die Sie uns schreiben"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The feedback you write to us"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "El comentario que nos escribe"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Le commentaire que vous nous écrivez"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Il commento che ci scrivi"
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "O comentário que nos escreve"
+          }
+        }
+      }
+    },
+    "Le message n'a pas pu être envoyé. Réessayez plus tard." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Die Nachricht konnte nicht gesendet werden. Versuchen Sie es später erneut."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The message couldn't be sent. Try again later."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "El mensaje no se ha podido enviar. Inténtelo más tarde."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Le message n'a pas pu être envoyé. Réessayez plus tard."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Il messaggio non è stato inviato. Riprova più tardi."
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "A mensagem não pôde ser enviada. Tente novamente mais tarde."
+          }
+        }
+      }
+    },
+    "Le message part avec la version de MyTrack, celle d'iOS et le modèle de votre iPhone, de quoi situer ce que vous décrivez. Aucun de vos trajets n'est joint." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Die Nachricht wird mit der Version von MyTrack, der iOS-Version und dem Modell Ihres iPhones gesendet – genug, um einzuordnen, was Sie beschreiben. Keine Ihrer Fahrten wird beigefügt."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The message is sent along with MyTrack's version, your iOS version and your iPhone model — enough to place what you are describing. None of your trips are attached."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "El mensaje se envía con la versión de MyTrack, la de iOS y el modelo de su iPhone, lo justo para situar lo que describe. No se adjunta ninguno de sus trayectos."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Le message part avec la version de MyTrack, celle d'iOS et le modèle de votre iPhone, de quoi situer ce que vous décrivez. Aucun de vos trajets n'est joint."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Il messaggio parte con la versione di MyTrack, quella di iOS e il modello del tuo iPhone, quanto basta per inquadrare ciò che descrivi. Nessuno dei tuoi viaggi viene allegato."
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "A mensagem segue com a versão da MyTrack, a do iOS e o modelo do seu iPhone, o suficiente para situar o que descreve. Nenhuma das suas viagens é anexada."
+          }
+        }
+      }
+    },
+    "Les réglages permettent de nous écrire. Le titre et le message que vous tapez partent alors vers notre service d'envoi de courrier, accompagnés de la version de MyTrack, de celle d'iOS et du modèle de votre iPhone, de quoi situer ce que vous décrivez. Rien d'autre n'est joint : ni vos trajets, ni vos véhicules, ni votre profil." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Über die Einstellungen können Sie uns schreiben. Der Titel und die Nachricht, die Sie eintippen, gehen dann an unseren E-Mail-Versanddienst, zusammen mit der Version von MyTrack, der iOS-Version und dem Modell Ihres iPhones – genug, um einzuordnen, was Sie beschreiben. Nichts anderes wird beigefügt: weder Ihre Fahrten noch Ihre Fahrzeuge noch Ihr Profil."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Settings let you write to us. The title and message you type then go to our e-mail sending service, together with MyTrack's version, your iOS version and your iPhone model — enough to place what you are describing. Nothing else is attached: not your trips, not your vehicles, not your profile."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Los ajustes permiten escribirnos. El título y el mensaje que escribe se envían entonces a nuestro servicio de envío de correo, junto con la versión de MyTrack, la de iOS y el modelo de su iPhone, lo justo para situar lo que describe. No se adjunta nada más: ni sus trayectos, ni sus vehículos, ni su perfil."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Les réglages permettent de nous écrire. Le titre et le message que vous tapez partent alors vers notre service d'envoi de courrier, accompagnés de la version de MyTrack, de celle d'iOS et du modèle de votre iPhone, de quoi situer ce que vous décrivez. Rien d'autre n'est joint : ni vos trajets, ni vos véhicules, ni votre profil."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Le impostazioni permettono di scriverci. Il titolo e il messaggio che digiti partono allora verso il nostro servizio di invio della posta, insieme alla versione di MyTrack, a quella di iOS e al modello del tuo iPhone, quanto basta per inquadrare ciò che descrivi. Nient'altro viene allegato: né i tuoi viaggi, né i tuoi veicoli, né il tuo profilo."
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "As definições permitem escrever-nos. O título e a mensagem que escreve seguem então para o nosso serviço de envio de correio, acompanhados da versão da MyTrack, da do iOS e do modelo do seu iPhone, o suficiente para situar o que descreve. Mais nada é anexado: nem as suas viagens, nem os seus veículos, nem o seu perfil."
+          }
+        }
+      }
+    },
+    "Merci, c'est lu." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Danke, wir lesen sie."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Thank you — it gets read."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Gracias, lo leemos."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Merci, c'est lu."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Grazie, lo leggiamo."
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Obrigado, é lida."
+          }
+        }
+      }
+    },
+    "Message envoyé" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nachricht gesendet"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Message sent"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mensaje enviado"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Message envoyé"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Messaggio inviato"
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mensagem enviada"
+          }
+        }
+      }
+    },
+    "Titre" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Titel"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Title"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Título"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Titre"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Titolo"
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Título"
+          }
+        }
+      }
+    },
+    "Votre message" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ihre Nachricht"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Your message"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Su mensaje"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Votre message"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Il tuo messaggio"
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "A sua mensagem"
           }
         }
       }
