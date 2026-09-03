@@ -92,15 +92,9 @@ struct VehiclePickerView: View {
             .sheet(item: $vehicleBeingEdited) { vehicle in
                 EditVehicleView(vehicle: vehicle)
             }
-            // Posée sur le contenu et non sur la pile : sur la pile, la
-            // pastille viendrait se lire par-dessus le titre « Véhicules ».
-            // Ici plutôt qu'à la seule racine de l'app, parce que c'est cette
-            // feuille qu'on retrouve en sortant de l'appareil photo, et qu'une
-            // surimpression posée dessous ne la traverserait pas.
-            .vehiclePhotoToast()
         }
-        // Sur la pile et non sur son contenu, cette fois : la carte se pose au
-        // bas de la feuille entière, barre de navigation comprise. Elle n'occupe
+        // Sur la pile et non sur son contenu : la carte se pose au bas de la
+        // feuille entière, barre de navigation comprise. Elle n'occupe
         // que sa propre place — la liste au-dessus reste au doigt.
         .overlay(alignment: .bottom) {
             if let vehicle = vehicleBeingPhotographed {

@@ -47,7 +47,7 @@ enum StudioCutoutConfiguration {
     /// Une clé OpenAI, le temps d'un essai depuis Xcode. À vider avant de
     /// pousser quoi que ce soit sur un dépôt partagé — et de toute façon
     /// absente des compilations Release.
-    static let debugOpenAIKey = ""
+    static let debugOpenAIKey = ""      
 
     static var hasDebugKey: Bool { !debugOpenAIKey.isEmpty }
     #endif

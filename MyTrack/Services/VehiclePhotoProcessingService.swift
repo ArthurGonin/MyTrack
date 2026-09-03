@@ -12,8 +12,8 @@
 //
 //  Ce qu'il publie, `state`, n'est pas un état d'avancement mais ce qu'il y a à
 //  dire : une pastille en cours, une réussite qui s'efface d'elle-même, un
-//  échec en trois mots. Les écrans s'y abonnent par `.vehiclePhotoToast()` et
-//  n'en savent rien d'autre.
+//  échec en trois mots. L'app s'y abonne en un seul endroit — un
+//  `.vehiclePhotoToast()` posé à sa racine — et n'en sait rien d'autre.
 //
 //  Une seule photo à la fois : une nouvelle prise annule celle qui traînait.
 //  Reprendre une photo, c'est vouloir remplacer la précédente, pas les mettre

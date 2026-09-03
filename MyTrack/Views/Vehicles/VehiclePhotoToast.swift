@@ -13,14 +13,19 @@
 //  quelques secondes. Les deux délais sont dans `VehiclePhotoProcessingService`,
 //  avec l'état qu'ils gouvernent.
 //
-//  Elle se pose écran par écran (`.vehiclePhotoToast()`) et non une fois pour
-//  toutes à la racine, parce qu'une feuille présentée par-dessus couvrirait une
-//  pastille posée dessous : SwiftUI empile les présentations, et une
-//  surimpression ne traverse pas une feuille. Les trois surfaces d'où l'on peut
-//  lancer une photo, ou revenir après en avoir pris une, la posent donc chacune.
+//  Une seule pastille pour toute l'app, et elle vit dans sa propre fenêtre.
+//  Elle a d'abord été posée écran par écran, parce qu'une surimpression ne
+//  traverse pas une feuille : celle de la racine se serait retrouvée cachée par
+//  la liste des véhicules, d'où l'on photographie. Mais une feuille ne monte
+//  pas jusqu'en haut de l'écran, et on en voyait donc deux à la fois — celle de
+//  la feuille, et celle de la racine qui dépassait au-dessus, chacune avec sa
+//  propre animation. Une fenêtre à part règle les deux d'un coup : elle est
+//  au-dessus de tout ce que l'app présente, feuilles comprises, donc une seule
+//  suffit.
 //
 
 import SwiftUI
+import UIKit
 
 struct VehiclePhotoToast: View {
     let state: VehiclePhotoProcessingService.State
@@ -70,11 +75,12 @@ struct VehiclePhotoToast: View {
 }
 
 extension View {
-    /// La pastille de détourage, posée en haut de cet écran.
+    /// La pastille de détourage, installée pour toute l'app.
     ///
-    /// À mettre sur le contenu *sous* la barre de navigation quand il y en a
-    /// une : posée sur la pile entière, la gélule viendrait se lire par-dessus
-    /// le titre.
+    /// À poser une seule fois, à la racine : elle ne se dessine pas dans cet
+    /// écran-ci mais dans une fenêtre à elle, au-dessus de tout ce que l'app
+    /// présente. Peu importe donc où on la pose et ce qui s'ouvre par-dessus —
+    /// et il n'y a plus aucune raison de la poser ailleurs.
     func vehiclePhotoToast() -> some View {
         modifier(VehiclePhotoToastModifier())
     }
@@ -82,21 +88,103 @@ extension View {
 
 private struct VehiclePhotoToastModifier: ViewModifier {
     @Environment(AppServices.self) private var appServices
+    @Environment(\.scenePhase) private var scenePhase
+    @State private var presenter = VehiclePhotoToastPresenter()
 
     func body(content: Content) -> some View {
-        let state = appServices.vehiclePhotoProcessingService.state
         content
+            .onAppear { presenter.install(appServices) }
+            // Deuxième chance : si l'écran paraît avant que sa scène soit
+            // rattachée, il n'y a pas encore de fenêtre où en ajouter une.
+            // L'installation ne se fait de toute façon qu'une fois.
+            .onChange(of: scenePhase) { _, phase in
+                guard phase == .active else { return }
+                presenter.install(appServices)
+            }
+    }
+}
+
+/// La fenêtre où la pastille se dessine, et ce qui la tient en vie.
+///
+/// Une fenêtre à part est le seul endroit d'où l'on voit tout : dans la
+/// hiérarchie de l'app, une surimpression reste sous les feuilles que celle-ci
+/// présente, et SwiftUI n'a pas de « par-dessus la feuille ». Elle ne reçoit
+/// aucun toucher (voir `PassthroughWindow`) et ne devient jamais la fenêtre
+/// principale : l'app dessous continue de vivre comme si elle n'était pas là.
+///
+/// Installée à la première demande et gardée jusqu'à la fin : vide, elle ne
+/// montre rien et ne coûte rien, alors que la retirer entre deux photos
+/// couperait l'animation de sortie de la pastille.
+final class VehiclePhotoToastPresenter {
+    private var window: UIWindow?
+
+    func install(_ appServices: AppServices) {
+        guard window == nil, let scene = Self.activeScene else { return }
+
+        let host = UIHostingController(rootView: VehiclePhotoToastLayer(appServices: appServices))
+        // Sans ça, la vue du contrôleur peint un fond opaque, et c'est toute
+        // l'app qui disparaît derrière.
+        host.view.backgroundColor = .clear
+
+        let window = PassthroughWindow(windowScene: scene)
+        window.rootViewController = host
+        window.backgroundColor = .clear
+        // Juste au-dessus des fenêtres ordinaires : il en faut assez pour
+        // passer devant les feuilles de l'app — qui vivent dans la sienne — et
+        // rien de plus. La barre d'état et le clavier sont bien plus haut, et
+        // doivent le rester.
+        window.windowLevel = .normal + 1
+        // `isHidden` et non `makeKeyAndVisible` : la fenêtre se montre sans
+        // prendre la main. La principale reste la principale, avec son clavier
+        // et son premier répondant.
+        window.isHidden = false
+        self.window = window
+    }
+
+    /// La scène où l'app s'affiche.
+    ///
+    /// Aucun filtre sur « active » : au tout premier affichage la scène est
+    /// encore `foregroundInactive`, et c'est déjà là qu'il faut installer.
+    /// Comme dans `TabBarMetrics`, on n'écarte que ce qui n'est pas à l'écran.
+    private static var activeScene: UIWindowScene? {
+        UIApplication.shared.connectedScenes
+            .compactMap { $0 as? UIWindowScene }
+            .first { $0.activationState != .background && $0.activationState != .unattached }
+    }
+}
+
+/// Une fenêtre que le doigt traverse.
+///
+/// La pastille informe, elle ne sert à rien d'autre. Sans ça, sa fenêtre
+/// couvrant l'écran entier, elle avalerait tous les touchers de l'app.
+private final class PassthroughWindow: UIWindow {
+    override func hitTest(_ point: CGPoint, with event: UIEvent?) -> UIView? {
+        nil
+    }
+}
+
+/// Ce que la fenêtre porte : la pastille en haut, et rien autour.
+private struct VehiclePhotoToastLayer: View {
+    let appServices: AppServices
+
+    var body: some View {
+        let state = appServices.vehiclePhotoProcessingService.state
+
+        Color.clear
             .overlay(alignment: .top) {
                 if let state {
                     VehiclePhotoToast(state: state)
                         .padding(.top, 8)
-                        // Elle informe, elle ne sert à rien d'autre : tout ce
-                        // qui est dessous doit continuer de répondre au doigt.
-                        .allowsHitTesting(false)
                         .transition(.move(edge: .top).combined(with: .opacity))
                 }
             }
             .animation(.smooth(duration: 0.35), value: state)
+            // Cette fenêtre est hors de la hiérarchie SwiftUI de l'app : rien
+            // ne lui descend, pas même la langue choisie. Elle la reprend donc
+            // ici, à la source, sans quoi la pastille parlerait celle du
+            // système.
+            .environment(\.locale, appServices.languageService.locale)
+            .environment(\.localizationBundle, appServices.languageService.bundle)
     }
 }
 

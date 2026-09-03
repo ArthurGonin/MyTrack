@@ -67,12 +67,6 @@ struct EditVehicleView: View {
                 draft = VehicleDraft(vehicle: vehicle, locale: locale)
                 hasLoadedDraft = true
             }
-            // Sur le formulaire et non sur la pile : sur la pile, la pastille
-            // se lirait par-dessus le nom du véhicule. Et ici en plus de la
-            // racine de l'app, parce que c'est cette fiche qu'on retrouve en
-            // sortant de l'appareil photo — une surimpression posée dessous ne
-            // traverserait pas la feuille.
-            .vehiclePhotoToast()
         }
         // La carte se pose au bas de la fiche, qui reste lisible au-dessus
         // d'elle. Voir `VehiclePhotoCaptureView` pour le choix d'une
