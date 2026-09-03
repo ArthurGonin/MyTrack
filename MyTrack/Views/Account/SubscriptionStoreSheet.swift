@@ -123,26 +123,21 @@ struct SubscriptionStoreSheet: View {
     }
 }
 
-/// Les deux liens légaux ne peuvent être branchés que si les URL existent —
-/// d'où un modificateur à part, plutôt qu'un `if let` au milieu de la vitrine.
+/// Les deux boutons légaux que la vitrine native affiche d'elle-même, branchés
+/// sur les textes embarqués de l'app plutôt que sur des adresses web — voir
+/// `LegalDocument`.
+///
+/// La variante à vue, et non celle à URL : le document est poussé dans la pile
+/// de la vitrine, donc l'achat en cours reste derrière, à un retour près. Avec
+/// une URL, StoreKit ouvre un navigateur par-dessus.
 private struct LegalPolicyDestinations: ViewModifier {
     func body(content: Content) -> some View {
         content
-            .modifier(OptionalPolicyDestination(url: LegalLinks.termsOfUse, policy: .termsOfService))
-            .modifier(OptionalPolicyDestination(url: LegalLinks.privacyPolicy, policy: .privacyPolicy))
-    }
-}
-
-private struct OptionalPolicyDestination: ViewModifier {
-    let url: URL?
-    let policy: SubscriptionStorePolicyKind
-
-    @ViewBuilder
-    func body(content: Content) -> some View {
-        if let url {
-            content.subscriptionStorePolicyDestination(url: url, for: policy)
-        } else {
-            content
-        }
+            .subscriptionStorePolicyDestination(for: .termsOfService) {
+                LegalDocumentView(kind: .termsOfUse)
+            }
+            .subscriptionStorePolicyDestination(for: .privacyPolicy) {
+                LegalDocumentView(kind: .privacyPolicy)
+            }
     }
 }

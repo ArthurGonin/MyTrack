@@ -13241,6 +13241,3446 @@
           }
         }
       }
+    },
+    "Abonnements et achat unique" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Abonnements und Einmalkauf"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Subscriptions and one-time purchase"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Suscripciones y compra única"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Abonnements et achat unique"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Abbonamenti e acquisto singolo"
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Subscrições e compra única"
+          }
+        }
+      }
+    },
+    "Au volant" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Am Steuer"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "At the wheel"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Al volante"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Au volant"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Al volante"
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ao volante"
+          }
+        }
+      }
+    },
+    "Avec votre autorisation, MyTrack lit l'activité de mouvement mesurée par iOS — marche, course, voiture — pour reconnaître le début et la fin d'un trajet. Cette activité est lue sur le moment ; elle n'est ni enregistrée, ni transmise." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mit Ihrer Erlaubnis liest MyTrack die von iOS gemessene Bewegungsaktivität – Gehen, Laufen, Autofahren –, um Anfang und Ende einer Fahrt zu erkennen. Diese Aktivität wird im Moment gelesen; sie wird weder gespeichert noch übermittelt."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "With your permission, MyTrack reads the motion activity measured by iOS — walking, running, driving — to recognise the start and end of a trip. That activity is read in the moment; it is neither stored nor transmitted."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Con su permiso, MyTrack lee la actividad de movimiento medida por iOS —andar, correr, ir en coche— para reconocer el inicio y el final de un trayecto. Esa actividad se lee en el momento; no se guarda ni se transmite."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Avec votre autorisation, MyTrack lit l'activité de mouvement mesurée par iOS — marche, course, voiture — pour reconnaître le début et la fin d'un trajet. Cette activité est lue sur le moment ; elle n'est ni enregistrée, ni transmise."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Con la tua autorizzazione, MyTrack legge l'attività di movimento misurata da iOS — camminata, corsa, auto — per riconoscere l'inizio e la fine di un viaggio. Questa attività viene letta sul momento; non viene né salvata né trasmessa."
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Com a sua autorização, a MyTrack lê a atividade de movimento medida pelo iOS — a pé, a correr, de carro — para reconhecer o início e o fim de uma viagem. Essa atividade é lida no momento; não é guardada nem transmitida."
+          }
+        }
+      }
+    },
+    "Ce qu'il faut pour que ça marche" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Was es dafür braucht"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "What it takes to work"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Lo que hace falta para que funcione"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ce qu'il faut pour que ça marche"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cosa serve perché funzioni"
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "O que é preciso para funcionar"
+          }
+        }
+      }
+    },
+    "Ce que MyTrack ne fait pas" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Was MyTrack nicht tut"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "What MyTrack does not do"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Lo que MyTrack no hace"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ce que MyTrack ne fait pas"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cosa MyTrack non fa"
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "O que a MyTrack não faz"
+          }
+        }
+      }
+    },
+    "Ce que l'app mesure, et ce qu'elle ne garantit pas" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Was die App misst und was sie nicht garantiert"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "What the app measures, and what it does not guarantee"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Lo que la app mide, y lo que no garantiza"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ce que l'app mesure, et ce qu'elle ne garantit pas"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cosa misura l'app, e cosa non garantisce"
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "O que a app mede, e o que não garante"
+          }
+        }
+      }
+    },
+    "Ce que vous avez le droit de faire" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Was Sie tun dürfen"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "What you may do"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Lo que puede hacer"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ce que vous avez le droit de faire"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cosa puoi fare"
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "O que pode fazer"
+          }
+        }
+      }
+    },
+    "Ce que vous mettez dans l'app" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Was Sie in die App einbringen"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "What you put into the app"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Lo que introduce en la app"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ce que vous mettez dans l'app"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ciò che metti nell'app"
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "O que coloca na app"
+          }
+        }
+      }
+    },
+    "Ce qui appartient à KiwiJuice" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Was KiwiJuice gehört"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "What belongs to KiwiJuice"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Lo que pertenece a KiwiJuice"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ce qui appartient à KiwiJuice"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ciò che appartiene a KiwiJuice"
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "O que pertence à KiwiJuice"
+          }
+        }
+      }
+    },
+    "Ce qui est enregistré sur votre appareil" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Was auf Ihrem Gerät gespeichert wird"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "What is stored on your device"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Lo que se guarda en su dispositivo"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ce qui est enregistré sur votre appareil"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cosa viene salvato sul tuo dispositivo"
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "O que fica guardado no seu dispositivo"
+          }
+        }
+      }
+    },
+    "Ces conditions peuvent évoluer. La date indiquée en haut désigne la version en vigueur, et c'est toujours celle que vous lisez dans l'app qui s'applique." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Diese Bedingungen können sich ändern. Das oben genannte Datum bezeichnet die geltende Fassung, und massgeblich ist stets die, die Sie in der App lesen."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "These terms may change. The date shown above identifies the version in force, and the one that applies is always the one you read in the app."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Estas condiciones pueden evolucionar. La fecha indicada arriba designa la versión en vigor, y la que se aplica es siempre la que lee en la app."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ces conditions peuvent évoluer. La date indiquée en haut désigne la version en vigueur, et c'est toujours celle que vous lisez dans l'app qui s'applique."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Queste condizioni possono evolvere. La data indicata in alto designa la versione in vigore, e quella che si applica è sempre quella che leggi nell'app."
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Estas condições podem evoluir. A data indicada acima designa a versão em vigor, e a que se aplica é sempre a que lê na app."
+          }
+        }
+      }
+    },
+    "Ces conditions sont régies par le droit suisse, et les tribunaux du siège de KiwiJuice sont compétents. Si vous êtes consommateur, cela ne vous prive ni de la protection des dispositions impératives du droit de votre pays de résidence, ni de la possibilité d'agir devant les tribunaux de ce pays." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Diese Bedingungen unterstehen schweizerischem Recht, und zuständig sind die Gerichte am Sitz von KiwiJuice. Sind Sie Verbraucher, so nimmt Ihnen dies weder den Schutz der zwingenden Bestimmungen des Rechts Ihres Wohnsitzstaates noch die Möglichkeit, vor den Gerichten dieses Staates zu klagen."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "These terms are governed by Swiss law, and the courts at KiwiJuice's registered seat have jurisdiction. If you are a consumer, this deprives you neither of the protection of the mandatory provisions of the law of your country of residence, nor of the possibility of bringing proceedings before the courts of that country."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Estas condiciones se rigen por el derecho suizo, y son competentes los tribunales del domicilio de KiwiJuice. Si es consumidor, ello no le priva ni de la protección de las disposiciones imperativas del derecho de su país de residencia, ni de la posibilidad de acudir a los tribunales de ese país."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ces conditions sont régies par le droit suisse, et les tribunaux du siège de KiwiJuice sont compétents. Si vous êtes consommateur, cela ne vous prive ni de la protection des dispositions impératives du droit de votre pays de résidence, ni de la possibilité d'agir devant les tribunaux de ce pays."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Queste condizioni sono rette dal diritto svizzero, e sono competenti i tribunali della sede di KiwiJuice. Se sei un consumatore, ciò non ti priva né della protezione delle disposizioni imperative del diritto del tuo paese di residenza, né della possibilità di agire davanti ai tribunali di tale paese."
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Estas condições regem-se pelo direito suíço, e são competentes os tribunais da sede da KiwiJuice. Se for consumidor, tal não o priva nem da proteção das disposições imperativas do direito do seu país de residência, nem da possibilidade de agir perante os tribunais desse país."
+          }
+        }
+      }
+    },
+    "Ces conditions vous lient à KiwiJuice et non à Apple : Apple n'est pas partie à ce contrat et n'est responsable ni de MyTrack, ni de son contenu. Apple n'est tenue à aucune obligation d'assistance ni de maintenance sur l'app." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Diese Bedingungen binden Sie an KiwiJuice und nicht an Apple: Apple ist nicht Vertragspartei und weder für MyTrack noch für dessen Inhalte verantwortlich. Apple trifft keinerlei Pflicht zu Support oder Wartung der App."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "These terms bind you to KiwiJuice and not to Apple: Apple is not a party to this contract and is responsible neither for MyTrack nor for its content. Apple has no obligation whatsoever to furnish support or maintenance for the app."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Estas condiciones le vinculan a KiwiJuice y no a Apple: Apple no es parte de este contrato y no es responsable ni de MyTrack ni de su contenido. Apple no está obligada a prestar ninguna asistencia ni mantenimiento sobre la app."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ces conditions vous lient à KiwiJuice et non à Apple : Apple n'est pas partie à ce contrat et n'est responsable ni de MyTrack, ni de son contenu. Apple n'est tenue à aucune obligation d'assistance ni de maintenance sur l'app."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Queste condizioni ti vincolano a KiwiJuice e non ad Apple: Apple non è parte di questo contratto e non è responsabile né di MyTrack né dei suoi contenuti. Apple non ha alcun obbligo di assistenza o manutenzione sull'app."
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Estas condições vinculam-no à KiwiJuice e não à Apple: a Apple não é parte neste contrato e não é responsável nem pela MyTrack nem pelo seu conteúdo. A Apple não está sujeita a qualquer obrigação de assistência ou manutenção da app."
+          }
+        }
+      }
+    },
+    "Ces droits sont ici d'un exercice direct : puisque vos données sont sur votre appareil et nulle part ailleurs, c'est vous qui les consultez, les modifiez et les supprimez, dans l'app, sans avoir à en demander la permission. Pour la seule photo qui transite par le relais, écrivez-nous." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Diese Rechte üben Sie hier unmittelbar aus: Da Ihre Daten auf Ihrem Gerät liegen und nirgends sonst, sehen, ändern und löschen Sie sie selbst in der App, ohne dafür um Erlaubnis bitten zu müssen. Für das einzige Foto, das über den Vermittler läuft, schreiben Sie uns."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Here these rights are exercised directly: since your data is on your device and nowhere else, you view it, change it and delete it yourself, in the app, without having to ask permission. For the one photo that passes through the relay, write to us."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aquí estos derechos se ejercen directamente: dado que sus datos están en su dispositivo y en ningún otro sitio, es usted quien los consulta, los modifica y los suprime, en la app, sin tener que pedir permiso. Para la única foto que pasa por el relé, escríbanos."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ces droits sont ici d'un exercice direct : puisque vos données sont sur votre appareil et nulle part ailleurs, c'est vous qui les consultez, les modifiez et les supprimez, dans l'app, sans avoir à en demander la permission. Pour la seule photo qui transite par le relais, écrivez-nous."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Qui questi diritti si esercitano direttamente: poiché i tuoi dati sono sul tuo dispositivo e da nessun'altra parte, sei tu a consultarli, modificarli ed eliminarli, nell'app, senza dover chiedere il permesso. Per l'unica foto che transita dal relè, scrivici."
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aqui estes direitos exercem-se diretamente: uma vez que os seus dados estão no seu dispositivo e em mais lado nenhum, é o próprio que os consulta, altera e elimina, na app, sem ter de pedir autorização. Para a única fotografia que passa pelo retransmissor, escreva-nos."
+          }
+        }
+      }
+    },
+    "Combien de temps, et comment tout effacer" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Wie lange, und wie Sie alles löschen"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "How long, and how to erase everything"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cuánto tiempo, y cómo borrarlo todo"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Combien de temps, et comment tout effacer"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Per quanto tempo, e come cancellare tutto"
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Durante quanto tempo, e como apagar tudo"
+          }
+        }
+      }
+    },
+    "Dans Réglages, « Supprimer le compte » efface définitivement vos trajets, vos véhicules, vos rapports, votre profil et vos réglages. Supprimer l'app depuis l'écran d'accueil emporte la base avec elle." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "In den Einstellungen löscht „Konto löschen“ Ihre Fahrten, Fahrzeuge, Berichte, Ihr Profil und Ihre Einstellungen endgültig. Wenn Sie die App vom Home-Bildschirm entfernen, verschwindet die Datenbank mit ihr."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "In Settings, “Delete account” permanently erases your trips, vehicles, reports, profile and settings. Deleting the app from the Home Screen takes the database with it."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "En Ajustes, «Eliminar la cuenta» borra definitivamente sus trayectos, vehículos, informes, perfil y ajustes. Eliminar la app desde la pantalla de inicio se lleva la base de datos con ella."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dans Réglages, « Supprimer le compte » efface définitivement vos trajets, vos véhicules, vos rapports, votre profil et vos réglages. Supprimer l'app depuis l'écran d'accueil emporte la base avec elle."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "In Impostazioni, «Elimina l'account» cancella definitivamente i tuoi viaggi, veicoli, resoconti, profilo e impostazioni. Eliminare l'app dalla schermata Home porta con sé l'archivio."
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nas Definições, «Eliminar a conta» apaga definitivamente as suas viagens, veículos, relatórios, perfil e definições. Eliminar a app a partir do ecrã principal leva a base de dados com ela."
+          }
+        }
+      }
+    },
+    "Dernière mise à jour : %@" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Zuletzt aktualisiert: %@"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Last updated: %@"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Última actualización: %@"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dernière mise à jour : %@"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ultimo aggiornamento: %@"
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Última atualização: %@"
+          }
+        }
+      }
+    },
+    "Droit applicable" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Anwendbares Recht"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Governing law"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Derecho aplicable"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Droit applicable"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Diritto applicabile"
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Direito aplicável"
+          }
+        }
+      }
+    },
+    "En bref" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kurz gesagt"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "In short"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "En resumen"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "En bref"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "In breve"
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Em resumo"
+          }
+        }
+      }
+    },
+    "En installant ou en utilisant MyTrack, vous acceptez ces conditions. Si vous ne les acceptez pas, n'utilisez pas l'app." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mit der Installation oder Nutzung von MyTrack akzeptieren Sie diese Bedingungen. Wenn Sie sie nicht akzeptieren, nutzen Sie die App nicht."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "By installing or using MyTrack, you accept these terms. If you do not accept them, do not use the app."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Al instalar o utilizar MyTrack, acepta estas condiciones. Si no las acepta, no utilice la app."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "En installant ou en utilisant MyTrack, vous acceptez ces conditions. Si vous ne les acceptez pas, n'utilisez pas l'app."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Installando o utilizzando MyTrack, accetti queste condizioni. Se non le accetti, non usare l'app."
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ao instalar ou utilizar a MyTrack, aceita estas condições. Se não as aceitar, não utilize a app."
+          }
+        }
+      }
+    },
+    "Garantie et responsabilité" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Gewährleistung und Haftung"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Warranty and liability"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Garantía y responsabilidad"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Garantie et responsabilité"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Garanzia e responsabilità"
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Garantia e responsabilidade"
+          }
+        }
+      }
+    },
+    "KiwiJuice vous accorde un droit d'usage personnel, non exclusif et non transférable de MyTrack sur les appareils Apple que vous possédez ou contrôlez, dans les limites des règles d'usage de l'App Store." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "KiwiJuice gewährt Ihnen ein persönliches, nicht ausschliessliches und nicht übertragbares Nutzungsrecht an MyTrack auf den Apple-Geräten, die Sie besitzen oder kontrollieren, im Rahmen der Nutzungsregeln des App Store."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "KiwiJuice grants you a personal, non-exclusive and non-transferable right to use MyTrack on the Apple devices you own or control, within the limits of the App Store usage rules."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "KiwiJuice le concede un derecho de uso personal, no exclusivo e intransferible de MyTrack en los dispositivos Apple que posea o controle, dentro de los límites de las reglas de uso del App Store."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "KiwiJuice vous accorde un droit d'usage personnel, non exclusif et non transférable de MyTrack sur les appareils Apple que vous possédez ou contrôlez, dans les limites des règles d'usage de l'App Store."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "KiwiJuice ti concede un diritto d'uso personale, non esclusivo e non trasferibile di MyTrack sui dispositivi Apple che possiedi o controlli, nei limiti delle regole d'uso dell'App Store."
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "A KiwiJuice concede-lhe um direito de utilização pessoal, não exclusivo e intransmissível da MyTrack nos dispositivos Apple que possua ou controle, dentro dos limites das regras de utilização da App Store."
+          }
+        }
+      }
+    },
+    "L'accès « Toujours » n'est demandé que si vous activez le suivi automatique : c'est ce qui permet à iOS de réveiller l'app au début d'un trajet. Sans lui, seuls les trajets que vous démarrez vous-même peuvent être enregistrés." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Der Zugriff „Immer“ wird nur verlangt, wenn Sie die automatische Erkennung einschalten: nur so kann iOS die App zu Beginn einer Fahrt wecken. Ohne ihn lassen sich nur die Fahrten aufzeichnen, die Sie selbst starten."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "“Always” access is requested only if you turn on automatic detection: that is what lets iOS wake the app when a trip begins. Without it, only the trips you start yourself can be recorded."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "El acceso «Siempre» solo se solicita si activa el seguimiento automático: es lo que permite a iOS despertar la app al comenzar un trayecto. Sin él, solo pueden registrarse los trayectos que usted mismo inicia."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "L'accès « Toujours » n'est demandé que si vous activez le suivi automatique : c'est ce qui permet à iOS de réveiller l'app au début d'un trajet. Sans lui, seuls les trajets que vous démarrez vous-même peuvent être enregistrés."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "L'accesso «Sempre» viene richiesto solo se attivi il rilevamento automatico: è ciò che permette a iOS di risvegliare l'app all'inizio di un viaggio. Senza di esso, si possono registrare solo i viaggi che avvii tu stesso."
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "O acesso «Sempre» só é pedido se ativar a deteção automática: é o que permite ao iOS acordar a app no início de uma viagem. Sem ele, só podem ser registadas as viagens que o próprio inicia."
+          }
+        }
+      }
+    },
+    "L'achat unique ne se reconduit pas et n'expire pas." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Der Einmalkauf verlängert sich nicht und läuft nicht ab."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The one-time purchase does not renew and does not expire."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "La compra única no se renueva ni caduca."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "L'achat unique ne se reconduit pas et n'expire pas."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "L'acquisto singolo non si rinnova e non scade."
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "A compra única não se renova nem expira."
+          }
+        }
+      }
+    },
+    "L'app mesure et vous aide à tenir vos comptes, elle ne les certifie pas. Ce qu'elle produit reste à vérifier avant tout usage professionnel ou fiscal." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Die App misst und hilft Ihnen beim Führen Ihrer Aufzeichnungen, sie beglaubigt sie nicht. Was sie erzeugt, ist vor jeder geschäftlichen oder steuerlichen Verwendung zu überprüfen."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The app measures and helps you keep your records; it does not certify them. What it produces must be checked before any professional or tax-related use."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "La app mide y le ayuda a llevar sus cuentas, pero no las certifica. Lo que produce debe verificarse antes de cualquier uso profesional o fiscal."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "L'app mesure et vous aide à tenir vos comptes, elle ne les certifie pas. Ce qu'elle produit reste à vérifier avant tout usage professionnel ou fiscal."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "L'app misura e ti aiuta a tenere i tuoi conti, non li certifica. Quanto produce va verificato prima di qualsiasi uso professionale o fiscale."
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "A app mede e ajuda-o a manter as suas contas, não as certifica. O que produz deve ser verificado antes de qualquer utilização profissional ou fiscal."
+          }
+        }
+      }
+    },
+    "L'app se contente de demander à iOS si votre accès est actif, et jusqu'à quand." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Die App fragt iOS lediglich, ob Ihr Zugang aktiv ist und bis wann."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The app merely asks iOS whether your access is active, and until when."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "La app se limita a preguntar a iOS si su acceso está activo, y hasta cuándo."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "L'app se contente de demander à iOS si votre accès est actif, et jusqu'à quand."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "L'app si limita a chiedere a iOS se il tuo accesso è attivo, e fino a quando."
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "A app limita-se a perguntar ao iOS se o seu acesso está ativo, e até quando."
+          }
+        }
+      }
+    },
+    "L'app, son nom, son icône, ses textes et ses dessins appartiennent à KiwiJuice. Rien dans ces conditions ne vous en transfère la propriété." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Die App, ihr Name, ihr Symbol, ihre Texte und ihre Zeichnungen gehören KiwiJuice. Nichts in diesen Bedingungen überträgt Ihnen daran Eigentum."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The app, its name, its icon, its texts and its drawings belong to KiwiJuice. Nothing in these terms transfers ownership of them to you."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "La app, su nombre, su icono, sus textos y sus dibujos pertenecen a KiwiJuice. Nada en estas condiciones le transfiere su propiedad."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "L'app, son nom, son icône, ses textes et ses dessins appartiennent à KiwiJuice. Rien dans ces conditions ne vous en transfère la propriété."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "L'app, il suo nome, la sua icona, i suoi testi e i suoi disegni appartengono a KiwiJuice. Nulla in queste condizioni te ne trasferisce la proprietà."
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "A app, o seu nome, o seu ícone, os seus textos e os seus desenhos pertencem à KiwiJuice. Nada nestas condições lhe transfere a respetiva propriedade."
+          }
+        }
+      }
+    },
+    "La détection automatique repose sur les capteurs de mouvement. Elle peut manquer un trajet, en couper un en deux, ou en détecter un alors que vous étiez passager, dans un bus ou dans un train. C'est pour cela que l'app vous demande de confirmer, et c'est à vous de corriger ce qu'elle propose." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Die automatische Erkennung stützt sich auf die Bewegungssensoren. Sie kann eine Fahrt übersehen, eine in zwei zerschneiden oder eine erkennen, während Sie Beifahrer waren, im Bus oder im Zug sassen. Deshalb bittet die App um Bestätigung, und es liegt an Ihnen, ihre Vorschläge zu korrigieren."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Automatic detection relies on the motion sensors. It may miss a trip, split one in two, or detect one while you were a passenger, on a bus or on a train. That is why the app asks you to confirm, and it is up to you to correct what it proposes."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "La detección automática se basa en los sensores de movimiento. Puede pasar por alto un trayecto, partir uno en dos o detectar uno cuando usted iba de pasajero, en autobús o en tren. Por eso la app le pide que confirme, y le corresponde a usted corregir lo que propone."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "La détection automatique repose sur les capteurs de mouvement. Elle peut manquer un trajet, en couper un en deux, ou en détecter un alors que vous étiez passager, dans un bus ou dans un train. C'est pour cela que l'app vous demande de confirmer, et c'est à vous de corriger ce qu'elle propose."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Il rilevamento automatico si basa sui sensori di movimento. Può mancare un viaggio, tagliarne uno in due o rilevarne uno mentre eri passeggero, su un autobus o su un treno. È per questo che l'app ti chiede di confermare, e sta a te correggere ciò che propone."
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "A deteção automática assenta nos sensores de movimento. Pode falhar uma viagem, cortar uma em duas ou detetar uma quando ia como passageiro, de autocarro ou de comboio. É por isso que a app lhe pede confirmação, e cabe-lhe corrigir o que ela propõe."
+          }
+        }
+      }
+    },
+    "La loi fédérale suisse sur la protection des données s'applique, ainsi que le règlement général sur la protection des données si vous résidez dans l'Union européenne : accès, rectification, effacement, portabilité et opposition." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Es gilt das schweizerische Bundesgesetz über den Datenschutz sowie die Datenschutz-Grundverordnung, wenn Sie in der Europäischen Union wohnen: Auskunft, Berichtigung, Löschung, Datenübertragbarkeit und Widerspruch."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Swiss federal data protection law applies, as does the General Data Protection Regulation if you live in the European Union: access, rectification, erasure, portability and objection."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Se aplica la ley federal suiza de protección de datos, así como el Reglamento General de Protección de Datos si reside en la Unión Europea: acceso, rectificación, supresión, portabilidad y oposición."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "La loi fédérale suisse sur la protection des données s'applique, ainsi que le règlement général sur la protection des données si vous résidez dans l'Union européenne : accès, rectification, effacement, portabilité et opposition."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Si applica la legge federale svizzera sulla protezione dei dati, così come il regolamento generale sulla protezione dei dati se risiedi nell'Unione europea: accesso, rettifica, cancellazione, portabilità e opposizione."
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aplica-se a lei federal suíça de proteção de dados, bem como o regulamento geral sobre a proteção de dados se residir na União Europeia: acesso, retificação, apagamento, portabilidade e oposição."
+          }
+        }
+      }
+    },
+    "La photo de votre véhicule" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Das Foto Ihres Fahrzeugs"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Your vehicle's photo"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "La foto de su vehículo"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "La photo de votre véhicule"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "La foto del tuo veicolo"
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "A fotografia do seu veículo"
+          }
+        }
+      }
+    },
+    "La position" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Der Standort"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Location"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "La ubicación"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "La position"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "La posizione"
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "A localização"
+          }
+        }
+      }
+    },
+    "Le mouvement" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Die Bewegung"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Motion"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "El movimiento"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Le mouvement"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Il movimento"
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "O movimento"
+          }
+        }
+      }
+    },
+    "Le relais ne conserve pas la photo : il la transmet et vous renvoie le résultat. Il garde seulement un compteur — l'identifiant que votre appareil donne à l'éditeur, et la date du jour — pour limiter le service à cinq photos quotidiennes. Ce compteur s'efface au bout de vingt-six heures, et cet identifiant change si vous supprimez puis réinstallez l'app." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Der Vermittler bewahrt das Foto nicht auf: Er leitet es weiter und schickt Ihnen das Ergebnis zurück. Er speichert lediglich einen Zähler – die Kennung, die Ihr Gerät dem Herausgeber gibt, und das Tagesdatum –, um den Dienst auf fünf Fotos pro Tag zu begrenzen. Dieser Zähler wird nach sechsundzwanzig Stunden gelöscht, und die Kennung ändert sich, wenn Sie die App löschen und neu installieren."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The relay does not keep the photo: it forwards it and returns the result to you. It keeps only a counter — the identifier your device gives to the publisher, and today's date — to cap the service at five photos a day. That counter is erased after twenty-six hours, and the identifier changes if you delete and reinstall the app."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "El relé no conserva la foto: la transmite y le devuelve el resultado. Solo guarda un contador —el identificador que su dispositivo da al editor y la fecha del día— para limitar el servicio a cinco fotos diarias. Ese contador se borra al cabo de veintiséis horas, y ese identificador cambia si borra y vuelve a instalar la app."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Le relais ne conserve pas la photo : il la transmet et vous renvoie le résultat. Il garde seulement un compteur — l'identifiant que votre appareil donne à l'éditeur, et la date du jour — pour limiter le service à cinq photos quotidiennes. Ce compteur s'efface au bout de vingt-six heures, et cet identifiant change si vous supprimez puis réinstallez l'app."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Il relè non conserva la foto: la trasmette e ti restituisce il risultato. Tiene solo un contatore — l'identificativo che il tuo dispositivo dà all'editore e la data del giorno — per limitare il servizio a cinque foto al giorno. Questo contatore si cancella dopo ventisei ore, e l'identificativo cambia se elimini e reinstalli l'app."
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "O retransmissor não conserva a fotografia: transmite-a e devolve-lhe o resultado. Guarda apenas um contador — o identificador que o seu dispositivo dá ao editor e a data do dia — para limitar o serviço a cinco fotografias por dia. Esse contador apaga-se ao fim de vinte e seis horas, e esse identificador muda se apagar e reinstalar a app."
+          }
+        }
+      }
+    },
+    "Le rôle d'Apple" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Die Rolle von Apple"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Apple's role"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "El papel de Apple"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Le rôle d'Apple"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Il ruolo di Apple"
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "O papel da Apple"
+          }
+        }
+      }
+    },
+    "Les abonnements et l'achat unique passent par l'App Store. C'est Apple qui encaisse et qui connaît votre moyen de paiement : KiwiJuice n'y a pas accès et ne reçoit ni votre nom, ni votre adresse, ni votre numéro de carte." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Abonnements und Einmalkauf laufen über den App Store. Apple zieht den Betrag ein und kennt Ihr Zahlungsmittel: KiwiJuice hat keinen Zugriff darauf und erhält weder Ihren Namen noch Ihre Adresse noch Ihre Kartennummer."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Subscriptions and the one-time purchase go through the App Store. Apple takes the payment and knows your payment method: KiwiJuice has no access to it and receives neither your name, nor your address, nor your card number."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Las suscripciones y la compra única pasan por el App Store. Es Apple quien cobra y quien conoce su medio de pago: KiwiJuice no tiene acceso a él y no recibe ni su nombre, ni su dirección, ni el número de su tarjeta."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Les abonnements et l'achat unique passent par l'App Store. C'est Apple qui encaisse et qui connaît votre moyen de paiement : KiwiJuice n'y a pas accès et ne reçoit ni votre nom, ni votre adresse, ni votre numéro de carte."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Gli abbonamenti e l'acquisto singolo passano dall'App Store. È Apple a incassare e a conoscere il tuo metodo di pagamento: KiwiJuice non vi ha accesso e non riceve né il tuo nome, né il tuo indirizzo, né il numero della tua carta."
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "As subscrições e a compra única passam pela App Store. É a Apple que cobra e que conhece o seu meio de pagamento: a KiwiJuice não tem acesso a ele e não recebe nem o seu nome, nem a sua morada, nem o número do seu cartão."
+          }
+        }
+      }
+    },
+    "Les abonnements se reconduisent automatiquement. Votre compte App Store est débité dans les vingt-quatre heures qui précèdent chaque échéance, sauf résiliation au moins vingt-quatre heures avant celle-ci. La reconduction se gère et se résilie dans les réglages de votre compte App Store, jamais depuis KiwiJuice." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Abonnements verlängern sich automatisch. Ihr App-Store-Konto wird innerhalb der vierundzwanzig Stunden vor jedem Ablaufdatum belastet, sofern Sie nicht mindestens vierundzwanzig Stunden davor kündigen. Die Verlängerung verwalten und kündigen Sie in den Einstellungen Ihres App-Store-Kontos, niemals bei KiwiJuice."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Subscriptions renew automatically. Your App Store account is charged within the twenty-four hours before each renewal date, unless you cancel at least twenty-four hours beforehand. Renewal is managed and cancelled in your App Store account settings, never through KiwiJuice."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Las suscripciones se renuevan automáticamente. Se cobrará a su cuenta del App Store en las veinticuatro horas previas a cada vencimiento, salvo cancelación al menos veinticuatro horas antes. La renovación se gestiona y se cancela en los ajustes de su cuenta del App Store, nunca desde KiwiJuice."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Les abonnements se reconduisent automatiquement. Votre compte App Store est débité dans les vingt-quatre heures qui précèdent chaque échéance, sauf résiliation au moins vingt-quatre heures avant celle-ci. La reconduction se gère et se résilie dans les réglages de votre compte App Store, jamais depuis KiwiJuice."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Gli abbonamenti si rinnovano automaticamente. Il tuo account App Store viene addebitato nelle ventiquattro ore che precedono ogni scadenza, salvo disdetta almeno ventiquattro ore prima. Il rinnovo si gestisce e si disdice nelle impostazioni del tuo account App Store, mai presso KiwiJuice."
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "As subscrições renovam-se automaticamente. A sua conta App Store é debitada nas vinte e quatro horas que antecedem cada vencimento, salvo cancelamento pelo menos vinte e quatro horas antes. A renovação gere-se e cancela-se nas definições da sua conta App Store, nunca junto da KiwiJuice."
+          }
+        }
+      }
+    },
+    "Les achats" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Die Käufe"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Purchases"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Las compras"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Les achats"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Gli acquisti"
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "As compras"
+          }
+        }
+      }
+    },
+    "Les coûts affichés sont des estimations, calculées à partir de la consommation et du prix de l'énergie que vous saisissez vous-même." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Die angezeigten Kosten sind Schätzungen, berechnet aus dem Verbrauch und dem Energiepreis, die Sie selbst eingeben."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The costs shown are estimates, computed from the consumption and energy price you enter yourself."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Los costes mostrados son estimaciones, calculadas a partir del consumo y del precio de la energía que usted mismo introduce."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Les coûts affichés sont des estimations, calculées à partir de la consommation et du prix de l'énergie que vous saisissez vous-même."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "I costi mostrati sono stime, calcolate a partire dal consumo e dal prezzo dell'energia che inserisci tu stesso."
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Os custos apresentados são estimativas, calculadas a partir do consumo e do preço da energia que o próprio introduz."
+          }
+        }
+      }
+    },
+    "Les distances et les tracés sont calculés à partir du GPS de l'iPhone. Leur précision dépend du signal : un tunnel, un parking souterrain ou une rue étroite entre de hauts immeubles dégradent la mesure, et un trajet peut s'en trouver plus court ou plus long qu'il ne l'a été." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Entfernungen und Strecken werden aus dem GPS des iPhones berechnet. Ihre Genauigkeit hängt vom Signal ab: ein Tunnel, eine Tiefgarage oder eine enge Strasse zwischen hohen Gebäuden verschlechtern die Messung, und eine Fahrt kann dadurch kürzer oder länger erscheinen, als sie war."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Distances and routes are computed from the iPhone's GPS. Their accuracy depends on the signal: a tunnel, an underground car park or a narrow street between tall buildings degrade the measurement, and a trip may come out shorter or longer than it really was."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Las distancias y los trazados se calculan a partir del GPS del iPhone. Su precisión depende de la señal: un túnel, un aparcamiento subterráneo o una calle estrecha entre edificios altos degradan la medición, y un trayecto puede resultar más corto o más largo de lo que fue."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Les distances et les tracés sont calculés à partir du GPS de l'iPhone. Leur précision dépend du signal : un tunnel, un parking souterrain ou une rue étroite entre de hauts immeubles dégradent la mesure, et un trajet peut s'en trouver plus court ou plus long qu'il ne l'a été."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Le distanze e i tracciati sono calcolati a partire dal GPS dell'iPhone. La loro precisione dipende dal segnale: una galleria, un parcheggio sotterraneo o una strada stretta fra edifici alti degradano la misura, e un viaggio può risultarne più corto o più lungo di quanto sia stato."
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "As distâncias e os traçados são calculados a partir do GPS do iPhone. A sua precisão depende do sinal: um túnel, um parque de estacionamento subterrâneo ou uma rua estreita entre edifícios altos degradam a medição, e uma viagem pode ficar mais curta ou mais longa do que foi."
+          }
+        }
+      }
+    },
+    "Les enfants" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kinder"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Children"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Los menores"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Les enfants"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "I minori"
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "As crianças"
+          }
+        }
+      }
+    },
+    "Les notifications" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Die Mitteilungen"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Notifications"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Las notificaciones"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Les notifications"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Le notifiche"
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "As notificações"
+          }
+        }
+      }
+    },
+    "Les paiements et les remboursements sont traités par Apple : une demande de remboursement se fait auprès de l'assistance Apple, selon ses conditions." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Zahlungen und Rückerstattungen wickelt Apple ab: Ein Rückerstattungsantrag ist beim Apple-Support zu stellen, nach dessen Bedingungen."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Payments and refunds are handled by Apple: a refund request is made to Apple Support, under its terms."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Los pagos y los reembolsos los gestiona Apple: la solicitud de reembolso se dirige al soporte de Apple, según sus condiciones."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Les paiements et les remboursements sont traités par Apple : une demande de remboursement se fait auprès de l'assistance Apple, selon ses conditions."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "I pagamenti e i rimborsi sono gestiti da Apple: la richiesta di rimborso si presenta all'assistenza Apple, secondo le sue condizioni."
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Os pagamentos e os reembolsos são tratados pela Apple: um pedido de reembolso faz-se junto do apoio da Apple, segundo as suas condições."
+          }
+        }
+      }
+    },
+    "Les photos, les noms de véhicules, les plaques et les informations de votre profil restent les vôtres. En prenant une photo de véhicule, vous autorisez sa transmission au prestataire de détourage pour ce seul traitement, décrit dans la politique de confidentialité." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Die Fotos, die Fahrzeugnamen, die Kennzeichen und die Angaben Ihres Profils bleiben Ihre. Wenn Sie ein Fahrzeugfoto aufnehmen, erlauben Sie dessen Übermittlung an den Dienstleister für das Freistellen, allein zu dieser Bearbeitung, wie sie in der Datenschutzerklärung beschrieben ist."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The photos, vehicle names, licence plates and profile details remain yours. By taking a vehicle photo, you authorise it to be sent to the cut-out provider for that processing alone, as described in the privacy policy."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Las fotos, los nombres de los vehículos, las matrículas y los datos de su perfil siguen siendo suyos. Al tomar una foto de vehículo, autoriza su transmisión al proveedor de recorte únicamente para ese tratamiento, descrito en la política de privacidad."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Les photos, les noms de véhicules, les plaques et les informations de votre profil restent les vôtres. En prenant une photo de véhicule, vous autorisez sa transmission au prestataire de détourage pour ce seul traitement, décrit dans la politique de confidentialité."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Le foto, i nomi dei veicoli, le targhe e le informazioni del tuo profilo restano tuoi. Scattando una foto di veicolo, ne autorizzi la trasmissione al fornitore dello scontorno per quel solo trattamento, descritto nell'informativa sulla privacy."
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "As fotografias, os nomes dos veículos, as matrículas e as informações do seu perfil continuam a ser seus. Ao tirar uma fotografia de veículo, autoriza a sua transmissão ao prestador do recorte apenas para esse tratamento, descrito na política de privacidade."
+          }
+        }
+      }
+    },
+    "Les sauvegardes" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Die Backups"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Backups"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Las copias de seguridad"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Les sauvegardes"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "I backup"
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "As cópias de segurança"
+          }
+        }
+      }
+    },
+    "Modifications" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Änderungen"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Changes"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Modificaciones"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Modifications"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Modifiche"
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Alterações"
+          }
+        }
+      }
+    },
+    "MyTrack enregistre vos trajets sur votre iPhone, et ils y restent. L'app n'a pas de compte à créer, pas de serveur où vos trajets seraient recopiés, aucune publicité et aucun traceur." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "MyTrack zeichnet Ihre Fahrten auf Ihrem iPhone auf, und dort bleiben sie. Die App verlangt kein Konto, hat keinen Server, auf den Ihre Fahrten kopiert würden, keine Werbung und keine Tracker."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "MyTrack records your trips on your iPhone, and that is where they stay. The app has no account to create, no server your trips are copied to, no advertising and no trackers."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "MyTrack registra sus trayectos en su iPhone, y ahí se quedan. La app no tiene cuenta que crear, ni servidor donde se copien sus trayectos, ni publicidad, ni rastreadores."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "MyTrack enregistre vos trajets sur votre iPhone, et ils y restent. L'app n'a pas de compte à créer, pas de serveur où vos trajets seraient recopiés, aucune publicité et aucun traceur."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "MyTrack registra i tuoi viaggi sul tuo iPhone, ed è lì che restano. L'app non richiede alcun account, non ha un server su cui copiare i tuoi viaggi, nessuna pubblicità e nessun tracciatore."
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "A MyTrack regista as suas viagens no seu iPhone, e é aí que ficam. A app não tem conta a criar, nem servidor para onde as suas viagens sejam copiadas, nem publicidade, nem rastreadores."
+          }
+        }
+      }
+    },
+    "MyTrack est fournie en l'état et selon sa disponibilité. Dans les limites permises par le droit applicable, KiwiJuice ne répond pas des dommages indirects, d'une perte de données ni d'un manque à gagner résultant de l'usage de l'app." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "MyTrack wird wie besehen und nach Verfügbarkeit bereitgestellt. Im gesetzlich zulässigen Rahmen haftet KiwiJuice nicht für mittelbare Schäden, Datenverlust oder entgangenen Gewinn aus der Nutzung der App."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "MyTrack is provided as is and as available. To the extent permitted by applicable law, KiwiJuice is not liable for indirect damage, loss of data or loss of profit arising from use of the app."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "MyTrack se proporciona tal cual y según disponibilidad. Dentro de los límites permitidos por la ley aplicable, KiwiJuice no responde de daños indirectos, pérdida de datos ni lucro cesante derivados del uso de la app."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "MyTrack est fournie en l'état et selon sa disponibilité. Dans les limites permises par le droit applicable, KiwiJuice ne répond pas des dommages indirects, d'une perte de données ni d'un manque à gagner résultant de l'usage de l'app."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "MyTrack è fornita così com'è e secondo disponibilità. Nei limiti consentiti dal diritto applicabile, KiwiJuice non risponde di danni indiretti, perdita di dati o mancato guadagno derivanti dall'uso dell'app."
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "A MyTrack é fornecida no estado em que se encontra e conforme disponibilidade. Nos limites permitidos pelo direito aplicável, a KiwiJuice não responde por danos indiretos, perda de dados nem lucros cessantes resultantes da utilização da app."
+          }
+        }
+      }
+    },
+    "MyTrack est un carnet de trajets automatique. Vous payez pour enregistrer de nouveaux trajets ; ce que vous avez déjà enregistré vous reste acquis. Vos données sont sur votre appareil et vous appartiennent." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "MyTrack ist ein automatisches Fahrtenbuch. Sie bezahlen dafür, neue Fahrten aufzuzeichnen; was Sie bereits aufgezeichnet haben, bleibt Ihnen. Ihre Daten liegen auf Ihrem Gerät und gehören Ihnen."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "MyTrack is an automatic trip log. You pay to record new trips; what you have already recorded remains yours. Your data is on your device and belongs to you."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "MyTrack es un cuaderno de trayectos automático. Usted paga por registrar nuevos trayectos; lo que ya ha registrado sigue siendo suyo. Sus datos están en su dispositivo y le pertenecen."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "MyTrack est un carnet de trajets automatique. Vous payez pour enregistrer de nouveaux trajets ; ce que vous avez déjà enregistré vous reste acquis. Vos données sont sur votre appareil et vous appartiennent."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "MyTrack è un libretto di viaggio automatico. Paghi per registrare nuovi viaggi; ciò che hai già registrato resta tuo. I tuoi dati sono sul tuo dispositivo e ti appartengono."
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "A MyTrack é um caderno de viagens automático. Paga para registar novas viagens; o que já registou continua a ser seu. Os seus dados estão no seu dispositivo e pertencem-lhe."
+          }
+        }
+      }
+    },
+    "MyTrack est éditée et fournie par KiwiJuice, en Suisse, et distribuée par l'App Store d'Apple. Ces conditions forment le contrat entre vous et KiwiJuice." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "MyTrack wird von KiwiJuice in der Schweiz herausgegeben und bereitgestellt und über den App Store von Apple vertrieben. Diese Bedingungen bilden den Vertrag zwischen Ihnen und KiwiJuice."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "MyTrack is published and provided by KiwiJuice, in Switzerland, and distributed through Apple's App Store. These terms form the contract between you and KiwiJuice."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "MyTrack está editada y proporcionada por KiwiJuice, en Suiza, y distribuida por el App Store de Apple. Estas condiciones constituyen el contrato entre usted y KiwiJuice."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "MyTrack est éditée et fournie par KiwiJuice, en Suisse, et distribuée par l'App Store d'Apple. Ces conditions forment le contrat entre vous et KiwiJuice."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "MyTrack è pubblicata e fornita da KiwiJuice, in Svizzera, e distribuita tramite l'App Store di Apple. Queste condizioni costituiscono il contratto tra te e KiwiJuice."
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "A MyTrack é editada e fornecida pela KiwiJuice, na Suíça, e distribuída pela App Store da Apple. Estas condições formam o contrato entre si e a KiwiJuice."
+          }
+        }
+      }
+    },
+    "MyTrack est éditée par KiwiJuice, en Suisse. C'est KiwiJuice qui répond du traitement décrit ici." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "MyTrack wird von KiwiJuice in der Schweiz herausgegeben. KiwiJuice ist für die hier beschriebene Bearbeitung verantwortlich."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "MyTrack is published by KiwiJuice, in Switzerland. KiwiJuice is responsible for the processing described here."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "MyTrack está editada por KiwiJuice, en Suiza. KiwiJuice es responsable del tratamiento descrito aquí."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "MyTrack est éditée par KiwiJuice, en Suisse. C'est KiwiJuice qui répond du traitement décrit ici."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "MyTrack è pubblicata da KiwiJuice, in Svizzera. KiwiJuice è responsabile del trattamento descritto qui."
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "A MyTrack é editada pela KiwiJuice, na Suíça. É a KiwiJuice que responde pelo tratamento aqui descrito."
+          }
+        }
+      }
+    },
+    "MyTrack n'est ni un conseil fiscal, ni un conseil comptable, et ses rapports ne sont pas des pièces certifiées. Si vous vous en servez pour une note de frais, une déduction ou un contrôle, vous restez seul responsable de leur exactitude et de leur conformité aux règles qui vous concernent." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "MyTrack ist weder eine Steuer- noch eine Buchhaltungsberatung, und seine Berichte sind keine beglaubigten Belege. Wenn Sie sie für eine Spesenabrechnung, einen Abzug oder eine Prüfung verwenden, bleiben Sie allein für ihre Richtigkeit und ihre Übereinstimmung mit den für Sie geltenden Regeln verantwortlich."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "MyTrack is neither tax advice nor accounting advice, and its reports are not certified records. If you use them for an expense claim, a deduction or an audit, you alone remain responsible for their accuracy and for their compliance with the rules that apply to you."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "MyTrack no es asesoramiento fiscal ni contable, y sus informes no son documentos certificados. Si los utiliza para una nota de gastos, una deducción o una inspección, usted sigue siendo el único responsable de su exactitud y de su conformidad con las normas que le afectan."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "MyTrack n'est ni un conseil fiscal, ni un conseil comptable, et ses rapports ne sont pas des pièces certifiées. Si vous vous en servez pour une note de frais, une déduction ou un contrôle, vous restez seul responsable de leur exactitude et de leur conformité aux règles qui vous concernent."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "MyTrack non è né una consulenza fiscale né una consulenza contabile, e i suoi resoconti non sono documenti certificati. Se li usi per una nota spese, una deduzione o un controllo, resti l'unico responsabile della loro esattezza e della loro conformità alle regole che ti riguardano."
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "A MyTrack não é aconselhamento fiscal nem contabilístico, e os seus relatórios não são documentos certificados. Se os utilizar para uma nota de despesas, uma dedução ou uma inspeção, continua a ser o único responsável pela sua exatidão e pela sua conformidade com as regras que lhe dizem respeito."
+          }
+        }
+      }
+    },
+    "MyTrack ne garde aucune copie de vos trajets ailleurs que sur votre appareil. Un iPhone perdu, cassé ou effacé sans sauvegarde emporte donc vos trajets avec lui : sauvegardez votre appareil si ces données comptent pour vous." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "MyTrack bewahrt keine Kopie Ihrer Fahrten ausserhalb Ihres Geräts auf. Ein verlorenes, defektes oder ohne Backup gelöschtes iPhone nimmt Ihre Fahrten also mit sich: Sichern Sie Ihr Gerät, wenn Ihnen diese Daten wichtig sind."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "MyTrack keeps no copy of your trips anywhere but on your device. An iPhone lost, broken or erased without a backup therefore takes your trips with it: back up your device if this data matters to you."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "MyTrack no guarda ninguna copia de sus trayectos fuera de su dispositivo. Un iPhone perdido, roto o borrado sin copia de seguridad se lleva por tanto sus trayectos consigo: haga copias de seguridad de su dispositivo si estos datos le importan."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "MyTrack ne garde aucune copie de vos trajets ailleurs que sur votre appareil. Un iPhone perdu, cassé ou effacé sans sauvegarde emporte donc vos trajets avec lui : sauvegardez votre appareil si ces données comptent pour vous."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "MyTrack non conserva alcuna copia dei tuoi viaggi al di fuori del tuo dispositivo. Un iPhone perso, rotto o cancellato senza backup porta quindi via con sé i tuoi viaggi: esegui il backup del dispositivo se questi dati contano per te."
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "A MyTrack não guarda qualquer cópia das suas viagens fora do seu dispositivo. Um iPhone perdido, partido ou apagado sem cópia de segurança leva, portanto, as suas viagens consigo: faça cópias de segurança do dispositivo se estes dados lhe importam."
+          }
+        }
+      }
+    },
+    "MyTrack s'adresse à des conducteurs. L'app n'est pas destinée aux enfants et ne recueille sciemment aucune donnée les concernant." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "MyTrack richtet sich an Fahrerinnen und Fahrer. Die App ist nicht für Kinder bestimmt und erhebt wissentlich keine Daten über sie."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "MyTrack is for drivers. The app is not intended for children and knowingly collects no data about them."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "MyTrack se dirige a conductores. La app no está destinada a menores y no recoge conscientemente ningún dato sobre ellos."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "MyTrack s'adresse à des conducteurs. L'app n'est pas destinée aux enfants et ne recueille sciemment aucune donnée les concernant."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "MyTrack si rivolge a chi guida. L'app non è destinata ai minori e non raccoglie consapevolmente alcun dato che li riguardi."
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "A MyTrack destina-se a condutores. A app não se dirige a crianças e não recolhe conscientemente quaisquer dados que lhes digam respeito."
+          }
+        }
+      }
+    },
+    "MyTrack se paie de trois façons : un abonnement mensuel, un abonnement annuel, ou un achat unique qui ouvre l'accès définitivement. Les prix sont affichés dans l'app, dans votre devise, avant tout paiement." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "MyTrack lässt sich auf drei Arten bezahlen: als Monatsabo, als Jahresabo oder als Einmalkauf, der den Zugang dauerhaft freischaltet. Die Preise werden vor jeder Zahlung in der App in Ihrer Währung angezeigt."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "MyTrack can be paid for in three ways: a monthly subscription, an annual subscription, or a one-time purchase that unlocks access for good. Prices are shown in the app, in your currency, before any payment."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "MyTrack se paga de tres formas: una suscripción mensual, una suscripción anual o una compra única que abre el acceso de forma definitiva. Los precios se muestran en la app, en su moneda, antes de cualquier pago."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "MyTrack se paie de trois façons : un abonnement mensuel, un abonnement annuel, ou un achat unique qui ouvre l'accès définitivement. Les prix sont affichés dans l'app, dans votre devise, avant tout paiement."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "MyTrack si paga in tre modi: un abbonamento mensile, un abbonamento annuale o un acquisto singolo che apre l'accesso in via definitiva. I prezzi sono mostrati nell'app, nella tua valuta, prima di qualsiasi pagamento."
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "A MyTrack paga-se de três formas: uma subscrição mensal, uma subscrição anual ou uma compra única que abre o acesso definitivamente. Os preços são apresentados na app, na sua moeda, antes de qualquer pagamento."
+          }
+        }
+      }
+    },
+    "Ne photographiez que ce que vous avez le droit de photographier, et n'envoyez rien d'illicite. Le service de photo est plafonné à quelques images par jour et peut être interrompu : l'app reste utilisable sans lui." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Fotografieren Sie nur, was Sie fotografieren dürfen, und senden Sie nichts Rechtswidriges. Der Fotodienst ist auf einige Bilder pro Tag begrenzt und kann eingestellt werden: Die App bleibt auch ohne ihn nutzbar."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Photograph only what you are entitled to photograph, and send nothing unlawful. The photo service is capped at a few images a day and may be discontinued: the app remains usable without it."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Fotografíe únicamente lo que tenga derecho a fotografiar y no envíe nada ilícito. El servicio de fotos está limitado a unas pocas imágenes al día y puede interrumpirse: la app sigue siendo utilizable sin él."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ne photographiez que ce que vous avez le droit de photographier, et n'envoyez rien d'illicite. Le service de photo est plafonné à quelques images par jour et peut être interrompu : l'app reste utilisable sans lui."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Fotografa solo ciò che hai il diritto di fotografare e non inviare nulla di illecito. Il servizio foto è limitato a poche immagini al giorno e può essere interrotto: l'app resta utilizzabile senza di esso."
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Fotografe apenas o que tem o direito de fotografar e não envie nada ilícito. O serviço de fotografia está limitado a algumas imagens por dia e pode ser interrompido: a app continua utilizável sem ele."
+          }
+        }
+      }
+    },
+    "Nous écrire" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Schreiben Sie uns"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Write to us"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Escríbanos"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nous écrire"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Scriverci"
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Escreva-nos"
+          }
+        }
+      }
+    },
+    "OpenAI traite la photo aux États-Unis pour produire l'image et, selon la politique de son interface de programmation, peut la conserver un temps limité à des fins de sécurité, sans s'en servir pour entraîner ses modèles." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "OpenAI verarbeitet das Foto in den Vereinigten Staaten, um das Bild zu erzeugen, und kann es gemäss den Richtlinien seiner Programmierschnittstelle für begrenzte Zeit zu Sicherheitszwecken aufbewahren, ohne es zum Training seiner Modelle zu verwenden."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "OpenAI processes the photo in the United States to produce the image and, under its programming interface policy, may retain it for a limited time for safety purposes, without using it to train its models."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "OpenAI trata la foto en Estados Unidos para producir la imagen y, según la política de su interfaz de programación, puede conservarla un tiempo limitado con fines de seguridad, sin utilizarla para entrenar sus modelos."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "OpenAI traite la photo aux États-Unis pour produire l'image et, selon la politique de son interface de programmation, peut la conserver un temps limité à des fins de sécurité, sans s'en servir pour entraîner ses modèles."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "OpenAI tratta la foto negli Stati Uniti per produrre l'immagine e, secondo la politica della sua interfaccia di programmazione, può conservarla per un tempo limitato a fini di sicurezza, senza usarla per addestrare i propri modelli."
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "A OpenAI trata a fotografia nos Estados Unidos para produzir a imagem e, segundo a política da sua interface de programação, pode conservá-la por um tempo limitado para fins de segurança, sem a usar para treinar os seus modelos."
+          }
+        }
+      }
+    },
+    "Pas de compte, pas de mot de passe, pas d'identifiant publicitaire. Aucun outil de mesure d'audience, aucun kit tiers, aucune trace envoyée à quiconque lorsque vous ouvrez l'app ou appuyez sur un bouton." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kein Konto, kein Passwort, keine Werbekennung. Keine Analysewerkzeuge, keine Fremdbibliotheken, keine Spur, die an irgendjemanden gesendet wird, wenn Sie die App öffnen oder eine Taste drücken."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No account, no password, no advertising identifier. No analytics tools, no third-party kits, no trace sent to anyone when you open the app or tap a button."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ni cuenta, ni contraseña, ni identificador publicitario. Ninguna herramienta de analítica, ningún kit de terceros, ningún rastro enviado a nadie cuando abre la app o pulsa un botón."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pas de compte, pas de mot de passe, pas d'identifiant publicitaire. Aucun outil de mesure d'audience, aucun kit tiers, aucune trace envoyée à quiconque lorsque vous ouvrez l'app ou appuyez sur un bouton."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nessun account, nessuna password, nessun identificativo pubblicitario. Nessuno strumento di analisi, nessun kit di terze parti, nessuna traccia inviata a chicchessia quando apri l'app o premi un pulsante."
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sem conta, sem palavra-passe, sem identificador publicitário. Nenhuma ferramenta de medição de audiência, nenhum kit de terceiros, nenhum rasto enviado a quem quer que seja quando abre a app ou toca num botão."
+          }
+        }
+      }
+    },
+    "Payer ouvre l'enregistrement de nouveaux trajets. Si votre accès prend fin, vos trajets, véhicules et rapports déjà enregistrés restent consultables et exportables." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Die Zahlung schaltet das Aufzeichnen neuer Fahrten frei. Endet Ihr Zugang, bleiben Ihre bereits aufgezeichneten Fahrten, Fahrzeuge und Berichte einsehbar und exportierbar."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Paying unlocks the recording of new trips. If your access ends, the trips, vehicles and reports you have already recorded remain viewable and exportable."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pagar habilita el registro de nuevos trayectos. Si su acceso termina, los trayectos, vehículos e informes ya registrados siguen siendo consultables y exportables."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Payer ouvre l'enregistrement de nouveaux trajets. Si votre accès prend fin, vos trajets, véhicules et rapports déjà enregistrés restent consultables et exportables."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pagare apre la registrazione di nuovi viaggi. Se il tuo accesso termina, i viaggi, i veicoli e i resoconti già registrati restano consultabili ed esportabili."
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pagar abre o registo de novas viagens. Se o seu acesso terminar, as viagens, veículos e relatórios já registados continuam consultáveis e exportáveis."
+          }
+        }
+      }
+    },
+    "Pendant un trajet, MyTrack relève votre position pour tracer l'itinéraire et calculer la distance. Ces points sont écrits dans la base locale et n'en sortent pas." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Während einer Fahrt erfasst MyTrack Ihren Standort, um die Route zu zeichnen und die Entfernung zu berechnen. Diese Punkte werden in die lokale Datenbank geschrieben und verlassen sie nicht."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "During a trip, MyTrack records your location to draw the route and compute the distance. Those points are written to the local database and never leave it."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Durante un trayecto, MyTrack registra su ubicación para trazar el itinerario y calcular la distancia. Esos puntos se escriben en la base local y no salen de ella."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pendant un trajet, MyTrack relève votre position pour tracer l'itinéraire et calculer la distance. Ces points sont écrits dans la base locale et n'en sortent pas."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Durante un viaggio, MyTrack rileva la tua posizione per tracciare l'itinerario e calcolare la distanza. Questi punti vengono scritti nell'archivio locale e non ne escono."
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Durante uma viagem, a MyTrack regista a sua localização para traçar o itinerário e calcular a distância. Esses pontos são escritos na base local e não saem dela."
+          }
+        }
+      }
+    },
+    "Photographiez votre voiture, pas les gens autour d'elle. Et si vous préférez ne rien envoyer, ne prenez pas de photo : l'app fonctionne très bien avec le dessin de voiture par défaut." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Fotografieren Sie Ihr Auto, nicht die Menschen darum herum. Und wenn Sie lieber nichts senden möchten, machen Sie einfach kein Foto: Die App funktioniert bestens mit der voreingestellten Autozeichnung."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Photograph your car, not the people around it. And if you would rather send nothing at all, simply take no photo: the app works perfectly well with the default car drawing."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Fotografíe su coche, no a la gente que hay alrededor. Y si prefiere no enviar nada, no tome ninguna foto: la app funciona perfectamente con el dibujo de coche predeterminado."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Photographiez votre voiture, pas les gens autour d'elle. Et si vous préférez ne rien envoyer, ne prenez pas de photo : l'app fonctionne très bien avec le dessin de voiture par défaut."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Fotografa la tua auto, non le persone intorno. E se preferisci non inviare nulla, non scattare alcuna foto: l'app funziona benissimo con il disegno d'auto predefinito."
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Fotografe o seu carro, não as pessoas à volta. E se preferir não enviar nada, não tire fotografia alguma: a app funciona muito bem com o desenho de carro predefinido."
+          }
+        }
+      }
+    },
+    "Pour toute question sur ce texte ou sur vos données, écrivez-nous." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bei Fragen zu diesem Text oder zu Ihren Daten schreiben Sie uns."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "For any question about this text or about your data, write to us."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Para cualquier duda sobre este texto o sobre sus datos, escríbanos."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pour toute question sur ce texte ou sur vos données, écrivez-nous."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Per qualsiasi domanda su questo testo o sui tuoi dati, scrivici."
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Para qualquer questão sobre este texto ou sobre os seus dados, escreva-nos."
+          }
+        }
+      }
+    },
+    "Pour toute question sur ces conditions, écrivez-nous." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bei Fragen zu diesen Bedingungen schreiben Sie uns."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "For any question about these terms, write to us."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Para cualquier duda sobre estas condiciones, escríbanos."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pour toute question sur ces conditions, écrivez-nous."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Per qualsiasi domanda su queste condizioni, scrivici."
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Para qualquer questão sobre estas condições, escreva-nos."
+          }
+        }
+      }
+    },
+    "Quand l'offre annuelle comporte un essai gratuit, sa durée est annoncée sur l'écran d'achat. Souscrire un abonnement pendant un essai en cours met fin à la partie non utilisée de cet essai." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Wenn das Jahresangebot eine kostenlose Testphase enthält, wird ihre Dauer auf dem Kaufbildschirm angezeigt. Wer während einer laufenden Testphase ein Abonnement abschliesst, verliert den nicht genutzten Teil dieser Testphase."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "When the annual offer includes a free trial, its length is stated on the purchase screen. Subscribing during an ongoing trial forfeits the unused part of that trial."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cuando la oferta anual incluye una prueba gratuita, su duración se indica en la pantalla de compra. Suscribirse durante una prueba en curso pone fin a la parte no utilizada de esa prueba."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Quand l'offre annuelle comporte un essai gratuit, sa durée est annoncée sur l'écran d'achat. Souscrire un abonnement pendant un essai en cours met fin à la partie non utilisée de cet essai."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Quando l'offerta annuale prevede una prova gratuita, la sua durata è indicata nella schermata d'acquisto. Sottoscrivere un abbonamento durante una prova in corso fa decadere la parte non utilizzata di tale prova."
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Quando a oferta anual inclui um período experimental gratuito, a sua duração é indicada no ecrã de compra. Subscrever durante um período experimental em curso põe termo à parte não utilizada desse período."
+          }
+        }
+      }
+    },
+    "Qui vous fournit l'app" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Wer Ihnen die App bereitstellt"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Who provides the app"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Quién le proporciona la app"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Qui vous fournit l'app"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Chi ti fornisce l'app"
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Quem lhe fornece a app"
+          }
+        }
+      }
+    },
+    "Qui édite MyTrack" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Wer MyTrack herausgibt"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Who publishes MyTrack"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Quién edita MyTrack"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Qui édite MyTrack"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Chi pubblica MyTrack"
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Quem edita a MyTrack"
+          }
+        }
+      }
+    },
+    "Rien ici n'écarte la responsabilité en cas de faute grave ou intentionnelle, ni en cas d'atteinte à la vie ou à l'intégrité corporelle. Si vous êtes consommateur, les droits que la loi de votre pays vous reconnaît restent entiers." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nichts hierin schliesst die Haftung bei grober Fahrlässigkeit oder Vorsatz aus, ebenso wenig bei Verletzung von Leben oder Körper. Wenn Sie Verbraucher sind, bleiben die Rechte, die Ihnen das Recht Ihres Landes gewährt, unberührt."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nothing here excludes liability for gross negligence or wilful misconduct, nor for injury to life or bodily integrity. If you are a consumer, the rights granted to you by the law of your country remain untouched."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nada de lo aquí dispuesto excluye la responsabilidad por culpa grave o dolo, ni por daños a la vida o a la integridad física. Si es consumidor, los derechos que le reconoce la ley de su país permanecen intactos."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Rien ici n'écarte la responsabilité en cas de faute grave ou intentionnelle, ni en cas d'atteinte à la vie ou à l'intégrité corporelle. Si vous êtes consommateur, les droits que la loi de votre pays vous reconnaît restent entiers."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nulla di quanto qui previsto esclude la responsabilità per colpa grave o dolo, né per lesioni alla vita o all'integrità fisica. Se sei un consumatore, i diritti che la legge del tuo paese ti riconosce restano integri."
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nada aqui afasta a responsabilidade em caso de culpa grave ou dolo, nem em caso de ofensa à vida ou à integridade física. Se for consumidor, os direitos que a lei do seu país lhe reconhece mantêm-se intactos."
+          }
+        }
+      }
+    },
+    "Réglez ce que vous avez à régler avant de partir. Ne manipulez pas l'app en conduisant, et respectez le code de la route du pays où vous roulez : il passe toujours avant MyTrack." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Stellen Sie ein, was einzustellen ist, bevor Sie losfahren. Bedienen Sie die App nicht während der Fahrt und halten Sie sich an die Strassenverkehrsordnung des Landes, in dem Sie unterwegs sind: Sie geht MyTrack immer vor."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Set whatever needs setting before you leave. Do not operate the app while driving, and follow the traffic laws of the country you are driving in: they always come before MyTrack."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ajuste lo que tenga que ajustar antes de salir. No manipule la app mientras conduce y respete el código de circulación del país por el que circula: siempre está por encima de MyTrack."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Réglez ce que vous avez à régler avant de partir. Ne manipulez pas l'app en conduisant, et respectez le code de la route du pays où vous roulez : il passe toujours avant MyTrack."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Imposta ciò che devi impostare prima di partire. Non usare l'app mentre guidi e rispetta il codice della strada del paese in cui circoli: viene sempre prima di MyTrack."
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Configure o que tiver de configurar antes de partir. Não manuseie a app enquanto conduz e cumpra o código da estrada do país onde circula: vem sempre antes da MyTrack."
+          }
+        }
+      }
+    },
+    "Résiliation" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Beendigung"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Termination"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Resolución"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Résiliation"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Risoluzione"
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cessação"
+          }
+        }
+      }
+    },
+    "Si ce texte change, la date indiquée en haut change avec lui, et la version qui vous engage est toujours celle que vous lisez dans l'app." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ändert sich dieser Text, so ändert sich das oben genannte Datum mit ihm, und massgeblich ist stets die Fassung, die Sie in der App lesen."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "If this text changes, the date shown above changes with it, and the version that binds you is always the one you read in the app."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Si este texto cambia, la fecha indicada arriba cambia con él, y la versión que le vincula es siempre la que lee en la app."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Si ce texte change, la date indiquée en haut change avec lui, et la version qui vous engage est toujours celle que vous lisez dans l'app."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Se questo testo cambia, la data indicata in alto cambia con esso, e la versione che ti vincola è sempre quella che leggi nell'app."
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Se este texto mudar, a data indicada acima muda com ele, e a versão que o vincula é sempre a que lê na app."
+          }
+        }
+      }
+    },
+    "Si l'app se révélait non conforme à une garantie applicable, vous pouvez le signaler à Apple, qui vous en remboursera le prix d'achat ; au-delà de ce remboursement, Apple n'assume aucune autre obligation. Toute réclamation relative à l'app — responsabilité du fait du produit, conformité réglementaire, propriété intellectuelle — relève de KiwiJuice. Apple et ses filiales sont tiers bénéficiaires de ces conditions et peuvent s'en prévaloir." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sollte die App einer geltenden Gewährleistung nicht entsprechen, können Sie dies Apple melden; Apple erstattet Ihnen dann den Kaufpreis. Über diese Erstattung hinaus trifft Apple keine weitere Pflicht. Jede Beanstandung der App – Produkthaftung, Einhaltung von Vorschriften, geistiges Eigentum – fällt in die Verantwortung von KiwiJuice. Apple und ihre Tochtergesellschaften sind Drittbegünstigte dieser Bedingungen und können sich darauf berufen."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "If the app were to fail to conform to an applicable warranty, you may notify Apple, which will refund the purchase price to you; beyond that refund, Apple has no other obligation. Any claim relating to the app — product liability, regulatory compliance, intellectual property — is the responsibility of KiwiJuice. Apple and its subsidiaries are third-party beneficiaries of these terms and may enforce them."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Si la app resultara no conforme con una garantía aplicable, puede notificarlo a Apple, que le reembolsará el precio de compra; más allá de ese reembolso, Apple no asume ninguna otra obligación. Toda reclamación relativa a la app —responsabilidad por producto, conformidad reglamentaria, propiedad intelectual— corresponde a KiwiJuice. Apple y sus filiales son terceros beneficiarios de estas condiciones y pueden invocarlas."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Si l'app se révélait non conforme à une garantie applicable, vous pouvez le signaler à Apple, qui vous en remboursera le prix d'achat ; au-delà de ce remboursement, Apple n'assume aucune autre obligation. Toute réclamation relative à l'app — responsabilité du fait du produit, conformité réglementaire, propriété intellectuelle — relève de KiwiJuice. Apple et ses filiales sont tiers bénéficiaires de ces conditions et peuvent s'en prévaloir."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Se l'app risultasse non conforme a una garanzia applicabile, puoi segnalarlo ad Apple, che ti rimborserà il prezzo d'acquisto; oltre a tale rimborso, Apple non assume alcun altro obbligo. Ogni reclamo relativo all'app — responsabilità da prodotto, conformità normativa, proprietà intellettuale — compete a KiwiJuice. Apple e le sue controllate sono terzi beneficiari di queste condizioni e possono farle valere."
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Se a app se revelasse desconforme com uma garantia aplicável, pode comunicá-lo à Apple, que lhe reembolsará o preço de compra; para além desse reembolso, a Apple não assume qualquer outra obrigação. Qualquer reclamação relativa à app — responsabilidade pelo produto, conformidade regulamentar, propriedade intelectual — compete à KiwiJuice. A Apple e as suas filiais são terceiros beneficiários destas condições e podem invocá-las."
+          }
+        }
+      }
+    },
+    "Si vous les autorisez, MyTrack vous prévient qu'un trajet détecté attend votre confirmation, qu'un rapport est prêt, ou que votre abonnement a expiré. Ces notifications sont préparées et déclenchées sur votre appareil ; aucune n'arrive d'un serveur." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Wenn Sie sie erlauben, meldet MyTrack Ihnen, dass eine erkannte Fahrt auf Ihre Bestätigung wartet, dass ein Bericht bereit ist oder dass Ihr Abonnement abgelaufen ist. Diese Mitteilungen werden auf Ihrem Gerät erstellt und ausgelöst; keine kommt von einem Server."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "If you allow them, MyTrack tells you that a detected trip is awaiting your confirmation, that a report is ready, or that your subscription has expired. These notifications are prepared and triggered on your device; none arrives from a server."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Si las autoriza, MyTrack le avisa de que un trayecto detectado espera su confirmación, de que un informe está listo o de que su suscripción ha caducado. Estas notificaciones se preparan y se lanzan en su dispositivo; ninguna llega de un servidor."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Si vous les autorisez, MyTrack vous prévient qu'un trajet détecté attend votre confirmation, qu'un rapport est prêt, ou que votre abonnement a expiré. Ces notifications sont préparées et déclenchées sur votre appareil ; aucune n'arrive d'un serveur."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Se le autorizzi, MyTrack ti avvisa che un viaggio rilevato attende la tua conferma, che un resoconto è pronto o che il tuo abbonamento è scaduto. Queste notifiche sono preparate e attivate sul tuo dispositivo; nessuna arriva da un server."
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Se as autorizar, a MyTrack avisa-o de que uma viagem detetada aguarda a sua confirmação, de que um relatório está pronto ou de que a sua subscrição expirou. Estas notificações são preparadas e desencadeadas no seu dispositivo; nenhuma chega de um servidor."
+          }
+        }
+      }
+    },
+    "Si vous photographiez votre véhicule, la photo est envoyée à un relais opéré par KiwiJuice, qui la transmet à OpenAI pour la détourer et la nettoyer. C'est le seul envoi que fait l'app, et il n'a lieu qu'au moment où vous prenez une photo." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Wenn Sie Ihr Fahrzeug fotografieren, wird das Foto an einen von KiwiJuice betriebenen Vermittler gesendet, der es zum Freistellen und Aufbereiten an OpenAI weiterleitet. Das ist die einzige Übertragung der App, und sie findet nur in dem Moment statt, in dem Sie ein Foto aufnehmen."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "If you photograph your vehicle, the photo is sent to a relay operated by KiwiJuice, which forwards it to OpenAI to cut it out and clean it up. This is the only transmission the app makes, and it happens only at the moment you take a photo."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Si fotografía su vehículo, la foto se envía a un relé operado por KiwiJuice, que la transmite a OpenAI para recortarla y limpiarla. Es el único envío que hace la app, y solo ocurre en el momento en que toma una foto."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Si vous photographiez votre véhicule, la photo est envoyée à un relais opéré par KiwiJuice, qui la transmet à OpenAI pour la détourer et la nettoyer. C'est le seul envoi que fait l'app, et il n'a lieu qu'au moment où vous prenez une photo."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Se fotografi il tuo veicolo, la foto viene inviata a un relè gestito da KiwiJuice, che la trasmette a OpenAI per scontornarla e ripulirla. È l'unico invio che l'app effettua, e avviene solo nel momento in cui scatti una foto."
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Se fotografar o seu veículo, a fotografia é enviada para um retransmissor operado pela KiwiJuice, que a transmite à OpenAI para a recortar e limpar. É o único envio que a app faz, e só acontece no momento em que tira uma fotografia."
+          }
+        }
+      }
+    },
+    "Si vous sauvegardez votre iPhone, dans iCloud ou sur un ordinateur, la base de MyTrack fait partie de la sauvegarde. Elle est alors protégée par Apple, selon vos réglages de sauvegarde, et non par MyTrack." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Wenn Sie Ihr iPhone sichern, in iCloud oder auf einem Computer, gehört die Datenbank von MyTrack zum Backup. Sie wird dann von Apple gemäss Ihren Backup-Einstellungen geschützt, nicht von MyTrack."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "If you back up your iPhone, to iCloud or to a computer, MyTrack's database is part of the backup. It is then protected by Apple, according to your backup settings, and not by MyTrack."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Si hace una copia de seguridad de su iPhone, en iCloud o en un ordenador, la base de datos de MyTrack forma parte de la copia. Entonces la protege Apple, según sus ajustes de copia de seguridad, y no MyTrack."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Si vous sauvegardez votre iPhone, dans iCloud ou sur un ordinateur, la base de MyTrack fait partie de la sauvegarde. Elle est alors protégée par Apple, selon vos réglages de sauvegarde, et non par MyTrack."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Se esegui il backup del tuo iPhone, su iCloud o su un computer, l'archivio di MyTrack fa parte del backup. È allora protetto da Apple, secondo le tue impostazioni di backup, e non da MyTrack."
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Se fizer uma cópia de segurança do seu iPhone, no iCloud ou num computador, a base de dados da MyTrack faz parte dessa cópia. Passa então a ser protegida pela Apple, segundo as suas definições de cópia de segurança, e não pela MyTrack."
+          }
+        }
+      }
+    },
+    "Tout cela vit dans une base locale, sur votre iPhone. Elle n'est synchronisée ni avec iCloud, ni avec un serveur." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "All das liegt in einer lokalen Datenbank auf Ihrem iPhone. Sie wird weder mit iCloud noch mit einem Server synchronisiert."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "All of it lives in a local database on your iPhone. It is synchronised neither with iCloud nor with any server."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Todo ello vive en una base de datos local, en su iPhone. No se sincroniza ni con iCloud ni con ningún servidor."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tout cela vit dans une base locale, sur votre iPhone. Elle n'est synchronisée ni avec iCloud, ni avec un serveur."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tutto questo vive in un archivio locale, sul tuo iPhone. Non è sincronizzato né con iCloud né con un server."
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tudo isso vive numa base de dados local, no seu iPhone. Não é sincronizada nem com o iCloud nem com qualquer servidor."
+          }
+        }
+      }
+    },
+    "Un iPhone et une version d'iOS prise en charge. Le suivi automatique demande en plus l'accès à la position réglé sur « Toujours » et l'accès à Motion et forme : sans eux, seuls les trajets que vous démarrez vous-même sont enregistrés." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ein iPhone und eine unterstützte iOS-Version. Die automatische Erkennung verlangt zusätzlich den auf „Immer“ gestellten Standortzugriff und den Zugriff auf Bewegung und Fitness: ohne sie werden nur die Fahrten aufgezeichnet, die Sie selbst starten."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "An iPhone and a supported version of iOS. Automatic detection additionally requires location access set to “Always” and access to Motion & Fitness: without them, only the trips you start yourself are recorded."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Un iPhone y una versión de iOS compatible. El seguimiento automático requiere además el acceso a la ubicación en «Siempre» y el acceso a Movimiento y forma física: sin ellos, solo se registran los trayectos que usted mismo inicia."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Un iPhone et une version d'iOS prise en charge. Le suivi automatique demande en plus l'accès à la position réglé sur « Toujours » et l'accès à Motion et forme : sans eux, seuls les trajets que vous démarrez vous-même sont enregistrés."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Un iPhone e una versione di iOS supportata. Il rilevamento automatico richiede inoltre l'accesso alla posizione impostato su «Sempre» e l'accesso a Movimento e fitness: senza di essi vengono registrati solo i viaggi che avvii tu stesso."
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Um iPhone e uma versão do iOS compatível. A deteção automática exige ainda o acesso à localização definido como «Sempre» e o acesso a Movimento e preparação física: sem eles, só são registadas as viagens que o próprio inicia."
+          }
+        }
+      }
+    },
+    "Une seule chose quitte votre appareil, et seulement si vous la demandez : la photo de votre véhicule, envoyée pour être détourée. Tout le reste — positions, distances, véhicules, rapports — ne sort jamais de l'iPhone." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nur eines verlässt Ihr Gerät, und auch das nur auf Ihren Wunsch: das Foto Ihres Fahrzeugs, das zum Freistellen gesendet wird. Alles andere – Positionen, Entfernungen, Fahrzeuge, Berichte – verlässt das iPhone nie."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Only one thing leaves your device, and only if you ask for it: the photo of your vehicle, sent to be cut out. Everything else — locations, distances, vehicles, reports — never leaves the iPhone."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Solo una cosa sale de su dispositivo, y solo si usted lo pide: la foto de su vehículo, enviada para recortarla. Todo lo demás —posiciones, distancias, vehículos, informes— nunca sale del iPhone."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Une seule chose quitte votre appareil, et seulement si vous la demandez : la photo de votre véhicule, envoyée pour être détourée. Tout le reste — positions, distances, véhicules, rapports — ne sort jamais de l'iPhone."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Una sola cosa lascia il tuo dispositivo, e solo se lo chiedi: la foto del tuo veicolo, inviata per essere scontornata. Tutto il resto — posizioni, distanze, veicoli, resoconti — non esce mai dall'iPhone."
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Só uma coisa sai do seu dispositivo, e apenas se a pedir: a fotografia do seu veículo, enviada para ser recortada. Todo o resto — posições, distâncias, veículos, relatórios — nunca sai do iPhone."
+          }
+        }
+      }
+    },
+    "Vos données ne sont ni vendues, ni louées, ni partagées, et ne servent à établir aucun profil." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ihre Daten werden weder verkauft noch vermietet noch weitergegeben und dienen keiner Profilbildung."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Your data is not sold, rented or shared, and is not used to build any profile."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sus datos no se venden, ni se alquilan, ni se comparten, y no sirven para elaborar ningún perfil."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Vos données ne sont ni vendues, ni louées, ni partagées, et ne servent à établir aucun profil."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "I tuoi dati non vengono venduti, né affittati, né condivisi, e non servono a costruire alcun profilo."
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Os seus dados não são vendidos, nem alugados, nem partilhados, e não servem para construir qualquer perfil."
+          }
+        }
+      }
+    },
+    "Vos données restent tant que vous gardez l'app. Rien n'expire et rien n'est effacé dans votre dos." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ihre Daten bleiben, solange Sie die App behalten. Nichts läuft ab, und nichts wird hinter Ihrem Rücken gelöscht."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Your data stays as long as you keep the app. Nothing expires and nothing is deleted behind your back."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sus datos permanecen mientras conserve la app. Nada caduca y nada se borra a sus espaldas."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Vos données restent tant que vous gardez l'app. Rien n'expire et rien n'est effacé dans votre dos."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "I tuoi dati restano finché conservi l'app. Nulla scade e nulla viene cancellato a tua insaputa."
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Os seus dados permanecem enquanto mantiver a app. Nada expira e nada é apagado nas suas costas."
+          }
+        }
+      }
+    },
+    "Vos données, et qui en est le gardien" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ihre Daten, und wer sie hütet"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Your data, and who keeps it safe"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sus datos, y quién los custodia"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Vos données, et qui en est le gardien"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "I tuoi dati, e chi ne è il custode"
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Os seus dados, e quem é o seu guardião"
+          }
+        }
+      }
+    },
+    "Vos droits" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ihre Rechte"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Your rights"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sus derechos"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Vos droits"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "I tuoi diritti"
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Os seus direitos"
+          }
+        }
+      }
+    },
+    "Vos trajets : date, durée, distance, points de départ et d'arrivée, et le tracé relevé pendant le trajet. Vos véhicules : nom, plaque si vous la renseignez, énergie, consommation, prix de l'énergie, et la photo si vous en prenez une." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ihre Fahrten: Datum, Dauer, Entfernung, Start- und Zielpunkt sowie die während der Fahrt aufgezeichnete Strecke. Ihre Fahrzeuge: Name, Kennzeichen falls angegeben, Energieart, Verbrauch, Energiepreis und das Foto, falls Sie eines aufnehmen."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Your trips: date, duration, distance, start and end points, and the route recorded along the way. Your vehicles: name, licence plate if you enter one, energy type, consumption, energy price, and the photo if you take one."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sus trayectos: fecha, duración, distancia, puntos de salida y de llegada, y el trazado registrado durante el trayecto. Sus vehículos: nombre, matrícula si la indica, energía, consumo, precio de la energía y la foto si toma alguna."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Vos trajets : date, durée, distance, points de départ et d'arrivée, et le tracé relevé pendant le trajet. Vos véhicules : nom, plaque si vous la renseignez, énergie, consommation, prix de l'énergie, et la photo si vous en prenez une."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "I tuoi viaggi: data, durata, distanza, punti di partenza e di arrivo e il tracciato rilevato durante il viaggio. I tuoi veicoli: nome, targa se la inserisci, energia, consumo, prezzo dell'energia e la foto se ne scatti una."
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "As suas viagens: data, duração, distância, pontos de partida e de chegada, e o traçado registado durante a viagem. Os seus veículos: nome, matrícula se a indicar, energia, consumo, preço da energia e a fotografia caso tire alguma."
+          }
+        }
+      }
+    },
+    "Votre accord" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ihr Einverständnis"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Your agreement"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Su aceptación"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Votre accord"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Il tuo consenso"
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "O seu acordo"
+          }
+        }
+      }
+    },
+    "Votre profil : prénom, nom, e-mail et téléphone, tels que vous les saisissez ; ils figurent en en-tête de vos rapports et ne sont transmis nulle part. Vos rapports PDF, produits sur l'appareil. Enfin vos réglages : langue, unité de distance, préférences d'enregistrement." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ihr Profil: Vorname, Name, E-Mail und Telefonnummer, so wie Sie sie eingeben; sie erscheinen im Kopf Ihrer Berichte und werden nirgendwohin übermittelt. Ihre PDF-Berichte, auf dem Gerät erstellt. Und schliesslich Ihre Einstellungen: Sprache, Entfernungseinheit, Aufzeichnungsoptionen."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Your profile: first name, last name, e-mail and phone number, exactly as you enter them; they appear at the top of your reports and are sent nowhere. Your PDF reports, produced on the device. And finally your settings: language, distance unit, recording preferences."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Su perfil: nombre, apellidos, correo electrónico y teléfono, tal como los introduce; figuran en el encabezado de sus informes y no se transmiten a ninguna parte. Sus informes en PDF, generados en el dispositivo. Y por último sus ajustes: idioma, unidad de distancia, preferencias de grabación."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Votre profil : prénom, nom, e-mail et téléphone, tels que vous les saisissez ; ils figurent en en-tête de vos rapports et ne sont transmis nulle part. Vos rapports PDF, produits sur l'appareil. Enfin vos réglages : langue, unité de distance, préférences d'enregistrement."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Il tuo profilo: nome, cognome, e-mail e telefono, così come li inserisci; compaiono in testa ai tuoi resoconti e non vengono trasmessi da nessuna parte. I tuoi resoconti in PDF, prodotti sul dispositivo. Infine le tue impostazioni: lingua, unità di distanza, preferenze di registrazione."
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "O seu perfil: nome próprio, apelido, e-mail e telefone, tal como os introduz; figuram no cabeçalho dos seus relatórios e não são transmitidos a lado nenhum. Os seus relatórios em PDF, produzidos no dispositivo. E por fim as suas definições: idioma, unidade de distância, preferências de registo."
+          }
+        }
+      }
+    },
+    "Vous ne pouvez ni revendre l'app, ni la louer, ni la décompiler, ni en extraire le code, ni contourner les limites du service de photo, ni vous en servir à d'autres fins que celles prévues ici." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sie dürfen die App weder weiterverkaufen noch vermieten, dekompilieren, ihren Code extrahieren, die Grenzen des Fotodienstes umgehen oder sie zu anderen als den hier vorgesehenen Zwecken verwenden."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "You may not resell the app, rent it, decompile it, extract its code, circumvent the limits of the photo service, or use it for purposes other than those set out here."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No puede revender la app, ni alquilarla, ni descompilarla, ni extraer su código, ni eludir los límites del servicio de fotos, ni usarla con fines distintos de los previstos aquí."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Vous ne pouvez ni revendre l'app, ni la louer, ni la décompiler, ni en extraire le code, ni contourner les limites du service de photo, ni vous en servir à d'autres fins que celles prévues ici."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Non puoi rivendere l'app, né noleggiarla, né decompilarla, né estrarne il codice, né aggirare i limiti del servizio foto, né usarla per fini diversi da quelli qui previsti."
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Não pode revender a app, nem alugá-la, nem descompilá-la, nem extrair o seu código, nem contornar os limites do serviço de fotografia, nem usá-la para fins distintos dos aqui previstos."
+          }
+        }
+      }
+    },
+    "Vous pouvez cesser d'utiliser MyTrack à tout moment en supprimant l'app ; la résiliation d'un abonnement se fait, elle, dans les réglages de votre compte App Store. KiwiJuice peut cesser de proposer l'app ou l'une de ses fonctions, en vous prévenant dans un délai raisonnable lorsque c'est possible." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sie können die Nutzung von MyTrack jederzeit beenden, indem Sie die App löschen; ein Abonnement kündigen Sie hingegen in den Einstellungen Ihres App-Store-Kontos. KiwiJuice kann die App oder eine ihrer Funktionen einstellen und wird Sie, soweit möglich, in angemessener Frist vorher informieren."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "You can stop using MyTrack at any time by deleting the app; cancelling a subscription, however, is done in your App Store account settings. KiwiJuice may stop offering the app or one of its features, giving you reasonable notice where possible."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Puede dejar de usar MyTrack en cualquier momento eliminando la app; la cancelación de una suscripción, en cambio, se hace en los ajustes de su cuenta del App Store. KiwiJuice puede dejar de ofrecer la app o alguna de sus funciones, avisándole con un plazo razonable cuando sea posible."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Vous pouvez cesser d'utiliser MyTrack à tout moment en supprimant l'app ; la résiliation d'un abonnement se fait, elle, dans les réglages de votre compte App Store. KiwiJuice peut cesser de proposer l'app ou l'une de ses fonctions, en vous prévenant dans un délai raisonnable lorsque c'est possible."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Puoi smettere di usare MyTrack in qualsiasi momento eliminando l'app; la disdetta di un abbonamento, invece, si effettua nelle impostazioni del tuo account App Store. KiwiJuice può cessare di offrire l'app o una delle sue funzioni, avvisandoti con un preavviso ragionevole quando possibile."
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pode deixar de utilizar a MyTrack a qualquer momento eliminando a app; o cancelamento de uma subscrição, esse, faz-se nas definições da sua conta App Store. A KiwiJuice pode deixar de oferecer a app ou uma das suas funções, avisando-o com um prazo razoável sempre que possível."
+          }
+        }
+      }
     }
   },
   "version" : "1.0"

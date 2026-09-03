@@ -37,6 +37,9 @@ struct PaywallStepView: View {
     @State private var isPurchaseFailedAlertPresented = false
     @State private var isRestoreFailedAlertPresented = false
     @State private var hasPurchaseFailed = false
+    /// Le texte légal ouvert, ou nil. Les deux documents sont dans l'app :
+    /// voir `LegalDocument`.
+    @State private var presentedLegalDocument: LegalDocument.Kind?
 
     /// Whether the store has had its chance and still can't sell anything here.
     /// This screen is the only way into the app, so it must never trap someone
@@ -75,6 +78,7 @@ struct PaywallStepView: View {
             footer
         }
         .padding(.horizontal, 4)
+        .legalDocumentSheet($presentedLegalDocument)
         // The one load attempt happens at launch; if it came back empty —
         // no network at the time — this is the moment to try again, before
         // concluding the store is out of reach.
@@ -228,9 +232,9 @@ struct PaywallStepView: View {
     }
 
     /// Exigé par la règle App Review 3.1.2 : durée et reconduction annoncées
-    /// en clair, plus un lien vers les conditions d'utilisation et la
-    /// politique de confidentialité. Le texte de reconduction ne doit pas
-    /// s'afficher pour l'achat unique : il n'y a rien à reconduire.
+    /// en clair, plus un accès aux conditions d'utilisation et à la politique
+    /// de confidentialité. Le texte de reconduction ne doit pas s'afficher
+    /// pour l'achat unique : il n'y a rien à reconduire.
     private var legalFooter: some View {
         VStack(spacing: 8) {
             Text(legalDisclosure)
@@ -245,9 +249,9 @@ struct PaywallStepView: View {
                 Button("Restaurer mes achats") { restore() }
                     .buttonStyle(.plain)
                 Text(verbatim: "·").accessibilityHidden(true)
-                legalLink("Conditions d'utilisation", url: LegalLinks.termsOfUse)
+                legalLink("Conditions d'utilisation", .termsOfUse)
                 Text(verbatim: "·").accessibilityHidden(true)
-                legalLink("Confidentialité", url: LegalLinks.privacyPolicy)
+                legalLink("Confidentialité", .privacyPolicy)
             }
             .font(.caption2)
             .lineLimit(1)
@@ -264,15 +268,14 @@ struct PaywallStepView: View {
             : "Renouvellement automatique, résiliable à tout moment depuis votre compte App Store."
     }
 
-    /// Grisé tant que l'URL n'est pas renseignée dans `LegalLinks` : un lien
-    /// mort serait pire qu'un libellé inerte.
-    @ViewBuilder
-    private func legalLink(_ title: LocalizedStringKey, url: URL?) -> some View {
-        if let url {
-            Link(title, destination: url)
-        } else {
-            Text(title).foregroundStyle(.tertiary)
-        }
+    /// Un bouton et non un `Link` : le document est dans l'app, il s'ouvre en
+    /// feuille par-dessus l'onboarding. Personne ne quitte l'écran d'achat
+    /// pour aller lire, et personne n'a besoin de réseau pour ça.
+    private func legalLink(
+        _ title: LocalizedStringKey, _ document: LegalDocument.Kind
+    ) -> some View {
+        Button(title) { presentedLegalDocument = document }
+            .buttonStyle(.plain)
     }
 
     /// Une chaîne du catalogue, résolue dans la langue que l'app s'est choisie.

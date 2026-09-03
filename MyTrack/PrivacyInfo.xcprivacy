@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<!-- Aucun suivi publicitaire, aucun domaine de suivi : l'app ne parle qu'au
+	     relais de détourage, et ce n'est pas du suivi. -->
+	<key>NSPrivacyTracking</key>
+	<false/>
+	<key>NSPrivacyTrackingDomains</key>
+	<array/>
+
+	<!-- « Collecté » au sens d'Apple veut dire « sorti de l'appareil et gardé
+	     au-delà de la requête ». Ne sont donc listés ici que la photo et
+	     l'identifiant d'appareil qui l'accompagne — voir VehiclePhotoService et
+	     Server/studio-cutout/worker.ts. Les trajets, les positions, le profil et
+	     les rapports ne sortent jamais : ils n'ont rien à faire dans cette
+	     liste, et l'y mettre serait aussi faux que de les taire. -->
+	<key>NSPrivacyCollectedDataTypes</key>
+	<array>
+		<dict>
+			<key>NSPrivacyCollectedDataType</key>
+			<string>NSPrivacyCollectedDataTypePhotosorVideos</string>
+			<key>NSPrivacyCollectedDataTypeLinked</key>
+			<false/>
+			<key>NSPrivacyCollectedDataTypeTracking</key>
+			<false/>
+			<key>NSPrivacyCollectedDataTypePurposes</key>
+			<array>
+				<string>NSPrivacyCollectedDataTypePurposeAppFunctionality</string>
+			</array>
+		</dict>
+		<dict>
+			<!-- `identifierForVendor`, envoyé avec la photo pour que le relais
+			     puisse plafonner à cinq images par jour. Gardé vingt-six heures
+			     côté relais, donc au-delà de la requête : c'est ce qui en fait
+			     une collecte au sens d'Apple. -->
+			<key>NSPrivacyCollectedDataType</key>
+			<string>NSPrivacyCollectedDataTypeDeviceID</string>
+			<key>NSPrivacyCollectedDataTypeLinked</key>
+			<false/>
+			<key>NSPrivacyCollectedDataTypeTracking</key>
+			<false/>
+			<key>NSPrivacyCollectedDataTypePurposes</key>
+			<array>
+				<string>NSPrivacyCollectedDataTypePurposeAppFunctionality</string>
+			</array>
+		</dict>
+	</array>
+
+	<!-- La seule API « à motif obligatoire » que l'app emploie : UserDefaults,
+	     par `@AppStorage` et par `UserDefaults.standard`. CA92.1 est le motif
+	     « lire et écrire des informations de cette app seule », qui est
+	     exactement ce qu'en font la langue, l'unité de distance et les
+	     préférences d'enregistrement. Sans cette déclaration, App Store Connect
+	     renvoie l'avertissement ITMS-91053. -->
+	<key>NSPrivacyAccessedAPITypes</key>
+	<array>
+		<dict>
+			<key>NSPrivacyAccessedAPIType</key>
+			<string>NSPrivacyAccessedAPICategoryUserDefaults</string>
+			<key>NSPrivacyAccessedAPITypeReasons</key>
+			<array>
+				<string>CA92.1</string>
+			</array>
+		</dict>
+	</array>
+</dict>
+</plist>

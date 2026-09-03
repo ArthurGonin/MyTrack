@@ -6,9 +6,12 @@
 //  l'abonnement vivait dans la paywall d'onboarding, écran vu une seule fois :
 //  après ça, plus aucun moyen de voir son abonnement, de le résilier, de le
 //  restaurer après une réinstallation, ni de relire les conditions. Restaurer
-//  ses achats et atteindre les deux pages légales depuis l'app sont exigés par
+//  ses achats et atteindre les deux textes légaux depuis l'app sont exigés par
 //  App Review (règles 3.1.1 et 3.1.2) ; le reste est ce qu'un utilisateur
 //  s'attend à trouver dans des réglages iOS.
+//
+//  Les deux textes sont embarqués et s'ouvrent en feuille — voir
+//  `LegalDocument`.
 //
 
 import StoreKit
@@ -24,6 +27,8 @@ struct SubscriptionSettingsSection: View {
     @State private var restoreOutcome: RestoreOutcome?
     @State private var isPurchaseFailedAlertPresented = false
     @State private var isCancelReminderPresented = false
+    /// Le texte légal ouvert, ou nil — voir `LegalDocument`.
+    @State private var presentedLegalDocument: LegalDocument.Kind?
 
     private enum RestoreOutcome {
         case restoredSubscription
@@ -42,19 +47,22 @@ struct SubscriptionSettingsSection: View {
             subscriptionSection
 
             Section {
-                legalLink(
+                legalRow(
                     "Conditions d'utilisation",
                     systemImage: "info.square.fill",
                     tint: .gray,
-                    url: LegalLinks.termsOfUse
+                    document: .termsOfUse
                 )
-                legalLink(
+                legalRow(
                     "Confidentialité",
                     systemImage: "hand.raised.square.fill",
                     tint: .blue,
-                    url: LegalLinks.privacyPolicy
+                    document: .privacyPolicy
                 )
             }
+            // Sur la section et non sur le `Group` : celui-ci appliquerait la
+            // feuille à chacun de ses enfants, donc deux fois.
+            .legalDocumentSheet($presentedLegalDocument)
         }
     }
 
@@ -366,35 +374,31 @@ struct SubscriptionSettingsSection: View {
         }
     }
 
-    /// Même règle que dans la paywall : tant que l'URL n'est pas renseignée
-    /// dans `LegalLinks`, un libellé inerte vaut mieux qu'un lien mort.
+    /// Une ligne qui ouvre un des deux textes légaux, désormais embarqués dans
+    /// l'app — voir `LegalDocument`.
     ///
-    /// La flèche oblique annonce ce que la ligne fait vraiment : quitter l'app
-    /// pour le navigateur. Sans elle, la ligne ressemble à toutes celles qui
-    /// poussent un écran, et le départ vers Safari surprend.
-    @ViewBuilder
-    private func legalLink(
+    /// Le chevron, et non plus la flèche oblique : la ligne ne quitte plus
+    /// l'app pour un navigateur, elle ouvre un document par-dessus les
+    /// réglages. C'est le signe que le système met sur une ligne qui mène
+    /// ailleurs sans faire sortir.
+    private func legalRow(
         _ title: LocalizedStringKey,
         systemImage: String,
         tint: Color,
-        url: URL?
+        document: LegalDocument.Kind
     ) -> some View {
-        if let url {
-            Link(destination: url) {
-                HStack {
-                    SettingsRowLabel(title, systemImage: systemImage, tint: tint)
-                        .foregroundStyle(.primary)
-                    Spacer()
-                    Image(systemName: "arrow.up.right")
-                        .font(.footnote.weight(.semibold))
-                        .foregroundStyle(.secondary)
-                }
-                .contentShape(.rect)
+        Button {
+            presentedLegalDocument = document
+        } label: {
+            HStack {
+                SettingsRowLabel(title, systemImage: systemImage, tint: tint)
+                    .foregroundStyle(.primary)
+                Spacer()
+                Image(systemName: "chevron.forward")
+                    .font(.footnote.weight(.semibold))
+                    .foregroundStyle(.tertiary)
             }
-        } else {
-            // Ligne inerte : l'icône s'éteint avec le texte plutôt que de
-            // garder sa couleur, qui donnerait l'air d'un lien cliquable.
-            Label(title, systemImage: systemImage).foregroundStyle(.tertiary)
+            .contentShape(.rect)
         }
     }
 
