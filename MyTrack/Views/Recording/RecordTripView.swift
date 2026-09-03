@@ -524,16 +524,22 @@ struct RecordTripView: View {
             if viewModel.isRecording {
                 VStack(spacing: 16) {
                     grabber
-                    // Repliée, la feuille est bien plus haute que ses deux
-                    // chiffres : ces ressorts les posent au milieu du verre
-                    // plutôt que collés sous la poignée.
-                    if isSheetCollapsed {
-                        Spacer(minLength: 0)
-                    }
                     liveStats
-                    if isSheetCollapsed {
-                        Spacer(minLength: 0)
-                    }
+                        // Repliée, la feuille est plus haute que ses deux
+                        // chiffres : ce cadre leur donne le reste de la place
+                        // et les pose au milieu du verre, plutôt que collés
+                        // sous la poignée.
+                        //
+                        // Un cadre et non deux `Spacer` de part et d'autre :
+                        // la pile met son écart de 16 points autour de chacun
+                        // d'eux, ce qui coûtait 32 points pour deux vues de
+                        // hauteur nulle. La feuille repliée n'a pas ces 32
+                        // points à donner — elle est haute de ce qu'il faut
+                        // pour couvrir les tuiles, pas plus — et c'était les
+                        // chiffres qui les payaient, en rapetissant de leur
+                        // `minimumScaleFactor` : les mêmes nombres se
+                        // lisaient plus petits carte rangée que carte ouverte.
+                        .frame(maxHeight: isSheetCollapsed ? .infinity : nil)
                     if !isSheetCollapsed {
                         LiveTripMapView()
                             .frame(maxWidth: .infinity, maxHeight: .infinity)

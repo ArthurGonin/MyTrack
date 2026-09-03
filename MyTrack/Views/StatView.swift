@@ -28,6 +28,14 @@ struct StatView<Value: View>: View {
                 .monospacedDigit()
                 .lineLimit(1)
                 .minimumScaleFactor(0.7)
+                // Le rapetissement ne répond qu'à la largeur. `minimumScaleFactor`
+                // obéit aussi à la hauteur qu'on propose au texte, et une pile un
+                // peu serrée suffit alors à faire maigrir le nombre : le même
+                // chiffre se lirait plus petit ici que là selon ce qui l'entoure,
+                // alors que c'est lui qu'on vient lire. Sa hauteur est donc celle
+                // de sa police, quoi qu'on lui propose ; il ne reste flexible que
+                // dans le sens où une valeur peut vraiment être trop longue.
+                .fixedSize(horizontal: false, vertical: true)
             Text(label)
                 .font(.caption)
                 .foregroundStyle(.secondary)
