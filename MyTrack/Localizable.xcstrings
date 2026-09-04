@@ -1,52 +1,371 @@
 {
   "sourceLanguage" : "en",
   "strings" : {
-    "" : {
-
-    },
-    "·" : {
-
-    },
-    "* Certaines apps concurrentes facturent en fonction du kilométrage parcouru." : {
-      "extractionState" : "stale",
+    "La création de rapports nécessite un abonnement actif. Vos rapports déjà générés restent accessibles." : {
       "localizations" : {
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "* Manche Konkurrenz-Apps rechnen nach gefahrenen Kilometern ab."
+            "value" : "Das Erstellen von Berichten erfordert ein aktives Abo. Ihre bereits erstellten Berichte bleiben verfügbar."
           }
         },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "* Some competing apps charge based on the distance you drive."
+            "value" : "Creating reports requires an active subscription. The reports you've already generated remain available."
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "* Algunas apps de la competencia cobran en función de los kilómetros recorridos."
+            "value" : "La creación de informes requiere una suscripción activa. Sus informes ya generados siguen disponibles."
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "* Certaines apps concurrentes facturent en fonction du kilométrage parcouru."
+            "value" : "La création de rapports nécessite un abonnement actif. Vos rapports déjà générés restent accessibles."
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "* Alcune app concorrenti fatturano in base ai chilometri percorsi."
+            "value" : "La creazione di rapporti richiede un abbonamento attivo. I rapporti già generati restano accessibili."
           }
         },
         "pt" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "* Algumas apps concorrentes cobram em função dos quilómetros percorridos."
+            "value" : "A criação de relatórios requer uma subscrição ativa. Os relatórios já gerados continuam acessíveis."
           }
         }
       }
+    },
+    "Votre abonnement n'a pas pu être renouvelé : vous ne pouvez plus créer de rapport. Vos rapports déjà générés restent accessibles." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ihr Abo konnte nicht erneuert werden: Sie können keine Berichte mehr erstellen. Ihre bereits erstellten Berichte bleiben verfügbar."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Your subscription couldn't be renewed: you can no longer create reports. The reports you've already generated remain available."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No se ha podido renovar su suscripción: ya no puede crear informes. Sus informes ya generados siguen disponibles."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Votre abonnement n'a pas pu être renouvelé : vous ne pouvez plus créer de rapport. Vos rapports déjà générés restent accessibles."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Non è stato possibile rinnovare il suo abbonamento: non può più creare rapporti. I rapporti già generati restano accessibili."
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Não foi possível renovar a sua subscrição: já não pode criar relatórios. Os relatórios já gerados continuam acessíveis."
+          }
+        }
+      }
+    },
+    "Sans abonnement actif, MyTrack n'enregistre plus de trajet et ne génère plus de rapport. Ce qui est déjà enregistré reste accessible." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ohne aktives Abo zeichnet MyTrack keine Fahrten mehr auf und erstellt keine Berichte mehr. Was bereits gespeichert ist, bleibt verfügbar."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Without an active subscription, MyTrack no longer records trips or generates reports. What's already saved remains available."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sin una suscripción activa, MyTrack ya no registra viajes ni genera informes. Lo que ya está guardado sigue disponible."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sans abonnement actif, MyTrack n'enregistre plus de trajet et ne génère plus de rapport. Ce qui est déjà enregistré reste accessible."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Senza un abbonamento attivo, MyTrack non registra più viaggi e non genera più rapporti. Ciò che è già salvato resta accessibile."
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sem uma subscrição ativa, o MyTrack deixa de registar viagens e de gerar relatórios. O que já está guardado continua acessível."
+          }
+        }
+      }
+    },
+    "Votre abonnement n'a pas pu être renouvelé : MyTrack n'enregistre plus de trajet et ne génère plus de rapport. Ce qui est déjà enregistré reste accessible." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ihr Abo konnte nicht erneuert werden: MyTrack zeichnet keine Fahrten mehr auf und erstellt keine Berichte mehr. Was bereits gespeichert ist, bleibt verfügbar."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Your subscription couldn't be renewed: MyTrack no longer records trips or generates reports. What's already saved remains available."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No se ha podido renovar su suscripción: MyTrack ya no registra viajes ni genera informes. Lo que ya está guardado sigue disponible."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Votre abonnement n'a pas pu être renouvelé : MyTrack n'enregistre plus de trajet et ne génère plus de rapport. Ce qui est déjà enregistré reste accessible."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Non è stato possibile rinnovare il suo abbonamento: MyTrack non registra più viaggi e non genera più rapporti. Ciò che è già salvato resta accessibile."
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Não foi possível renovar a sua subscrição: o MyTrack deixa de registar viagens e de gerar relatórios. O que já está guardado continua acessível."
+          }
+        }
+      }
+    },
+    "Rapport introuvable" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bericht nicht gefunden"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Report not found"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Informe no encontrado"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Rapport introuvable"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Rapporto non trovato"
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Relatório não encontrado"
+          }
+        }
+      }
+    },
+    "Le fichier PDF de ce rapport n'est plus sur cet appareil. Vous pouvez générer un nouveau rapport sur la même période." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Die PDF-Datei dieses Berichts ist nicht mehr auf diesem Gerät. Sie können einen neuen Bericht für denselben Zeitraum erstellen."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "This report's PDF file is no longer on this device. You can generate a new report for the same period."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "El archivo PDF de este informe ya no está en este dispositivo. Puede generar un informe nuevo para el mismo periodo."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Le fichier PDF de ce rapport n'est plus sur cet appareil. Vous pouvez générer un nouveau rapport sur la même période."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Il file PDF di questo rapporto non è più su questo dispositivo. Può generare un nuovo rapporto per lo stesso periodo."
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "O ficheiro PDF deste relatório já não está neste dispositivo. Pode gerar um novo relatório para o mesmo período."
+          }
+        }
+      }
+    },
+    "Supprimer ce véhicule ?" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dieses Fahrzeug löschen?"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Delete this vehicle?"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "¿Eliminar este vehículo?"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Supprimer ce véhicule ?"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Eliminare questo veicolo?"
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Eliminar este veículo?"
+          }
+        }
+      }
+    },
+    "Vos trajets déjà enregistrés restent là, mais ils n'auront plus de véhicule." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ihre bereits aufgezeichneten Fahrten bleiben erhalten, aber ohne Fahrzeug."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Your recorded trips stay, but they will no longer have a vehicle."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sus viajes ya registrados se conservan, pero se quedarán sin vehículo."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Vos trajets déjà enregistrés restent là, mais ils n'auront plus de véhicule."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "I suoi viaggi già registrati restano, ma non avranno più un veicolo."
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "As suas viagens já registadas mantêm-se, mas deixam de ter veículo."
+          }
+        }
+      }
+    },
+    "MyTrack n'a pas accès à l'appareil photo." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "MyTrack hat keinen Zugriff auf die Kamera."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "MyTrack doesn't have access to the camera."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "MyTrack no tiene acceso a la cámara."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "MyTrack n'a pas accès à l'appareil photo."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "MyTrack non ha accesso alla fotocamera."
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "O MyTrack não tem acesso à câmara."
+          }
+        }
+      }
+    },
+    "" : {
+
+    },
+    "·" : {
+
     },
     "/ an" : {
       "localizations" : {
@@ -1225,47 +1544,6 @@
         }
       }
     },
-    "5 étoiles sur 5" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "5 von 5 Sternen"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "5 stars out of 5"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "5 estrellas de 5"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "5 étoiles sur 5"
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "5 stelle su 5"
-          }
-        },
-        "pt" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "5 estrelas em 5"
-          }
-        }
-      }
-    },
     "À vie" : {
       "localizations" : {
         "de" : {
@@ -1742,47 +2020,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Compra única"
-          }
-        }
-      }
-    },
-    "achat unique, à vie" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Einmalkauf, lebenslang"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "one-time purchase, for life"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "compra única, de por vida"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "achat unique, à vie"
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "acquisto unico, a vita"
-          }
-        },
-        "pt" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "compra única, para toda a vida"
           }
         }
       }
@@ -2988,47 +3225,6 @@
         }
       }
     },
-    "Autorise l'accès à la position dans Réglages pour activer le suivi automatique." : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Erlaube den Standortzugriff in den Einstellungen, um die automatische Erfassung zu aktivieren."
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Allow location access in Settings to turn on automatic tracking."
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Permite el acceso a la ubicación en Ajustes para activar el seguimiento automático."
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Autorise l'accès à la position dans Réglages pour activer le suivi automatique."
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Consenti l'accesso alla posizione in Impostazioni per attivare il rilevamento automatico."
-          }
-        },
-        "pt" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Permite o acesso à localização nas Definições para ativar a deteção automática."
-          }
-        }
-      }
-    },
     "Autoriser" : {
       "localizations" : {
         "de" : {
@@ -3145,47 +3341,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Permita o acesso à localização nas Definições para registar uma viagem."
-          }
-        }
-      }
-    },
-    "Autres apps" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Andere Apps"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Other apps"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Otras apps"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Autres apps"
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Altre app"
-          }
-        },
-        "pt" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Outras apps"
           }
         }
       }
@@ -4590,47 +4745,6 @@
         }
       }
     },
-    "Détection automatique" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Automatische Erkennung"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Automatic detection"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Detección automática"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Détection automatique"
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Rilevamento automatico"
-          }
-        },
-        "pt" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Deteção automática"
-          }
-        }
-      }
-    },
     "Distance" : {
       "localizations" : {
         "de" : {
@@ -5152,47 +5266,6 @@
         }
       }
     },
-    "Elle se lance toute seule quand je prends la voiture. J'ai fini par l'oublier — c'est le plus beau compliment." : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Sie startet von allein, sobald ich ins Auto steige. Ich habe sie irgendwann vergessen — das schönste Kompliment."
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "It starts on its own whenever I get in the car. I ended up forgetting about it — which is the best compliment I can give it."
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Se pone en marcha sola cuando cojo el coche. He acabado olvidándome de ella, y es el mejor cumplido."
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Elle se lance toute seule quand je prends la voiture. J'ai fini par l'oublier — c'est le plus beau compliment."
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Si avvia da sola quando prendo la macchina. Ho finito per dimenticarmene — ed è il complimento più bello."
-          }
-        },
-        "pt" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Arranca sozinha quando entro no carro. Acabei por me esquecer dela — e esse é o melhor elogio."
-          }
-        }
-      }
-    },
     "En kilomètres ou en miles ?" : {
       "localizations" : {
         "de" : {
@@ -5229,47 +5302,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Em quilómetros ou em milhas?"
-          }
-        }
-      }
-    },
-    "En route" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Auf geht's"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Let's go"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "En marcha"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "En route"
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "In viaggio"
-          }
-        },
-        "pt" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "A caminho"
           }
         }
       }
@@ -5550,47 +5582,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Período grátis até %@. Não haverá renovação: o acesso termina nessa data."
-          }
-        }
-      }
-    },
-    "Estimation d'après la consommation du véhicule." : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Geschätzt anhand des Verbrauchs des Fahrzeugs."
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Estimated from the vehicle's consumption."
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Estimación a partir del consumo del vehículo."
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Estimation d'après la consommation du véhicule."
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Stima basata sul consumo del veicolo."
-          }
-        },
-        "pt" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Estimativa a partir do consumo do veículo."
           }
         }
       }
@@ -6155,47 +6146,6 @@
         }
       }
     },
-    "Ignorer (debug)" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Überspringen (Debug)"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Skip (debug)"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Omitir (debug)"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Ignorer (debug)"
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Salta (debug)"
-          }
-        },
-        "pt" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Ignorar (debug)"
-          }
-        }
-      }
-    },
     "Immatriculation (optionnel)" : {
       "localizations" : {
         "de" : {
@@ -6436,47 +6386,6 @@
         }
       }
     },
-    "J'y vais" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Los geht's"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Let's go"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "¡Vamos!"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "J'y vais"
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Ci sto"
-          }
-        },
-        "pt" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Vamos lá"
-          }
-        }
-      }
-    },
     "Kilomètres" : {
       "localizations" : {
         "de" : {
@@ -6713,47 +6622,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Deixar uma avaliação"
-          }
-        }
-      }
-    },
-    "Lance l'enregistrement quand tu démarres." : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Starte die Aufzeichnung, wenn du losfährst."
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Start recording when you set off."
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Inicia la grabación cuando arranques."
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Lance l'enregistrement quand tu démarres."
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Avvia la registrazione quando parti."
-          }
-        },
-        "pt" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Inicia a gravação quando arrancares."
           }
         }
       }
@@ -7034,47 +6902,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "A deteção automática precisa da localização definida como «Sempre» para despertar a app no início de uma viagem, e da atividade física para reconhecer a condução. As notificações servem para confirmar uma viagem detetada e avisar que um relatório está pronto. Uma autorização recusada só pode ser reposta nas Definições do iOS."
-          }
-        }
-      }
-    },
-    "Le suivi automatique a besoin de la position réglée sur « Toujours » pour réveiller l'app au départ d'un trajet, et de l'activité physique pour reconnaître la conduite. Une autorisation refusée ne peut plus se rétablir que dans les Réglages d'iOS." : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Die automatische Erkennung braucht den Standort auf „Immer“, damit die App zu Fahrtbeginn geweckt wird, und die körperliche Aktivität, um das Fahren zu erkennen. Eine abgelehnte Berechtigung lässt sich nur noch in den iOS-Einstellungen wiederherstellen."
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Automatic tracking needs location set to “Always” so the app can be woken at the start of a trip, and physical activity to recognise driving. A permission you have denied can only be restored in iOS Settings."
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "El seguimiento automático necesita la ubicación en «Siempre» para despertar la app al inicio de un trayecto, y la actividad física para reconocer la conducción. Un permiso denegado solo se puede restablecer en los Ajustes de iOS."
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Le suivi automatique a besoin de la position réglée sur « Toujours » pour réveiller l'app au départ d'un trajet, et de l'activité physique pour reconnaître la conduite. Une autorisation refusée ne peut plus se rétablir que dans les Réglages d'iOS."
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Il rilevamento automatico ha bisogno della posizione impostata su «Sempre» per risvegliare l'app all'inizio di un viaggio, e dell'attività fisica per riconoscere la guida. Un'autorizzazione negata si può ripristinare solo in Impostazioni di iOS."
-          }
-        },
-        "pt" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "A deteção automática precisa da localização definida como «Sempre» para despertar a app no início de uma viagem, e da atividade física para reconhecer a condução. Uma autorização recusada só pode ser reposta nas Definições do iOS."
           }
         }
       }
@@ -9327,47 +9154,6 @@
         }
       }
     },
-    "Pourquoi MyTrack" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Warum MyTrack"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Why MyTrack"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Por qué MyTrack"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Pourquoi MyTrack"
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Perché MyTrack"
-          }
-        },
-        "pt" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Porquê MyTrack"
-          }
-        }
-      }
-    },
     "Premier rapport" : {
       "localizations" : {
         "de" : {
@@ -9524,47 +9310,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Preço"
-          }
-        }
-      }
-    },
-    "Prix honnête*" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Fairer Preis*"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Fair price*"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Precio justo*"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Prix honnête*"
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Prezzo onesto*"
-          }
-        },
-        "pt" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Preço justo*"
           }
         }
       }
@@ -9890,47 +9635,6 @@
         }
       }
     },
-    "Rapports PDF inclus" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "PDF-Berichte inklusive"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "PDF reports included"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Informes PDF incluidos"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Rapports PDF inclus"
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Rapporti PDF inclusi"
-          }
-        },
-        "pt" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Relatórios PDF incluídos"
-          }
-        }
-      }
-    },
     "Rapports périodiques" : {
       "localizations" : {
         "de" : {
@@ -10007,47 +9711,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Receba automaticamente um PDF das suas viagens"
-          }
-        }
-      }
-    },
-    "Réessayez demain." : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Versuchen Sie es morgen erneut."
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Try again tomorrow."
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Inténtelo de nuevo mañana."
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Réessayez demain."
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Riprovi domani."
-          }
-        },
-        "pt" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Tente novamente amanhã."
           }
         }
       }
@@ -10208,47 +9871,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Defina a localização como «Sempre» e permita a atividade física nas Definições para ativar a deteção automática."
-          }
-        }
-      }
-    },
-    "Renouvellement automatique, résiliable à tout moment depuis ton compte App Store. Sans résiliation au moins 24 h avant la fin de l'essai, l'abonnement devient payant." : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Verlängert sich automatisch, jederzeit über dein App-Store-Konto kündbar. Wird nicht mindestens 24 Stunden vor Ende der Testphase gekündigt, wird das Abo kostenpflichtig."
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Renews automatically; cancel any time from your App Store account. Unless you cancel at least 24 hours before the trial ends, the subscription becomes paid."
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Se renueva automáticamente y puedes cancelarla en cualquier momento desde tu cuenta de App Store. Si no la cancelas al menos 24 horas antes de que termine la prueba, la suscripción pasa a ser de pago."
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Renouvellement automatique, résiliable à tout moment depuis ton compte App Store. Sans résiliation au moins 24 h avant la fin de l'essai, l'abonnement devient payant."
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Si rinnova automaticamente e puoi disdirlo in qualsiasi momento dal tuo account App Store. Se non disdici almeno 24 ore prima della fine della prova, l'abbonamento diventa a pagamento."
-          }
-        },
-        "pt" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Renova-se automaticamente e podes cancelar a qualquer momento na tua conta App Store. Se não cancelares pelo menos 24 horas antes do fim do período experimental, a subscrição passa a ser paga."
           }
         }
       }
@@ -10574,46 +10196,6 @@
         }
       }
     },
-    "Sans abonnement actif, aucun nouveau trajet n'est enregistré. Vos trajets et rapports déjà enregistrés restent accessibles." : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Ohne aktives Abo werden keine neuen Fahrten aufgezeichnet. Bereits gespeicherte Fahrten und Berichte bleiben verfügbar."
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Without an active subscription, no new trips are recorded. The trips and reports you've already saved remain available."
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Sin una suscripción activa no se registra ningún viaje nuevo. Los viajes e informes ya guardados siguen disponibles."
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Sans abonnement actif, aucun nouveau trajet n'est enregistré. Vos trajets et rapports déjà enregistrés restent accessibles."
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Senza un abbonamento attivo non viene registrato alcun nuovo viaggio. I viaggi e i rapporti già salvati restano accessibili."
-          }
-        },
-        "pt" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Sem uma subscrição ativa, não é registada nenhuma viagem nova. As viagens e relatórios já guardados continuam acessíveis."
-          }
-        }
-      }
-    },
     "Se réabonner" : {
       "localizations" : {
         "de" : {
@@ -10690,47 +10272,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Renova-se automaticamente a %@."
-          }
-        }
-      }
-    },
-    "Sécurité des données" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Datensicherheit"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Data security"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Seguridad de los datos"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Sécurité des données"
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Sicurezza dei dati"
-          }
-        },
-        "pt" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Segurança dos dados"
           }
         }
       }
@@ -12320,47 +11861,6 @@
         }
       }
     },
-    "Unités" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Einheiten"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Units"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Unidades"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Unités"
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Unità"
-          }
-        },
-        "pt" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Unidades"
-          }
-        }
-      }
-    },
     "Véhicule" : {
       "localizations" : {
         "de" : {
@@ -12477,47 +11977,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Veículos: %@"
-          }
-        }
-      }
-    },
-    "Véhicules illimités" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Unbegrenzte Fahrzeuge"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Unlimited vehicles"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Vehículos ilimitados"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Véhicules illimités"
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Veicoli illimitati"
-          }
-        },
-        "pt" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Veículos ilimitados"
           }
         }
       }
@@ -12838,46 +12297,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "A sua subscrição foi encontrada nesta conta App Store."
-          }
-        }
-      }
-    },
-    "Votre abonnement n'a pas pu être renouvelé : aucun nouveau trajet n'est enregistré. Vos trajets et rapports déjà enregistrés restent accessibles." : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Ihr Abo konnte nicht verlängert werden: Es werden keine neuen Fahrten aufgezeichnet. Bereits gespeicherte Fahrten und Berichte bleiben verfügbar."
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Your subscription couldn't be renewed, so no new trips are being recorded. The trips and reports you've already saved remain available."
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "No se ha podido renovar su suscripción: no se registra ningún viaje nuevo. Los viajes e informes ya guardados siguen disponibles."
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Votre abonnement n'a pas pu être renouvelé : aucun nouveau trajet n'est enregistré. Vos trajets et rapports déjà enregistrés restent accessibles."
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Non è stato possibile rinnovare il suo abbonamento: nessun nuovo viaggio viene registrato. I viaggi e i rapporti già salvati restano accessibili."
-          }
-        },
-        "pt" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Não foi possível renovar a sua subscrição: não é registada nenhuma viagem nova. As viagens e relatórios já guardados continuam acessíveis."
           }
         }
       }

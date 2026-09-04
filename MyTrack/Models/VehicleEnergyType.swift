@@ -19,7 +19,13 @@
 
 import Foundation
 
-enum VehicleEnergyType: String, Codable, CaseIterable, Identifiable {
+/// `nonisolated`, comme `DistanceUnit` et `TripFormatting` : la valeur est lue
+/// depuis les extensions de `Trip` et de `Vehicle`, qui sont hors du fil
+/// principal parce qu'elles étendent un `@Model`, et depuis le rendu du PDF qui
+/// tourne en tâche détachée. Sans ce mot, le projet la rattacherait au fil
+/// principal comme tout le reste (`SWIFT_DEFAULT_ACTOR_ISOLATION`), et chacune
+/// de ces lectures serait un franchissement d'isolation.
+nonisolated enum VehicleEnergyType: String, Codable, CaseIterable, Identifiable {
     case combustion
     case electric
     case hybrid

@@ -44,5 +44,5 @@ struct AddVehicleView: View {
 
 #Preview {
     AddVehicleView(viewModel: VehicleListViewModel(vehicleService: VehicleService()))
-        .modelContainer(for: [Trip.self, Vehicle.self], inMemory: true)
+        .modelContainer(for: [Trip.self, Vehicle.self, UserProfile.self, ReportProfile.self, GeneratedReport.self], inMemory: true)
 }

@@ -79,6 +79,13 @@ final class AppServices {
         tripRecorder.cleanUpOrphanedTrips()
     }
 
+    /// Les préférences qui ne sont portées par aucun service et qu'il faut donc
+    /// nommer ici. Écrites en clair plutôt que reprises d'une constante : celles
+    /// des services le sont chez eux, et une clé de plus se remarque mieux dans
+    /// cette liste courte que noyée dans un `dictionaryRepresentation`, qui
+    /// emporterait au passage les réglages d'iOS eux-mêmes.
+    private static let strayPreferenceKeys = ["tripSortOrder", "hadRecordingAccess"]
+
     /// Wipes every trace of the user's data — trips, vehicles, generated report
     /// PDFs, profile and report settings — and stops background monitoring, so
     /// the app comes back looking like a fresh install. `UserProfile` and
@@ -95,10 +102,21 @@ final class AppServices {
             tripRecorder.discard()
         }
         drivingDetector.disable()
+        drivingDetector.resetToDefaults()
         notificationService.cancelAllNotifications()
         onboardingService.resetToDefaults()
         languageService.resetToSystemDefault()
-        unitSettingsService.distanceUnit = .kilometers
+        // La région de l'appareil, et non les kilomètres en dur : l'alerte
+        // promet une app d'avant le premier lancement, et un premier lancement
+        // aux États-Unis propose des miles.
+        unitSettingsService.distanceUnit = .systemDefault
+        // Les réglages qui vivent hors des services, et qu'un compte supprimé
+        // laissait derrière lui : l'ordre de tri de la liste des trajets, et
+        // l'accès que PurchaseService garde sur le disque pour s'armer au
+        // réveil en arrière-plan.
+        for key in Self.strayPreferenceKeys {
+            UserDefaults.standard.removeObject(forKey: key)
+        }
 
         if let reports = try? context.fetch(FetchDescriptor<GeneratedReport>()) {
             for report in reports {

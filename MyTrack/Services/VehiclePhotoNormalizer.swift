@@ -105,35 +105,47 @@ nonisolated enum VehiclePhotoNormalizer {
     /// penser qu'à un seul sens.
     private static func bodyBox(of image: CGImage) -> CGRect? {
         let width = image.width, height = image.height
+        guard width > 0, height > 0 else { return nil }
         var pixels = [UInt8](repeating: 0, count: width * height * 4)
-        guard let context = CGContext(
-            data: &pixels,
-            width: width,
-            height: height,
-            bitsPerComponent: 8,
-            bytesPerRow: width * 4,
-            space: CGColorSpaceCreateDeviceRGB(),
-            bitmapInfo: CGImageAlphaInfo.premultipliedLast.rawValue
-        ) else { return nil }
-        context.draw(image, in: CGRect(x: 0, y: 0, width: width, height: height))
 
-        var minX = width, maxX = -1, topRow = height, bottomRow = -1
-        for row in 0..<height {
-            for column in 0..<width where pixels[(row * width + column) * 4 + 3] > bodyAlphaThreshold {
-                minX = min(minX, column)
-                maxX = max(maxX, column)
-                topRow = min(topRow, row)
-                bottomRow = max(bottomRow, row)
+        // Le tampon reste ouvert pendant tout le tracé *et* toute la lecture.
+        // Passer `&pixels` à `CGContext(data:)` rendait un pointeur dont Swift ne
+        // promet la validité que le temps de cet appel-là, alors que le contexte
+        // le garde et écrit dedans bien après. Ça marchait, mais rien
+        // n'obligeait le compilateur à ce que ça continue : le tableau pouvait
+        // être déplacé entre la création du contexte et le `draw`.
+        return pixels.withUnsafeMutableBytes { raw -> CGRect? in
+            guard let base = raw.baseAddress,
+                  let context = CGContext(
+                      data: base,
+                      width: width,
+                      height: height,
+                      bitsPerComponent: 8,
+                      bytesPerRow: width * 4,
+                      space: CGColorSpaceCreateDeviceRGB(),
+                      bitmapInfo: CGImageAlphaInfo.premultipliedLast.rawValue
+                  )
+            else { return nil }
+            context.draw(image, in: CGRect(x: 0, y: 0, width: width, height: height))
+
+            var minX = width, maxX = -1, topRow = height, bottomRow = -1
+            for row in 0..<height {
+                for column in 0..<width where raw[(row * width + column) * 4 + 3] > bodyAlphaThreshold {
+                    minX = min(minX, column)
+                    maxX = max(maxX, column)
+                    topRow = min(topRow, row)
+                    bottomRow = max(bottomRow, row)
+                }
             }
-        }
-        guard maxX >= minX, bottomRow >= topRow else { return nil }
+            guard maxX >= minX, bottomRow >= topRow else { return nil }
 
-        return CGRect(
-            x: CGFloat(minX),
-            y: CGFloat(height - 1 - bottomRow),
-            width: CGFloat(maxX - minX + 1),
-            height: CGFloat(bottomRow - topRow + 1)
-        )
+            return CGRect(
+                x: CGFloat(minX),
+                y: CGFloat(height - 1 - bottomRow),
+                width: CGFloat(maxX - minX + 1),
+                height: CGFloat(bottomRow - topRow + 1)
+            )
+        }
     }
 
     /// L'ombre de contact, en ellipses concentriques.

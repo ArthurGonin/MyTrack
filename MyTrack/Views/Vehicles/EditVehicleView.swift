@@ -91,13 +91,19 @@ struct EditVehicleView: View {
     @ViewBuilder
     private var photoSection: some View {
         Section("Photo") {
-            if let data = vehicle.photoData, let photo = UIImage(data: data) {
-                Image(uiImage: photo)
-                    .resizable()
-                    .scaledToFit()
-                    .frame(maxWidth: .infinity)
-                    .frame(height: 110)
-                    .accessibilityLabel("Photo du véhicule")
+            if vehicle.photoData != nil {
+                VehiclePhotoImage(photoData: vehicle.photoData) { image in
+                    image
+                        .resizable()
+                        .scaledToFit()
+                        .frame(maxWidth: .infinity)
+                        .frame(height: 110)
+                        .accessibilityLabel("Photo du véhicule")
+                } placeholder: {
+                    // Le temps du décodage, la place est gardée : sans ça la
+                    // fiche sautait d'une ligne au moment où la photo paraît.
+                    Color.clear.frame(height: 110)
+                }
             }
 
             Button {
@@ -127,7 +133,7 @@ struct EditVehicleView: View {
 
 #Preview {
     let container = try! ModelContainer(
-        for: Trip.self, Vehicle.self,
+        for: Trip.self, Vehicle.self, UserProfile.self, ReportProfile.self, GeneratedReport.self,
         configurations: ModelConfiguration(isStoredInMemoryOnly: true)
     )
     let vehicle = Vehicle(

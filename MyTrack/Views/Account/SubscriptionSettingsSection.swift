@@ -265,7 +265,7 @@ struct SubscriptionSettingsSection: View {
             switch await purchaseService.purchase(.lifetime) {
             case .success:
                 if hadSubscription { isCancelReminderPresented = true }
-            case .failed:
+            case .failed, .unavailable:
                 isPurchaseFailedAlertPresented = true
             // Comme dans la paywall : un achat annulé n'a rien à annoncer, et
             // un achat en attente d'approbation remontera de lui-même par
@@ -321,8 +321,8 @@ struct SubscriptionSettingsSection: View {
         switch purchaseService.entitlement {
         case nil:
             return purchaseService.hasBillingIssue
-                ? String(localized: "Votre abonnement n'a pas pu être renouvelé : aucun nouveau trajet n'est enregistré. Vos trajets et rapports déjà enregistrés restent accessibles.", bundle: localizationBundle, locale: locale)
-                : String(localized: "Sans abonnement actif, aucun nouveau trajet n'est enregistré. Vos trajets et rapports déjà enregistrés restent accessibles.", bundle: localizationBundle, locale: locale)
+                ? String(localized: "Votre abonnement n'a pas pu être renouvelé : MyTrack n'enregistre plus de trajet et ne génère plus de rapport. Ce qui est déjà enregistré reste accessible.", bundle: localizationBundle, locale: locale)
+                : String(localized: "Sans abonnement actif, MyTrack n'enregistre plus de trajet et ne génère plus de rapport. Ce qui est déjà enregistré reste accessible.", bundle: localizationBundle, locale: locale)
 
         case .lifetime:
             // « Sans abonnement ni reconduction » devient un mensonge tant qu'un

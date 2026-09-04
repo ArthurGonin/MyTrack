@@ -36,18 +36,30 @@ struct PaywallStepView: View {
     @Environment(\.localizationBundle) private var localizationBundle
     @State private var isPurchaseFailedAlertPresented = false
     @State private var isRestoreFailedAlertPresented = false
-    @State private var hasPurchaseFailed = false
+    /// Vrai quand la boutique a refusé l'achat pour de bon — voir
+    /// `PurchaseOutcome.unavailable`.
+    @State private var hasStoreRefusedPurchase = false
     /// Le texte légal ouvert, ou nil. Les deux documents sont dans l'app :
     /// voir `LegalDocument`.
     @State private var presentedLegalDocument: LegalDocument.Kind?
 
     /// Whether the store has had its chance and still can't sell anything here.
     /// This screen is the only way into the app, so it must never trap someone
-    /// StoreKit simply can't serve — no network, a StoreKit outage, a device
-    /// that can't buy. A user who is merely undecided still has to choose:
-    /// this appears only once buying has actually proved impossible.
+    /// StoreKit simply can't serve. A user who is merely undecided still has to
+    /// choose: this appears only once buying has actually proved impossible.
+    ///
+    /// Deux cas, et deux seulement. La boutique n'a rien à vendre — il n'y a
+    /// alors littéralement aucun bouton d'achat qui fonctionne. Ou elle a refusé
+    /// l'achat définitivement : achats restreints, produit absent du pays.
+    ///
+    /// Un achat simplement échoué n'en fait plus partie, et c'était le défaut :
+    /// une carte refusée, un réseau coupé, et la porte s'ouvrait pour toujours —
+    /// il suffisait de faire échouer un achat une fois. Ce qui passe cette porte
+    /// n'obtient d'ailleurs rien de payant : `canRecordTrips` reste faux, donc
+    /// ni enregistrement, ni détection, ni création de rapport. C'est une app
+    /// vide avec un chemin d'achat, pas un accès gratuit.
     private var isStoreUnreachable: Bool {
-        (hasAttemptedProductLoad && products.isEmpty) || hasPurchaseFailed
+        (hasAttemptedProductLoad && products.isEmpty) || hasStoreRefusedPurchase
     }
 
     private var isBusy: Bool { isPurchasing || isRestoring }
@@ -215,7 +227,9 @@ struct PaywallStepView: View {
             case .userCancelled, .pending:
                 break
             case .failed:
-                hasPurchaseFailed = true
+                isPurchaseFailedAlertPresented = true
+            case .unavailable:
+                hasStoreRefusedPurchase = true
                 isPurchaseFailedAlertPresented = true
             }
         }

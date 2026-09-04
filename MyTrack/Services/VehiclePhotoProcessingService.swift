@@ -93,6 +93,10 @@ final class VehiclePhotoProcessingService {
                 // utilisable. Écrire sur une ligne qui n'existe plus n'aurait
                 // aucun sens, et la pastille n'a personne à qui annoncer quoi.
                 guard vehicle.modelContext != nil else {
+                    // La minuterie avec l'état : une pastille rangée sans
+                    // annuler ce qui devait l'effacer laisse un compte à rebours
+                    // libre d'effacer la pastille *suivante*.
+                    expiry?.cancel()
                     state = nil
                     return
                 }

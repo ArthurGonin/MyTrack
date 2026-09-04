@@ -5,7 +5,6 @@
 
 import SwiftUI
 import SwiftData
-import StoreKit
 import CoreLocation
 
 struct RecordTripView: View {
@@ -22,8 +21,6 @@ struct RecordTripView: View {
     /// Set when the start slider could only raise the location prompt, so the
     /// answer — whenever it comes — resumes what the user actually asked for.
     @State private var isAwaitingLocationPermission = false
-    @State private var isSubscriptionStorePresented = false
-    @State private var isManageSubscriptionsPresented = false
     /// Vrai quand la feuille a été tirée vers le bas : la carte est
     /// rangée, les deux chiffres et le bouton restent.
     @State private var isSheetCollapsed = false
@@ -33,10 +30,6 @@ struct RecordTripView: View {
     @State private var sheetContentOpacity: Double = 1
     /// Celle de la carte seule, pour son propre aller-retour quand on replie.
     @State private var mapOpacity: Double = 1
-    /// La gélule de la barre d'onglets, quand on a pu la mesurer : c'est elle
-    /// que le bouton Démarrer épouse au repos. `nil` tant qu'on ne l'a pas lue
-    /// — ou si elle est introuvable, auquel cas le bouton garde sa pleine
-    /// taille, celle qu'il avait avant.
     /// La taille du grand nombre. `@ScaledMetric` plutôt qu'une constante :
     /// une taille en points ne suit pas les réglages d'accessibilité, et ce
     /// nombre-là est ce qu'on vient lire.
@@ -46,6 +39,10 @@ struct RecordTripView: View {
     /// points ne suivrait pas les réglages d'accessibilité.
     @ScaledMetric(relativeTo: .title) private var tileValueSize: CGFloat = 32
 
+    /// La gélule de la barre d'onglets, quand on a pu la mesurer : c'est elle
+    /// que le bouton Démarrer épouse au repos. `nil` tant qu'on ne l'a pas lue
+    /// — ou si elle est introuvable, auquel cas le bouton garde sa pleine
+    /// taille, celle qu'il avait avant.
     @State private var tabBarSize: CGSize?
     /// La hauteur des trois tuiles, relevée sur elles : c'est jusque-là que la
     /// feuille repliée doit descendre pour les cacher.
@@ -84,7 +81,10 @@ struct RecordTripView: View {
     private var canRecordTrips: Bool { appServices.purchaseService.canRecordTrips }
 
     var body: some View {
-        NavigationStack {
+        // Relevé une fois pour ce rendu, et passé de main en main : voir
+        // `MonthlySummary`.
+        let summary = monthlySummary
+        return NavigationStack {
             VStack(spacing: 20) {
                 greetingHeader
 
@@ -105,9 +105,9 @@ struct RecordTripView: View {
                             // la salutation : le reste de l'écran est plein, et
                             // c'est là que l'écart se voit le moins.
                             Spacer(minLength: 0)
-                            monthlyHeader
+                            monthlyHeader(summary)
                             carIllustration
-                            monthlyTiles
+                            monthlyTiles(summary)
                             // La place que le bouton occupe au repos, gardée
                             // vide : la voiture s'arrête juste au-dessus de lui
                             // au lieu de passer dessous. Toujours celle du
@@ -223,10 +223,6 @@ struct RecordTripView: View {
                     viewModel.selectVehicle(vehicle, in: modelContext)
                 }
             }
-            .sheet(isPresented: $isSubscriptionStorePresented) {
-                SubscriptionStoreSheet(isPresented: $isSubscriptionStorePresented)
-            }
-            .manageSubscriptionsSheet(isPresented: $isManageSubscriptionsPresented)
         }
     }
 
@@ -260,8 +256,9 @@ struct RecordTripView: View {
     ///
     /// Le nombre et son unité sont deux textes et non un seul : c'est le nombre
     /// qu'on lit d'un coup d'œil, le « km » n'est là que pour le qualifier.
-    private var monthlyHeader: some View {
-        VStack(spacing: 6) {
+    private func monthlyHeader(_ summary: MonthlySummary) -> some View {
+        let distance = distanceParts(summary.distanceMeters)
+        return VStack(spacing: 6) {
             Text("Ce mois-ci")
                 .font(.subheadline)
                 .foregroundStyle(.secondary)
@@ -269,15 +266,15 @@ struct RecordTripView: View {
                 .padding(.vertical, 5)
                 .background(Color(uiColor: .tertiarySystemFill), in: .capsule)
             HStack(alignment: .firstTextBaseline, spacing: 4) {
-                Text(monthlyDistance.value)
+                Text(distance.value)
                     .font(.system(size: odometerSize, weight: .light))
                     .lineLimit(1)
                     .minimumScaleFactor(0.4)
-                Text(monthlyDistance.symbol)
+                Text(distance.symbol)
                     .font(.title2)
                     .foregroundStyle(.secondary)
             }
-            monthlyChangeLine
+            monthlyChangeLine(summary)
         }
     }
 
@@ -291,15 +288,15 @@ struct RecordTripView: View {
     /// salue que la hausse : rouler moins n'est pas une faute, et le rouge de
     /// l'app est réservé à ce qui ne tourne plus.
     @ViewBuilder
-    private var monthlyChangeLine: some View {
-        if let change = monthlyChange {
-            let isUp = change.ratio >= 0
+    private func monthlyChangeLine(_ summary: MonthlySummary) -> some View {
+        if let ratio = summary.change {
+            let isUp = ratio >= 0
             HStack(spacing: 5) {
                 Image(systemName: isUp ? "arrow.up.right" : "arrow.down.right")
                     .foregroundStyle(isUp ? Color.green : Color.secondary)
                 Text(
                     String(
-                        localized: "\(formattedPercent(change.ratio)) par rapport à \(change.month)",
+                        localized: "\(formattedPercent(ratio)) par rapport à \(previousMonthName)",
                         bundle: localizationBundle,
                         locale: locale
                     )
@@ -317,16 +314,17 @@ struct RecordTripView: View {
     /// La rangée est rentrée de quelques points par rapport à la marge de
     /// l'écran : les tuiles s'affinent, et la voiture au-dessus, qui déborde,
     /// n'en paraît que plus large.
-    private var monthlyTiles: some View {
+    private func monthlyTiles(_ summary: MonthlySummary) -> some View {
         HStack(spacing: Self.tileSpacing) {
             tile("road.lanes", label: "trajets") {
-                tileValue(monthlyTrips.count.formatted(.number.locale(locale)))
+                tileValue(summary.tripCount.formatted(.number.locale(locale)))
             }
             tile("clock", label: "temps de conduite") {
-                tileValue(monthlyDrivingTime)
+                tileValue(TripFormatting.clockDuration(summary.drivingTime, locale: locale))
             }
             tile("point.topleft.down.curvedto.point.bottomright.up", label: "distance moyenne") {
-                if let average = monthlyAverageDistance {
+                if let averageMeters = summary.averageDistanceMeters {
+                    let average = distanceParts(averageMeters, fractionDigits: 1)
                     tileValue(average.value, unit: average.symbol)
                 } else {
                     tileValue(Self.noValue)
@@ -389,70 +387,81 @@ struct RecordTripView: View {
         .monospacedDigit()
     }
 
-    /// Les trajets d'un mois donné, pour le véhicule choisi.
+    /// Ce que l'accueil dit du mois en cours, relevé d'un seul passage sur les
+    /// trajets.
     ///
+    /// Un seul, parce qu'il y en avait sept. Chacun des chiffres affichés — la
+    /// distance, le compte, le temps de conduite, la moyenne, l'écart avec le
+    /// mois d'avant — était une propriété calculée qui refiltrait pour son
+    /// compte *tous* les trajets de la base, et deux d'entre elles en
+    /// refiltraient un mois de plus. Or le corps de cet écran est redessiné à
+    /// chaque point GPS reçu pendant un enregistrement : le coût se payait
+    /// toutes les quelques secondes, en conduisant, sur la liste entière.
+    private struct MonthlySummary {
+        var tripCount = 0
+        var distanceMeters: Double = 0
+        var drivingTime: TimeInterval = 0
+        /// Ce que le mois précédent avait parcouru, pour l'écart affiché sous le
+        /// compteur.
+        var previousDistanceMeters: Double = 0
+
+        /// La longueur du trajet moyen. Nil sans trajet : une moyenne sur rien
+        /// n'existe pas, et zéro se lirait comme des trajets de zéro kilomètre.
+        var averageDistanceMeters: Double? {
+            tripCount > 0 ? distanceMeters / Double(tripCount) : nil
+        }
+
+        /// L'écart avec le mois d'avant, en proportion. Nil quand il n'y a rien
+        /// à comparer : sans kilomètre le mois précédent, toute proportion
+        /// serait une division par zéro.
+        var change: Double? {
+            guard previousDistanceMeters > 0 else { return nil }
+            return (distanceMeters - previousDistanceMeters) / previousDistanceMeters
+        }
+    }
+
     /// Les trajets confirmés seulement : un trajet détecté que personne n'a
     /// encore validé n'en est pas encore un, et un trajet supprimé n'en est
     /// plus un. Sans véhicule sélectionné il n'y a rien à distinguer, et le
     /// compte additionne alors tout ce qui a roulé.
-    private func confirmedTrips(inMonthContaining date: Date) -> [Trip] {
-        guard let month = Calendar.current.dateInterval(of: .month, for: date) else { return [] }
-        return trips.filter { trip in
-            trip.confirmationStatus == .confirmed
-                && (selectedVehicle == nil || trip.vehicle === selectedVehicle)
-                && month.contains(trip.startDate)
-        }
-    }
-
-    private var monthlyTrips: [Trip] { confirmedTrips(inMonthContaining: Date()) }
-
-    private var monthlyDistanceMeters: Double {
-        monthlyTrips.reduce(0) { $0 + $1.distanceMeters }
-    }
-
-    private var monthlyDistance: (value: String, symbol: String) {
-        TripFormatting.distanceParts(
-            meters: monthlyDistanceMeters,
-            unit: appServices.unitSettingsService.distanceUnit,
-            locale: locale
-        )
-    }
-
-    /// Le temps passé au volant ce mois-ci. Un trajet en cours compte jusqu'à
-    /// maintenant, comme partout ailleurs dans l'app.
-    private var monthlyDrivingTime: String {
+    private var monthlySummary: MonthlySummary {
         let now = Date()
-        let total = monthlyTrips.reduce(0.0) { total, trip in
-            total + (trip.endDate ?? now).timeIntervalSince(trip.startDate)
+        let calendar = Calendar.current
+        guard let month = calendar.dateInterval(of: .month, for: now) else { return MonthlySummary() }
+        let previousMonth = calendar.date(byAdding: .month, value: -1, to: now)
+            .flatMap { calendar.dateInterval(of: .month, for: $0) }
+
+        var summary = MonthlySummary()
+        for trip in trips {
+            guard trip.confirmationStatus == .confirmed,
+                  selectedVehicle == nil || trip.vehicle === selectedVehicle
+            else { continue }
+
+            if month.contains(trip.startDate) {
+                summary.tripCount += 1
+                summary.distanceMeters += trip.distanceMeters
+                // Un trajet en cours compte jusqu'à maintenant, comme partout
+                // ailleurs dans l'app.
+                summary.drivingTime += (trip.endDate ?? now).timeIntervalSince(trip.startDate)
+            } else if previousMonth?.contains(trip.startDate) == true {
+                summary.previousDistanceMeters += trip.distanceMeters
+            }
         }
-        return TripFormatting.clockDuration(total, locale: locale)
+        return summary
     }
 
-    /// La longueur du trajet moyen. Nil sans trajet : une moyenne sur rien
-    /// n'existe pas, et zéro se lirait comme des trajets de zéro kilomètre.
-    private var monthlyAverageDistance: (value: String, symbol: String)? {
-        guard !monthlyTrips.isEmpty else { return nil }
-        return TripFormatting.distanceParts(
-            meters: monthlyDistanceMeters / Double(monthlyTrips.count),
+    /// Le nom du mois précédent, tel qu'il s'écrit sous le compteur.
+    private var previousMonthName: String {
+        guard let date = Calendar.current.date(byAdding: .month, value: -1, to: Date()) else { return "" }
+        return date.formatted(.dateTime.month(.wide).locale(locale))
+    }
+
+    private func distanceParts(_ meters: Double, fractionDigits: Int = 0) -> (value: String, symbol: String) {
+        TripFormatting.distanceParts(
+            meters: meters,
             unit: appServices.unitSettingsService.distanceUnit,
             locale: locale,
-            fractionDigits: 1
-        )
-    }
-
-    /// L'écart avec le mois d'avant, et le nom de ce mois-là.
-    ///
-    /// Nil quand il n'y a rien à comparer : sans kilomètre le mois précédent,
-    /// toute proportion serait une division par zéro.
-    private var monthlyChange: (ratio: Double, month: String)? {
-        guard let lastMonthDate = Calendar.current.date(byAdding: .month, value: -1, to: Date())
-        else { return nil }
-        let reference = confirmedTrips(inMonthContaining: lastMonthDate)
-            .reduce(0) { $0 + $1.distanceMeters }
-        guard reference > 0 else { return nil }
-        return (
-            (monthlyDistanceMeters - reference) / reference,
-            lastMonthDate.formatted(.dateTime.month(.wide).locale(locale))
+            fractionDigits: fractionDigits
         )
     }
 
@@ -466,11 +475,17 @@ struct RecordTripView: View {
     /// La voiture du véhicule choisi si elle a été photographiée, le dessin
     /// sinon. Les deux sortent du même normalisateur, donc du même cadre : le
     /// bloc garde sa hauteur et rien ne saute en changeant de véhicule.
-    private var carImage: Image {
-        if let data = selectedVehicle?.photoData, let photo = UIImage(data: data) {
-            return Image(uiImage: photo)
+    ///
+    /// Passe par `VehiclePhotoImage` plutôt que de décoder ici : ce corps est
+    /// réévalué à chaque point GPS reçu, et le PNG fait six mégaoctets une fois
+    /// décodé.
+    @ViewBuilder
+    private var carImage: some View {
+        VehiclePhotoImage(photoData: selectedVehicle?.photoData) { image in
+            image.resizable().scaledToFit()
+        } placeholder: {
+            Image("HomeCar").resizable().scaledToFit()
         }
-        return Image("HomeCar")
     }
 
     /// La voiture, en dessin plutôt qu'en photo de fond : elle est un objet de
@@ -482,8 +497,6 @@ struct RecordTripView: View {
     /// coupée par le bord a l'air posée devant l'écran plutôt que dedans.
     private var carIllustration: some View {
         carImage
-            .resizable()
-            .scaledToFit()
             // Une largeur, pas de hauteur : la voiture prend celle que ses
             // proportions lui donnent, et rien de plus. Lui laisser la hauteur
             // disponible lui ferait garder le vide pour elle, alors que c'est
@@ -840,54 +853,15 @@ struct RecordTripView: View {
     /// de lui : le bouton ne ferait plus rien de toute façon, et c'est cet
     /// écran-là qu'on ouvre en pensant que ses trajets sont enregistrés. C'est
     /// donc ici que le dire compte le plus.
+    ///
+    /// Le glyphe, le titre et le bouton viennent de `SubscriptionRequiredView`,
+    /// partagé avec la feuille de nouveau rapport : seule la phrase qui nomme ce
+    /// qui est perdu appartient à cet écran.
     private var subscriptionRequiredView: some View {
-        ContentUnavailableView {
-            Label {
-                Text(blockedTitle)
-            } icon: {
-                // Rouge, et pas le gris par défaut d'un écran vide : ce n'est
-                // pas « il n'y a rien ici », c'est « ça ne tourne plus ».
-                Image(systemName: hasBillingIssue
-                    ? "creditcard.trianglebadge.exclamationmark"
-                    : "exclamationmark.triangle.fill")
-                    .foregroundStyle(.red)
-            }
-        } description: {
-            Text(blockedDescription)
-        } actions: {
-            // Un paiement qui échoue n'est pas une résiliation : proposer une
-            // nouvelle formule à quelqu'un qui n'a rien annulé ne réglerait pas
-            // son problème. Ce qu'il lui faut, c'est sa carte.
-            Button(blockedActionTitle) {
-                if hasBillingIssue {
-                    isManageSubscriptionsPresented = true
-                } else {
-                    isSubscriptionStorePresented = true
-                }
-            }
-            .buttonStyle(.borderedProminent)
-            .foregroundStyle(Color.onAccent)
-            .controlSize(.large)
-        }
-    }
-
-    private var hasBillingIssue: Bool { appServices.purchaseService.hasBillingIssue }
-
-    // Typés `LocalizedStringKey` : un ternaire entre deux littéraux passé
-    // directement à `Text` peut se résoudre en `String` — donc sans traduction.
-    // Le type explicite lève le doute.
-    private var blockedTitle: LocalizedStringKey {
-        hasBillingIssue ? "Problème de paiement" : "Abonnement inactif"
-    }
-
-    private var blockedDescription: LocalizedStringKey {
-        hasBillingIssue
-            ? "Votre abonnement n'a pas pu être renouvelé : vos trajets ne sont plus enregistrés. Vos trajets et rapports restent accessibles."
-            : "L'enregistrement des trajets nécessite un abonnement actif. Vos trajets et rapports déjà enregistrés restent accessibles."
-    }
-
-    private var blockedActionTitle: LocalizedStringKey {
-        hasBillingIssue ? "Mettre à jour le paiement" : "Se réabonner"
+        SubscriptionRequiredView(
+            description: "L'enregistrement des trajets nécessite un abonnement actif. Vos trajets et rapports déjà enregistrés restent accessibles.",
+            billingIssueDescription: "Votre abonnement n'a pas pu être renouvelé : vos trajets ne sont plus enregistrés. Vos trajets et rapports restent accessibles."
+        )
     }
 
     /// A first tap on a fresh install can only raise the location prompt and
@@ -922,7 +896,7 @@ struct RecordTripView: View {
 
 #Preview {
     let container = try! ModelContainer(
-        for: Trip.self, Vehicle.self, UserProfile.self,
+        for: Trip.self, Vehicle.self, UserProfile.self, ReportProfile.self, GeneratedReport.self,
         configurations: ModelConfiguration(isStoredInMemoryOnly: true)
     )
     return RecordTripView()

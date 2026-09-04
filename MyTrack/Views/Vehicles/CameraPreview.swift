@@ -37,6 +37,15 @@ final class CameraController {
     /// autorisation refusée. L'écran propose alors la photothèque.
     private(set) var isReady = false
 
+    /// Vrai quand l'app *a* un appareil photo mais pas le droit de s'en servir.
+    ///
+    /// La distinction change ce que l'écran doit dire, et ce qu'il peut
+    /// proposer. « L'appareil photo n'est pas disponible ici » est vrai sur un
+    /// simulateur et faux sur un iPhone dont l'accès a été refusé : là, il y a
+    /// bien un appareil, il manque une autorisation, et iOS ne repose plus sa
+    /// question — seuls ses Réglages peuvent encore la lever.
+    private(set) var isAccessDenied = false
+
     /// Faux quand l'appareil n'a pas de flash — le simulateur, la caméra avant
     /// de certains modèles. Le bouton disparaît alors plutôt que de rester là
     /// sans effet.
@@ -65,7 +74,26 @@ final class CameraController {
         // sur un simulateur, la fenêtre s'ouvrirait pour rien et la photothèque
         // aurait pris le relais de toute façon.
         guard AVCaptureDevice.default(for: .video) != nil else { return }
-        guard await AVCaptureDevice.requestAccess(for: .video) else { return }
+
+        // L'état est lu avant de demander : `requestAccess` rend `false` aussi
+        // bien pour un refus qui vient d'être prononcé que pour un refus
+        // d'autrefois, sur lequel il ne montre plus rien du tout. Sans cette
+        // lecture, l'écran ne pouvait pas savoir s'il attendait une réponse ou
+        // s'il devait envoyer l'utilisateur dans les Réglages.
+        switch AVCaptureDevice.authorizationStatus(for: .video) {
+        case .authorized:
+            break
+        case .notDetermined:
+            guard await AVCaptureDevice.requestAccess(for: .video) else {
+                isAccessDenied = true
+                return
+            }
+        default:
+            isAccessDenied = true
+            return
+        }
+
+        isAccessDenied = false
         guard !session.isRunning else { return }
 
         let configured = await withCheckedContinuation { continuation in
@@ -127,7 +155,12 @@ final class CameraController {
     /// reste une d'ouverte (`AVCaptureSession.h`). C'est aussi pourquoi il n'y a
     /// pas de `defer` ici — il aurait fermé une seconde fois, après coup, ce qui
     /// était déjà refermé.
-    private func configureSession() -> Bool {
+    ///
+    /// `nonisolated` parce qu'elle s'exécute sur `queue` et nulle part ailleurs :
+    /// c'est là qu'AVFoundation veut qu'on mène une session, et la laisser sur le
+    /// fil principal — le défaut du projet — en faisait un appel qui traverse
+    /// l'isolation à chaque prise.
+    nonisolated private func configureSession() -> Bool {
         session.beginConfiguration()
         session.sessionPreset = .photo
 

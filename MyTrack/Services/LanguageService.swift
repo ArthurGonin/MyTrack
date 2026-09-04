@@ -62,8 +62,14 @@ final class LanguageService {
 
     /// Remet la langue du système, pour qu'un compte supprimé retrouve une app
     /// d'avant tout premier lancement.
+    ///
+    /// L'effacement vient *après* l'affectation, et l'ordre inverse était un
+    /// bug : le `didSet` de `language` réécrivait la clé dans la foulée, si bien
+    /// qu'un compte supprimé se retrouvait avec un choix explicite — la langue
+    /// du système à cet instant — et cessait de suivre celle de l'iPhone si elle
+    /// changeait ensuite. C'est exactement ce que l'init cherche à éviter.
     func resetToSystemDefault() {
-        UserDefaults.standard.removeObject(forKey: Self.selectedLanguageKey)
         language = .systemDefault
+        UserDefaults.standard.removeObject(forKey: Self.selectedLanguageKey)
     }
 }

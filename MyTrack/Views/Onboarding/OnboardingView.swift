@@ -328,12 +328,18 @@ struct OnboardingView: View {
         }
     }
 
+    /// Borné à la dernière étape : la boucle ci-dessous s'arrête *au-delà* de la
+    /// liste quand plus rien n'est visible devant, et `currentStep` irait alors
+    /// lire un rang qui n'existe pas. Aucun chemin n'y mène aujourd'hui — la
+    /// paywall termine l'onboarding au lieu d'avancer — mais rien dans le code
+    /// ne le garantit, et le `onChange` d'autorisation qui appelle `advanceStep`
+    /// est posé sur toutes les étapes à la fois.
     private func advanceStep() {
         var next = currentStepIndex + 1
         while next < OnboardingStep.allCases.count, !isStepVisible(OnboardingStep.allCases[next]) {
             next += 1
         }
-        currentStepIndex = next
+        currentStepIndex = min(next, OnboardingStep.allCases.count - 1)
     }
 
     private func retreatStep() {
@@ -512,7 +518,7 @@ struct OnboardingView: View {
 
 #Preview {
     let container = try! ModelContainer(
-        for: Trip.self, Vehicle.self, UserProfile.self, ReportProfile.self,
+        for: Trip.self, Vehicle.self, UserProfile.self, ReportProfile.self, GeneratedReport.self,
         configurations: ModelConfiguration(isStoredInMemoryOnly: true)
     )
     return OnboardingView()

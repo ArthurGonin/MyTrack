@@ -83,9 +83,23 @@ autant que sur un fond blanc : un halo blanc ne se voit que sur le noir.
 
 - **Secret partagé** : il est dans l'app, donc extractible. Il écarte les appels au hasard,
   rien de plus. App Attest ferait mieux le jour où le volume le justifiera.
-- **Cinq photos par appareil et par jour**, comptées dans KV (`DAILY_LIMIT` dans
-  `worker.ts`). Le compteur ne monte qu'une fois l'image obtenue : un appel raté ne coûte pas
-  son quota. Au-delà, le proxy répond 429 et l'app dit « Réessayez demain ».
+- **Cinq photos par appareil et par jour** (`DAILY_LIMIT`). Ce plafond-là est un confort, pas
+  une défense : l'appareil s'annonce dans `X-MyTrack-Device`, un en-tête que l'appelant
+  choisit, et un identifiant neuf à chaque requête le remet à zéro. Il empêche une app qui
+  déraille de brûler le quota d'un foyer, rien de plus.
+- **Quinze photos par adresse IP et par jour** (`DAILY_IP_LIMIT`), plus **deux par minute**
+  (le lien `BURST` de `wrangler.toml`). Ceux-là tiennent, parce que `CF-Connecting-IP` est posé
+  par Cloudflare et écrase ce que le client aurait mis. L'adresse n'est pas stockée : ce qui
+  entre dans KV est un SHA-256 salé par le secret partagé, tronqué à huit octets — de quoi
+  compter sans conserver. Le coupe-rafale passe **avant** les lectures KV, dont la cohérence
+  éventuelle laisserait sinon passer cent requêtes lancées en même temps.
+- Les compteurs ne montent qu'une fois l'image obtenue : un appel raté ne coûte pas son quota.
+  Au-delà, le proxy répond 429 et l'app dit « Réessayez demain ».
+- **Cinq mégaoctets par photo** au maximum, lus sur `Content-Length` puis sur le fichier reçu —
+  un client hostile ment sur le premier. L'app envoie du JPEG réduit à 2048 pixels de côté.
+- **Les erreurs d'OpenAI ne repartent pas au client** : elles vont dans le journal
+  (`wrangler tail`), et l'appelant reçoit un 502 nu. Elles portent des identifiants
+  d'organisation et des messages qui n'ont rien à faire chez quelqu'un dont on ne sait rien.
 - **Le plan gratuit de Cloudflare suffit**, et doit continuer de suffire. Dix millisecondes de
   processeur par requête, l'attente du réseau non comptée : ce proxy en consomme deux, parce
   qu'il ne lit jamais l'image qu'il transporte. Lui faire décoder le base64 est précisément ce

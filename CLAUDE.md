@@ -1,45 +1,102 @@
 # MyTrack
 
-App iOS (SwiftUI) qui enregistre automatiquement les trajets en voiture : détection de conduite, tracking GPS, association à un véhicule, et confirmation manuelle des trajets détectés.
+App iOS (SwiftUI) qui enregistre les trajets en voiture : détection automatique de conduite,
+tracking GPS, association à un véhicule, estimation du coût en énergie, et rapports PDF —
+ponctuels ou périodiques. L'app entière est payante (abonnement ou achat unique).
 
 ## Règles de travail (IMPORTANT)
 
-- **Design toujours natif Apple, autant que possible.** Utiliser les composants et matériaux SwiftUI/UIKit standards plutôt que des styles custom — par exemple **Liquid Glass** pour les boutons et surfaces plutôt qu'un style maison, les contrôles système natifs (boutons, listes, navigation) plutôt que des équivalents recréés à la main.
-- **Icônes = SF Symbols uniquement.** Quand on demande d'ajouter une icône, toujours utiliser un symbole SF Symbols (`Image(systemName:)`), jamais une image custom. Si l'utilisateur donne le nom exact du symbole, l'utiliser tel quel dans le code (`systemName: "nom.exact"`) sans le remplacer par autre chose.
+- **Design toujours natif Apple, autant que possible.** Utiliser les composants et matériaux
+  SwiftUI/UIKit standards plutôt que des styles custom — par exemple **Liquid Glass** pour les
+  boutons et surfaces plutôt qu'un style maison, les contrôles système natifs (boutons, listes,
+  navigation) plutôt que des équivalents recréés à la main.
+- **Icônes = SF Symbols uniquement.** Quand on demande d'ajouter une icône, toujours utiliser un
+  symbole SF Symbols (`Image(systemName:)`), jamais une image custom. Si l'utilisateur donne le
+  nom exact du symbole, l'utiliser tel quel dans le code (`systemName: "nom.exact"`) sans le
+  remplacer par autre chose.
+- **Une nouvelle propriété dans un `@Model` doit être optionnelle.** SwiftData ajoute bien la
+  colonne aux lignes existantes, mais il la laisse vide sans y reporter la valeur par défaut : une
+  propriété non-optionnelle compile et ferme l'app au premier écran qui lit une ligne d'avant la
+  mise à jour. Voir `Vehicle.storedEnergyType`, qui porte l'explication complète.
+- **Ne pas laisser un corps de vue lire un modèle qu'on vient de supprimer.** `dismiss()` retire
+  l'écran avec une animation, et SwiftUI le redessine pendant ce temps : lire une propriété d'un
+  `@Model` effacé ferme l'app. Le patron est dans `TripDetailView.isSeparated` et
+  `ReportProfileEditView.isDeleted` — vider le corps, fermer, puis supprimer.
+- **Le texte affiché passe par le catalogue de chaînes**, en six langues. Hors SwiftUI (PDF,
+  notifications), utiliser `String(localized:bundle:locale:)` avec le bundle *et* la locale de
+  `LanguageService` : `String(localized:)` seul retombe sur la langue du système.
 
 ## Stack
 
-- Swift / SwiftUI, cible iOS.
-- Persistance : **SwiftData** (`@Model`).
-- Pas de SPM package ni de dépendances tierces — projet Xcode pur (`MyTrack.xcodeproj`).
-- Pas de target de tests pour l'instant.
+- Swift / SwiftUI, cible iOS 26.0. Pas de SPM, pas de dépendance tierce — projet Xcode pur
+  (`MyTrack.xcodeproj`), avec des groupes synchronisés sur le système de fichiers : un fichier
+  ajouté dans `MyTrack/` entre dans la cible sans toucher au `.pbxproj`.
+- Persistance : **SwiftData** (`@Model`). **Pas encore de `SchemaMigrationPlan`** — voir le TODO
+  de `MyTrackApp.makeContainer`.
+- Concurrence : `SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor` et
+  `SWIFT_STRICT_CONCURRENCY = complete`, en mode langage Swift 5. Tout est donc sur le fil
+  principal par défaut ; ce qui n'y est pas le dit (`nonisolated`), et le projet compile sans un
+  seul avertissement de concurrence — à garder ainsi.
+- Achats : StoreKit 2, avec `MyTrack.storekit` pour les essais depuis Xcode (le simulateur en
+  ligne de commande ne sait pas appliquer cette configuration).
+- Pas de cible de tests.
 
 ## Build / run
 
-Le projet s'ouvre et se build via Xcode (`MyTrack.xcodeproj`). Pas de script CLI dédié — utiliser `xcodebuild` si besoin de build en ligne de commande, en pointant sur le scheme `MyTrack`.
+Le projet s'ouvre et se build via Xcode. En ligne de commande, `xcode-select` pointe sur les
+Command Line Tools : il faut donc préfixer explicitement.
+
+```sh
+DEVELOPER_DIR=/Applications/Xcode.app/Contents/Developer xcodebuild \
+  -project MyTrack.xcodeproj -scheme MyTrack \
+  -destination 'generic/platform=iOS Simulator' build
+```
+
+L'incrémental saute parfois des modifications sans le dire : si un changement ne se voit pas dans
+le simulateur, suspecter le build avant le code et refaire un `clean build`.
 
 ## Architecture
 
-Le code vit dans `MyTrack/`, organisé en couches classiques MVVM :
+Le code vit dans `MyTrack/`, en couches MVVM. `Server/` porte deux Workers Cloudflare.
 
-- **`Models/`** — entités SwiftData et types associés :
-  - `Trip` (`@Model`) : trajet enregistré (dates, distance, coordonnées de départ/arrivée, points de route, véhicule associé, statut de confirmation).
-  - `Vehicle`, `RoutePoint`, `TripSource` (origine du trajet : auto-détecté vs manuel), `TripConfirmationStatus`.
-  - `Trip+Formatting.swift` : extensions de formatage d'affichage.
-- **`Services/`** — logique métier et intégrations système, assemblées dans `AppServices` (composition root, injectée dans l'environnement SwiftUI depuis `MyTrackApp`) :
-  - `LocationService` — accès GPS.
-  - `MotionActivityService` — détection d'activité (marche/voiture) via CoreMotion.
-  - `DrivingDetector` — combine motion + location pour détecter le début/fin de trajet en voiture.
-  - `TripRecorder` — enregistre les points de route et persiste les `Trip` en base.
-  - `VehicleService` — gestion des véhicules.
-  - `NotificationService` — notifications locales (ex: demander confirmation d'un trajet détecté).
-- **`ViewModels/`** — un ViewModel par écran principal (liste des trajets, revue des trajets en attente, enregistrement en cours, liste des véhicules).
-- **`Views/`** — organisées par domaine : `Recording/`, `Trips/`, `Vehicles/`, plus `RootTabView` comme point d'entrée de la navigation par onglets.
-
-`AppServices` est construit une seule fois dans `MyTrackApp.init()` avec le `ModelContext` partagé, pour que les écritures faites en arrière-plan (par `TripRecorder`/`DrivingDetector`) restent visibles des vues utilisant `@Query`.
+- **`Models/`** — entités SwiftData et types de valeur :
+  - `Trip` (dates, distance, coordonnées, points de route, véhicule, statut de confirmation,
+    chiffres d'énergie figés, composants de fusion), `Vehicle`, `UserProfile`, `ReportProfile`,
+    `GeneratedReport`.
+  - Extensions par sujet plutôt que dans le modèle : `Trip+Cost` (estimation du coût en énergie),
+    `Trip+Merge` (fusionner et séparer des trajets), `Trip+Formatting`, `Vehicle+Formatting`.
+  - `TripFormatting` porte la mise en forme partagée par les écrans et le PDF ;
+    `ReportPeriodBoundary` l'arithmétique calendaire des rapports périodiques.
+- **`Services/`** — logique métier et intégrations système, assemblées dans `AppServices`
+  (composition root, construit une fois dans `MyTrackApp.init()` avec le `ModelContext` partagé,
+  puis injecté par `.environment(...)`) :
+  - Enregistrement : `LocationService`, `MotionActivityService`, `DrivingDetector` (la machine à
+    états qui décide qu'un trajet commence et se termine), `TripRecorder` (le seul à démarrer et
+    arrêter le GPS), `NotificationService`.
+  - Rapports : `ReportProfileService`, `ReportGenerationService`, `TripReportPDFRenderer`
+    (`nonisolated`, rendu hors du fil principal depuis des `TripReportRow`).
+  - Achats : `PurchaseService` — source de vérité unique de l'abonnement, qui coupe la détection
+    et prévient quand l'accès tombe.
+  - Photos : `VehiclePhotoService` (appelle le proxy), `VehiclePhotoProcessingService` (mène le
+    détourage hors de l'écran qui l'a lancé), `VehiclePhotoNormalizer` (cadre commun).
+  - Préférences : `LanguageService`, `UnitSettingsService`, `OnboardingService` — dans
+    `UserDefaults`, parce que ce sont des réglages et non des données.
+  - `FeedbackService`, `TripCostSnapshotService`, `AppLog`, `ModelContext+Saving`.
+- **`ViewModels/`** — des `struct` sans état, qui reçoivent le `ModelContext` en paramètre.
+- **`Views/`** — par domaine : `Recording/`, `Trips/`, `Vehicles/`, `Reports/`, `Account/`,
+  `Onboarding/`, `Legal/`, plus `RootTabView` comme point d'entrée par onglets.
+- **`Server/`** — `studio-cutout/` (proxy vers l'API images d'OpenAI, qui détient la clé et le
+  prompt) et `feedback/` (relais qui transforme un message des réglages en courriel). Chacun a son
+  README. Modifier un worker demande un `wrangler deploy` : le code du dépôt ne suffit pas.
 
 ## Conventions observées
 
 - Un type par fichier, nommé comme le fichier.
-- Les services sont des classes injectées via `@Observable` / `.environment(...)`, pas de singletons globaux.
-- Les entités SwiftData restent simples (peu de logique) ; le formatage d'affichage est déporté dans des extensions dédiées (`Trip+Formatting.swift`) plutôt que dans le modèle lui-même.
+- Services en classes `@Observable` injectées par l'environnement, jamais de singleton global.
+- Les entités SwiftData restent simples ; le calcul et le formatage vivent dans des extensions
+  dédiées.
+- Les commentaires expliquent **pourquoi**, et gardent trace du bug qui a mené au choix. C'est la
+  mémoire du projet : les conserver et les mettre à jour quand le code change.
+- Un texte affiché à l'utilisateur est une `LocalizedStringKey` ; une donnée saisie (nom de
+  véhicule, de profil) se rend telle quelle. Un ternaire entre deux littéraux passé à `Text` se
+  résout en `String` et échappe à la traduction : le typer explicitement.

@@ -288,9 +288,10 @@ nonisolated enum TripReportPDFRenderer {
     }
 
     /// Draws the icon masked to the rounded square iOS uses on the home screen.
-    /// There is no icon in the asset catalog yet, so until one is added the
-    /// same square is outlined empty: the space is already reserved, and
-    /// nothing below shifts on the day the icon lands.
+    /// Le repli — un carré vide au trait — sert les cas où le bundle ne rend
+    /// aucune icône : une compilation où le catalogue n'en porte pas, ou une
+    /// version d'iOS qui range `CFBundleIcons` autrement. La place est réservée
+    /// dans les deux cas, donc rien ne se décale en dessous.
     private static func drawAppIcon(_ icon: UIImage?, in rect: CGRect) {
         // Apple's icon mask rounds at ~22.4% of the side.
         let mask = UIBezierPath(roundedRect: rect, cornerRadius: rect.width * 0.2237)
@@ -316,7 +317,7 @@ nonisolated enum TripReportPDFRenderer {
 
     /// The app icon isn't reachable by asset name on every iOS version, so the
     /// bundle's own icon file list is tried first and the asset name only as a
-    /// fallback. `nil` — the case today — is expected, not an error.
+    /// fallback. `nil` reste un cas prévu, pas une erreur : voir `drawAppIcon`.
     private static func appIcon() -> UIImage? {
         if let icons = Bundle.main.infoDictionary?["CFBundleIcons"] as? [String: Any],
            let primary = icons["CFBundlePrimaryIcon"] as? [String: Any],

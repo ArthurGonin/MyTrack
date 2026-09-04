@@ -30,9 +30,26 @@ extension Trip {
     /// Un trajet en cours d'enregistrement est refusé : sa distance grandit
     /// encore, et le trajet fusionné, lui, fige la sienne au moment de la
     /// fusion — il resterait faux pour toujours.
+    ///
+    /// Un trajet qui n'est pas confirmé l'est aussi : `separate` rend ses
+    /// composants à la liste en `.confirmed`, faute de se rappeler d'où ils
+    /// venaient. Fusionner puis séparer un trajet en attente le validerait donc
+    /// sans que personne ait répondu, et un trajet de la corbeille en
+    /// ressortirait. La liste ne montre que des trajets confirmés : cette garde
+    /// ne retire rien d'atteignable, elle rend `separate` juste par
+    /// construction.
+    ///
+    /// `@MainActor` parce qu'une extension de `@Model` est nonisolated par
+    /// défaut : sans ce mot, écrire dans le contexte depuis ici est un
+    /// franchissement d'isolation que le mode Swift 6 refuse. Les deux seuls
+    /// appelants — la liste et le détail — sont déjà sur le fil principal, donc
+    /// l'annotation ne fait qu'inscrire ce qui est vrai.
+    @MainActor
     @discardableResult
     static func merge(_ trips: [Trip], in context: ModelContext) -> Trip? {
-        guard trips.count >= 2, trips.allSatisfy({ !$0.isActive }) else { return nil }
+        guard trips.count >= 2,
+              trips.allSatisfy({ !$0.isActive && $0.confirmationStatus == .confirmed })
+        else { return nil }
 
         // Relevé avant de rebrancher quoi que ce soit : `isMerged` répond par
         // les composants, et ils auront changé de trajet juste après.
@@ -82,6 +99,9 @@ extension Trip {
     /// Défait la fusion : les composants retournent dans la liste tels qu'ils en
     /// étaient partis, et le trajet qui les rassemblait disparaît — il n'avait
     /// rien à lui que la somme de ce qu'ils portent.
+    ///
+    /// `@MainActor` pour la même raison que `merge`.
+    @MainActor
     func separate(in context: ModelContext) {
         guard isMerged else { return }
         for component in orderedComponents {

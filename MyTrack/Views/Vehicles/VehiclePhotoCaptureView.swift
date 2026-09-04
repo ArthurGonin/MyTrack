@@ -61,6 +61,7 @@
 
 import PhotosUI
 import SwiftUI
+import UIKit
 
 struct VehiclePhotoCaptureView: View {
     let vehicle: Vehicle
@@ -271,8 +272,15 @@ struct VehiclePhotoCaptureView: View {
     /// Un `PhotosPicker` n'est pas un `Button` : le verre s'habille autour du
     /// symbole plutôt que de se poser sur le bouton, comme pour les deux autres.
     private var libraryButton: some View {
+        // Le symbole est écrit sur place plutôt qu'appelé depuis `symbol(_:)` :
+        // la closure de `PhotosPicker` n'est pas isolée au fil principal, et en
+        // faire sortir une vue construite là-bas est un franchissement
+        // d'isolation que le mode Swift 6 refuse.
         PhotosPicker(selection: $libraryItem, matching: .images) {
-            symbol("photo.on.rectangle")
+            Image(systemName: "photo.on.rectangle")
+                .font(.system(size: 16, weight: .semibold))
+                .foregroundStyle(.white)
+                .frame(width: 44, height: 44)
                 .glassEffect(.regular.interactive(), in: .circle)
         }
         .accessibilityLabel("Choisir une photo")
@@ -285,15 +293,30 @@ struct VehiclePhotoCaptureView: View {
             .frame(width: 44, height: 44)
     }
 
+    /// Deux situations, et deux réponses différentes : sur un appareil sans
+    /// caméra il n'y a rien à faire — la photothèque, juste en dessous, est la
+    /// sortie — alors qu'un accès refusé se répare, mais seulement dans les
+    /// Réglages d'iOS, qui ne reposent plus la question.
     private var noCameraPlaceholder: some View {
         VStack(spacing: 12) {
-            Image(systemName: "camera.fill")
+            Image(systemName: camera.isAccessDenied ? "camera.badge.ellipsis" : "camera.fill")
                 .font(.largeTitle)
                 .foregroundStyle(.white.opacity(0.5))
-            Text("L'appareil photo n'est pas disponible ici.")
+            Text(camera.isAccessDenied
+                ? "MyTrack n'a pas accès à l'appareil photo."
+                : "L'appareil photo n'est pas disponible ici.")
                 .font(.subheadline)
                 .foregroundStyle(.white.opacity(0.75))
                 .multilineTextAlignment(.center)
+            if camera.isAccessDenied {
+                Button("Ouvrir les Réglages") {
+                    if let url = URL(string: UIApplication.openSettingsURLString) {
+                        UIApplication.shared.open(url)
+                    }
+                }
+                .buttonStyle(.bordered)
+                .tint(.white)
+            }
         }
         .padding(40)
     }

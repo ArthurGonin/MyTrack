@@ -182,6 +182,22 @@ final class NotificationService: NSObject, UNUserNotificationCenterDelegate {
         }
     }
 
+    /// Retire la demande de confirmation d'un trajet, livrée comme en attente.
+    ///
+    /// À appeler dès qu'un trajet quitte `.pendingConfirmation` par un autre
+    /// chemin — l'écran de revue, typiquement. Sans ça la notification reste au
+    /// centre de notifications avec ses deux boutons, et « Oui » appuyé le
+    /// lendemain ramènerait un trajet que son propriétaire a supprimé.
+    ///
+    /// `removeDelivered` *et* `removePending` : la première a été livrée sans
+    /// déclencheur, mais rien ne garantit qu'elle l'ait été — l'app pouvait
+    /// être en train de s'éteindre.
+    func cancelTripConfirmationNotification(tripID: UUID) {
+        let identifier = tripID.uuidString
+        center.removeDeliveredNotifications(withIdentifiers: [identifier])
+        center.removePendingNotificationRequests(withIdentifiers: [identifier])
+    }
+
     func cancelReportReadyNotification(profileID: UUID) {
         center.removePendingNotificationRequests(withIdentifiers: [reportReadyIdentifier(for: profileID)])
     }
@@ -190,12 +206,18 @@ final class NotificationService: NSObject, UNUserNotificationCenterDelegate {
     /// les profils : appelée quand l'abonnement tombe, alors qu'aucun de ces
     /// rapports ne sera plus généré.
     func cancelReportReadyNotifications() {
-        center.getPendingNotificationRequests { [weak self] requests in
+        // Le centre et le préfixe sont relevés ici, sur le fil principal : la
+        // closure ci-dessous, elle, est rappelée par UserNotifications sur la
+        // sienne, et n'a pas le droit d'aller lire des propriétés d'un objet qui
+        // vit sur le fil principal.
+        let center = center
+        let prefix = Self.reportReadyIdentifierPrefix
+        center.getPendingNotificationRequests { requests in
             let identifiers = requests
                 .map(\.identifier)
-                .filter { $0.hasPrefix(Self.reportReadyIdentifierPrefix) }
+                .filter { $0.hasPrefix(prefix) }
             guard !identifiers.isEmpty else { return }
-            self?.center.removePendingNotificationRequests(withIdentifiers: identifiers)
+            center.removePendingNotificationRequests(withIdentifiers: identifiers)
         }
     }
 
@@ -272,6 +294,20 @@ final class NotificationService: NSObject, UNUserNotificationCenterDelegate {
         }
 
         guard let trip = trip(withID: idString) else { return }
+
+        // Une notification survit à ce qu'elle annonçait : celle-ci reste
+        // affichée alors que le trajet a pu être répondu dans l'app, supprimé,
+        // ou fusionné avec d'autres depuis. Répondre « Oui » ramènerait alors un
+        // trajet mis à la corbeille — et, sur un composant de fusion, le
+        // remettrait dans la liste *en plus* du trajet qui le contient déjà,
+        // doublant sa distance dans les totaux et dans les rapports.
+        //
+        // Seul un trajet encore en attente se laisse donc répondre ; pour les
+        // autres, il n'y a rien à faire que retirer une notification périmée.
+        guard trip.confirmationStatus == .pendingConfirmation else {
+            cancelTripConfirmationNotification(tripID: trip.id)
+            return
+        }
 
         switch response.actionIdentifier {
         case Self.confirmActionIdentifier:

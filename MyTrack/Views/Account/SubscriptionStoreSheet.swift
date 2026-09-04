@@ -116,7 +116,7 @@ struct SubscriptionStoreSheet: View {
             switch await purchaseService.purchase(.lifetime) {
             case .success, .userCancelled, .pending:
                 break
-            case .failed:
+            case .failed, .unavailable:
                 isLifetimePurchaseFailedAlertPresented = true
             }
         }

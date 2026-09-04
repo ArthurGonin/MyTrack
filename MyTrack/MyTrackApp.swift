@@ -52,10 +52,33 @@ struct MyTrackApp: App {
             return container
         }
 
-        AppLog.persistence.error("Store unreadable — deleting it and starting fresh.")
+        // Mis de côté, et non effacé. La différence ne se voit que le jour où
+        // elle compte : les trajets d'une année entière tiennent dans ce
+        // fichier, et rien ici ne sait dire si l'ouverture a échoué pour un
+        // schéma devenu incompatible — le cas attendu tant qu'il n'y a pas de
+        // plan de migration — ou pour un disque plein, un fichier verrouillé par
+        // un processus qui vient de mourir, une restauration à moitié faite.
+        // Effacer répondait la même chose aux deux, et la seconde réponse était
+        // définitive. Renommé, le magasin reste récupérable : à la main, ou par
+        // un futur plan de migration qui saura le relire.
         let url = configuration.url
+        let stamp = ISO8601DateFormatter().string(from: .now).replacingOccurrences(of: ":", with: "-")
+        AppLog.persistence.error("Store unreadable — moving it aside as .\(stamp, privacy: .public).bak")
         for suffix in ["", "-wal", "-shm"] {
-            try? FileManager.default.removeItem(at: URL(fileURLWithPath: url.path + suffix))
+            let file = URL(fileURLWithPath: url.path + suffix)
+            guard FileManager.default.fileExists(atPath: file.path) else { continue }
+            let archived = URL(fileURLWithPath: "\(file.path).\(stamp).bak")
+            do {
+                try FileManager.default.moveItem(at: file, to: archived)
+            } catch {
+                // Le déplacement lui-même peut échouer — disque plein, dossier en
+                // lecture seule. On efface alors, faute de mieux : sans store
+                // ouvrable, l'app ne démarre pas du tout.
+                AppLog.persistence.error(
+                    "Impossible de mettre le magasin de côté (\(error.localizedDescription, privacy: .public)) — effacement."
+                )
+                try? FileManager.default.removeItem(at: file)
+            }
         }
         if let container = try? ModelContainer(for: schema, configurations: [configuration]) {
             return container

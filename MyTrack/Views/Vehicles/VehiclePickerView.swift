@@ -41,6 +41,9 @@ struct VehiclePickerView: View {
     /// la carte de l'appareil photo se pose sur cette liste, qui reste entière
     /// et lisible au-dessus d'elle — voir `VehiclePhotoCaptureView`.
     @State private var vehicleBeingPhotographed: Vehicle?
+    /// Le véhicule qu'un balayage propose de supprimer, tant que la question
+    /// n'a pas reçu de réponse.
+    @State private var vehicleToDelete: Vehicle?
 
     private var viewModel: VehicleListViewModel {
         VehicleListViewModel(vehicleService: appServices.vehicleService)
@@ -63,9 +66,17 @@ struct VehiclePickerView: View {
                         ForEach(vehicles) { vehicle in
                             row(vehicle)
                         }
+                        // La question plutôt que le geste : supprimer un
+                        // véhicule est irréversible, détache tous ses trajets —
+                        // qui perdent leur nom et sortent de tout rapport
+                        // filtré par véhicule — et le retire des profils de
+                        // rapport qui le nommaient. Les deux autres suppressions
+                        // de l'app, le compte et un profil de rapport, demandent
+                        // déjà confirmation ; celle-ci était la seule à ne pas
+                        // le faire.
                         .onDelete { indexSet in
-                            for index in indexSet {
-                                viewModel.deleteVehicle(vehicles[index], in: modelContext)
+                            vehicleToDelete = indexSet.first.flatMap { index in
+                                vehicles.indices.contains(index) ? vehicles[index] : nil
                             }
                         }
                     }
@@ -91,6 +102,22 @@ struct VehiclePickerView: View {
             }
             .sheet(item: $vehicleBeingEdited) { vehicle in
                 EditVehicleView(vehicle: vehicle)
+            }
+            .confirmationDialog(
+                "Supprimer ce véhicule ?",
+                isPresented: Binding(
+                    get: { vehicleToDelete != nil },
+                    set: { if !$0 { vehicleToDelete = nil } }
+                ),
+                titleVisibility: .visible,
+                presenting: vehicleToDelete
+            ) { vehicle in
+                Button("Supprimer", role: .destructive) {
+                    viewModel.deleteVehicle(vehicle, in: modelContext)
+                }
+                Button("Annuler", role: .cancel) {}
+            } message: { _ in
+                Text("Vos trajets déjà enregistrés restent là, mais ils n'auront plus de véhicule.")
             }
         }
         // Sur la pile et non sur son contenu : la carte se pose au bas de la
@@ -199,15 +226,22 @@ struct VehiclePickerView: View {
     /// une photo ratée. L'effacer, plus rare, passe par l'appui long.
     @ViewBuilder
     private func photoButton(for vehicle: Vehicle) -> some View {
-        if let data = vehicle.photoData, let photo = UIImage(data: data) {
+        if vehicle.photoData != nil {
             Button {
                 openCamera(for: vehicle)
             } label: {
-                Image(uiImage: photo)
-                    .resizable()
-                    .scaledToFit()
-                    .frame(width: Self.thumbnailWidth)
-                    .clipShape(.rect(cornerRadius: 6))
+                // Décodée une fois et gardée : chaque ligne portait sinon un
+                // PNG de six mégaoctets remis à plat à chaque rendu de la
+                // feuille — voir `VehiclePhotoImage`.
+                VehiclePhotoImage(photoData: vehicle.photoData) { image in
+                    image
+                        .resizable()
+                        .scaledToFit()
+                        .frame(width: Self.thumbnailWidth)
+                        .clipShape(.rect(cornerRadius: 6))
+                } placeholder: {
+                    Color.clear.frame(width: Self.thumbnailWidth, height: Self.thumbnailWidth)
+                }
             }
             .buttonStyle(.plain)
             .accessibilityLabel("Reprendre la photo")
@@ -259,7 +293,7 @@ struct VehiclePickerView: View {
 
 #Preview {
     let container = try! ModelContainer(
-        for: Trip.self, Vehicle.self,
+        for: Trip.self, Vehicle.self, UserProfile.self, ReportProfile.self, GeneratedReport.self,
         configurations: ModelConfiguration(isStoredInMemoryOnly: true)
     )
     return VehiclePickerView(selectedVehicle: nil, onSelect: { _ in })

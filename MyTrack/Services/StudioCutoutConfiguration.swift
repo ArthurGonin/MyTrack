@@ -18,8 +18,15 @@
 //  l'oubliant remplie.
 //
 //  Le secret partagé, lui, est embarqué et c'est assumé : il n'authentifie
-//  personne, il écarte les appels au hasard. Ce sont les plafonds du proxy et
-//  celui de la clé OpenAI qui limitent vraiment les dégâts.
+//  personne, il écarte les appels au hasard.
+//
+//  Ce qui limite vraiment les dégâts, dans l'ordre : le plafond de dépense
+//  mensuel posé sur la clé OpenAI, qu'aucun appelant ne peut contourner ; puis
+//  les plafonds du proxy par adresse IP et à la minute, que Cloudflare pose
+//  lui-même. Le plafond par appareil, lui, n'en est pas un — il compte un
+//  en-tête que l'appelant choisit, et un identifiant neuf à chaque requête le
+//  remet à zéro. Il est là pour qu'une app qui déraille ne brûle pas le quota
+//  d'un foyer, pas pour tenir tête à qui aurait extrait le secret.
 //
 
 import Foundation

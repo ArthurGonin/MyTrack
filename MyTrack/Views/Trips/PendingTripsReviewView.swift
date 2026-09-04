@@ -26,7 +26,9 @@ struct PendingTripsReviewView: View {
         allTrips.filter { $0.confirmationStatus == .pendingConfirmation }
     }
 
-    private let viewModel = PendingTripsReviewViewModel()
+    private var viewModel: PendingTripsReviewViewModel {
+        PendingTripsReviewViewModel(notificationService: appServices.notificationService)
+    }
 
     var body: some View {
         NavigationStack {
@@ -74,7 +76,7 @@ struct PendingTripsReviewView: View {
 
 #Preview {
     let container = try! ModelContainer(
-        for: Trip.self, Vehicle.self,
+        for: Trip.self, Vehicle.self, UserProfile.self, ReportProfile.self, GeneratedReport.self,
         configurations: ModelConfiguration(isStoredInMemoryOnly: true)
     )
     let trip = Trip(startDate: .now.addingTimeInterval(-1800), source: .automatic, vehicle: nil)

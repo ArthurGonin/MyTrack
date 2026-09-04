@@ -59,11 +59,17 @@ struct RecordTripViewModel {
         // An automatically detected trip that has already stopped moving ends
         // where the driving ended, not now.
         let endDate = drivingDetector.ownedTripDrivingStoppedAt ?? .now
-        guard let trip = tripRecorder.finalize(endDate: endDate) else { return }
+        let trip = tripRecorder.finalize(endDate: endDate)
 
+        // Rendu dans tous les cas, y compris quand `finalize` a jeté un trajet
+        // sans un seul point dans sa fenêtre : l'état laissé derrière
+        // s'accrocherait au prochain trajet lancé à la main et le finaliserait
+        // dans le dos de l'utilisateur (voir `forgetOwnedTrip`).
+        defer { drivingDetector.forgetOwnedTrip() }
+
+        guard let trip else { return }
         trip.confirmationStatus = .confirmed
         context.saveOrLog()
-        drivingDetector.forgetOwnedTrip()
     }
 
     /// Renvoie l'état réel une fois toutes les fenêtres système répondues, et

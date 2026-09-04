@@ -20,7 +20,7 @@ extension Trip {
     /// Ensemble, et jamais un à un : croiser une consommation figée l'an dernier
     /// avec le prix du carburant d'aujourd'hui donnerait un coût que le trajet
     /// n'a jamais eu.
-    struct EnergyFigures: Equatable {
+    nonisolated struct EnergyFigures: Equatable {
         let consumption: Double
         /// Nil quand le prix n'était pas renseigné : le trajet a alors une
         /// consommation, mais pas de coût.

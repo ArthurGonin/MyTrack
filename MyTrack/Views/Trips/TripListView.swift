@@ -126,11 +126,19 @@ struct TripListView: View {
     /// Le balayage qui envoie une ligne à la corbeille, ou rien pendant la
     /// sélection : le doigt y sert à cocher, et un balayage de trop enverrait à
     /// la corbeille un trajet qu'on voulait seulement choisir.
-    private var swipeToTrash: ((IndexSet) -> Void)? {
+    ///
+    /// `rows` est la liste que la `ForEach` a effectivement affichée, et non
+    /// `trips` relu au moment du geste. Les deux ne sont pas la même : `trips`
+    /// refait son filtre et son tri à chaque lecture, et deux des huit critères
+    /// — la durée — se calculent jusqu'à *maintenant* tant qu'un trajet est en
+    /// cours. Son rang bougeait donc entre l'affichage de la ligne et le
+    /// relâchement du doigt, et le balayage envoyait à la corbeille le trajet
+    /// voisin.
+    private func swipeToTrash(in rows: [Trip]) -> ((IndexSet) -> Void)? {
         guard !isSelecting else { return nil }
         return { indexSet in
-            for index in indexSet {
-                viewModel.moveToTrash(trips[index], in: modelContext)
+            for index in indexSet where rows.indices.contains(index) {
+                viewModel.moveToTrash(rows[index], in: modelContext)
             }
         }
     }
@@ -148,13 +156,17 @@ struct TripListView: View {
                     )
                 } else {
                     List {
-                        if !trips.isEmpty {
+                        // Relevée une fois pour ce rendu : la `ForEach` et le
+                        // balayage qui la suit doivent parler de la même liste,
+                        // au même instant — voir `swipeToTrash(in:)`.
+                        let rows = trips
+                        if !rows.isEmpty {
                             Section {
-                                ForEach(trips) { trip in
+                                ForEach(rows) { trip in
                                     row(for: trip)
                                         .appCardRow()
                                 }
-                                .onDelete(perform: swipeToTrash)
+                                .onDelete(perform: swipeToTrash(in: rows))
                             }
                         } else if !confirmedTrips.isEmpty {
                             // Un filtre qui ne rend rien le dit sur place plutôt

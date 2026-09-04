@@ -9,6 +9,7 @@
 //
 
 import SwiftUI
+import OSLog
 import SwiftData
 import QuickLook
 
@@ -20,6 +21,7 @@ struct ReportsView: View {
     @Environment(\.locale) private var locale
     @State private var previewURL: URL?
     @State private var isPresentingExport = false
+    @State private var isMissingFileAlertPresented = false
 
     var body: some View {
         NavigationStack {
@@ -64,6 +66,11 @@ struct ReportsView: View {
             }
             .sheet(isPresented: $isPresentingExport) {
                 ReportExportView()
+            }
+            .alert("Rapport introuvable", isPresented: $isMissingFileAlertPresented) {
+                Button("OK", role: .cancel) {}
+            } message: {
+                Text("Le fichier PDF de ce rapport n'est plus sur cet appareil. Vous pouvez générer un nouveau rapport sur la même période.")
             }
             .accountToolbar()
         }
@@ -123,8 +130,22 @@ struct ReportsView: View {
         .accessibilityValue(isUnopened ? Text("Non ouvert") : Text(""))
     }
 
+    /// Le rapport n'est marqué lu que si son PDF est bien là pour être lu.
+    ///
+    /// Le fichier peut manquer — restauration de sauvegarde qui ne rend pas les
+    /// Documents, effacement manuel. QuickLook affiche alors une page vide, et
+    /// marquer le rapport lu au passage ferait disparaître sa pastille rouge :
+    /// l'utilisateur perdrait le seul signe qu'il n'a pas encore vu ce rapport,
+    /// pour un rapport qu'il n'a en effet pas pu voir.
     private func open(_ report: GeneratedReport) {
-        previewURL = appServices.reportGenerationService.fileURL(for: report)
+        guard let url = appServices.reportGenerationService.fileURL(for: report),
+              FileManager.default.fileExists(atPath: url.path)
+        else {
+            AppLog.reports.error("PDF introuvable pour \(report.fileName, privacy: .public).")
+            isMissingFileAlertPresented = true
+            return
+        }
+        previewURL = url
         appServices.reportGenerationService.markOpened(report, in: modelContext)
     }
 }

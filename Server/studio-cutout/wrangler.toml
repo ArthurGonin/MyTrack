@@ -7,3 +7,15 @@ compatibility_date = "2026-01-01"
 [[kv_namespaces]]
 binding = "QUOTA"
 id = "dc11363f1db948ac918c13d306840c78"
+
+# Le coupe-rafale, qui bouche ce que KV ne peut pas : sa cohérence éventuelle
+# laisserait passer cent requêtes lancées en même temps, et chacune d'elles est
+# un appel facturé à OpenAI. `period` ne vaut que 10 ou 60 secondes, d'où un
+# plafond à la minute en plus de ceux du jour.
+#
+# Facultatif : si « wrangler deploy » refuse ce bloc, le retirer suffit — le
+# worker le lit sous « if (env.BURST) » et tourne à l'identique sans lui.
+[[ratelimits]]
+name = "BURST"
+namespace_id = "1"
+simple = { limit = 2, period = 60 }

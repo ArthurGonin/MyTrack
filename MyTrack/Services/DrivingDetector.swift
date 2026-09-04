@@ -268,6 +268,22 @@ final class DrivingDetector {
         status = currentStatus
     }
 
+    /// Remet les deux préférences de la détection dans l'état d'un premier
+    /// lancement — appelée par `AppServices.eraseAllData`, qui promet une app
+    /// d'avant tout premier lancement. `disable()` a déjà éteint la
+    /// surveillance ; ici on efface ce qui reste sur le disque.
+    func resetToDefaults() {
+        isEnabled = false
+        requiresTripConfirmation = true
+        // Effacées *après* les affectations : le `didSet` de
+        // `requiresTripConfirmation` réenregistrerait sinon la clé qu'on vient
+        // d'effacer, et l'app cesserait de distinguer « jamais choisi » de
+        // « choisi ainsi » (même piège que `LanguageService.resetToSystemDefault`).
+        UserDefaults.standard.removeObject(forKey: Self.preferenceKey)
+        UserDefaults.standard.removeObject(forKey: Self.requiresConfirmationKey)
+        status = currentStatus
+    }
+
     /// Ouvre ou ferme la détection selon l'abonnement. La *préférence* de
     /// l'utilisateur (`isEnabled`) n'est jamais touchée : reprendre son
     /// abonnement doit faire repartir la détection sans avoir à re-basculer un

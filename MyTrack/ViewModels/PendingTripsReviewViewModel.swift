@@ -12,13 +12,20 @@ import Foundation
 import SwiftData
 
 struct PendingTripsReviewViewModel {
+    /// Pour retirer la notification du trajet qu'on vient de trancher : elle
+    /// reste sinon au centre de notifications avec ses boutons Oui/Non, et
+    /// « Oui » appuyé le lendemain ramènerait un trajet supprimé.
+    let notificationService: NotificationService
+
     func confirm(_ trip: Trip, in context: ModelContext) {
         trip.confirmationStatus = .confirmed
         context.saveOrLog()
+        notificationService.cancelTripConfirmationNotification(tripID: trip.id)
     }
 
     func discard(_ trip: Trip, in context: ModelContext) {
         trip.confirmationStatus = .deleted
         context.saveOrLog()
+        notificationService.cancelTripConfirmationNotification(tripID: trip.id)
     }
 }

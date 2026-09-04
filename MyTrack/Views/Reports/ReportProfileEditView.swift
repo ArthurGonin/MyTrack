@@ -22,7 +22,37 @@ struct ReportProfileEditView: View {
     @Query(sort: \Vehicle.name) private var allVehicles: [Vehicle]
     @State private var isDeleteConfirmationPresented = false
 
+    /// Vrai dès que « Supprimer ce profil » a été touché.
+    ///
+    /// Même précaution que dans `TripDetailView` : la suppression efface le
+    /// profil que cet écran montre, mais l'écran met le temps d'une animation à
+    /// se retirer — et SwiftUI le redessine pendant ce temps-là. Relire alors la
+    /// moindre propriété d'un profil effacé ferme l'app (« This model instance
+    /// was invalidated because its backing data could no longer be found in the
+    /// store »). Le corps se vide donc d'un coup, et ce qui glisse hors de
+    /// l'écran est le fond gris de l'app.
+    @State private var isDeleted = false
+
     var body: some View {
+        Group {
+            if isDeleted {
+                Color.clear
+            } else {
+                form
+            }
+        }
+        .appBackground()
+        .confirmationDialog(
+            "Supprimer ce profil ?",
+            isPresented: $isDeleteConfirmationPresented,
+            titleVisibility: .visible
+        ) {
+            Button("Supprimer", role: .destructive) { deleteProfile() }
+            Button("Annuler", role: .cancel) {}
+        }
+    }
+
+    private var form: some View {
         Form {
             Section {
                 TextField("Nom du profil", text: Binding(
@@ -88,7 +118,6 @@ struct ReportProfileEditView: View {
                 }
             }
         }
-        .appBackground()
         // Le nom du profil est une donnée, pas du texte d'interface : seul le
         // titre de remplacement se traduit. Résolu ici plutôt que par
         // `navigationTitle("…")`, qui ne se relit pas au changement de langue.
@@ -102,14 +131,6 @@ struct ReportProfileEditView: View {
             ToolbarItem(placement: .confirmationAction) {
                 Button("OK") { dismiss() }
             }
-        }
-        .confirmationDialog(
-            "Supprimer ce profil ?",
-            isPresented: $isDeleteConfirmationPresented,
-            titleVisibility: .visible
-        ) {
-            Button("Supprimer", role: .destructive) { deleteProfile() }
-            Button("Annuler", role: .cancel) {}
         }
     }
 
@@ -138,8 +159,12 @@ struct ReportProfileEditView: View {
         updateVehicles(vehicles)
     }
 
+    /// Le rappel déjà programmé porte le nom du profil dans son texte : sans
+    /// cette reprogrammation, « Le rapport "Nouveau rapport périodique" est
+    /// prêt » arrivait des semaines après que l'utilisateur l'a renommé.
     private func updateName(_ name: String) {
         appServices.reportProfileService.updateName(name, for: profile, in: modelContext)
+        rescheduleNotification()
     }
 
     private func updatePeriodicity(_ periodicity: ReportPeriodicity) {
@@ -171,10 +196,14 @@ struct ReportProfileEditView: View {
         }
     }
 
+    /// Dans cet ordre, et pas un autre : le corps cesse de lire le profil,
+    /// l'écran se retire, et le profil s'efface enfin — voir `isDeleted`.
     private func deleteProfile() {
-        appServices.notificationService.cancelReportReadyNotification(profileID: profile.id)
-        appServices.reportProfileService.deleteProfile(profile, in: modelContext)
+        let profileID = profile.id
+        isDeleted = true
         dismiss()
+        appServices.notificationService.cancelReportReadyNotification(profileID: profileID)
+        appServices.reportProfileService.deleteProfile(profile, in: modelContext)
     }
 }
 

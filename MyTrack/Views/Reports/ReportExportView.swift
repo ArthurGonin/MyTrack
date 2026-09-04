@@ -107,53 +107,26 @@ struct ReportExportView: View {
         return Calendar.current.date(byAdding: .day, value: 1, to: startOfEndDay) ?? startOfEndDay
     }
 
+    /// Créer un rapport fait partie de ce que l'abonnement paie, au même titre
+    /// que l'enregistrement d'un trajet — et comme les rapports périodiques, que
+    /// `RootTabView` passe sans les générer quand l'abonnement est tombé. Les
+    /// deux chemins disaient jusqu'ici le contraire l'un de l'autre : celui-ci
+    /// exportait sans rien demander.
+    ///
+    /// Ce qui existe déjà reste accessible : la liste des rapports s'ouvre, et
+    /// leurs PDF aussi. On ne prend pas en otage ce qui a été produit.
+    private var canGenerate: Bool { appServices.purchaseService.canRecordTrips }
+
     var body: some View {
         NavigationStack {
-            Form {
-                Picker("Mode", selection: $mode) {
-                    ForEach(ExportMode.allCases, id: \.self) { mode in
-                        Text(mode.label).tag(mode)
-                    }
-                }
-                .pickerStyle(.segmented)
-                .listRowSeparator(.hidden)
-
-                if !allVehicles.isEmpty {
-                    Section {
-                        vehicleSelectionRow(title: Text("Tous les véhicules"), isSelected: selectedVehicleIDs.isEmpty) {
-                            selectedVehicleIDs.removeAll()
-                        }
-                        ForEach(allVehicles) { vehicle in
-                            vehicleSelectionRow(
-                                title: Text(vehicle.name),
-                                isSelected: selectedVehicleIDs.contains(vehicle.persistentModelID)
-                            ) {
-                                toggleVehicle(vehicle)
-                            }
-                        }
-                    } header: {
-                        Text("Véhicules")
-                    }
-                }
-
-                switch mode {
-                case .dateRange:
-                    Section {
-                        DatePicker("Début", selection: $startDate, displayedComponents: .date)
-                        DatePicker("Fin", selection: $endDate, displayedComponents: .date)
-                    } footer: {
-                        Text(dateRangeFooter)
-                    }
-                case .manualSelection:
-                    Section {
-                        if confirmedTrips.isEmpty {
-                            ContentUnavailableView("Aucun trajet", systemImage: "map")
-                        } else {
-                            ForEach(confirmedTrips) { trip in
-                                tripSelectionRow(trip)
-                            }
-                        }
-                    }
+            Group {
+                if canGenerate {
+                    form
+                } else {
+                    SubscriptionRequiredView(
+                        description: "La création de rapports nécessite un abonnement actif. Vos rapports déjà générés restent accessibles.",
+                        billingIssueDescription: "Votre abonnement n'a pas pu être renouvelé : vous ne pouvez plus créer de rapport. Vos rapports déjà générés restent accessibles."
+                    )
                 }
             }
             .appBackground()
@@ -162,12 +135,17 @@ struct ReportExportView: View {
                 ToolbarItem(placement: .cancellationAction) {
                     Button("Annuler") { dismiss() }
                 }
-                ToolbarItem(placement: .confirmationAction) {
-                    if isGenerating {
-                        ProgressView()
-                    } else {
-                        Button("Générer") { generate() }
-                            .disabled(tripsToExport.isEmpty)
+                // Rien à générer sans abonnement : le bouton disparaît plutôt
+                // que de rester là, éteint, à côté d'un écran qui explique déjà
+                // pourquoi.
+                if canGenerate {
+                    ToolbarItem(placement: .confirmationAction) {
+                        if isGenerating {
+                            ProgressView()
+                        } else {
+                            Button("Générer") { generate() }
+                                .disabled(tripsToExport.isEmpty)
+                        }
                     }
                 }
             }
@@ -182,6 +160,56 @@ struct ReportExportView: View {
                     fileURL: appServices.reportGenerationService.fileURL(for: report),
                     onDone: { dismiss() }
                 )
+            }
+        }
+    }
+
+    private var form: some View {
+        Form {
+            Picker("Mode", selection: $mode) {
+                ForEach(ExportMode.allCases, id: \.self) { mode in
+                    Text(mode.label).tag(mode)
+                }
+            }
+            .pickerStyle(.segmented)
+            .listRowSeparator(.hidden)
+
+            if !allVehicles.isEmpty {
+                Section {
+                    vehicleSelectionRow(title: Text("Tous les véhicules"), isSelected: selectedVehicleIDs.isEmpty) {
+                        selectedVehicleIDs.removeAll()
+                    }
+                    ForEach(allVehicles) { vehicle in
+                        vehicleSelectionRow(
+                            title: Text(vehicle.name),
+                            isSelected: selectedVehicleIDs.contains(vehicle.persistentModelID)
+                        ) {
+                            toggleVehicle(vehicle)
+                        }
+                    }
+                } header: {
+                    Text("Véhicules")
+                }
+            }
+
+            switch mode {
+            case .dateRange:
+                Section {
+                    DatePicker("Début", selection: $startDate, displayedComponents: .date)
+                    DatePicker("Fin", selection: $endDate, displayedComponents: .date)
+                } footer: {
+                    Text(dateRangeFooter)
+                }
+            case .manualSelection:
+                Section {
+                    if confirmedTrips.isEmpty {
+                        ContentUnavailableView("Aucun trajet", systemImage: "map")
+                    } else {
+                        ForEach(confirmedTrips) { trip in
+                            tripSelectionRow(trip)
+                        }
+                    }
+                }
             }
         }
     }
@@ -246,7 +274,7 @@ struct ReportExportView: View {
     }
 
     private func generate() {
-        guard !isGenerating else { return }
+        guard canGenerate, !isGenerating else { return }
         isGenerating = true
 
         let trips = tripsToExport

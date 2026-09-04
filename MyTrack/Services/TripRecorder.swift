@@ -108,22 +108,59 @@ final class TripRecorder {
     /// driving actually stopped (not when the stop-confirmation window ends).
     /// Returns the finalized trip so DrivingDetector can schedule a
     /// confirmation notification for it.
+    ///
+    /// La trace est ramenée à la fenêtre du trajet, et la distance recalculée
+    /// dessus. C'est tout l'écart entre les deux appelants : le mode manuel
+    /// termine à `.now`, donc rien n'est retiré, tandis que la détection
+    /// automatique termine au moment où la conduite s'est arrêtée — cinq minutes
+    /// avant, le temps de la fenêtre de confirmation d'arrêt, pendant laquelle
+    /// le GPS tournait encore. Les points de ces cinq minutes-là étaient comptés
+    /// dans la distance sans l'être dans la durée : trois cents mètres à pied
+    /// entre la voiture et le bureau s'ajoutaient à chaque trajet, et un rapport
+    /// de frais kilométriques les facturait.
     @discardableResult
     func finalize(endDate: Date) -> Trip? {
         guard let trip = activeTrip else { return nil }
         locationService.stopActiveTracking()
         locationService.onLocationUpdate = nil
 
-        trip.endDate = endDate
-        if let last = lastAcceptedLocation {
-            trip.endLatitude = last.coordinate.latitude
-            trip.endLongitude = last.coordinate.longitude
+        let recorded = trip.routePoints.filter { $0.timestamp <= endDate }
+
+        // Rien avant la fin de la conduite : le GPS n'avait rien accroché de la
+        // course elle-même. Il n'y a ni trace ni distance à garder, et un trajet
+        // de zéro kilomètre n'a rien à faire dans une liste — même raison que la
+        // garde de `DrivingDetector.finalizeTrip`.
+        guard let last = recorded.last else {
+            modelContext.delete(trip)
+            modelContext.saveOrLog()
+            resetState()
+            return nil
         }
-        trip.distanceMeters = currentDistanceMeters
+
+        trip.endDate = endDate
+        trip.routePoints = recorded
+        trip.distanceMeters = Self.distance(over: recorded)
+        trip.endLatitude = last.latitude
+        trip.endLongitude = last.longitude
         modelContext.saveOrLog()
 
         resetState()
         return trip
+    }
+
+    /// La longueur d'une trace, point à point.
+    ///
+    /// Le même calcul que celui qu'accumule `handle(_:)` — `CLLocation.distance`
+    /// sur des points consécutifs — donc le même résultat quand rien n'est
+    /// retiré : la distance enregistrée ne saute pas par rapport à celle qui
+    /// s'affichait pendant la course.
+    private static func distance(over points: [RoutePoint]) -> Double {
+        guard points.count >= 2 else { return 0 }
+        return zip(points, points.dropFirst()).reduce(0) { total, pair in
+            let from = CLLocation(latitude: pair.0.latitude, longitude: pair.0.longitude)
+            let to = CLLocation(latitude: pair.1.latitude, longitude: pair.1.longitude)
+            return total + from.distance(from: to)
+        }
     }
 
     private func resetState() {
