@@ -50,7 +50,22 @@ stricte, sans un avertissement), pas par un lancement. À exercer une fois :
 
 - [ ] Supprimer un profil de rapport depuis ses réglages — c'était un crash.
 - [ ] Un trajet auto-détecté de bout en bout : vérifier que **distance et durée décrivent la
-      même fenêtre** (les 5 minutes de la fenêtre d'arrêt étaient comptées dans la distance).
+      même fenêtre** (les minutes de la fenêtre d'arrêt étaient comptées dans la distance).
+- [ ] **Les nouveaux seuils de la détection.** Un trajet est réel s'il fait plus de 300 m — la
+      durée ne compte plus — et la fenêtre d'arrêt vaut 90 s si Core Motion dit qu'on marche,
+      3 min s'il dit seulement qu'on ne bouge plus. À exercer : se garer et s'éloigner à pied
+      (la notification doit arriver dans la minute et demie, pas cinq minutes plus tard) ;
+      déplacer la voiture sur cent mètres (rien ne doit apparaître) ; s'arrêter cinq minutes en
+      chemin (deux trajets, à fusionner si on veut — c'est délibéré, un trajet d'un seul tenant
+      étant insécable).
+- [ ] **Un vrai trajet, téléphone verrouillé dans la poche.** Le GPS enregistre désormais en
+      continu (une mesure par seconde) au lieu d'un point tous les dix mètres, et rien de ce
+      qui rend ça possible ne s'exerce au simulateur : ni la suspension de l'app, ni Core
+      Motion, ni la session d'activité en arrière-plan. Deux chiffres à lire dans la Console,
+      catégorie `recording` : la ligne « Trip finalized: N GPS point(s) over Ns » — N doit
+      valoir à peu près la durée en secondes, pas une dizaine — et l'absence de « No location
+      delivered for Ns ». La pastille bleue doit rester allumée tout le trajet ; si elle
+      s'éteint, c'est l'arrière-plan qu'il faut regarder, pas le filtre.
 - [ ] Répondre « Non » dans l'écran de revue, puis appuyer « Oui » sur la notification restée
       affichée : le trajet ne doit **pas** revenir.
 - [ ] Supprimer le compte, relancer : langue et unité doivent repartir sur celles du système.

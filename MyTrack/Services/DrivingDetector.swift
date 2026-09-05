@@ -4,17 +4,31 @@
 //
 //  State machine that turns raw Core Motion activity samples into
 //  start/discard/stop decisions for an automatic trip, driving the shared
-//  TripRecorder. GPS starts the instant automotive activity is first seen;
-//  if driving doesn't last 60s the trip is discarded as noise. Past that
-//  point, ending requires 5 minutes of continuous non-automotive activity,
-//  and GPS keeps running through that window so the route isn't cut if
-//  driving resumes (traffic light, ferry, etc).
+//  TripRecorder. GPS starts the instant automotive activity is first seen.
+//
+//  Both of this machine's verdicts pick the recoverable mistake over the
+//  unrecoverable one, because the app can undo exactly one of each pair. A
+//  trip recorded as one piece cannot be split — `Trip.separate` only undoes a
+//  *merge* — while two trips can be joined in a tap; and a discarded trip is
+//  gone without trace, while a spurious one costs one "Non" on a notification.
+//  So: keep rather than discard, and cut rather than swallow.
+//
+//  What makes a trip real is therefore the distance covered, not the time
+//  elapsed (see `TripRecorder.minimumAutomaticTripDistance`), and how long a
+//  stop is given to prove itself depends on what Core Motion actually says —
+//  see `StopReason`. GPS keeps running through that window so the route isn't
+//  cut if driving resumes.
 //
 //  Core Motion only reports activity *changes*, so no decision may rely on a
 //  further sample arriving: a steady drive can produce a single automotive
 //  sample, and a parked phone left perfectly still produces none at all. Every
 //  deadline below is therefore evaluated against wall-clock time and re-armed
 //  on a timer, never counted in samples.
+//
+//  Nor may a decision rely on having *seen* the samples that did arrive: iOS
+//  suspends the app, and the live callbacks of that stretch are simply missed.
+//  A trip in progress therefore re-reads the activity record itself, on a
+//  timer, and trusts that over what it happens to have been told.
 //
 
 import Foundation
@@ -84,9 +98,45 @@ final class DrivingDetector {
     /// the user started by hand is never silently finalized — nor notified
     /// about as if it had been detected automatically.
     private var recordingStartedAt: Date?
-    private var stopCandidateSince: Date?
+    private var pendingStop: PendingStop?
     private var pendingDecisionTask: Task<Void, Never>?
+    private var drivingRecheckTask: Task<Void, Never>?
     private var isMonitoring = false
+
+    /// Ce que Core Motion a dit pour ouvrir la fenêtre d'arrêt.
+    ///
+    /// Les deux réponses possibles n'ont pas du tout la même valeur, et
+    /// l'app les traitait pareil :
+    ///
+    /// - « je marche » (ou je cours, ou je pédale) après « en voiture » ne
+    ///   veut dire qu'une chose : la personne est sortie du véhicule. Il n'y a
+    ///   rien à attendre.
+    /// - « je ne bouge plus » ne tranche rien : c'est un feu rouge, un
+    ///   bouchon, un passage à niveau — ou une voiture garée dans laquelle on
+    ///   reste assis. Là, il faut de la patience.
+    ///
+    /// Une seule fenêtre pour les deux devait donc être taillée pour le cas
+    /// ambigu, et le cas courant — se garer, sortir, s'en aller — payait cette
+    /// patience-là pour rien : cinq minutes de GPS après chaque trajet, et une
+    /// notification « avez-vous fait ce trajet ? » qui arrivait cinq minutes
+    /// après qu'on avait cessé d'y penser.
+    private enum StopReason {
+        case leftTheVehicle
+        case ambiguous
+
+        init(isMovingUnderOwnPower: Bool) {
+            self = isMovingUnderOwnPower ? .leftTheVehicle : .ambiguous
+        }
+    }
+
+    /// L'arrêt en cours d'évaluation : depuis quand, et sur quel signal.
+    ///
+    /// Les deux ensemble plutôt que deux propriétés côte à côte : elles sont
+    /// posées et effacées d'un seul geste, et rien ne peut les désynchroniser.
+    private struct PendingStop {
+        let since: Date
+        let reason: StopReason
+    }
 
     /// Les deux fenêtres système à enchaîner pour atteindre « Toujours ».
     ///
@@ -158,12 +208,53 @@ final class DrivingDetector {
     /// short enough that the reading still describes now.
     private static let recentActivityLookback: TimeInterval = 300
 
-    private static let startValidationWindow: TimeInterval = 60
-    private static let stopConfirmationWindow: TimeInterval = 300
-    /// How long non-automotive activity must persist before a trip too short to
-    /// be validated is thrown away. Without it, a red light 30 seconds after
-    /// departure would discard a real trip that is only just starting.
-    private static let discardGraceWindow: TimeInterval = 60
+    /// Ce qu'on attend, la conduite arrêtée, avant de clore le trajet.
+    ///
+    /// Deux valeurs et non une, parce que la question posée n'est pas la même
+    /// — voir `StopReason`. La personne a quitté la voiture : quatre-vingt-dix
+    /// secondes suffisent, le temps qu'elle y revienne si elle avait juste
+    /// fait le tour du véhicule. Elle est seulement immobile : trois minutes,
+    /// de quoi passer un feu rouge interminable ou un passage à niveau.
+    ///
+    /// Trois minutes et non cinq, parce que la fenêtre longue prenait un pari
+    /// irréversible pour en éviter un réversible : cinq minutes avalent un
+    /// arrêt à la station-service ou un dépôt à l'école, et le trajet unique
+    /// qui en sort ne peut plus être coupé — alors que deux trajets se
+    /// fusionnent d'un geste, et se re-séparent ensuite.
+    private static let stopWindowOnFoot: TimeInterval = 90
+    private static let stopWindowStandingStill: TimeInterval = 180
+
+    private static func stopWindow(for reason: StopReason) -> TimeInterval {
+        switch reason {
+        case .leftTheVehicle: stopWindowOnFoot
+        case .ambiguous: stopWindowStandingStill
+        }
+    }
+
+    /// Vrai quand l'échantillon dit que la personne se déplace par ses propres
+    /// moyens. Le pendant vivant de `DrivingReading.isMovingUnderOwnPower`,
+    /// pour que la politique soit écrite une seule fois.
+    private static func isMovingUnderOwnPower(_ activity: CMMotionActivity) -> Bool {
+        activity.walking || activity.running || activity.cycling
+    }
+
+    /// Tous les combien, trajet en cours, on va relire l'historique de Core
+    /// Motion au lieu d'attendre qu'il parle.
+    ///
+    /// Un échantillon vivant n'arrive que si l'app tourne. Suspendue — ce
+    /// qu'iOS fait sans prévenir — elle ne voit rien passer, et se retrouve
+    /// dans l'un des deux mauvais états : elle croit la conduite finie sur un
+    /// échantillon dépassé, et coupe le trajet et le GPS en pleine route ; ou
+    /// elle la croit en cours longtemps après l'arrêt, et laisse le GPS
+    /// tourner. La requête d'historique, elle, est complète quoi qu'il soit
+    /// arrivé à l'app : c'est la seule lecture sur laquelle on puisse compter.
+    ///
+    /// Une minute : assez rare pour ne rien coûter, assez fréquent pour qu'une
+    /// relecture tombe toujours à l'intérieur de la plus courte des fenêtres
+    /// d'arrêt. C'est cette relecture qui rend ces fenêtres raccourcissables :
+    /// sans elle, une fenêtre courte couperait des trajets en deux sur un
+    /// échantillon que l'app, suspendue, n'aurait pas vu se démentir.
+    private static let drivingRecheckInterval: Duration = .seconds(60)
     private static let preferenceKey = "isAutoDetectionEnabled"
     private static let requiresConfirmationKey = "autoDetectionRequiresConfirmation"
 
@@ -341,7 +432,7 @@ final class DrivingDetector {
     /// app end the trip where the driving ended, rather than padding it with
     /// the minutes spent parked inside the stop-confirmation window.
     var ownedTripDrivingStoppedAt: Date? {
-        recordingStartedAt == nil ? nil : stopCandidateSince
+        recordingStartedAt == nil ? nil : pendingStop?.since
     }
 
     /// Call when the trip this detector started was ended from somewhere else —
@@ -522,6 +613,8 @@ final class DrivingDetector {
     private func resetState() {
         recordingStartedAt = nil
         clearPendingDecision()
+        drivingRecheckTask?.cancel()
+        drivingRecheckTask = nil
         // Le trajet qui était en cours quand l'abonnement est tombé vient de se
         // terminer : c'est ici, et pas avant, qu'on cesse de surveiller.
         if !hasRecordingAccess, isMonitoring {
@@ -545,45 +638,76 @@ final class DrivingDetector {
         // belongs to the user until they stop it by hand.
         guard recordingStartedAt != nil, tripRecorder.isRecording else { return }
 
-        if stopCandidateSince == nil {
-            stopCandidateSince = Date()
-        }
+        noteStop(at: Date(), reason: StopReason(isMovingUnderOwnPower: Self.isMovingUnderOwnPower(activity)))
         evaluatePendingDecision()
+    }
+
+    /// Ouvre la fenêtre d'arrêt, ou lève son ambiguïté si elle est déjà ouverte.
+    ///
+    /// L'heure ne bouge jamais une fois posée : la conduite a cessé au premier
+    /// échantillon, et c'est cette heure-là qui datera la fin du trajet. Mais
+    /// un « je marche » qui arrive après un « je ne bouge plus » apprend
+    /// quelque chose — la personne est sortie — et raccourcit l'attente. Sans
+    /// ça, se garer puis descendre de voiture trente secondes plus tard
+    /// gardait la patience du cas ambigu alors que le doute était levé.
+    ///
+    /// L'inverse n'existe pas : une fois qu'on sait la personne sortie, un
+    /// « immobile » qui suit ne le défait pas. Ce qui défait un arrêt, c'est un
+    /// « en voiture », et il l'annule entièrement.
+    private func noteStop(at date: Date, reason: StopReason) {
+        guard let pending = pendingStop else {
+            pendingStop = PendingStop(since: date, reason: reason)
+            AppLog.recording.notice(
+                "Driving stopped — ending the trip in \(Int(Self.stopWindow(for: reason)))s unless it resumes."
+            )
+            return
+        }
+        guard case .ambiguous = pending.reason, case .leftTheVehicle = reason else { return }
+        pendingStop = PendingStop(since: pending.since, reason: reason)
+        AppLog.recording.notice("The driver has left the vehicle — shortening the stop window.")
     }
 
     /// Decides what to do with a trip whose driving activity has stopped.
     /// Runs both on each new activity sample and from a timer, because a
     /// stopped phone may never produce another sample: without the timer a
     /// trip could stay open — GPS running — indefinitely.
+    ///
+    /// Une seule fenêtre commande les deux issues, garder ou jeter. C'étaient
+    /// deux durées distinctes, et la plus courte des deux — soixante secondes
+    /// avant de jeter — s'est révélée fausse le jour où la validation est
+    /// passée à la distance : un bouchon parcouru sur cent mètres n'atteint
+    /// pas le seuil, et se serait fait effacer au bout d'une minute d'arrêt.
+    /// La question « la conduite a-t-elle vraiment cessé ? » est pourtant la
+    /// même dans les deux cas ; seul ce qu'on en fait ensuite diffère.
     private func evaluatePendingDecision() {
-        guard let startedAt = recordingStartedAt,
-              let candidateStart = stopCandidateSince,
+        guard recordingStartedAt != nil,
+              let stop = pendingStop,
               tripRecorder.isRecording
         else {
             return
         }
 
-        let drivenDuration = candidateStart.timeIntervalSince(startedAt)
-        let stoppedFor = Date().timeIntervalSince(candidateStart)
-
-        guard drivenDuration >= Self.startValidationWindow else {
-            // Too short to be a real trip yet — but wait out the grace window
-            // in case driving simply paused rather than ended.
-            if stoppedFor >= Self.discardGraceWindow {
-                AppLog.recording.notice("Discarding an automatic trip: driving lasted under the validation window.")
-                tripRecorder.discard()
-                resetState()
-            } else {
-                scheduleDecision(after: Self.discardGraceWindow - stoppedFor)
-            }
+        let stoppedFor = Date().timeIntervalSince(stop.since)
+        let window = Self.stopWindow(for: stop.reason)
+        guard stoppedFor >= window else {
+            scheduleDecision(after: window - stoppedFor)
             return
         }
 
-        if stoppedFor >= Self.stopConfirmationWindow {
-            finalizeTrip(endDate: candidateStart)
-        } else {
-            scheduleDecision(after: Self.stopConfirmationWindow - stoppedFor)
+        // Relue maintenant, et non figée à l'ouverture de la fenêtre : un
+        // trajet peut avoir franchi le seuil entre-temps, la conduite ayant
+        // repris sans que l'app le voie passer.
+        let distance = tripRecorder.currentDistanceMeters
+        guard distance >= TripRecorder.minimumAutomaticTripDistance else {
+            AppLog.recording.notice(
+                "Discarding an automatic trip: \(Int(distance))m covered, under the \(Int(TripRecorder.minimumAutomaticTripDistance))m floor."
+            )
+            tripRecorder.discard()
+            resetState()
+            return
         }
+
+        finalizeTrip(endDate: stop.since)
     }
 
     private func scheduleDecision(after delay: TimeInterval) {
@@ -598,7 +722,7 @@ final class DrivingDetector {
     private func clearPendingDecision() {
         pendingDecisionTask?.cancel()
         pendingDecisionTask = nil
-        stopCandidateSince = nil
+        pendingStop = nil
     }
 
     private func startProvisionalTrip() {
@@ -615,6 +739,67 @@ final class DrivingDetector {
 
         recordingStartedAt = Date()
         clearPendingDecision()
+        armDrivingRecheck()
+    }
+
+    /// Relit l'activité de Core Motion à intervalle régulier tant qu'un trajet
+    /// est en cours. Voir `drivingRecheckInterval` pour ce qu'il corrige.
+    private func armDrivingRecheck() {
+        drivingRecheckTask?.cancel()
+        drivingRecheckTask = Task { [weak self] in
+            while !Task.isCancelled {
+                try? await Task.sleep(for: Self.drivingRecheckInterval)
+                guard !Task.isCancelled, let self else { return }
+                await recheckDriving()
+            }
+        }
+    }
+
+    /// Confronte l'état du trajet à ce que Core Motion a réellement enregistré.
+    ///
+    /// Deux corrections, symétriques :
+    ///
+    /// - on roule encore, mais un arrêt est en attente : l'échantillon qui l'a
+    ///   ouvert est dépassé — un feu rouge, une reprise que l'app suspendue n'a
+    ///   pas vue. L'annuler évite de couper le trajet, et le GPS avec lui, en
+    ///   pleine route.
+    /// - on ne roule plus, et rien n'est en attente : aucun échantillon n'est
+    ///   venu le dire. Ouvrir la fenêtre d'arrêt maintenant, au moment où la
+    ///   conduite a vraiment cessé et non maintenant, évite de laisser le GPS
+    ///   tourner jusqu'au prochain réveil — et de facturer le trajet jusque-là.
+    private func recheckDriving() async {
+        guard ownsTripInProgress, let startedAt = recordingStartedAt else { return }
+
+        // On remonte jusqu'au début du trajet, et non sur une fenêtre fixe : la
+        // bascule qu'on cherche a forcément eu lieu après lui, et l'app a pu
+        // rester suspendue longtemps entre-temps. Sur cinq minutes glissantes,
+        // un arrêt vieux d'un quart d'heure sortait de la fenêtre : la lecture
+        // ne trouvait plus rien d'automobile dedans et datait la fin du trajet
+        // du bord de la fenêtre — dix minutes de stationnement comptées comme
+        // de la route. La requête reste bon marché, Core Motion n'enregistrant
+        // que des changements.
+        let lookback = max(Self.recentActivityLookback, Date().timeIntervalSince(startedAt))
+        let reading = await motionActivityService.recentDriving(lookingBack: lookback)
+        // Conditions can have changed while the query was in flight.
+        guard ownsTripInProgress else { return }
+
+        if reading.isAutomotive {
+            guard pendingStop != nil else { return }
+            AppLog.recording.notice("Core Motion still reads automotive — cancelling the pending stop.")
+            clearPendingDecision()
+            return
+        }
+
+        // Rien d'exploitable dans la fenêtre : Core Motion n'a rien à dire, et
+        // deviner à sa place fermerait un trajet bien vivant.
+        guard let stoppedAt = reading.stoppedAt else { return }
+        // Jamais avant le début du trajet : un arrêt daté d'avant ferait une
+        // durée négative, et `finalize` ne garderait pas un seul point.
+        noteStop(
+            at: max(stoppedAt, recordingStartedAt ?? stoppedAt),
+            reason: StopReason(isMovingUnderOwnPower: reading.isMovingUnderOwnPower)
+        )
+        evaluatePendingDecision()
     }
 
     private func finalizeTrip(endDate: Date) {
