@@ -18,6 +18,12 @@ struct RecordTripView: View {
     @Query private var userProfiles: [UserProfile]
     @State private var isPermissionDeniedAlertPresented = false
     @State private var isPresentingVehiclePicker = false
+    /// Le véhicule dont l'appareil photo doit se lever en même temps que la
+    /// feuille des véhicules. Renseigné par l'invitation à photographier, et
+    /// remis à nil par le sélecteur de la barre : les deux ouvrent la même
+    /// feuille, mais l'une la veut avec l'appareil photo déjà levé et l'autre
+    /// sur sa liste.
+    @State private var vehicleToPhotographOnOpen: Vehicle?
     /// Set when the start slider could only raise the location prompt, so the
     /// answer — whenever it comes — resumes what the user actually asked for.
     @State private var isAwaitingLocationPermission = false
@@ -38,6 +44,10 @@ struct RecordTripView: View {
     /// Celle des chiffres des tuiles. Même raison qu'au-dessus : une taille en
     /// points ne suivrait pas les réglages d'accessibilité.
     @ScaledMetric(relativeTo: .title) private var tileValueSize: CGFloat = 32
+
+    /// Celle du symbole de l'invitation à photographier, pour la même raison
+    /// que les deux précédentes.
+    @ScaledMetric(relativeTo: .largeTitle) private var invitationSymbolSize: CGFloat = 56
 
     /// La gélule de la barre d'onglets, quand on a pu la mesurer : c'est elle
     /// que le bouton Démarrer épouse au repos. `nil` tant qu'on ne l'a pas lue
@@ -151,6 +161,10 @@ struct RecordTripView: View {
                     // Le même bouton que dans la liste des trajets, au mot près :
                     // voir `VehicleToolbarButton`.
                     VehicleToolbarButton(vehicle: selectedVehicle, placeholder: "Aucun véhicule") {
+                        // Remis à zéro : on vient changer de véhicule, pas en
+                        // photographier un — c'est la même feuille, mais pas la
+                        // même intention.
+                        vehicleToPhotographOnOpen = nil
                         isPresentingVehiclePicker = true
                     }
                 }
@@ -219,7 +233,10 @@ struct RecordTripView: View {
                 Text("Autorisez l'accès à la position dans Réglages pour enregistrer un trajet.")
             }
             .sheet(isPresented: $isPresentingVehiclePicker) {
-                VehiclePickerView(selectedVehicle: selectedVehicle) { vehicle in
+                VehiclePickerView(
+                    selectedVehicle: selectedVehicle,
+                    photographing: vehicleToPhotographOnOpen
+                ) { vehicle in
                     viewModel.selectVehicle(vehicle, in: modelContext)
                 }
             }
@@ -472,42 +489,180 @@ struct RecordTripView: View {
         abs(ratio).formatted(.percent.precision(.fractionLength(0)).locale(locale))
     }
 
-    /// La voiture du véhicule choisi si elle a été photographiée, le dessin
-    /// sinon. Les deux sortent du même normalisateur, donc du même cadre : le
-    /// bloc garde sa hauteur et rien ne saute en changeant de véhicule.
+    /// La voiture du véhicule choisi si elle a été photographiée, l'invitation
+    /// à la photographier sinon.
     ///
-    /// Passe par `VehiclePhotoImage` plutôt que de décoder ici : ce corps est
+    /// Le choix se fait sur `photoData` et non sur l'image une fois décodée,
+    /// bien que `VehiclePhotoImage` propose exactement cette bascule-là : le
+    /// décodage a lieu *après* le premier rendu, et un véhicule qui a bien sa
+    /// photo aurait donc montré l'invitation le temps d'une image — « Prenez
+    /// votre véhicule en photo » clignotant devant une voiture déjà
+    /// photographiée. Le temps du décodage, c'est la place de la photo qui est
+    /// gardée, vide.
+    ///
+    /// Passe quand même par `VehiclePhotoImage` pour décoder : ce corps est
     /// réévalué à chaque point GPS reçu, et le PNG fait six mégaoctets une fois
     /// décodé.
     @ViewBuilder
-    private var carImage: some View {
-        VehiclePhotoImage(photoData: selectedVehicle?.photoData) { image in
-            image.resizable().scaledToFit()
-        } placeholder: {
-            Image("HomeCar").resizable().scaledToFit()
-        }
-    }
-
-    /// La voiture, en dessin plutôt qu'en photo de fond : elle est un objet de
-    /// l'écran, posée entre les cases et le bouton, et non un décor derrière
-    /// tout le reste. Le PNG est détouré, donc c'est le dégradé de l'app qu'on
-    /// voit autour d'elle.
-    ///
-    /// Elle déborde des marges de l'écran de quelques points : une voiture
-    /// coupée par le bord a l'air posée devant l'écran plutôt que dedans.
     private var carIllustration: some View {
-        carImage
+        if let photoData = selectedVehicle?.photoData {
+            // La voiture, en objet de l'écran plutôt qu'en photo de fond :
+            // posée entre les cases et le bouton, et non en décor derrière tout
+            // le reste. Le PNG est détouré, donc c'est le dégradé de l'app
+            // qu'on voit autour d'elle.
+            VehiclePhotoImage(photoData: photoData) { image in
+                image.resizable().scaledToFit()
+            } placeholder: {
+                // Le cadre exact que la photo prendra : toutes sortent du même
+                // normalisateur, donc du même 3:2. Rien ne bouge quand elle
+                // arrive, et rien n'a clignoté en attendant.
+                Color.clear.aspectRatio(VehiclePhotoNormalizer.canvasSize, contentMode: .fit)
+            }
             // Une largeur, pas de hauteur : la voiture prend celle que ses
             // proportions lui donnent, et rien de plus. Lui laisser la hauteur
             // disponible lui ferait garder le vide pour elle, alors que c'est
             // aux cases de le remplir. `scaledToFit` la fait quand même
             // rapetisser sur un écran trop court, au lieu de déborder.
             .frame(maxWidth: .infinity)
+            // Elle déborde des marges de l'écran de quelques points : une
+            // voiture coupée par le bord a l'air posée devant l'écran plutôt
+            // que dedans.
             .padding(.horizontal, -Self.carBleed)
             // Servie avant les cases : elle prend la hauteur que sa largeur lui
             // donne, et c'est ce qu'elle laisse qui revient à la grille.
             .layoutPriority(1)
             .accessibilityHidden(true)
+        } else {
+            photoInvitation
+        }
+    }
+
+    /// Ce qui tient la place de la voiture tant qu'aucune photo n'a été prise :
+    /// une invitation à la prendre, qui est elle-même le chemin pour le faire.
+    ///
+    /// Un dessin générique occupait cette place avant, et il ne disait rien :
+    /// on pouvait le prendre pour une décoration de l'app et ne jamais
+    /// découvrir qu'on peut y mettre sa propre voiture. Il reste le recours de
+    /// l'onboarding, où l'étape porte déjà la phrase qui manquait ici.
+    ///
+    /// Sans véhicule choisi il n'y a rien à photographier, et la même feuille
+    /// s'ouvre alors sans appareil photo — sur la liste, ou sur son vide d'où
+    /// le « + » ajoute le premier.
+    ///
+    /// Ces deux-là sont bien deux cas et non un seul, malgré le même titre :
+    /// une base de test portait deux véhicules dont aucun n'était coché, et
+    /// « Ajoutez un véhicule » y était un mensonge visible. `VehicleService`
+    /// promeut pourtant un remplaçant quand on supprime le véhicule coché, donc
+    /// l'état ne devrait pas exister — mais il existe, et le dire juste ne coûte
+    /// qu'une phrase.
+    @ViewBuilder
+    private var photoInvitation: some View {
+        if let vehicle = selectedVehicle {
+            invitation(
+                symbol: "camera.viewfinder",
+                title: "Prenez votre véhicule en photo",
+                detail: "Elle sera détourée et posée ici."
+            ) {
+                vehicleToPhotographOnOpen = vehicle
+                isPresentingVehiclePicker = true
+            }
+        } else if vehicles.isEmpty {
+            invitation(
+                symbol: "car",
+                title: "Aucun véhicule",
+                detail: "Ajoutez un véhicule pour l'associer à vos trajets."
+            ) {
+                vehicleToPhotographOnOpen = nil
+                isPresentingVehiclePicker = true
+            }
+        } else {
+            invitation(
+                symbol: "car",
+                title: "Aucun véhicule",
+                detail: "Choisissez celui que vous conduisez."
+            ) {
+                vehicleToPhotographOnOpen = nil
+                isPresentingVehiclePicker = true
+            }
+        }
+    }
+
+    /// Le bandeau lui-même : le symbole en grand, ce qu'on gagne à le toucher,
+    /// et ce qu'il advient ensuite.
+    ///
+    /// Le symbole est passé en paramètre, et il doit exister : un nom inconnu
+    /// de SF Symbols ne fait pas d'erreur, il ne dessine rien. Le premier essai
+    /// portait « car.badge.plus », qui n'existe pas, et le bandeau s'est affiché
+    /// avec ses deux textes et un trou au-dessus.
+    ///
+    /// En verre et non en carte (`appCard`) : c'est un contrôle et non du
+    /// contenu, et le verre est la matière de ce qui flotte au-dessus — voir
+    /// `View+Card`. Même matière, même rayon et même retrait que les trois
+    /// tuiles juste dessous : il se lit comme la grande case de leur rangée.
+    ///
+    /// Les deux textes sont des paramètres `LocalizedStringKey` plutôt que deux
+    /// ternaires écrits dans le corps : un ternaire entre deux littéraux passé
+    /// à `Text` se résout en `String`, et sort du catalogue de traductions sans
+    /// prévenir.
+    private func invitation(
+        symbol: String,
+        title: LocalizedStringKey,
+        detail: LocalizedStringKey,
+        action: @escaping () -> Void
+    ) -> some View {
+        Button(action: action) {
+            VStack(spacing: 12) {
+                Image(systemName: symbol)
+                    // Plafonné, à la différence des deux autres tailles en
+                    // points de cet écran : celles-là portent des chiffres
+                    // qu'on vient lire, celui-ci est un signe. Aux corps
+                    // d'accessibilité il montait à cent vingt points et
+                    // poussait les tuiles sous la barre d'onglets, alors que le
+                    // dessin qu'il remplace gardait la même hauteur à toutes
+                    // les tailles — un symbole plus gros que ça n'apprend rien
+                    // de plus.
+                    .font(.system(size: min(invitationSymbolSize, Self.invitationSymbolCap)))
+                    // L'accent, comme l'appareil photo de la liste des
+                    // véhicules : c'est ce qui distingue un bandeau sur lequel
+                    // on appuie du décor gris qui l'entoure.
+                    .foregroundStyle(.tint)
+                VStack(spacing: 4) {
+                    Text(title)
+                        .font(.headline)
+                    Text(detail)
+                        .font(.footnote)
+                        .foregroundStyle(.secondary)
+                }
+                .multilineTextAlignment(.center)
+                // Les deux phrases passent à la ligne plutôt que de se couper.
+                // Sans ce `fixedSize`, elles restaient sur une seule ligne et
+                // finissaient en points de suspension dès les gros caractères
+                // — « Fotografieren Sie Ihr Fahrze… » : dans une pile, un
+                // `Text` reçoit d'abord la hauteur d'une ligne, et il s'y tient.
+                // `minimumScaleFactor` reste le dernier recours, pour les corps
+                // où même trois lignes ne suffiraient plus.
+                .fixedSize(horizontal: false, vertical: true)
+                .minimumScaleFactor(0.6)
+            }
+            // Toute la largeur, et la hauteur en trop : la voiture occupait le
+            // tiers de l'écran, et un bandeau à la seule taille de son contenu
+            // laissait ce tiers-là en vide sous la salutation. Souple et non
+            // fixe — la place restante se partage avec l'espaceur du haut, et
+            // sur un écran court ou en gros caractères le bandeau se referme
+            // sur son contenu au lieu de pousser les tuiles dehors.
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
+            .padding(.vertical, Self.invitationPadding)
+            .padding(.horizontal, 20)
+            // Sans ça, seuls le symbole et les textes répondent au doigt : le
+            // vide autour d'eux fait partie du bouton.
+            .contentShape(.rect)
+        }
+        .buttonStyle(.plain)
+        .glassEffect(
+            .regular.interactive(),
+            in: .rect(cornerRadius: Self.tileCornerRadius, style: .continuous)
+        )
+        .padding(.horizontal, Self.tileRowInset)
     }
 
     /// La feuille qui s'ouvre autour du bouton le temps d'un trajet.
@@ -847,6 +1002,14 @@ struct RecordTripView: View {
     /// de la largeur : ce débord-là est celui de la lueur, qui sort du cadre
     /// pendant que la voiture, elle, va d'un bord à l'autre de l'écran.
     private static let carBleed: CGFloat = 28
+
+    /// Ce que l'invitation à photographier garde autour de son contenu, en
+    /// haut et en bas. Généreux : elle remplace une voiture qui occupait le
+    /// tiers de l'écran, et un bandeau étroit laisserait un trou à sa place.
+    private static let invitationPadding: CGFloat = 24
+
+    /// La taille au-delà de laquelle son symbole cesse de grandir.
+    private static let invitationSymbolCap: CGFloat = 80
 
 
     /// Prend toute la place du bouton Démarrer plutôt que de s'ajouter à côté

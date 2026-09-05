@@ -45,6 +45,27 @@ struct VehiclePickerView: View {
     /// n'a pas reçu de réponse.
     @State private var vehicleToDelete: Vehicle?
 
+    /// - Parameter photographing: le véhicule dont l'appareil photo se lève en
+    ///   même temps que la feuille. C'est par là que passe l'accueil quand le
+    ///   véhicule choisi n'a pas de photo : le raccourci évite de rouvrir la
+    ///   liste pour y chercher le bouton d'un véhicule qu'on a déjà choisi.
+    ///
+    ///   Posé dans l'état initial plutôt que depuis un `onAppear` : la carte de
+    ///   l'appareil photo monte alors *avec* la feuille, en un seul mouvement,
+    ///   au lieu de surgir une image après elle. Une fois la carte refermée,
+    ///   c'est la liste qui reste — celle où l'on reprend une photo ratée.
+    init(
+        selectedVehicle: Vehicle?,
+        onSelectAllVehicles: (() -> Void)? = nil,
+        photographing vehicleToPhotograph: Vehicle? = nil,
+        onSelect: @escaping (Vehicle) -> Void
+    ) {
+        self.selectedVehicle = selectedVehicle
+        self.onSelectAllVehicles = onSelectAllVehicles
+        self.onSelect = onSelect
+        _vehicleBeingPhotographed = State(initialValue: vehicleToPhotograph)
+    }
+
     private var viewModel: VehicleListViewModel {
         VehicleListViewModel(vehicleService: appServices.vehicleService)
     }
