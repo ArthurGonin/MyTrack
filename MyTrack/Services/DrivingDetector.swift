@@ -18,6 +18,7 @@
 //
 
 import Foundation
+import UIKit
 import OSLog
 import CoreLocation
 import CoreMotion
@@ -201,6 +202,10 @@ final class DrivingDetector {
         // significant location change — since isEnabled always starts false
         // in a brand new instance otherwise.
         refresh()
+
+        locationService.onBackgroundWake = { [weak self] in
+            self?.catchUpWithDrivingAlreadyUnderWay()
+        }
     }
 
     func enable() {
@@ -482,7 +487,22 @@ final class DrivingDetector {
     /// change has just relaunched the app mid-journey, which is exactly the
     /// case automatic detection exists to cover.
     private func catchUpWithDrivingAlreadyUnderWay() {
+        var bgTaskId: UIBackgroundTaskIdentifier = .invalid
+        bgTaskId = UIApplication.shared.beginBackgroundTask {
+            if bgTaskId != .invalid {
+                UIApplication.shared.endBackgroundTask(bgTaskId)
+                bgTaskId = .invalid
+            }
+        }
+        
+        let taskToComplete = bgTaskId
+        
         Task { [weak self] in
+            defer {
+                if taskToComplete != .invalid {
+                    UIApplication.shared.endBackgroundTask(taskToComplete)
+                }
+            }
             guard let self else { return }
             guard await motionActivityService.isAutomotiveNow(lookingBack: Self.recentActivityLookback) else { return }
             // Conditions can have changed while the query was in flight.

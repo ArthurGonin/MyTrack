@@ -34,6 +34,7 @@ final class LocationService: NSObject, CLLocationManagerDelegate {
     private(set) var authorizationStatus: CLAuthorizationStatus
 
     var onLocationUpdate: ((CLLocation) -> Void)?
+    var onBackgroundWake: (() -> Void)?
 
     /// Fires whenever the system reports an authorization change, including the
     /// initial one at launch. DrivingDetector uses it to arm (or stay off) as
@@ -145,6 +146,10 @@ final class LocationService: NSObject, CLLocationManagerDelegate {
         for location in locations where isAcceptable(location) {
             accepted += 1
             onLocationUpdate?(location)
+        }
+        
+        if trackingStartedAt == nil {
+            onBackgroundWake?()
         }
 
         // Une ligne par livraison, pas par point : de quoi lire dans la Console

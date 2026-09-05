@@ -23,6 +23,17 @@ struct AutoDetectionStepView: View {
                     .font(.title3)
                     .foregroundStyle(.secondary)
             }
+            
+            HStack(alignment: .top, spacing: 12) {
+                Image(systemName: "exclamationmark.triangle.fill")
+                    .foregroundStyle(.yellow)
+                Text("Pour que la détection fonctionne, ne forcez pas la fermeture de l'application (ne la glissez pas vers le haut). Laissez-la simplement en arrière-plan.")
+                    .font(.subheadline)
+                    .foregroundStyle(.secondary)
+            }
+            .padding()
+            .background(.regularMaterial)
+            .clipShape(RoundedRectangle(cornerRadius: 12))
 
             Spacer()
 
