@@ -7,10 +7,17 @@
 //  n'y en a qu'un, celui de l'étape précédente, et un profil sans filtre les
 //  couvre déjà tous.
 //
-//  Aucune fréquence n'est cochée au départ — d'où la sélection optionnelle du
-//  `Picker`. `OnboardingChoiceList` n'était pas réutilisable telle quelle pour
-//  ça : elle exige une sélection non optionnelle, et ne sait pas héberger les
-//  lignes qui n'apparaissent que pour « Personnalisé ».
+//  Les fréquences sont des lignes à cocher — les mêmes qu'aux étapes de langue
+//  et d'unités, via `OnboardingChoiceRow` — et non un `Picker`. Un picker en
+//  style `.inline` posait son propre libellé « Fréquence » comme une ligne de
+//  plus dans le tableau, à côté de « Mensuel » et « Annuel », donc comme un
+//  choix possible. C'est un titre : il est passé en en-tête de section, où le
+//  système le rend comme partout ailleurs dans iOS.
+//
+//  Aucune fréquence n'est cochée au départ, d'où la sélection optionnelle du
+//  brouillon. `OnboardingChoiceList` ne pouvait pas servir telle quelle : elle
+//  exige une sélection non optionnelle, n'a pas d'en-tête, et ne sait pas
+//  héberger les lignes qui n'apparaissent que pour « Personnalisé ».
 //
 
 import SwiftUI
@@ -37,12 +44,14 @@ struct ReportProfileStepView: View {
                     TextField("Nom du profil", text: $draft.name)
                 }
                 Section {
-                    Picker("Fréquence", selection: $draft.periodicity) {
-                        ForEach(ReportProfileDraft.selectablePeriodicities, id: \.self) { periodicity in
-                            Text(periodicity.label).tag(Optional(periodicity))
+                    ForEach(ReportProfileDraft.selectablePeriodicities, id: \.self) { periodicity in
+                        OnboardingChoiceRow(
+                            label: Text(periodicity.label),
+                            isSelected: draft.periodicity == periodicity
+                        ) {
+                            draft.periodicity = periodicity
                         }
                     }
-                    .pickerStyle(.inline)
 
                     if draft.periodicity == .custom {
                         Stepper(
@@ -60,6 +69,8 @@ struct ReportProfileStepView: View {
                             .font(.footnote)
                             .foregroundStyle(.secondary)
                     }
+                } header: {
+                    Text("Fréquence")
                 } footer: {
                     Text("Ce rapport couvre tous vos véhicules. Vous pourrez le modifier dans les réglages.")
                 }

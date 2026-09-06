@@ -6,6 +6,15 @@
 //  vehicles it covers. Every control saves immediately through
 //  ReportProfileService, same live-edit pattern the rest of the app uses.
 //
+//  Le champ du nom est la seule exception, et pour une raison de coût : il se
+//  frappe caractère par caractère, là où une fréquence se choisit d'un geste.
+//  Écrire dans le profil à chaque touche ne coûte rien — c'est ce qui garde le
+//  live-edit —, mais l'écriture sur le disque et la replanification de la
+//  notification, elles, n'ont pas à se rejouer douze fois pour un nom de douze
+//  lettres : la seconde repasse par le centre de notifications du système à
+//  chaque fois. Les deux attendent donc que la saisie soit finie — le champ
+//  perd le focus, ou l'écran s'en va.
+//
 
 import SwiftUI
 import SwiftData
@@ -33,6 +42,13 @@ struct ReportProfileEditView: View {
     /// l'écran est le fond gris de l'app.
     @State private var isDeleted = false
 
+    /// Le focus du champ du nom : sa retombée est ce qui déclenche l'écriture.
+    @FocusState private var isNameFocused: Bool
+
+    /// Vrai quand le nom a changé depuis la dernière écriture. Évite d'écrire
+    /// et de replanifier en quittant un écran qu'on n'a fait que regarder.
+    @State private var hasUnsavedName = false
+
     var body: some View {
         Group {
             if isDeleted {
@@ -42,6 +58,11 @@ struct ReportProfileEditView: View {
             }
         }
         .appBackground()
+        // Le focus ne retombe pas toujours avant que l'écran s'en aille — un
+        // retour par le bord emporte les deux ensemble. Sans ça, le dernier nom
+        // frappé restait en mémoire jusqu'à la sauvegarde automatique de
+        // SwiftData, et la notification gardait l'ancien.
+        .onDisappear { commitName() }
         .confirmationDialog(
             "Supprimer ce profil ?",
             isPresented: $isDeleteConfirmationPresented,
@@ -57,8 +78,12 @@ struct ReportProfileEditView: View {
             Section {
                 TextField("Nom du profil", text: Binding(
                     get: { profile.name },
-                    set: { updateName($0) }
+                    set: { typeName($0) }
                 ))
+                .focused($isNameFocused)
+                .onChange(of: isNameFocused) { _, isFocused in
+                    if !isFocused { commitName() }
+                }
             }
             Section {
                 Picker("Fréquence", selection: Binding(
@@ -162,8 +187,23 @@ struct ReportProfileEditView: View {
     /// Le rappel déjà programmé porte le nom du profil dans son texte : sans
     /// cette reprogrammation, « Le rapport "Nouveau rapport périodique" est
     /// prêt » arrivait des semaines après que l'utilisateur l'a renommé.
-    private func updateName(_ name: String) {
-        appServices.reportProfileService.updateName(name, for: profile, in: modelContext)
+    /// Une touche : le profil change tout de suite, en mémoire seulement. Ce
+    /// qui coûte attend `commitName`.
+    private func typeName(_ name: String) {
+        profile.name = name
+        hasUnsavedName = true
+    }
+
+    /// La saisie est finie : on écrit, et on refait la notification — dont le
+    /// texte porte le nom du profil, d'où la replanification.
+    ///
+    /// Le garde sur `isDeleted` n'est pas de la précaution : supprimer le
+    /// profil retire l'écran, donc fait retomber le focus, donc passerait ici —
+    /// à lire un profil que l'on vient d'effacer. Voir `isDeleted`.
+    private func commitName() {
+        guard !isDeleted, hasUnsavedName else { return }
+        hasUnsavedName = false
+        appServices.reportProfileService.updateName(profile.name, for: profile, in: modelContext)
         rescheduleNotification()
     }
 
