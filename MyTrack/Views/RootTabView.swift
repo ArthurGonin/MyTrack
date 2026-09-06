@@ -112,12 +112,13 @@ struct RootTabView: View {
     /// Y a-t-il encore un trajet détecté qui attend une réponse ?
     ///
     /// Le filtre est en Swift, comme partout ailleurs dans l'app : `#Predicate`
-    /// ne sait pas comparer une propriété d'énumération à un cas. Le fetch
-    /// ramène donc toute la table, ce qui n'est pas gratuit sur une longue
-    /// histoire de trajets — mais il n'a lieu qu'à l'ouverture de l'app et sur
-    /// un appui de notification, et un `fetchCount` avec prédicat rendrait `0`
-    /// sans un mot le jour où SwiftData ne saurait pas le traduire : l'écran de
-    /// revue ne s'ouvrirait alors plus jamais.
+    /// ne sait pas comparer une propriété d'énumération à un cas, et ce n'est
+    /// plus une prudence mais une mesure — voir `TripConfirmationStatus`, qui
+    /// porte les deux erreurs relevées. Le fetch ramène donc toute la table, ce
+    /// qui n'est pas gratuit sur une longue histoire de trajets, mais il n'a
+    /// lieu qu'à l'ouverture de l'app et sur un appui de notification. Un
+    /// `fetchCount` avec prédicat, lui, jetterait — et le `try?` d'à côté
+    /// rendrait `0` sans un mot : l'écran de revue ne s'ouvrirait plus jamais.
     private var hasPendingTrips: Bool {
         let descriptor = FetchDescriptor<Trip>()
         return ((try? modelContext.fetch(descriptor)) ?? [])

@@ -118,47 +118,6 @@ struct MyTrackApp: App {
                 }
             }
             .environment(appServices)
-            // TEMP-PREDICATE-TEST
-            .task {
-                let context = modelContainer.mainContext
-                if UserDefaults.standard.bool(forKey: "seedPredicateTest") {
-                    let vehicle = Vehicle(name: "Essai prédicat")
-                    context.insert(vehicle)
-                    let statuses: [TripConfirmationStatus] =
-                        [.pendingConfirmation, .pendingConfirmation, .confirmed, .deleted, .merged]
-                    for (index, status) in statuses.enumerated() {
-                        let trip = Trip(
-                            startDate: .now.addingTimeInterval(Double(-3600 * (index + 1))),
-                            source: .automatic, vehicle: vehicle
-                        )
-                        trip.endDate = .now
-                        trip.confirmationStatus = status
-                        context.insert(trip)
-                    }
-                    try? context.save()
-                }
-
-                // A — ce que fait le code aujourd'hui : toute la table, filtrée en Swift.
-                let all = (try? context.fetch(FetchDescriptor<Trip>())) ?? []
-                let parSwift = all.filter { $0.confirmationStatus == .pendingConfirmation }.count
-
-                // B — le prédicat, avec le cas capturé dans une variable locale.
-                let pending = TripConfirmationStatus.pendingConfirmation
-                let descriptor = FetchDescriptor<Trip>(
-                    predicate: #Predicate { $0.confirmationStatus == pending }
-                )
-                let parCompte = (try? context.fetchCount(descriptor)) ?? -1
-                let parFetch = ((try? context.fetch(descriptor)) ?? []).count
-
-                AppLog.persistence.notice(
-                    """
-                    PREDICATE-TEST: total \(all.count, privacy: .public), \
-                    swift \(parSwift, privacy: .public), \
-                    fetchCount \(parCompte, privacy: .public), \
-                    fetch \(parFetch, privacy: .public)
-                    """
-                )
-            }
             // Tous les boutons de l'app en gélule. Posé ici plutôt que sur
             // chaque bouton : la forme se transmet par l'environnement, donc
             // un bouton ajouté plus tard la prend sans qu'on y pense — et

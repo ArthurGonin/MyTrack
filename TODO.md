@@ -7,11 +7,11 @@ l'état réel du dépôt. Rangé par ce qui bloque quoi, et non par difficulté.
 
 ## Bloquant pour une soumission App Store — dans le code
 
-- [ ] **Retirer le bloc `TEMP-PREDICATE-TEST`** (`MyTrack/MyTrackApp.swift`). Il vérifiait si
-      `#Predicate` sait comparer une propriété d'énumération à un cas. Plus gênant qu'il n'en a
-      l'air : seul le *semis* est gardé par la clé `seedPredicateTest`, mais le `fetch` de toute
-      la table `Trip` et la ligne de journal, eux, tournent à **chaque lancement** — y compris
-      en production, pour rien.
+- [x] **Retirer le bloc `TEMP-PREDICATE-TEST`** — fait, après l'avoir fait parler le
+      6 septembre 2026. Verdict : `#Predicate` ne sait toujours pas comparer une propriété
+      d'énumération à un cas, et la variante par `rawValue` ferme carrément l'app. Le filtre en
+      Swift est donc la voie et non un pis-aller ; les deux erreurs relevées sont écrites dans
+      `TripConfirmationStatus`.
 - [ ] **Commiter le travail en cours.** Le plan de migration, le popup d'avis et le reste vivent
       dans l'arbre de travail, pas dans l'historique.
 - [x] **Renseigner `LegalContact.email`** — vaut `contact@kiwijuice.dev`. Les conditions
@@ -166,11 +166,12 @@ exercer une fois :
       quels — c'est là que le rapport effort/valeur est le meilleur. `DrivingDetector` vient
       juste après : 600 lignes de machine à états, la pièce la plus difficile à raisonner et la
       seule sans filet.
-- [ ] **`hasPendingTrips` charge toute la table** (`RootTabView`). Un `fetchCount` avec
-      prédicat compile, mais rien ne prouve que SwiftData sache traduire un prédicat sur une
-      propriété d'énumération — et un `0` rendu à tort empêcherait l'écran de revue de s'ouvrir
-      sans une ligne dans les journaux. À reprendre seulement avec une vérification à
-      l'exécution en main.
+- [x] **`hasPendingTrips` charge toute la table** (`RootTabView`), et continuera : ce n'est
+      plus une dette mais une contrainte, mesurée le 6 septembre 2026. SwiftData refuse le
+      prédicat sur une propriété d'énumération — il jette, et le `try?` d'à côté rendrait `0`
+      sans un mot, ce qui empêcherait l'écran de revue de s'ouvrir. Voir
+      `TripConfirmationStatus` pour les deux erreurs exactes. À rouvrir seulement si une future
+      version de SwiftData change d'avis.
 - [x] **`ReportProfileEditView` sauvegardait à chaque frappe** dans le champ du nom. Le profil
       change toujours à chaque touche — c'est ce qui garde le live-edit — mais l'écriture sur le
       disque et la replanification de la notification attendent que le champ perde le focus ou

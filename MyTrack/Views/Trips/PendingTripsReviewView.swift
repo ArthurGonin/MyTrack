@@ -15,8 +15,9 @@ struct PendingTripsReviewView: View {
     @Environment(\.dismiss) private var dismiss
     @Environment(AppServices.self) private var appServices
 
-    // SwiftData's #Predicate macro can't compare an enum-typed property to a
-    // case, so the pending-only filter is applied in Swift. Reading them
+    // Le filtre « en attente seulement » se fait en Swift : SwiftData refuse un
+    // prédicat sur une propriété d'énumération (voir `TripConfirmationStatus`,
+    // qui porte la mesure). Reading them
     // through @Query rather than a snapshot keeps this screen correct when the
     // same trip is confirmed from the notification while it's open.
     @Environment(\.locale) private var locale

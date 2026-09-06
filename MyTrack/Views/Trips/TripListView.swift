@@ -10,9 +10,9 @@ struct TripListView: View {
     @Environment(\.modelContext) private var modelContext
     @Environment(AppServices.self) private var appServices
 
-    // SwiftData's #Predicate macro doesn't support comparing enum-typed properties
-    // directly (it can't build a key path to a plain enum case), so the confirmed-only
-    // filter is applied in Swift instead of in the query.
+    // Le filtre « confirmés seulement » se fait en Swift et non dans la requête :
+    // SwiftData refuse un prédicat qui compare une propriété d'énumération à un
+    // cas. Les deux erreurs exactes sont relevées dans `TripConfirmationStatus`.
     @Query(sort: \Trip.startDate, order: .reverse)
     private var allTrips: [Trip]
 
