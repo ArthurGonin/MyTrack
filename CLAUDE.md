@@ -31,12 +31,17 @@ ponctuels ou périodiques. L'app entière est payante (abonnement ou achat uniqu
 - Swift / SwiftUI, cible iOS 26.0. Pas de SPM, pas de dépendance tierce — projet Xcode pur
   (`MyTrack.xcodeproj`), avec des groupes synchronisés sur le système de fichiers : un fichier
   ajouté dans `MyTrack/` entre dans la cible sans toucher au `.pbxproj`.
-- Persistance : **SwiftData** (`@Model`). **Pas encore de `SchemaMigrationPlan`** — voir le TODO
-  de `MyTrackApp.makeContainer`.
+- Persistance : **SwiftData** (`@Model`), à travers `MyTrackMigrationPlan`. `MyTrackSchemaV1`
+  fige la V1.0.0 et porte la liste des modèles — c'est elle qui fait autorité, pas une seconde
+  liste posée ailleurs. Une fois l'app publiée, tout changement de modèle demandera une V2 et
+  une `MigrationStage`.
 - Concurrence : `SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor` et
   `SWIFT_STRICT_CONCURRENCY = complete`, en mode langage Swift 5. Tout est donc sur le fil
-  principal par défaut ; ce qui n'y est pas le dit (`nonisolated`), et le projet compile sans un
-  seul avertissement de concurrence — à garder ainsi.
+  principal par défaut ; ce qui n'y est pas le dit (`nonisolated`). Le neuf s'écrit sans un seul
+  avertissement de concurrence, et c'est à garder ainsi — mais le projet n'est pas à zéro :
+  `CameraPreview.swift` en porte onze et `NotificationService.swift` deux (voir `TODO.md`).
+  L'`xcodebuild` incrémental n'en émet aucun pour un fichier qu'il ne recompile pas, donc un
+  build vert ne prouve rien sur le reste : `touch` le fichier suspect pour savoir.
 - Achats : StoreKit 2, avec `MyTrack.storekit` pour les essais depuis Xcode (le simulateur en
   ligne de commande ne sait pas appliquer cette configuration).
 - Pas de cible de tests.
@@ -79,8 +84,10 @@ Le code vit dans `MyTrack/`, en couches MVVM. `Server/` porte deux Workers Cloud
     et prévient quand l'accès tombe.
   - Photos : `VehiclePhotoService` (appelle le proxy), `VehiclePhotoProcessingService` (mène le
     détourage hors de l'écran qui l'a lancé), `VehiclePhotoNormalizer` (cadre commun).
-  - Préférences : `LanguageService`, `UnitSettingsService`, `OnboardingService` — dans
-    `UserDefaults`, parce que ce sont des réglages et non des données.
+  - Préférences : `LanguageService`, `UnitSettingsService`, `OnboardingService`,
+    `ReviewPromptService` — dans `UserDefaults`, parce que ce sont des réglages et non des
+    données. Le dernier décide *quand* demander un avis sur l'App Store ; `ReviewPromptModifier`
+    pose les étoiles, qui appartiennent à iOS et ne passent donc pas par le catalogue.
   - `FeedbackService`, `TripCostSnapshotService`, `AppLog`, `ModelContext+Saving`.
 - **`ViewModels/`** — des `struct` sans état, qui reçoivent le `ModelContext` en paramètre.
 - **`Views/`** — par domaine : `Recording/`, `Trips/`, `Vehicles/`, `Reports/`, `Account/`,

@@ -1,31 +1,56 @@
 # Ce qu'il reste à faire
 
-État au 4 septembre 2026, après la passe de revue complète du code. Rangé par ce qui
-bloque quoi, et non par difficulté.
+État au 6 septembre 2026, après la passe de revue complète du code et le croisement avec
+l'état réel du dépôt. Rangé par ce qui bloque quoi, et non par difficulté.
 
 ---
 
-## Bloquant pour une soumission App Store
+## Bloquant pour une soumission App Store — dans le code
 
-- [ ] **Renseigner `LegalContact.email`** (`MyTrack/Views/Legal/LegalContact.swift`).
-      Tant qu'il vaut `nil`, les conditions d'utilisation et la politique de confidentialité
-      s'affichent **sans leur section de contact**. Le RGPD et la nLPD attendent un moyen de
-      joindre le responsable : ce n'est pas une préférence, c'est une lacune.
+- [ ] **Retirer le bloc `TEMP-PREDICATE-TEST`** (`MyTrack/MyTrackApp.swift`). Il vérifiait si
+      `#Predicate` sait comparer une propriété d'énumération à un cas. Plus gênant qu'il n'en a
+      l'air : seul le *semis* est gardé par la clé `seedPredicateTest`, mais le `fetch` de toute
+      la table `Trip` et la ligne de journal, eux, tournent à **chaque lancement** — y compris
+      en production, pour rien.
+- [ ] **Commiter le travail en cours.** Le plan de migration, le popup d'avis et le reste vivent
+      dans l'arbre de travail, pas dans l'historique.
+- [x] **Renseigner `LegalContact.email`** — vaut `contact@kiwijuice.dev`. Les conditions
+      d'utilisation et la politique de confidentialité affichent donc leur section de contact,
+      que le RGPD et la nLPD attendent.
+- [x] **Écrire un `SchemaMigrationPlan`.** `MyTrackSchemaV1` fige la V1.0.0 sur les cinq modèles
+      (`Trip`, `Vehicle`, `UserProfile`, `ReportProfile`, `GeneratedReport`) et
+      `MyTrackMigrationPlan` la porte ; `MyTrackApp.makeContainer` ouvre le magasin à travers
+      lui. Restait à faire **avant** la première version publique, et ça l'est — voir la section
+      « Une fois publié » pour ce que ça engage ensuite.
+- [x] **Vérifier la déclaration de chiffrement.** `ITSAppUsesNonExemptEncryption = false` est
+      dans l'`Info.plist` : l'app n'emploie que HTTPS, qui relève de l'exemption. À reconfirmer
+      si un jour elle chiffre autre chose elle-même.
+
+## Bloquant pour une soumission — dans App Store Connect
+
+Rien de ce qui suit n'est du code, et c'est précisément pourquoi ça s'oublie.
+
 - [ ] **Publier la politique de confidentialité à une URL.** App Store Connect la réclame dans
       les métadonnées de la fiche, et le texte embarqué dans l'app ne l'en dispense pas. C'est
       le même texte : voir `LegalDocument+PrivacyPolicy.swift`.
-- [ ] **Renseigner `appStoreID`** (`MyTrack/Views/Account/AccountSettingsView.swift`) une fois
-      l'app publiée. La ligne « Laisser un avis » reste désactivée jusque-là — volontairement,
-      plutôt que d'ouvrir un lien mort.
-- [ ] **Écrire un `SchemaMigrationPlan`** (`MyTrack/MyTrackApp.swift`). Sans lui, tout
-      changement de schéma non-léger fait échouer l'ouverture du magasin. Le repli le met
-      désormais **de côté** (`.sqlite.<horodatage>.bak`) au lieu de l'effacer, donc plus
-      personne ne perd ses trajets en silence — mais l'app repart quand même à vide. Une
-      `VersionedSchema` V1 doit être figée **avant** la première version publique : après, il
-      sera trop tard pour la déclarer rétroactivement.
-- [ ] **Vérifier la déclaration de chiffrement.** `ITSAppUsesNonExemptEncryption = false` a été
-      ajouté à l'`Info.plist` : l'app n'emploie que HTTPS, qui relève de l'exemption. À
-      confirmer si un jour elle chiffre autre chose elle-même.
+- [ ] **Créer les trois produits d'achat**, aux identifiants exacts que `PurchaseService`
+      demande : `KiwiJuice.MyTrack.monthly`, `KiwiJuice.MyTrack.annual`,
+      `KiwiJuice.MyTrack.lifetime`. Ils sont examinés **avec** la première version : oubliés, la
+      soumission part sans rien à vendre, et l'app entière est payante.
+- [ ] **Écrire les notes de revue (App Review Information).** Le plus gros risque de rejet, et
+      il n'a rien à voir avec le code. L'app est entièrement payante et son cœur — la détection
+      automatique — ne se déclenche qu'en voiture ; l'examinateur est assis dans un bureau et
+      verrait une paywall, puis une app qui « ne fait rien ». Lui dire : d'acheter en bac à
+      sable, d'utiliser le bouton **Démarrer** manuel pour voir un trajet s'enregistrer, et que
+      la détection automatique exige Core Motion et un déplacement réel.
+- [ ] **Justifier `UIBackgroundModes: location`** dans ces mêmes notes — guideline 2.5.4, un
+      service d'arrière-plan doit servir l'objet déclaré. Le cas est légitime, encore faut-il
+      l'écrire.
+- [ ] **Remplir le questionnaire App Privacy** : position précise, photos, et l'identifiant
+      d'appareil pour l'éditeur (`identifierForVendor`) dont le relais se sert comme compteur.
+      Tout est déjà décrit dans `LegalDocument+PrivacyPolicy.swift`, y compris le transfert à
+      OpenAI et le traitement aux États-Unis : il n'y a qu'à le reporter.
+- [ ] **Captures d'écran, description, mots-clés, catégorie.**
 
 ## Déploiement en attente
 
@@ -38,15 +63,17 @@ bloque quoi, et non par difficulté.
       `if (env.BURST)` et tourne à l'identique sans lui.
 - [ ] **Poser un plafond de dépense mensuel sur la clé OpenAI**
       (*platform.openai.com → Settings → Limits*). C'est la seule limite qu'un attaquant ne
-      peut pas contourner, et le seul garde-fou qui ne dépende pas de notre code.
-- [ ] **Confronter le modèle d'images à la documentation d'OpenAI** avant chaque déploiement.
-      `gpt-image-1` s'arrête le 23 octobre 2026 ; le proxy est déjà sur `gpt-image-2`. Détails
-      dans `Server/studio-cutout/README.md`.
+      peut pas contourner, et le seul garde-fou qui ne dépende pas de notre code. Cesse d'être
+      optionnel le jour de la mise en vente : le relais devient alors une cible publique.
+- [x] **Confronter le modèle d'images à la documentation d'OpenAI** — fait le 5 septembre 2026.
+      `gpt-image-2` n'est ni déprécié ni annoncé pour l'arrêt, et c'est le remplaçant désigné de
+      tous les autres. À refaire avant chaque déploiement ; détails dans
+      `Server/studio-cutout/README.md`.
 
 ## À tester dans l'app — rien de ce qui suit n'a été exercé à l'exécution
 
-Les corrections de la revue sont vérifiées **par compilation** (Debug, Release et concurrence
-stricte, sans un avertissement), pas par un lancement. À exercer une fois :
+Les corrections de la revue sont vérifiées **par compilation**, pas par un lancement. À
+exercer une fois :
 
 - [ ] Supprimer un profil de rapport depuis ses réglages — c'était un crash.
 - [ ] Un trajet auto-détecté de bout en bout : vérifier que **distance et durée décrivent la
@@ -66,6 +93,13 @@ stricte, sans un avertissement), pas par un lancement. À exercer une fois :
       valoir à peu près la durée en secondes, pas une dizaine — et l'absence de « No location
       delivered for Ns ». La pastille bleue doit rester allumée tout le trajet ; si elle
       s'éteint, c'est l'arrière-plan qu'il faut regarder, pas le filtre.
+- [ ] **Le popup d'avis, aux deux moments qui l'arment.** Ouvrir le détail d'un trajet, y rester
+      plus de cinq secondes, revenir : les étoiles doivent arriver une seconde et demie plus
+      tard, sur la liste. Puis, la demande dépensée, vérifier qu'un rapport lu ne la relance
+      pas — les 90 jours d'écart. Le popup lui-même est vérifié (il s'affiche, les compteurs se
+      persistent), ce sont les deux `onChange` qui l'arment qui ne se pilotent pas en ligne de
+      commande, faute d'injection de touches. **En build Xcode uniquement** : l'appel est ignoré
+      en TestFlight, et n'y affiche jamais rien.
 - [ ] Répondre « Non » dans l'écran de revue, puis appuyer « Oui » sur la notification restée
       affichée : le trajet ne doit **pas** revenir.
 - [ ] Supprimer le compte, relancer : langue et unité doivent repartir sur celles du système.
@@ -77,8 +111,36 @@ stricte, sans un avertissement), pas par un lancement. À exercer une fois :
 - [ ] Trier la liste par durée pendant un enregistrement, puis balayer une ligne : c'est le
       bon trajet qui part à la corbeille.
 
+## Une fois publié
+
+- [ ] **Renseigner `appStoreID`** (`MyTrack/Views/Account/AccountSettingsView.swift`) et livrer
+      une 1.0.1. Jusque-là la ligne « Laisser un avis » reste désactivée — volontairement,
+      plutôt que d'ouvrir un lien mort. Le popup à étoiles, lui, n'a pas besoin de cet
+      identifiant et fonctionne dès la première version.
+- [ ] **Ne juger le popup d'avis qu'en production.** Il ne s'affiche jamais en TestFlight ; en
+      App Store, Apple le plafonne à trois fois par 365 jours et l'utilisateur peut le couper
+      dans *Réglages → App Store*. `ReviewPromptService` en dépense deux au maximum, à 90 jours
+      d'écart. Aucune de ces demandes ne rend de résultat : la seule trace est la ligne
+      `AppLog.purchases`.
+- [ ] **Surveiller les plantages** dans Xcode → Window → Organizer. C'est là que les seuils de
+      `DrivingDetector` et le comportement en arrière-plan se feront juger par la réalité,
+      et non par le simulateur qui ne sait reproduire ni l'un ni l'autre.
+- [ ] **Répondre aux avis** dans App Store Connect, les mauvais d'abord : c'est public, et
+      c'est ce qui remonte une note.
+- [ ] **`MyTrackSchemaV1` est gelé** à partir de la version publique. Toute modification d'un
+      `@Model` demandera désormais une `MyTrackSchemaV2` et une `MigrationStage` dans
+      `MyTrackMigrationPlan` — la règle des propriétés optionnelles du CLAUDE.md ne suffira plus
+      seule pour un changement lourd. C'est exactement pourquoi figer la V1 avant était
+      bloquant.
+
 ## Dette technique
 
+- [ ] **Treize avertissements de concurrence**, et non zéro comme l'affirmaient ce fichier et le
+      CLAUDE.md jusqu'au 6 septembre : onze dans `CameraPreview.swift` (`session` et `output`
+      touchés depuis un contexte non isolé) et deux dans `NotificationService.swift`
+      (`UNUserNotificationCenter` n'est pas `Sendable`). Rien qui bloque une soumission. Ils se
+      cachent parce que l'`xcodebuild` incrémental n'en émet aucun pour un fichier qu'il ne
+      recompile pas : pour les revoir, `touch` ces deux fichiers avant de rebuilder.
 - [ ] **Aucune cible de tests.** `ReportPeriodBoundary`, `TripFormatting`, `Trip+Cost` et
       `VehicleDraft.number(from:)` sont du code pur, sans dépendance système, testables tels
       quels — c'est là que le rapport effort/valeur est le meilleur. `DrivingDetector` vient
@@ -89,9 +151,6 @@ stricte, sans un avertissement), pas par un lancement. À exercer une fois :
       propriété d'énumération — et un `0` rendu à tort empêcherait l'écran de revue de s'ouvrir
       sans une ligne dans les journaux. À reprendre seulement avec une vérification à
       l'exécution en main.
-- [ ] **`TripListView` recalcule `trips` plusieurs fois par rendu** (filtre + tri). Le balayage
-      vers la corbeille est corrigé, mais la mémoïsation complète reste à faire — celle de
-      `RecordTripView` (`MonthlySummary`) sert de modèle.
 - [ ] **`ReportProfileEditView` sauvegarde à chaque frappe** dans le champ du nom. Choix
       « live-edit » assumé, mais un `context.save()` par caractère.
 - [ ] **Faire tourner les deux secrets partagés** (`StudioCutoutConfiguration`,
@@ -102,6 +161,9 @@ stricte, sans un avertissement), pas par un lancement. À exercer une fois :
       exprès, mais à revoir si le texte peut s'allonger.
 - [ ] **Clé de traduction orpheline** : « Distance totale », ajoutée à la main et plus
       utilisée. Gardée parce que quelqu'un l'a voulue là ; à retirer si elle ne sert plus.
+- [x] **`TripListView` recalculait `trips` plusieurs fois par rendu** (filtre + tri). Les listes
+      sont désormais relevées une fois en tête du corps et passées de main en main, sur le
+      modèle de `MonthlySummary`.
 
 ## Décisions prises, notées pour mémoire
 
@@ -118,5 +180,9 @@ stricte, sans un avertissement), pas par un lancement. À exercer une fois :
   fait refuser à la revue — et elle ne donne rien de payant : `canRecordTrips` reste faux
   derrière.
 - **Le magasin illisible est mis de côté, pas effacé.** Voir `MyTrackApp.makeContainer`.
-- **`SWIFT_STRICT_CONCURRENCY = complete`** est activé : le projet compile sans un seul
-  avertissement de concurrence, et c'est ce qui empêche la dette de revenir.
+- **`SWIFT_STRICT_CONCURRENCY = complete`** est activé, et c'est ce qui empêche la dette de
+  concurrence de revenir. Le projet n'est pas pour autant à zéro avertissement : voir la dette
+  technique ci-dessus.
+- **Le moment de la demande d'avis** est le *retour* d'un écran de satisfaction, jamais l'écran
+  lui-même : les étoiles ne doivent pas se poser sur la carte qu'on regarde. Voir
+  `ReviewPromptService`.
