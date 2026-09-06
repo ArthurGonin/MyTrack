@@ -15,39 +15,49 @@ struct MyTrackApp: App {
     @State private var appServices: AppServices
 
     init() {
-        let schema = Schema([
-            Trip.self, Vehicle.self, UserProfile.self, ReportProfile.self, GeneratedReport.self,
-        ])
+        // La liste des modèles vit dans `MyTrackSchemaV1`, et non ici : c'est
+        // elle que le plan de migration nomme, et une seconde liste posée à
+        // côté finirait par en différer d'un modèle — qui disparaîtrait alors
+        // du magasin sans un mot.
+        let schema = Schema(versionedSchema: MyTrackMigrationPlan.current)
         let container = Self.makeContainer(for: schema)
 
         modelContainer = container
         _appServices = State(initialValue: AppServices(modelContext: container.mainContext))
     }
 
-    /// Opening the store can fail for two very different reasons: a schema
-    /// change made during development (there is no migration plan yet), or a
-    /// one-off problem — a full disk, a file left locked by a crash. Only the
-    /// first is genuinely unrecoverable, so wiping the store is now the last
-    /// resort rather than the first response: the open is retried once, the
-    /// original error is logged, and an in-memory store takes over if even a
-    /// fresh one can't be created — so a bad store can no longer crash launch,
-    /// and a full disk no longer silently costs the user every trip they own.
+    /// Ouvrir le magasin peut échouer pour deux raisons très différentes : un
+    /// écart de schéma qu'aucune étape de `MyTrackMigrationPlan` ne sait
+    /// franchir, ou un incident ponctuel — disque plein, fichier resté
+    /// verrouillé par un plantage.
     ///
-    /// TODO: replace the reset with a real `SchemaMigrationPlan` before
-    /// shipping — once the app is on the App Store, deleting the user's trips
-    /// is never an acceptable answer to a schema change.
+    /// Le premier cas relève désormais du plan de migration, qui traverse les
+    /// versions au lieu de repartir de zéro. Ce qui suit n'est donc plus la
+    /// réponse ordinaire à un changement de schéma : c'est le filet tendu sous
+    /// ce que le plan n'a pas su faire.
+    ///
+    /// L'ordre y va du moindre dégât au pire : on réessaie une fois, on
+    /// journalise l'erreur d'origine, on met le fichier de côté sans l'effacer,
+    /// et un magasin en mémoire prend le relais si même un fichier neuf est
+    /// impossible. De sorte qu'un magasin illisible ne peut plus fermer l'app
+    /// au lancement, et qu'un disque plein ne coûte plus à l'utilisateur tous
+    /// les trajets qu'il possède.
     private static func makeContainer(for schema: Schema) -> ModelContainer {
         let configuration = ModelConfiguration(schema: schema)
 
         do {
-            return try ModelContainer(for: schema, configurations: [configuration])
+            return try ModelContainer(
+                for: schema, migrationPlan: MyTrackMigrationPlan.self, configurations: [configuration]
+            )
         } catch {
             AppLog.persistence.error("Opening the store failed: \(error.localizedDescription, privacy: .public)")
         }
 
         // A transient failure — the file briefly locked by a process that just
         // died — can clear on its own, and retrying costs nothing before wiping.
-        if let container = try? ModelContainer(for: schema, configurations: [configuration]) {
+        if let container = try? ModelContainer(
+            for: schema, migrationPlan: MyTrackMigrationPlan.self, configurations: [configuration]
+        ) {
             AppLog.persistence.notice("Store opened on the second attempt.")
             return container
         }
@@ -55,9 +65,10 @@ struct MyTrackApp: App {
         // Mis de côté, et non effacé. La différence ne se voit que le jour où
         // elle compte : les trajets d'une année entière tiennent dans ce
         // fichier, et rien ici ne sait dire si l'ouverture a échoué pour un
-        // schéma devenu incompatible — le cas attendu tant qu'il n'y a pas de
-        // plan de migration — ou pour un disque plein, un fichier verrouillé par
-        // un processus qui vient de mourir, une restauration à moitié faite.
+        // schéma que le plan de migration n'a pas su franchir — devenu l'anomalie
+        // depuis qu'un plan existe — ou pour un disque plein, un fichier
+        // verrouillé par un processus qui vient de mourir, une restauration à
+        // moitié faite.
         // Effacer répondait la même chose aux deux, et la seconde réponse était
         // définitive. Renommé, le magasin reste récupérable : à la main, ou par
         // un futur plan de migration qui saura le relire.
@@ -80,7 +91,9 @@ struct MyTrackApp: App {
                 try? FileManager.default.removeItem(at: file)
             }
         }
-        if let container = try? ModelContainer(for: schema, configurations: [configuration]) {
+        if let container = try? ModelContainer(
+            for: schema, migrationPlan: MyTrackMigrationPlan.self, configurations: [configuration]
+        ) {
             return container
         }
 
@@ -105,6 +118,47 @@ struct MyTrackApp: App {
                 }
             }
             .environment(appServices)
+            // TEMP-PREDICATE-TEST
+            .task {
+                let context = modelContainer.mainContext
+                if UserDefaults.standard.bool(forKey: "seedPredicateTest") {
+                    let vehicle = Vehicle(name: "Essai prédicat")
+                    context.insert(vehicle)
+                    let statuses: [TripConfirmationStatus] =
+                        [.pendingConfirmation, .pendingConfirmation, .confirmed, .deleted, .merged]
+                    for (index, status) in statuses.enumerated() {
+                        let trip = Trip(
+                            startDate: .now.addingTimeInterval(Double(-3600 * (index + 1))),
+                            source: .automatic, vehicle: vehicle
+                        )
+                        trip.endDate = .now
+                        trip.confirmationStatus = status
+                        context.insert(trip)
+                    }
+                    try? context.save()
+                }
+
+                // A — ce que fait le code aujourd'hui : toute la table, filtrée en Swift.
+                let all = (try? context.fetch(FetchDescriptor<Trip>())) ?? []
+                let parSwift = all.filter { $0.confirmationStatus == .pendingConfirmation }.count
+
+                // B — le prédicat, avec le cas capturé dans une variable locale.
+                let pending = TripConfirmationStatus.pendingConfirmation
+                let descriptor = FetchDescriptor<Trip>(
+                    predicate: #Predicate { $0.confirmationStatus == pending }
+                )
+                let parCompte = (try? context.fetchCount(descriptor)) ?? -1
+                let parFetch = ((try? context.fetch(descriptor)) ?? []).count
+
+                AppLog.persistence.notice(
+                    """
+                    PREDICATE-TEST: total \(all.count, privacy: .public), \
+                    swift \(parSwift, privacy: .public), \
+                    fetchCount \(parCompte, privacy: .public), \
+                    fetch \(parFetch, privacy: .public)
+                    """
+                )
+            }
             // Tous les boutons de l'app en gélule. Posé ici plutôt que sur
             // chaque bouton : la forme se transmet par l'environnement, donc
             // un bouton ajouté plus tard la prend sans qu'on y pense — et
