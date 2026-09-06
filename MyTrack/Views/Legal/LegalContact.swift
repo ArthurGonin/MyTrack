@@ -29,4 +29,22 @@ enum LegalContact {
     /// *Email Routing → Routing Rules* qu'une règle achemine bien celle-ci
     /// vers une boîte réelle.
     static let email: String? = "contact@kiwijuice.dev"
+
+    /// La page d'aide, celle qu'App Store Connect réclame dans la fiche sous le
+    /// nom d'URL d'assistance.
+    ///
+    /// Obligatoire, et la guideline 1.5 demande que l'app *et* cette page
+    /// offrent chacune un moyen simple de nous joindre : le formulaire de
+    /// commentaire des réglages tient la première moitié, cette adresse la
+    /// seconde. La page doit rester publique et sans compte à créer — Apple
+    /// refuse une page d'accueil marketing ou un profil de réseau social.
+    static let supportURL = URL(string: "https://mytrack.kiwijuice.dev/support")
+
+    /// Le même texte que les réglages affichent hors ligne, publié à une
+    /// adresse parce que la fiche de l'App Store en réclame une : l'écran
+    /// embarqué ne dispense pas de cette exigence-là, qui est côté métadonnées
+    /// (voir l'en-tête de `LegalDocument`). Les deux doivent donc dire la même
+    /// chose — la page est produite depuis ce dépôt, catalogue de traductions
+    /// compris, pour qu'elles ne puissent pas diverger.
+    static let privacyPolicyURL = URL(string: "https://mytrack.kiwijuice.dev/privacy")
 }

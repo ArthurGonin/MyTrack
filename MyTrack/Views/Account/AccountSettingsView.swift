@@ -160,6 +160,19 @@ struct AccountSettingsView: View {
                 SubscriptionSettingsSection()
 
                 Section {
+                    // En tête : on cherche une réponse avant de chercher
+                    // quelqu'un à qui écrire, et la page répond déjà aux sept
+                    // questions qui reviennent.
+                    if let supportURL = LegalContact.supportURL {
+                        Link(destination: supportURL) {
+                            SettingsRowLabel(
+                                "Aide",
+                                systemImage: "questionmark.square.fill",
+                                tint: .blue
+                            )
+                        }
+                    }
+
                     // Au-dessus de l'avis, et c'est l'ordre qui compte : nous
                     // écrire d'abord, noter publiquement ensuite. Quelqu'un
                     // qu'une chose agace doit croiser le moyen de nous le dire

@@ -30,9 +30,15 @@ l'état réel du dépôt. Rangé par ce qui bloque quoi, et non par difficulté.
 
 Rien de ce qui suit n'est du code, et c'est précisément pourquoi ça s'oublie.
 
-- [ ] **Publier la politique de confidentialité à une URL.** App Store Connect la réclame dans
-      les métadonnées de la fiche, et le texte embarqué dans l'app ne l'en dispense pas. C'est
-      le même texte : voir `LegalDocument+PrivacyPolicy.swift`.
+- [ ] **Mettre en ligne les deux pages de `~/Desktop/mytrack-site/`**, à
+      `mytrack.kiwijuice.dev/privacy` et `mytrack.kiwijuice.dev/support`. Ce sont les deux URL
+      que la fiche réclame, et `LegalContact` les nomme déjà. HTML seul, six langues empilées,
+      aucune dépendance — n'importe quel hébergement statique convient, Cloudflare Pages en
+      tête puisque le domaine y est déjà.
+      La page de confidentialité est **produite depuis ce dépôt** — la structure de
+      `LegalDocument+PrivacyPolicy.swift` et les traductions de `Localizable.xcstrings` — pour
+      qu'elle ne puisse pas diverger de ce que l'app affiche. Si ce texte change, régénérer la
+      page plutôt que la corriger à la main.
 - [ ] **Créer les trois produits d'achat**, aux identifiants exacts que `PurchaseService`
       demande : `KiwiJuice.MyTrack.monthly`, `KiwiJuice.MyTrack.annual`,
       `KiwiJuice.MyTrack.lifetime`. Ils sont examinés **avec** la première version : oubliés, la
@@ -50,12 +56,11 @@ Rien de ce qui suit n'est du code, et c'est précisément pourquoi ça s'oublie.
       d'appareil pour l'éditeur (`identifierForVendor`) dont le relais se sert comme compteur.
       Tout est déjà décrit dans `LegalDocument+PrivacyPolicy.swift`, y compris le transfert à
       OpenAI et le traitement aux États-Unis : il n'y a qu'à le reporter.
-- [ ] **Renseigner l'URL d'assistance (Support URL).** Champ obligatoire de la fiche, et
-      guideline 1.5 : « votre app *et* son URL d'assistance doivent offrir un moyen simple de
-      vous joindre ». La page doit être publique, sans compte à créer, propre à cette app — ni
-      une page d'accueil marketing, ni un profil de réseau social — et porter au moins un canal
-      qui fonctionne : adresse, formulaire ou téléphone. Le formulaire « Envoyer un commentaire »
-      des réglages couvre déjà la moitié « dans l'app » de cette exigence.
+- [ ] **Renseigner les deux URL dans la fiche** une fois les pages en ligne : URL d'assistance
+      et URL de la politique de confidentialité, deux champs distincts. La guideline 1.5 veut
+      que l'app *et* sa page d'assistance offrent chacune un moyen de nous joindre — la ligne
+      « Aide » et le formulaire « Envoyer un commentaire » des réglages tiennent la première
+      moitié, la page la seconde.
 - [ ] **Captures d'écran, description, mots-clés, catégorie.**
 
 ## Déploiement en attente
