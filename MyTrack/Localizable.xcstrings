@@ -16684,46 +16684,6 @@
         }
       }
     },
-    "Vos trajets ne sont plus enregistrés. Vos trajets et rapports déjà enregistrés restent accessibles.": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Ihre Fahrten werden nicht mehr aufgezeichnet. Bereits gespeicherte Fahrten und Berichte bleiben verfügbar."
-          }
-        },
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Your trips are no longer being recorded. The trips and reports you've already saved remain available."
-          }
-        },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Sus viajes ya no se registran. Los viajes e informes ya guardados siguen disponibles."
-          }
-        },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Vos trajets ne sont plus enregistrés. Vos trajets et rapports déjà enregistrés restent accessibles."
-          }
-        },
-        "it": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "I suoi viaggi non vengono più registrati. I viaggi e i rapporti già salvati restano accessibili."
-          }
-        },
-        "pt": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "As suas viagens já não são registadas. As viagens e relatórios já guardados continuam acessíveis."
-          }
-        }
-      }
-    },
     "Votre abonnement a été retrouvé sur ce compte App Store.": {
       "localizations": {
         "de": {
@@ -16800,46 +16760,6 @@
           "stringUnit": {
             "state": "translated",
             "value": "Não foi possível renovar a sua subscrição: o MyTrack deixa de registar viagens e de gerar relatórios. O que já está guardado continua acessível."
-          }
-        }
-      }
-    },
-    "Votre abonnement n'a pas pu être renouvelé : vos trajets ne sont plus enregistrés. Mettez à jour votre moyen de paiement.": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Ihr Abo konnte nicht verlängert werden: Ihre Fahrten werden nicht mehr aufgezeichnet. Aktualisieren Sie Ihre Zahlungsmethode."
-          }
-        },
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Your subscription couldn't be renewed, so your trips are no longer being recorded. Update your payment method."
-          }
-        },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "No se ha podido renovar su suscripción: sus viajes ya no se registran. Actualice su método de pago."
-          }
-        },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Votre abonnement n'a pas pu être renouvelé : vos trajets ne sont plus enregistrés. Mettez à jour votre moyen de paiement."
-          }
-        },
-        "it": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Non è stato possibile rinnovare il suo abbonamento: i suoi viaggi non vengono più registrati. Aggiorni il metodo di pagamento."
-          }
-        },
-        "pt": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Não foi possível renovar a sua subscrição: as suas viagens já não são registadas. Atualize o seu método de pagamento."
           }
         }
       }
@@ -17440,6 +17360,86 @@
           "stringUnit": {
             "state": "translated",
             "value": "Para que a deteção funcione, não force o fecho da aplicação (não deslize para cima). Deixe-a simplesmente em segundo plano."
+          }
+        }
+      }
+    },
+    "Vos trajets ne sont plus enregistrés et vous ne pouvez plus créer de rapport. Ce qui est déjà enregistré reste accessible.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ihre Fahrten werden nicht mehr aufgezeichnet und Sie können keine Berichte mehr erstellen. Bereits Gespeichertes bleibt verfügbar."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Your trips are no longer being recorded and you can't create reports. Everything you've already saved remains available."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sus viajes ya no se registran y no puede crear informes. Todo lo ya guardado sigue disponible."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Vos trajets ne sont plus enregistrés et vous ne pouvez plus créer de rapport. Ce qui est déjà enregistré reste accessible."
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "I suoi viaggi non vengono più registrati e non può creare rapporti. Tutto ciò che è già salvato resta accessibile."
+          }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "As suas viagens já não são registadas e não pode criar relatórios. Tudo o que já foi guardado continua acessível."
+          }
+        }
+      }
+    },
+    "Votre abonnement n'a pas pu être renouvelé : vos trajets ne sont plus enregistrés et vous ne pouvez plus créer de rapport. Mettez à jour votre moyen de paiement.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ihr Abo konnte nicht verlängert werden: Ihre Fahrten werden nicht mehr aufgezeichnet und Sie können keine Berichte mehr erstellen. Aktualisieren Sie Ihre Zahlungsmethode."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Your subscription couldn't be renewed, so your trips are no longer being recorded and you can't create reports. Update your payment method."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No se ha podido renovar su suscripción: sus viajes ya no se registran y no puede crear informes. Actualice su método de pago."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Votre abonnement n'a pas pu être renouvelé : vos trajets ne sont plus enregistrés et vous ne pouvez plus créer de rapport. Mettez à jour votre moyen de paiement."
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Non è stato possibile rinnovare il suo abbonamento: i suoi viaggi non vengono più registrati e non può creare rapporti. Aggiorni il metodo di pagamento."
+          }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Não foi possível renovar a sua subscrição: as suas viagens já não são registadas e não pode criar relatórios. Atualize o seu método de pagamento."
           }
         }
       }

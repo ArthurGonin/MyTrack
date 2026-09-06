@@ -151,19 +151,26 @@ final class NotificationService: NSObject, UNUserNotificationCenterDelegate {
     /// alerte qui atteint l'utilisateur app fermée — donc la seule qui puisse
     /// lui épargner de découvrir trois semaines plus tard que rien n'a été
     /// enregistré.
+    ///
+    /// Le texte nomme les deux choses que l'abonnement paie, l'enregistrement
+    /// et la création de rapports, depuis que la seconde est passée derrière
+    /// lui : ne parler que des trajets laissait croire que le reste marchait
+    /// encore. Il reste court malgré tout — une notification se lit en deux
+    /// lignes, et la troisième phrase est ce que l'utilisateur veut savoir
+    /// tout de suite : ce qu'il a déjà ne disparaît pas.
     func notifySubscriptionLapsed(hasBillingIssue: Bool) {
         let content = UNMutableNotificationContent()
         if hasBillingIssue {
             content.title = String(localized: "Problème de paiement", bundle: bundle, locale: locale)
             content.body = String(
-                localized: "Votre abonnement n'a pas pu être renouvelé : vos trajets ne sont plus enregistrés. Mettez à jour votre moyen de paiement.",
+                localized: "Votre abonnement n'a pas pu être renouvelé : vos trajets ne sont plus enregistrés et vous ne pouvez plus créer de rapport. Mettez à jour votre moyen de paiement.",
                 bundle: bundle,
                 locale: locale
             )
         } else {
             content.title = String(localized: "Abonnement expiré", bundle: bundle, locale: locale)
             content.body = String(
-                localized: "Vos trajets ne sont plus enregistrés. Vos trajets et rapports déjà enregistrés restent accessibles.",
+                localized: "Vos trajets ne sont plus enregistrés et vous ne pouvez plus créer de rapport. Ce qui est déjà enregistré reste accessible.",
                 bundle: bundle,
                 locale: locale
             )
