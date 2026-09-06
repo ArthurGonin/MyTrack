@@ -7,6 +7,13 @@ l'état réel du dépôt. Rangé par ce qui bloque quoi, et non par difficulté.
 
 ## Bloquant pour une soumission App Store — dans le code
 
+- [ ] **Retirer le bloc `TEMP-SCREENSHOT`** de `MyTrackApp.swift` — il demande l'autorisation
+      de notification au lancement, pour que les captures en ligne de commande puissent en
+      montrer une. Commité le 6 septembre 2026 sur demande, parce qu'il sert encore aux essais
+      sur route et qu'il ne s'exécute pas tout seul : il est fermé derrière le drapeau
+      `UserDefaults` « askNotif », que seul un `simctl` pose. Inerte dans un build Xcode
+      ordinaire, donc — mais c'est de l'échafaudage, et l'échafaudage ne part pas sur l'App
+      Store. À sortir avant de soumettre.
 - [x] **Retirer le bloc `TEMP-PREDICATE-TEST`** — fait, après l'avoir fait parler le
       6 septembre 2026. Verdict : `#Predicate` ne sait toujours pas comparer une propriété
       d'énumération à un cas, et la variante par `rawValue` ferme carrément l'app. Le filtre en

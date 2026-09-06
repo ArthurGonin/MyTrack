@@ -118,6 +118,12 @@ struct MyTrackApp: App {
                 }
             }
             .environment(appServices)
+            // TEMP-SCREENSHOT : demande l'autorisation de notification au lancement.
+            .task {
+                guard UserDefaults.standard.bool(forKey: "askNotif") else { return }
+                let granted = await appServices.notificationService.requestAuthorization()
+                AppLog.recording.notice("NOTIF-AUTH: \(granted ? "accordée" : "refusée", privacy: .public)")
+            }
             // Tous les boutons de l'app en gélule. Posé ici plutôt que sur
             // chaque bouton : la forme se transmet par l'environnement, donc
             // un bouton ajouté plus tard la prend sans qu'on y pense — et
