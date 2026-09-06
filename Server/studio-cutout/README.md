@@ -111,13 +111,19 @@ autant que sur un fond blanc : un halo blanc ne se voit que sur le noir.
 
 ## Le modèle, et sa date de péremption
 
-Confronté à la documentation d'OpenAI le **2 septembre 2026** :
+Confronté à la documentation d'OpenAI le **5 septembre 2026** :
 
-- `gpt-image-1`, sur quoi ce proxy était écrit, **s'arrête le 23 octobre 2026**. D'où
-  `gpt-image-2`, son remplaçant désigné, ici comme dans le mode debug de l'app.
+- `gpt-image-2` n'est ni déprécié ni annoncé pour l'arrêt. Il est au contraire le remplaçant
+  désigné de tous les autres : `gpt-image-1` s'arrête le 23 octobre 2026, et `gpt-image-1-mini`,
+  `gpt-image-1.5` et `chatgpt-image-latest` le 1er décembre 2026. OpenAI ramène son offre
+  d'images à ce seul modèle — c'est donc le bon endroit où être.
 - Les paramètres tiennent tels quels : `size=1536x1024`, `quality=low`, `background=transparent`,
   `output_format=png`. Le fond transparent demande toujours du PNG (ou du WebP), jamais du JPEG.
-- `input_fidelity` n'a pas à être envoyé : `gpt-image-2` ne le laisse pas régler.
+- `input_fidelity` **est** réglable sur `gpt-image-2`, contrairement à ce qui était écrit ici le
+  2 septembre : la documentation le donne en paramètre facultatif, `high` ou `low`. On ne
+  l'envoie pas, donc le modèle applique sa valeur par défaut. À essayer le jour où une
+  carrosserie revient mal reproduite — c'est le réglage qui demande au modèle de coller de plus
+  près à la photo d'entrée, ce que ce prompt réclame déjà en toutes lettres.
 
 Refaites cette confrontation avant chaque déploiement — un modèle d'images a la durée de vie
 d'un yaourt. Le mode debug de l'app journalise la réponse d'OpenAI en cas de refus (catégorie
