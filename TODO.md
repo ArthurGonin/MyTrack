@@ -151,14 +151,16 @@ exercer une fois :
       propriété d'énumération — et un `0` rendu à tort empêcherait l'écran de revue de s'ouvrir
       sans une ligne dans les journaux. À reprendre seulement avec une vérification à
       l'exécution en main.
-- [ ] **`ReportProfileEditView` sauvegarde à chaque frappe** dans le champ du nom. Choix
-      « live-edit » assumé, mais un `context.save()` par caractère.
+- [x] **`ReportProfileEditView` sauvegardait à chaque frappe** dans le champ du nom. Le profil
+      change toujours à chaque touche — c'est ce qui garde le live-edit — mais l'écriture sur le
+      disque et la replanification de la notification attendent que le champ perde le focus ou
+      que l'écran s'en aille.
 - [ ] **Faire tourner les deux secrets partagés** (`StudioCutoutConfiguration`,
       `FeedbackConfiguration`) si le dépôt devient public. Ils sont en clair dans
       l'historique git — assumé et documenté, mais l'hypothèse change avec la visibilité.
-- [ ] **`notifySubscriptionLapsed` ne parle que des trajets.** Depuis que la création de
-      rapports est aussi derrière l'abonnement, la notification est incomplète — gardée courte
-      exprès, mais à revoir si le texte peut s'allonger.
+- [x] **`notifySubscriptionLapsed` ne parlait que des trajets.** Les deux textes nomment
+      désormais l'enregistrement *et* la création de rapports, sans s'allonger : la dernière
+      phrase reste ce qu'on veut savoir d'abord — ce qui est déjà enregistré ne disparaît pas.
 - [ ] **Clé de traduction orpheline** : « Distance totale », ajoutée à la main et plus
       utilisée. Gardée parce que quelqu'un l'a voulue là ; à retirer si elle ne sert plus.
 - [x] **`TripListView` recalculait `trips` plusieurs fois par rendu** (filtre + tri). Les listes
