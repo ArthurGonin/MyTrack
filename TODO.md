@@ -74,17 +74,19 @@ Rien de ce qui suit n'est du code, et c'est précisément pourquoi ça s'oublie.
 
 ## Déploiement en attente
 
-- [ ] **Déployer le proxy de détourage.** Le code du dépôt est corrigé, le worker en ligne
-      tourne encore l'ancien — avec un quota contournable par un simple en-tête.
-      ```sh
-      cd Server/studio-cutout && wrangler deploy
-      ```
-      Si `[[ratelimits]]` est refusé par wrangler, retirer le bloc : le worker le lit sous
-      `if (env.BURST)` et tourne à l'identique sans lui.
-- [ ] **Poser un plafond de dépense mensuel sur la clé OpenAI**
-      (*platform.openai.com → Settings → Limits*). C'est la seule limite qu'un attaquant ne
-      peut pas contourner, et le seul garde-fou qui ne dépende pas de notre code. Cesse d'être
-      optionnel le jour de la mise en vente : le relais devient alors une cible publique.
+- [x] **Déployer le proxy de détourage** — fait le 6 septembre 2026, version
+      `8d846fd7-afdc-4450-a548-399b8f837662` sur
+      `https://mytrack-studio.studio-cutout.workers.dev`. Le quota par IP et le coupe-rafale
+      sont donc enfin en ligne ; jusque-là le worker déployé ne comptait que sur
+      `X-MyTrack-Device`, un en-tête que l'appelant choisit. `[[ratelimits]]` a été accepté par
+      wrangler tel quel — le lien `BURST` apparaît dans les bindings à 2 requêtes / 60 s — donc
+      la solution de repli qui consistait à retirer le bloc n'a pas servi. Vérifié après coup :
+      un mauvais secret partagé rend 403, un GET rend 405, et les deux secrets sont toujours en
+      place (un `deploy` ne les efface pas).
+- [x] **Poser un plafond de dépense mensuel sur la clé OpenAI** — fait le 6 septembre 2026.
+      C'est la seule limite qu'un attaquant ne peut pas contourner, et le seul garde-fou qui ne
+      dépende pas de notre code : il devait être posé avant la mise en vente, où le relais
+      devient une cible publique.
 - [x] **Confronter le modèle d'images à la documentation d'OpenAI** — fait le 5 septembre 2026.
       `gpt-image-2` n'est ni déprécié ni annoncé pour l'arrêt, et c'est le remplaçant désigné de
       tous les autres. À refaire avant chaque déploiement ; détails dans
