@@ -46,7 +46,8 @@ Rien de ce qui suit n'est du code, et c'est précisément pourquoi ça s'oublie.
       demande : `KiwiJuice.MyTrack.monthly`, `KiwiJuice.MyTrack.annual`,
       `KiwiJuice.MyTrack.lifetime`. Ils sont examinés **avec** la première version : oubliés, la
       soumission part sans rien à vendre, et l'app entière est payante.
-- [ ] **Écrire les notes de revue (App Review Information).** Le plus gros risque de rejet, et
+- [ ] **Coller les notes de revue (App Review Information)** — rédigées, prêtes à coller dans
+      `~/Desktop/mytrack-app-store/notes-de-revue.md`. Le plus gros risque de rejet, et
       il n'a rien à voir avec le code. L'app est entièrement payante et son cœur — la détection
       automatique — ne se déclenche qu'en voiture ; l'examinateur est assis dans un bureau et
       verrait une paywall, puis une app qui « ne fait rien ». Lui dire : d'acheter en bac à
@@ -55,16 +56,22 @@ Rien de ce qui suit n'est du code, et c'est précisément pourquoi ça s'oublie.
 - [ ] **Justifier `UIBackgroundModes: location`** dans ces mêmes notes — guideline 2.5.4, un
       service d'arrière-plan doit servir l'objet déclaré. Le cas est légitime, encore faut-il
       l'écrire.
-- [ ] **Remplir le questionnaire App Privacy** : position précise, photos, et l'identifiant
-      d'appareil pour l'éditeur (`identifierForVendor`) dont le relais se sert comme compteur.
-      Tout est déjà décrit dans `LegalDocument+PrivacyPolicy.swift`, y compris le transfert à
-      OpenAI et le traitement aux États-Unis : il n'y a qu'à le reporter.
+- [ ] **Remplir le questionnaire App Privacy** — réponses préparées ligne par ligne dans
+      `~/Desktop/mytrack-app-store/app-privacy.md`. Deux entrées seulement : *Photos or Videos*
+      et *Device ID*, toutes deux « App Functionality », non liées à l'identité, sans tracking.
+      La position n'est **pas** à déclarer : Apple ne compte comme collectée que la donnée qui
+      quitte l'appareil, et les trajets n'en sortent jamais.
 - [ ] **Renseigner les deux URL dans la fiche** une fois les pages en ligne : URL d'assistance
       et URL de la politique de confidentialité, deux champs distincts. La guideline 1.5 veut
       que l'app *et* sa page d'assistance offrent chacune un moyen de nous joindre — la ligne
       « Aide » et le formulaire « Envoyer un commentaire » des réglages tiennent la première
       moitié, la page la seconde.
-- [ ] **Captures d'écran, description, mots-clés, catégorie.**
+- [ ] **Description, mots-clés, catégorie.**
+- [ ] **Captures d'écran** — trois sont faites, au format 6,9″ exigé (1320 × 2868), dans
+      `~/Desktop/mytrack-app-store/captures/`. Elles permettent de soumettre dès maintenant,
+      mais elles viennent du simulateur : l'accueil y montre l'invitation à photographier plutôt
+      que la voiture détourée. À refaire depuis un vrai iPhone 6,9″ pendant les essais sur
+      route — voir `captures.md` à côté.
 
 ## Déploiement en attente
 
