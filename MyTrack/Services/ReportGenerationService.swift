@@ -10,8 +10,33 @@
 import Foundation
 import OSLog
 import SwiftData
+import Observation
 
+@Observable
 final class ReportGenerationService {
+    /// Le nom du profil dont la dernière génération périodique a échoué, ou nil
+    /// quand tout va bien.
+    ///
+    /// Une génération ratée laissait l'utilisateur devant rien : la
+    /// notification lui avait dit « votre rapport est prêt » — elle part à
+    /// l'échéance, alors que le PDF n'est écrit qu'à l'ouverture de l'app — et
+    /// l'onglet Rapports s'ouvrait sur une liste inchangée, sans un mot. Seuls
+    /// les journaux le disaient.
+    ///
+    /// En mémoire seulement, et c'est voulu : la période n'est pas perdue —
+    /// `nextDueDate` reste en arrière tant que rien n'a été produit — donc la
+    /// génération est refaite au lancement suivant, et ce nom revient tout seul
+    /// si elle échoue encore.
+    private(set) var lastPeriodicFailureProfileName: String?
+
+    func recordPeriodicFailure(profileName: String) {
+        lastPeriodicFailureProfileName = profileName
+    }
+
+    func clearPeriodicFailure() {
+        lastPeriodicFailureProfileName = nil
+    }
+
     private let reportsDirectoryName = "Reports"
     private let userProfileService: UserProfileService
     private let unitSettingsService: UnitSettingsService

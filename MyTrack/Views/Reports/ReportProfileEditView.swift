@@ -226,14 +226,11 @@ struct ReportProfileEditView: View {
         appServices.reportProfileService.updateVehicles(vehicles, for: profile, in: modelContext)
     }
 
+    /// Sans garde sur la périodicité : `scheduleReportReadyNotifications`
+    /// annule de lui-même quand le profil n'a plus d'échéance, ce qui est le
+    /// cas dès qu'on le désactive.
     private func rescheduleNotification() {
-        if let nextDueDate = profile.nextDueDate {
-            appServices.notificationService.scheduleReportReadyNotification(
-                for: nextDueDate, profileID: profile.id, profileName: profile.name
-            )
-        } else {
-            appServices.notificationService.cancelReportReadyNotification(profileID: profile.id)
-        }
+        appServices.notificationService.scheduleReportReadyNotifications(for: profile)
     }
 
     /// Dans cet ordre, et pas un autre : le corps cesse de lire le profil,

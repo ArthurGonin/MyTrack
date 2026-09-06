@@ -480,12 +480,6 @@ struct OnboardingView: View {
 
         modelContext.saveOrLog()
 
-        // Lues avant le `Task` : un `@Model` n'est pas `Sendable`, et de toute
-        // façon seules ces trois valeurs y servent.
-        let reportProfileID = reportProfile?.id
-        let reportProfileName = reportProfile?.name
-        let reportProfileDueDate = reportProfile?.nextDueDate
-
         // Requested here — once, at the true end of onboarding — rather than
         // tied to the auto-detection step, since more steps may still follow
         // it and notifications are also used for report-ready alerts.
@@ -500,16 +494,8 @@ struct OnboardingView: View {
         // lancement suivant l'échéance, notification ou pas.
         Task {
             let granted = await appServices.notificationService.requestAuthorization()
-            guard granted,
-                  let reportProfileID,
-                  let reportProfileName,
-                  let reportProfileDueDate
-            else { return }
-            appServices.notificationService.scheduleReportReadyNotification(
-                for: reportProfileDueDate,
-                profileID: reportProfileID,
-                profileName: reportProfileName
-            )
+            guard granted, let reportProfile else { return }
+            appServices.notificationService.scheduleReportReadyNotifications(for: reportProfile)
         }
 
         appServices.onboardingService.hasCompletedOnboarding = true

@@ -1,6 +1,46 @@
 {
   "sourceLanguage": "en",
   "strings": {
+    "Le rapport « %@ » n'a pas pu être généré. MyTrack réessaiera à la prochaine ouverture.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Der Bericht „%@“ konnte nicht erstellt werden. MyTrack versucht es beim nächsten Öffnen erneut."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The “%@” report could not be generated. MyTrack will try again next time you open it."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No se pudo generar el informe «%@». MyTrack lo intentará de nuevo la próxima vez que lo abras."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Le rapport « %@ » n'a pas pu être généré. MyTrack réessaiera à la prochaine ouverture."
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Non è stato possibile generare il rapporto «%@». MyTrack riproverà alla prossima apertura."
+          }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Não foi possível gerar o relatório «%@». O MyTrack tentará novamente na próxima abertura."
+          }
+        }
+      }
+    },
     "Choisissez celui que vous conduisez.": {
       "localizations": {
         "de": {

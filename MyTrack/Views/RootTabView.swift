@@ -173,7 +173,7 @@ struct RootTabView: View {
             while generatedCount < Self.maxCatchUpReportsPerProfile,
                   let period = appServices.reportProfileService.periodDueForGeneration(profile: profile, now: .now) {
                 guard canGenerate else {
-                    let newDueDate = appServices.reportProfileService.skipPeriod(
+                    appServices.reportProfileService.skipPeriod(
                         profile: profile, through: period.periodEnd, in: modelContext
                     )
                     // Reprogrammé ici aussi, et pas seulement après une
@@ -181,11 +181,7 @@ struct RootTabView: View {
                     // rappels en attente (voir `AppServices`), et sans cette
                     // ligne le reprendre ne les ramenait jamais — l'utilisateur
                     // n'était plus prévenu qu'un rapport l'attend.
-                    if let newDueDate {
-                        appServices.notificationService.scheduleReportReadyNotification(
-                            for: newDueDate, profileID: profile.id, profileName: profile.name
-                        )
-                    }
+                    appServices.notificationService.scheduleReportReadyNotifications(for: profile)
                     generatedCount += 1
                     continue
                 }
@@ -235,16 +231,18 @@ struct RootTabView: View {
             AppLog.reports.error(
                 "Periodic report failed for \(profile.name, privacy: .public): \(error.localizedDescription, privacy: .public)"
             )
+            // Dit à l'écran des rapports quoi afficher : sans ça, quelqu'un qui
+            // vient d'appuyer sur « votre rapport est prêt » arrive sur une
+            // liste inchangée et n'apprend jamais pourquoi.
+            appServices.reportGenerationService.recordPeriodicFailure(profileName: profile.name)
             return false
         }
+        appServices.reportGenerationService.clearPeriodicFailure()
 
-        if let newDueDate = appServices.reportProfileService.advanceAfterGeneration(
+        appServices.reportProfileService.advanceAfterGeneration(
             profile: profile, generatedThrough: periodEnd, in: modelContext
-        ) {
-            appServices.notificationService.scheduleReportReadyNotification(
-                for: newDueDate, profileID: profile.id, profileName: profile.name
-            )
-        }
+        )
+        appServices.notificationService.scheduleReportReadyNotifications(for: profile)
         return true
     }
 }

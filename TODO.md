@@ -100,6 +100,12 @@ exercer une fois :
       persistent), ce sont les deux `onChange` qui l'arment qui ne se pilotent pas en ligne de
       commande, faute d'injection de touches. **En build Xcode uniquement** : l'appel est ignoré
       en TestFlight, et n'y affiche jamais rien.
+- [ ] **Le rapport périodique, de la notification au PDF.** Le reste de la chaîne est vérifié au
+      simulateur — l'échéance dépassée déclenche bien la génération à l'ouverture, le PDF porte
+      les bons trajets et les bons totaux, `nextDueDate` avance, les trois échéances suivantes
+      s'arment, et l'onglet Rapports s'ouvre avec la pastille. Restent les deux bouts que la
+      ligne de commande ne touche pas : la **livraison** de la notification à l'heure dite, et
+      le **vrai appui** dessus — les trois lignes du delegate qui lèvent `shouldOpenReportsTab`.
 - [ ] Répondre « Non » dans l'écran de revue, puis appuyer « Oui » sur la notification restée
       affichée : le trajet ne doit **pas** revenir.
 - [ ] Supprimer le compte, relancer : langue et unité doivent repartir sur celles du système.

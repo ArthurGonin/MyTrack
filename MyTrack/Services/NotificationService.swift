@@ -29,6 +29,10 @@ final class NotificationService: NSObject, UNUserNotificationCenterDelegate {
     private static let tripIDKey = "tripID"
     private static let reportReadyKey = "reportReady"
     private static let reportReadyIdentifierPrefix = "REPORT_READY_"
+
+    /// Combien d'échéances à venir sont armées d'un coup. Voir
+    /// `scheduleReportReadyNotifications`.
+    private static let scheduledReportOccurrences = 3
     private static let subscriptionLapsedIdentifier = "SUBSCRIPTION_LAPSED"
 
     /// Raised when the user taps a "your report is ready" notification, so the
@@ -127,9 +131,35 @@ final class NotificationService: NSObject, UNUserNotificationCenterDelegate {
     /// the app, where the actual generation happens on next launch (see RootTabView).
     /// Identified per-profile so several periodic report profiles can each have their
     /// own pending notification without cancelling one another.
-    func scheduleReportReadyNotification(for dueDate: Date, profileID: UUID, profileName: String) {
-        let identifier = reportReadyIdentifier(for: profileID)
-        center.removePendingNotificationRequests(withIdentifiers: [identifier])
+    func scheduleReportReadyNotifications(for profile: ReportProfile) {
+        cancelReportReadyNotification(profileID: profile.id)
+        guard var dueDate = profile.nextDueDate else { return }
+
+        // Les échéances à venir sont armées d'avance, et non une par une.
+        //
+        // La suivante n'était programmée qu'*après* une génération, laquelle
+        // n'a lieu qu'à l'ouverture de l'app : ignorer le rappel d'octobre et
+        // ne pas ouvrir MyTrack du mois suffisait donc à ce que celui de
+        // novembre n'arrive jamais. Rien ne le disait, et les rapports, eux,
+        // étaient bien rattrapés à la réouverture — l'utilisateur perdait
+        // l'alerte, pas le document.
+        //
+        // Trois suffisent à franchir deux périodes muettes, et restent loin des
+        // soixante-quatre notifications qu'iOS garde en attente par app, même
+        // avec plusieurs profils.
+        for occurrence in 0..<Self.scheduledReportOccurrences {
+            schedule(at: dueDate, profileID: profile.id, profileName: profile.name, occurrence: occurrence)
+            guard let next = ReportPeriodBoundary.nextDueDate(
+                after: dueDate,
+                periodicity: profile.periodicity,
+                customIntervalDays: profile.customIntervalDays
+            ) else { return }
+            dueDate = next
+        }
+    }
+
+    private func schedule(at dueDate: Date, profileID: UUID, profileName: String, occurrence: Int) {
+        let identifier = reportReadyIdentifier(for: profileID, occurrence: occurrence)
 
         let content = UNMutableNotificationContent()
         content.title = String(localized: "Votre rapport est prêt", bundle: bundle, locale: locale)
@@ -206,7 +236,15 @@ final class NotificationService: NSObject, UNUserNotificationCenterDelegate {
     }
 
     func cancelReportReadyNotification(profileID: UUID) {
-        center.removePendingNotificationRequests(withIdentifiers: [reportReadyIdentifier(for: profileID)])
+        // L'identifiant sans rang est celui d'avant les échéances multiples. Un
+        // appareil mis à jour en garde un par profil, qu'aucun des nouveaux ne
+        // recouvre : sans cette ligne il resterait armé pour toujours, et
+        // doublerait le premier rappel au lieu de le remplacer.
+        var identifiers = [Self.reportReadyIdentifierPrefix + profileID.uuidString]
+        identifiers += (0..<Self.scheduledReportOccurrences).map {
+            reportReadyIdentifier(for: profileID, occurrence: $0)
+        }
+        center.removePendingNotificationRequests(withIdentifiers: identifiers)
     }
 
     /// Annule les nudges de rapport encore en attente, sans avoir à connaître
@@ -228,8 +266,12 @@ final class NotificationService: NSObject, UNUserNotificationCenterDelegate {
         }
     }
 
-    private func reportReadyIdentifier(for profileID: UUID) -> String {
-        Self.reportReadyIdentifierPrefix + profileID.uuidString
+    /// Le rang est dans l'identifiant, faute de quoi les trois échéances
+    /// armées ensemble s'écraseraient l'une l'autre — et le préfixe reste en
+    /// tête, pour que `cancelReportReadyNotifications` continue de toutes les
+    /// reconnaître sans connaître les profils.
+    private func reportReadyIdentifier(for profileID: UUID, occurrence: Int) -> String {
+        "\(Self.reportReadyIdentifierPrefix)\(profileID.uuidString)_\(occurrence)"
     }
 
     func cancelAllNotifications() {

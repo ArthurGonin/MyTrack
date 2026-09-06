@@ -29,31 +29,9 @@ struct ReportsView: View {
 
     var body: some View {
         NavigationStack {
-            Group {
-                if reports.isEmpty {
-                    ContentUnavailableView {
-                        Label("Aucun rapport", systemImage: "doc.text")
-                    } description: {
-                        Text("Les rapports générés apparaîtront ici, du plus récent au plus ancien.")
-                    } actions: {
-                        Button("Créer un nouveau rapport") { isPresentingExport = true }
-                    }
-                } else {
-                    List {
-                        ForEach(reports) { report in
-                            reportRow(report)
-                                .appCardRow()
-                        }
-                        .onDelete { indexSet in
-                            for index in indexSet {
-                                appServices.reportGenerationService.deleteReport(reports[index], in: modelContext)
-                            }
-                        }
-                    }
-                    // Les lignes portent elles-mêmes leur carte : le style de
-                    // liste ne doit pas en dessiner une seconde autour d'elles.
-                    .listStyle(.plain)
-                }
+            VStack(spacing: 0) {
+                periodicFailureBanner
+                content
             }
             .appBackground()
             .quickLookPreview($previewURL)
@@ -87,6 +65,57 @@ struct ReportsView: View {
                     .reportRead, dwell: Date.now.timeIntervalSince(previewOpenedAt)
                 )
             }
+        }
+    }
+
+    @ViewBuilder
+    private var content: some View {
+        if reports.isEmpty {
+            ContentUnavailableView {
+                Label("Aucun rapport", systemImage: "doc.text")
+            } description: {
+                Text("Les rapports générés apparaîtront ici, du plus récent au plus ancien.")
+            } actions: {
+                Button("Créer un nouveau rapport") { isPresentingExport = true }
+            }
+        } else {
+            List {
+                ForEach(reports) { report in
+                    reportRow(report)
+                        .appCardRow()
+                }
+                .onDelete { indexSet in
+                    for index in indexSet {
+                        appServices.reportGenerationService.deleteReport(reports[index], in: modelContext)
+                    }
+                }
+            }
+            // Les lignes portent elles-mêmes leur carte : le style de
+            // liste ne doit pas en dessiner une seconde autour d'elles.
+            .listStyle(.plain)
+        }
+    }
+
+    /// Ce qui reste quand un rapport périodique n'a pas pu être produit.
+    ///
+    /// Au-dessus de la liste plutôt qu'en alerte : c'est ici qu'on vient
+    /// chercher le rapport annoncé, donc ici que son absence doit s'expliquer —
+    /// et une modale reviendrait à chaque lancement tant que la cause dure,
+    /// pour une nouvelle qui n'a rien d'urgent. Le nom du profil est une donnée
+    /// saisie : il s'interpole, il ne se traduit pas.
+    @ViewBuilder
+    private var periodicFailureBanner: some View {
+        if let profileName = appServices.reportGenerationService.lastPeriodicFailureProfileName {
+            Label {
+                Text("Le rapport « \(profileName) » n'a pas pu être généré. MyTrack réessaiera à la prochaine ouverture.")
+            } icon: {
+                Image(systemName: "exclamationmark.triangle.fill")
+                    .foregroundStyle(.orange)
+            }
+            .font(.footnote)
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .padding(.horizontal, 20)
+            .padding(.bottom, 12)
         }
     }
 
