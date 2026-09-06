@@ -12,8 +12,7 @@ l'état réel du dépôt. Rangé par ce qui bloque quoi, et non par difficulté.
       d'énumération à un cas, et la variante par `rawValue` ferme carrément l'app. Le filtre en
       Swift est donc la voie et non un pis-aller ; les deux erreurs relevées sont écrites dans
       `TripConfirmationStatus`.
-- [ ] **Commiter le travail en cours.** Le plan de migration, le popup d'avis et le reste vivent
-      dans l'arbre de travail, pas dans l'historique.
+- [x] **Commiter le travail en cours** — fait, et poussé sur `origin/main` le 6 septembre 2026.
 - [x] **Renseigner `LegalContact.email`** — vaut `contact@kiwijuice.dev`. Les conditions
       d'utilisation et la politique de confidentialité affichent donc leur section de contact,
       que le RGPD et la nLPD attendent.
