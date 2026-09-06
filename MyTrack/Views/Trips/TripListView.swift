@@ -95,11 +95,20 @@ struct TripListView: View {
         allTrips.filter { $0.confirmationStatus == .confirmed }
     }
 
-    private var trips: [Trip] {
+    /// Les trajets que la liste montre : ceux du véhicule filtré, dans l'ordre
+    /// choisi. Prend la liste confirmée en paramètre pour que le corps de la
+    /// vue, qui l'a déjà relevée, ne la refiltre pas une seconde fois.
+    private func sortedTrips(among confirmed: [Trip]) -> [Trip] {
         let filtered = activeVehicle.map { vehicle in
-            confirmedTrips.filter { $0.vehicle === vehicle }
-        } ?? confirmedTrips
+            confirmed.filter { $0.vehicle === vehicle }
+        } ?? confirmed
         return viewModel.sorted(filtered, by: sortOrder)
+    }
+
+    /// La même liste, pour qui n'a pas le relevé du rendu sous la main — les
+    /// gestes, qui s'exécutent une fois et hors du corps de la vue.
+    private var trips: [Trip] {
+        sortedTrips(among: confirmedTrips)
     }
 
     private var deletedTripsCount: Int {
@@ -119,8 +128,8 @@ struct TripListView: View {
     /// Fusionner demande au moins deux trajets, et aucun en cours : la distance
     /// d'un trajet qui roule encore grandit, alors que le trajet fusionné fige
     /// la sienne au moment de la fusion (voir `Trip+Merge`).
-    private var canMerge: Bool {
-        selectedTrips.count >= 2 && selectedTrips.allSatisfy { !$0.isActive }
+    private func canMerge(_ selected: [Trip]) -> Bool {
+        selected.count >= 2 && selected.allSatisfy { !$0.isActive }
     }
 
     /// Le balayage qui envoie une ligne à la corbeille, ou rien pendant la
@@ -146,9 +155,17 @@ struct TripListView: View {
     private let viewModel = TripListViewModel()
 
     var body: some View {
-        NavigationStack(path: $path) {
+        // Relevés une fois pour ce rendu, puis passés de main en main. Chacun
+        // refaisait sinon son filtre — et `rows` le tri par-dessus — à chaque
+        // lecture : une dizaine de fois par rendu, entre le corps, la barre et
+        // le menu de sélection. Même geste que `MonthlySummary` sur l'accueil.
+        let confirmed = confirmedTrips
+        let rows = sortedTrips(among: confirmed)
+        let selected = rows.filter { selection.contains($0.id) }
+        let trashedCount = deletedTripsCount
+        return NavigationStack(path: $path) {
             Group {
-                if confirmedTrips.isEmpty && deletedTripsCount == 0 {
+                if confirmed.isEmpty && trashedCount == 0 {
                     ContentUnavailableView(
                         "Aucun trajet",
                         systemImage: "map",
@@ -156,10 +173,10 @@ struct TripListView: View {
                     )
                 } else {
                     List {
-                        // Relevée une fois pour ce rendu : la `ForEach` et le
-                        // balayage qui la suit doivent parler de la même liste,
-                        // au même instant — voir `swipeToTrash(in:)`.
-                        let rows = trips
+                        // `rows` vient du relevé fait en tête du corps : la
+                        // `ForEach` et le balayage qui la suit doivent parler de
+                        // la même liste, au même instant — voir
+                        // `swipeToTrash(in:)`.
                         if !rows.isEmpty {
                             Section {
                                 ForEach(rows) { trip in
@@ -168,7 +185,7 @@ struct TripListView: View {
                                 }
                                 .onDelete(perform: swipeToTrash(in: rows))
                             }
-                        } else if !confirmedTrips.isEmpty {
+                        } else if !confirmed.isEmpty {
                             // Un filtre qui ne rend rien le dit sur place plutôt
                             // que de renvoyer à l'écran vide : la corbeille et le
                             // sélecteur de véhicule doivent rester à portée.
@@ -190,11 +207,11 @@ struct TripListView: View {
                                     HStack(spacing: 12) {
                                         Label("Trajets supprimés", systemImage: "trash")
                                         Spacer()
-                                        if deletedTripsCount > 0 {
+                                        if trashedCount > 0 {
                                             // `format:` plutôt qu'une interpolation :
                                             // le séparateur de milliers suit alors la
                                             // langue de l'app.
-                                            Text(deletedTripsCount, format: .number)
+                                            Text(trashedCount, format: .number)
                                                 .foregroundStyle(.secondary)
                                         }
                                         chevron
@@ -234,7 +251,7 @@ struct TripListView: View {
                         // Ce que les trois points prendront pour cible, écrit à
                         // la place du filtre : un menu d'actions qui ne dit pas
                         // sur quoi il agit ne s'ouvre qu'à contrecœur.
-                        selectionTitle
+                        selectionTitle(selected)
                     } else {
                         // Le même bouton que sur l'accueil, au mot près : voir
                         // `VehicleToolbarButton`. Ici il filtre au lieu de choisir.
@@ -245,14 +262,14 @@ struct TripListView: View {
                 }
                 if isSelecting {
                     ToolbarItem(placement: .primaryAction) {
-                        selectionMenu
+                        selectionMenu(selected)
                     }
                     ToolbarItem(placement: .primaryAction) {
                         Button("Terminé") { withAnimation { leaveSelection() } }
                     }
                 // Rien à trier ni à sélectionner tant qu'il n'y a pas de trajet :
                 // les boutons n'apparaissent qu'avec la liste.
-                } else if !trips.isEmpty {
+                } else if !rows.isEmpty {
                     ToolbarItem(placement: .primaryAction) {
                         selectButton
                     }
@@ -354,12 +371,12 @@ struct TripListView: View {
     /// reste une fois les trois points et « Terminé » posés à droite, et un
     /// titre plus long y finissait en « 2 trajets sélection… ».
     @ViewBuilder
-    private var selectionTitle: some View {
+    private func selectionTitle(_ selected: [Trip]) -> some View {
         Group {
-            if selectedTrips.isEmpty {
+            if selected.isEmpty {
                 Text("Sélectionner")
             } else {
-                Text("\(selectedTrips.count) sélectionnés")
+                Text("\(selected.count) sélectionnés")
             }
         }
         .font(.headline)
@@ -370,26 +387,26 @@ struct TripListView: View {
     /// Les actions restent visibles mais éteintes quand la sélection ne s'y
     /// prête pas : un menu dont les lignes apparaissent et disparaissent selon
     /// ce qui est coché n'apprend à personne ce qu'il sait faire.
-    private var selectionMenu: some View {
+    private func selectionMenu(_ selected: [Trip]) -> some View {
         Menu {
             Button {
                 vehiclePicker = .selection
             } label: {
                 Label("Changer de véhicule", systemImage: "car")
             }
-            .disabled(selectedTrips.isEmpty)
+            .disabled(selected.isEmpty)
             Button {
                 mergeSelection()
             } label: {
                 Label("Fusionner", systemImage: "arrow.triangle.merge")
             }
-            .disabled(!canMerge)
+            .disabled(!canMerge(selected))
             Button(role: .destructive) {
                 deleteSelection()
             } label: {
                 Label("Supprimer", systemImage: "trash")
             }
-            .disabled(selectedTrips.isEmpty)
+            .disabled(selected.isEmpty)
         } label: {
             Image(systemName: "ellipsis")
         }
