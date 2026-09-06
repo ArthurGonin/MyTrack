@@ -50,6 +50,12 @@ Rien de ce qui suit n'est du code, et c'est précisément pourquoi ça s'oublie.
       d'appareil pour l'éditeur (`identifierForVendor`) dont le relais se sert comme compteur.
       Tout est déjà décrit dans `LegalDocument+PrivacyPolicy.swift`, y compris le transfert à
       OpenAI et le traitement aux États-Unis : il n'y a qu'à le reporter.
+- [ ] **Renseigner l'URL d'assistance (Support URL).** Champ obligatoire de la fiche, et
+      guideline 1.5 : « votre app *et* son URL d'assistance doivent offrir un moyen simple de
+      vous joindre ». La page doit être publique, sans compte à créer, propre à cette app — ni
+      une page d'accueil marketing, ni un profil de réseau social — et porter au moins un canal
+      qui fonctionne : adresse, formulaire ou téléphone. Le formulaire « Envoyer un commentaire »
+      des réglages couvre déjà la moitié « dans l'app » de cette exigence.
 - [ ] **Captures d'écran, description, mots-clés, catégorie.**
 
 ## Déploiement en attente
