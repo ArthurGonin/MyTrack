@@ -30,8 +30,11 @@ l'état réel du dépôt. Rangé par ce qui bloque quoi, et non par difficulté.
 
 Rien de ce qui suit n'est du code, et c'est précisément pourquoi ça s'oublie.
 
-- [ ] **Mettre en ligne les deux pages de `~/Desktop/mytrack-site/`**, à
-      `mytrack.kiwijuice.dev/privacy` et `mytrack.kiwijuice.dev/support`. Ce sont les deux URL
+- [x] **Mettre en ligne les deux pages de `~/Desktop/mytrack-site/`** — en ligne et vérifiées le
+      6 septembre 2026 : HTTP 200, TLS valide, sans redirection ni compte à créer, six langues
+      servies, texte identique à celui de l'app. Reste `index.html` à poser à la racine, qui
+      répondait 404.
+      Elles sont à `mytrack.kiwijuice.dev/privacy` et `mytrack.kiwijuice.dev/support`. Ce sont les deux URL
       que la fiche réclame, et `LegalContact` les nomme déjà. HTML seul, six langues empilées,
       aucune dépendance — n'importe quel hébergement statique convient, Cloudflare Pages en
       tête puisque le domaine y est déjà.
