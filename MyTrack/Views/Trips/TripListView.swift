@@ -71,6 +71,11 @@ struct TripListView: View {
     /// y touchant.
     @State private var path = NavigationPath()
 
+    /// Quand le détail d'un trajet a été ouvert, pour savoir au retour s'il a
+    /// été regardé ou seulement effleuré. Nil le reste du temps — la corbeille
+    /// emprunte la même pile et ne doit pas compter.
+    @State private var tripOpenedAt: Date?
+
     /// Ce qui s'empile au-dessus de la liste sans être un trajet.
     private enum Destination: Hashable {
         case trash
@@ -298,6 +303,16 @@ struct TripListView: View {
                 }
             }
             .accountToolbar()
+            // Le retour du détail d'un trajet : la pile se vide, la liste
+            // revient, et c'est là que les étoiles ont leur place — pas sur la
+            // carte qu'il était en train de regarder.
+            .onChange(of: path.isEmpty) { _, isEmpty in
+                guard isEmpty, let tripOpenedAt else { return }
+                self.tripOpenedAt = nil
+                appServices.reviewPromptService.milestoneReached(
+                    .tripReviewed, dwell: Date.now.timeIntervalSince(tripOpenedAt)
+                )
+            }
         }
     }
 
@@ -319,6 +334,10 @@ struct TripListView: View {
             if isSelecting {
                 toggleSelection(of: trip)
             } else {
+                // L'heure d'ouverture, relevée ici seulement : c'est elle
+                // qui dira au retour s'il a regardé ce trajet ou s'il a
+                // touché la mauvaise ligne (voir `tripOpenedAt`).
+                tripOpenedAt = .now
                 path.append(trip)
             }
         } label: {

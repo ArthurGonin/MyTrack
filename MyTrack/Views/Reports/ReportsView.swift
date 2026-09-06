@@ -23,6 +23,10 @@ struct ReportsView: View {
     @State private var isPresentingExport = false
     @State private var isMissingFileAlertPresented = false
 
+    /// Quand QuickLook a ouvert le PDF, pour la même raison que
+    /// `TripListView.tripOpenedAt` : un rapport refermé aussitôt n'a pas été lu.
+    @State private var previewOpenedAt: Date?
+
     var body: some View {
         NavigationStack {
             Group {
@@ -73,6 +77,16 @@ struct ReportsView: View {
                 Text("Le fichier PDF de ce rapport n'est plus sur cet appareil. Vous pouvez générer un nouveau rapport sur la même période.")
             }
             .accountToolbar()
+            // QuickLook vient de se refermer : il a lu son rapport et retrouve
+            // la liste. Le même instant que le retour du détail d'un trajet, et
+            // pour la même raison — l'écran est calme, rien n'est recouvert.
+            .onChange(of: previewURL) { _, url in
+                guard url == nil, let previewOpenedAt else { return }
+                self.previewOpenedAt = nil
+                appServices.reviewPromptService.milestoneReached(
+                    .reportRead, dwell: Date.now.timeIntervalSince(previewOpenedAt)
+                )
+            }
         }
     }
 
@@ -145,6 +159,7 @@ struct ReportsView: View {
             isMissingFileAlertPresented = true
             return
         }
+        previewOpenedAt = .now
         previewURL = url
         appServices.reportGenerationService.markOpened(report, in: modelContext)
     }

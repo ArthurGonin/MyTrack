@@ -55,6 +55,10 @@ struct RootTabView: View {
         // il ne dépend pas de cette fenêtre — et la voiture est simplement là
         // en arrivant.
         .vehiclePhotoToast()
+        // Les étoiles d'iOS, quand ReviewPromptService juge le moment venu.
+        // Ici et pas plus bas : le popup ne tient à aucun onglet, et posé sur
+        // chacun il partirait plusieurs fois pour un seul jalon.
+        .reviewPrompt()
         .onAppear {
             if hasPendingTrips {
                 isPendingReviewPresented = true

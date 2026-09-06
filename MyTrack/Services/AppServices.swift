@@ -21,6 +21,7 @@ final class AppServices {
     let unitSettingsService = UnitSettingsService()
     let tripCostSnapshotService = TripCostSnapshotService()
     let onboardingService = OnboardingService()
+    let reviewPromptService = ReviewPromptService()
     let languageService = LanguageService()
     let locationService = LocationService()
     let motionActivityService = MotionActivityService()
@@ -105,6 +106,7 @@ final class AppServices {
         drivingDetector.resetToDefaults()
         notificationService.cancelAllNotifications()
         onboardingService.resetToDefaults()
+        reviewPromptService.resetToDefaults()
         languageService.resetToSystemDefault()
         // La région de l'appareil, et non les kilomètres en dur : l'alerte
         // promet une app d'avant le premier lancement, et un premier lancement
