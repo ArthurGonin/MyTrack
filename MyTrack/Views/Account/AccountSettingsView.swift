@@ -117,6 +117,22 @@ struct AccountSettingsView: View {
 
                 Section {
                     NavigationLink {
+                        DetectionLogView()
+                    } label: {
+                        SettingsRowLabel(
+                            "Journal de détection",
+                            systemImage: "eye.square.fill",
+                            tint: .gray
+                        )
+                    }
+                } footer: {
+                    // Le pied dit à quoi ça sert, faute de quoi la ligne serait
+                    // une curiosité technique posée au milieu des réglages.
+                    Text("Ce que la détection automatique a vu et décidé. À consulter quand un trajet ne s'est pas enregistré.")
+                }
+
+                Section {
+                    NavigationLink {
                         ReportSettingsView()
                     } label: {
                         SettingsRowLabel(

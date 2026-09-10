@@ -67,6 +67,7 @@ final class DrivingDetector {
     private let vehicleService: VehicleService
     private let notificationService: NotificationService
     private let locationService: LocationService
+    private let detectionLog: DetectionLog
     private let modelContext: ModelContext
 
     private(set) var isEnabled: Bool
@@ -100,8 +101,50 @@ final class DrivingDetector {
     private var recordingStartedAt: Date?
     private var pendingStop: PendingStop?
     private var pendingDecisionTask: Task<Void, Never>?
+
+    /// Vrai dès que la conduite est établie — par un échantillon sûr de Core
+    /// Motion, ou par la distance parcourue. Faux tant que le trajet ne repose
+    /// que sur un soupçon. Voir `probationWindow`.
+    private var isDrivingConfirmed = false
+    private var probationTask: Task<Void, Never>?
     private var drivingRecheckTask: Task<Void, Never>?
     private var isMonitoring = false
+
+    /// Un rattrapage est en vol. Le retour au premier plan et un réveil de fond
+    /// tombent volontiers ensemble, et deux rattrapages simultanés donneraient
+    /// deux requêtes d'historique et deux lignes de journal contradictoires
+    /// pour une seule question. Ce n'est pas une garde de correction —
+    /// `startProvisionalTrip` est synchrone sur le fil principal, donc deux
+    /// tâches ne peuvent pas ouvrir deux trajets — mais de lisibilité.
+    private var isCatchingUp = false
+
+    /// La fin de conduite du dernier trajet clos par ce détecteur.
+    ///
+    /// Il n'existe que pour une chose : ne pas rouvrir un trajet sur les
+    /// échantillons « en voiture » qui viennent justement de le clore. On se
+    /// gare, la fenêtre d'arrêt s'écoule, le trajet est enregistré — et le
+    /// réveil suivant retrouve dans l'historique de Core Motion, qui remonte
+    /// cinq minutes, exactement les mêmes échantillons. Rien n'y dit qu'on est
+    /// descendu, puisqu'on est encore assis dedans, et le rattrapage rouvrirait
+    /// un trajet sur une voiture à l'arrêt.
+    ///
+    /// Comparé à la date du dernier automobile, et non appliqué comme un délai :
+    /// un vrai redémarrage produit un échantillon *postérieur* à cette fin-là
+    /// et repart donc aussitôt, là où un délai fixe aurait bloqué celui qui
+    /// s'arrête cinq minutes à la boulangerie et repart.
+    ///
+    /// Sur le disque, parce que le trajet et le réveil qui le suit peuvent
+    /// appartenir à deux processus différents : iOS tue l'app garée, la relance
+    /// au changement de position significatif suivant, et une valeur seulement
+    /// en mémoire vaudrait `nil` au moment exact où elle sert.
+    private var lastDrivingEndedAt: Date? {
+        didSet {
+            UserDefaults.standard.set(
+                lastDrivingEndedAt?.timeIntervalSinceReferenceDate,
+                forKey: Self.lastDrivingEndedKey
+            )
+        }
+    }
 
     /// Ce que Core Motion a dit pour ouvrir la fenêtre d'arrêt.
     ///
@@ -255,8 +298,103 @@ final class DrivingDetector {
     /// sans elle, une fenêtre courte couperait des trajets en deux sur un
     /// échantillon que l'app, suspendue, n'aurait pas vu se démentir.
     private static let drivingRecheckInterval: Duration = .seconds(60)
+
+    /// Combien de temps un trajet ouvert sur un simple soupçon a pour faire ses
+    /// preuves.
+    ///
+    /// Le GPS s'allume désormais sur un échantillon « en voiture » que Core
+    /// Motion donne lui-même pour peu sûr (voir `handle`). C'est le seul moyen
+    /// d'avoir les points du *début* du trajet : le verdict sûr arrive une à
+    /// trois minutes plus tard — huit cents mètres en ville, plusieurs
+    /// kilomètres sur voie rapide — et rien ne peut retrouver après coup des
+    /// positions qui n'ont jamais été mesurées, iOS n'en gardant aucun
+    /// historique. En échange il faut savoir éteindre vite quand le soupçon
+    /// était faux, sans quoi le moindre capteur qui se trompe laisserait le GPS
+    /// tourner jusqu'au bout d'une fenêtre d'arrêt.
+    ///
+    /// Deux minutes, parce que la preuve attendue est d'avoir parcouru les
+    /// 300 m de `minimumAutomaticTripDistance` : ça fait 9 km/h de moyenne,
+    /// sous la vitesse d'un cycliste, donc franchi par n'importe quelle
+    /// conduite réelle — y compris un départ retenu par un feu à cinquante
+    /// mètres de chez soi. À une minute il aurait fallu tenir 18 km/h de
+    /// moyenne, et de vrais trajets urbains se seraient fait effacer.
+    ///
+    /// Ce qui est jeté ici l'est sans un mot : aucune notification ne part de
+    /// ce chemin — elles ne partent que de `finalizeTrip` — et l'utilisateur
+    /// n'a rien vu qu'il faille lui retirer.
+    private static let probationWindow: TimeInterval = 120
+
+    /// De combien un trajet peut être daté avant l'instant où on l'ouvre.
+    ///
+    /// Core Motion date ses échantillons du moment où l'activité a commencé, et
+    /// non du moment où il le dit : c'est cette date-là qui donne le vrai début
+    /// du trajet, et la retenir vaut souvent une dizaine de secondes de route.
+    /// Bornée, parce qu'un échantillon peut couvrir une longue période : un
+    /// trajet daté loin avant son premier point GPS afficherait une durée que
+    /// sa distance ne justifie pas.
+    private static let maxBackdating: TimeInterval = 60
+
+    /// Depuis combien de temps au plus un « en voiture » peut dater pour qu'on
+    /// ouvre encore un trajet dessus.
+    ///
+    /// `recentActivityLookback` est la fenêtre qu'on *interroge* ; celle-ci est
+    /// la fenêtre qu'on *croit*. Les deux diffèrent parce que la question n'est
+    /// pas la même : on remonte cinq minutes pour être sûr de trouver le
+    /// dernier changement, mais on n'ouvre un trajet que si ce changement
+    /// décrit encore maintenant. Un « en voiture » vieux de quatre minutes
+    /// suivi de rien du tout, c'est une voiture garée depuis quatre minutes.
+    ///
+    /// Cent quatre-vingts secondes, c'est-à-dire `stopWindowStandingStill` : un
+    /// trajet en cours qui aurait vu ce silence-là se serait clos tout seul, et
+    /// rouvrir maintenant ce qu'on aurait fermé alors n'aurait aucun sens.
+    private static let automotiveSuspicionMaxAge: TimeInterval = 180
+
+    /// La vitesse Doppler à partir de laquelle un point livré hors trajet vaut
+    /// à lui seul un soupçon de conduite.
+    ///
+    /// Huit mètres par seconde, soit 29 km/h — et c'est la borne *basse* de
+    /// l'estimation qui doit la franchir. Le seuil n'a pas à séparer la voiture
+    /// du vélo, il a à séparer un véhicule d'un piéton, et il n'ouvre qu'une
+    /// probation. Plus haut, on manquerait le trajet urbain lent qui est tout
+    /// l'objet de ce changement : une rue limitée à trente est une rue
+    /// ordinaire.
+    private static let reportedDrivingSpeed: CLLocationSpeed = 8
+
+    /// Le même seuil pour la vitesse *déduite* de deux réveils, et il est plus
+    /// bas : six mètres par seconde, soit 21,6 km/h.
+    ///
+    /// Plus bas parce que la mesure est d'une autre nature — une moyenne de
+    /// porte à porte, feux rouges compris. Une voiture en ville tient 20 à
+    /// 30 km/h de moyenne, un piéton 5, et la marge reste confortable.
+    ///
+    /// Et il faut être clair sur ce que ce déclencheur-ci ne peut pas faire :
+    /// iOS n'émet un changement significatif qu'au-delà de cinq cents mètres,
+    /// et pas plus d'une fois toutes les cinq minutes. Deux réveils consécutifs
+    /// en ville lente peuvent donc n'afficher que 6 km/h de moyenne et ne rien
+    /// déclencher — et par construction, le *premier* réveil d'un trajet n'a
+    /// aucun point de comparaison. C'est un filet pour la route, pas une
+    /// détection rapide pour la ville. La ville, c'est le soupçon de Core
+    /// Motion élargi qui la porte.
+    private static let impliedDrivingSpeed: CLLocationSpeed = 6
+
+    /// Au-delà de quoi une vitesse ne décrit plus un véhicule routier — un
+    /// train à grande vitesse, un avion, ou une mesure aberrante. 55 m/s, soit
+    /// 198 km/h, juste sous le plafond que `TripRecorder.maxPlausibleSpeed`
+    /// applique déjà aux points de la trace.
+    private static let maxRoadSpeed: CLLocationSpeed = 55
+
+    /// La vitesse instantanée qui prouve un véhicule, quelle que soit la
+    /// distance parcourue. Voir `endProbation`.
+    ///
+    /// 8,3 m/s, soit 30 km/h. Personne ne marche ni ne court à cette
+    /// vitesse-là. Un cycliste rapide y arrive : il partira alors en trajet, et
+    /// c'est la question « avez-vous fait ce trajet ? » qui tranchera — la même
+    /// répartition des rôles que pour le bus et le train, déjà écrite dans
+    /// `TripRecorder.minimumAutomaticTripDistance`.
+    private static let confirmingSpeed: CLLocationSpeed = 8.3
     private static let preferenceKey = "isAutoDetectionEnabled"
     private static let requiresConfirmationKey = "autoDetectionRequiresConfirmation"
+    private static let lastDrivingEndedKey = "lastAutomaticDrivingEndedAt"
 
     init(
         motionActivityService: MotionActivityService,
@@ -264,6 +402,7 @@ final class DrivingDetector {
         vehicleService: VehicleService,
         notificationService: NotificationService,
         locationService: LocationService,
+        detectionLog: DetectionLog,
         modelContext: ModelContext,
         hasRecordingAccess: Bool
     ) {
@@ -273,12 +412,20 @@ final class DrivingDetector {
         self.vehicleService = vehicleService
         self.notificationService = notificationService
         self.locationService = locationService
+        self.detectionLog = detectionLog
         self.modelContext = modelContext
         self.isEnabled = UserDefaults.standard.bool(forKey: Self.preferenceKey)
         // Absent key means "never set" rather than "chose automatic": default
         // to true so upgrading users keep today's always-ask behavior instead
         // of being silently switched to auto-accept.
         self.requiresTripConfirmation = UserDefaults.standard.object(forKey: Self.requiresConfirmationKey) as? Bool ?? true
+        // `object(forKey:)` et non `double(forKey:)` : la clé absente rendrait
+        // zéro, c'est-à-dire le 1er janvier 2001, et tout échantillon lui serait
+        // postérieur — la garde ne servirait plus à rien au premier lancement.
+        // Les observateurs ne se déclenchent pas dans un `init`, donc rien n'est
+        // réécrit sur le disque au passage.
+        self.lastDrivingEndedAt = (UserDefaults.standard.object(forKey: Self.lastDrivingEndedKey) as? Double)
+            .map(Date.init(timeIntervalSinceReferenceDate:))
 
         // "Always" location can be granted or revoked from Settings while the
         // app isn't running, so monitoring is re-evaluated on every change
@@ -294,8 +441,8 @@ final class DrivingDetector {
         // in a brand new instance otherwise.
         refresh()
 
-        locationService.onBackgroundWake = { [weak self] in
-            self?.catchUpWithDrivingAlreadyUnderWay()
+        locationService.onBackgroundWake = { [weak self] wake in
+            self?.catchUpWithDrivingAlreadyUnderWay(triggeredBy: .backgroundWake, wokenBy: wake)
         }
     }
 
@@ -377,6 +524,8 @@ final class DrivingDetector {
         // « choisi ainsi » (même piège que `LanguageService.resetToSystemDefault`).
         UserDefaults.standard.removeObject(forKey: Self.preferenceKey)
         UserDefaults.standard.removeObject(forKey: Self.requiresConfirmationKey)
+        lastDrivingEndedAt = nil
+        UserDefaults.standard.removeObject(forKey: Self.lastDrivingEndedKey)
         status = currentStatus
     }
 
@@ -413,7 +562,7 @@ final class DrivingDetector {
     private func stopMonitoringForLostAccess() {
         stopMonitoring()
         status = currentStatus
-        AppLog.recording.notice("Auto-detection stopped: no active subscription.")
+        detectionLog.record("Auto-detection stopped: no active subscription.")
     }
 
     /// Waits until the "Always" escalation started by enable() has settled —
@@ -489,10 +638,10 @@ final class DrivingDetector {
             guard let self else { return }
             switch prompt {
             case .whenInUse:
-                AppLog.recording.notice("Asking for \"When In Use\" location.")
+                detectionLog.record("Asking for \"When In Use\" location.")
                 locationService.requestWhenInUseAuthorization()
             case .always:
-                AppLog.recording.notice("Asking to upgrade location to \"Always\".")
+                detectionLog.record("Asking to upgrade location to \"Always\".")
                 locationService.requestAlwaysAuthorization()
             }
         }
@@ -523,6 +672,19 @@ final class DrivingDetector {
     func refresh() {
         status = currentStatus
         startMonitoringIfPossible()
+        // Le rattrapage est ici, et non dans `startMonitoringIfPossible`, qui
+        // sort à sa toute première garde (`guard !isMonitoring`) quand la
+        // surveillance tourne déjà. Revenir dans l'app en roulant ne
+        // déclenchait donc rien du tout — or c'est le seul moment où
+        // l'utilisateur regarde : il ouvre l'app en voiture, ne voit aucun
+        // trajet, et conclut, à raison, que la détection ne marche pas.
+        //
+        // `startMonitoringIfPossible` n'a que cet appelant-ci, donc rien ne
+        // peut appeler deux fois. Le dernier réveil connu est passé pour que le
+        // retour au premier plan dispose de la même vitesse que lui.
+        catchUpWithDrivingAlreadyUnderWay(
+            triggeredBy: .foreground, wokenBy: locationService.lastBackgroundWake
+        )
     }
 
     private var currentStatus: DrivingDetectionStatus {
@@ -544,13 +706,13 @@ final class DrivingDetector {
         case .off:
             return
         case .needsSubscription:
-            AppLog.recording.notice("Auto-detection is on but there is no active subscription — monitoring stays off.")
+            detectionLog.record("Auto-detection is on but there is no active subscription — monitoring stays off.")
             return
         case .unsupportedDevice:
-            AppLog.recording.notice("Motion activity is unavailable on this device — auto-detection can't run.")
+            detectionLog.record("Motion activity is unavailable on this device — auto-detection can't run.")
             return
         case .needsAlwaysLocation:
-            AppLog.recording.notice("Auto-detection is on but \"Always\" location isn't granted — monitoring stays off.")
+            detectionLog.record("Auto-detection is on but \"Always\" location isn't granted — monitoring stays off.")
             return
         case .needsMotionAccess:
             // Never let arming monitoring be what asks for Motion & Fitness:
@@ -558,7 +720,7 @@ final class DrivingDetector {
             // start with the preference still on would show it straight away,
             // outside the onboarding step that is meant to introduce it.
             // Asking is done explicitly, and only there.
-            AppLog.recording.notice("Motion & Fitness isn't granted — monitoring stays off rather than prompting from here.")
+            detectionLog.record("Motion & Fitness isn't granted — monitoring stays off rather than prompting from here.")
             return
         case .running:
             break
@@ -569,7 +731,125 @@ final class DrivingDetector {
         motionActivityService.startMonitoring { [weak self] activity in
             self?.handle(activity)
         }
-        catchUpWithDrivingAlreadyUnderWay()
+        // La seule ligne positive du journal : sans elle, « armé » et « jamais
+        // atteint » se lisent pareil, c'est-à-dire pas du tout.
+        detectionLog.record("Monitoring armed.")
+    }
+
+    /// Ce qu'un rattrapage a trouvé, et sur quelle foi.
+    ///
+    /// Nommé plutôt qu'un `Bool` : c'est la raison, et non le verdict, qui
+    /// expliquera un trajet manqué quand on relira le journal.
+    private enum CatchUpVerdict {
+        /// Core Motion lit « en voiture », sûr, et rien ne dit qu'on est sorti.
+        case confirmedAutomotive
+        /// « En voiture », mais peu sûr : le soupçon d'un démarrage.
+        case suspectedAutomotive
+        /// « En voiture » sûr, puis plus rien qui bouge, et personne n'est
+        /// descendu : un feu, un bouchon, une barrière de péage.
+        case stoppedInsideAVehicle
+        /// Le GPS mesure une vitesse de véhicule. Core Motion n'est pas
+        /// consulté — voir `speedVerdict`.
+        case measuredSpeed
+        /// Deux réveils successifs assez éloignés pour n'être pas un piéton.
+        case impliedSpeed
+
+        /// Seul le premier cas se passe de probation.
+        var isConfirmed: Bool {
+            if case .confirmedAutomotive = self { return true }
+            return false
+        }
+
+        /// Pour le journal, et pas pour l'écran : aucune traduction à écrire.
+        var logDescription: String {
+            switch self {
+            case .confirmedAutomotive: "confident automotive"
+            case .suspectedAutomotive: "low-confidence automotive"
+            case .stoppedInsideAVehicle: "stopped, still in the vehicle"
+            case .measuredSpeed: "measured GPS speed"
+            case .impliedSpeed: "speed implied between two wakes"
+            }
+        }
+    }
+
+    /// D'où vient un rattrapage.
+    ///
+    /// Ce n'est pas cosmétique : `refresh()` en déclenche un à chaque retour au
+    /// premier plan, et vingt lignes « rien vu » par jour noieraient dans le
+    /// journal les trois qui comptent. Un refus n'y est gardé que lorsqu'il y
+    /// avait quelque chose à décider — un vrai réveil de fond, ou un « en
+    /// voiture » dans l'historique.
+    private enum CatchUpTrigger {
+        case backgroundWake
+        case foreground
+    }
+
+    /// Faut-il ouvrir un trajet sur ce que Core Motion a enregistré ?
+    ///
+    /// C'est ici que le rattrapage cesse d'être plus timide que la décision en
+    /// direct. `handle(_:)` allume le GPS sur un « en voiture » que Core Motion
+    /// donne lui-même pour peu sûr ; ce chemin-ci exigeait un échantillon sûr
+    /// *et* qu'il fût le dernier de la fenêtre. La politique généreuse était
+    /// donc celle qui ne peut pas s'exécuter — une app suspendue ne reçoit
+    /// aucun échantillon vivant — et la timide celle qui décidait vraiment.
+    ///
+    /// Trois cas ouvrent, trois refusent : le refus demande une preuve, pas un
+    /// doute. C'est la règle du fichier prise dans l'autre sens.
+    private static func catchUpVerdict(
+        for reading: MotionActivityService.DrivingReading,
+        lastDrivingEndedAt: Date?,
+        at now: Date
+    ) -> CatchUpVerdict? {
+        guard let lastAutomotiveAt = reading.lastAutomotiveAt else { return nil }
+
+        // Les échantillons qui ont clos le trajet précédent, et qu'on retrouve
+        // dans l'historique parce qu'il remonte plus loin qu'eux. Voir
+        // `lastDrivingEndedAt`.
+        if let lastDrivingEndedAt, lastAutomotiveAt <= lastDrivingEndedAt { return nil }
+
+        // Descendu du véhicule depuis : il n'y a pas de trajet à reprendre.
+        if reading.leftVehicleAt != nil { return nil }
+
+        // Trop vieux pour décrire maintenant. Voir `automotiveSuspicionMaxAge`.
+        guard now.timeIntervalSince(lastAutomotiveAt) <= automotiveSuspicionMaxAge else { return nil }
+
+        if reading.isAutomotive { return .confirmedAutomotive }
+        guard reading.lastAutomotiveWasConfident else { return .suspectedAutomotive }
+        return .stoppedInsideAVehicle
+    }
+
+    /// Ce que la vitesse du réveil dit, Core Motion n'étant pas consulté.
+    ///
+    /// C'est le second déclencheur, et il existe parce que le premier a un
+    /// angle mort connu : téléphone dans une poche, en ville, à l'arrêt un feu
+    /// sur deux, Core Motion hésite entre « je marche » et « en voiture » et ne
+    /// donne souvent que du `.low`. La vitesse ne connaît pas cette
+    /// hésitation — quand le GPS mesure quarante kilomètres-heure, un « je
+    /// marche » est simplement faux.
+    private static func speedVerdict(for wake: LocationService.BackgroundWake) -> CatchUpVerdict? {
+        if let reported = wake.reportedSpeed, (reportedDrivingSpeed...maxRoadSpeed).contains(reported) {
+            return .measuredSpeed
+        }
+        if let implied = wake.impliedSpeed, (impliedDrivingSpeed...maxRoadSpeed).contains(implied) {
+            return .impliedSpeed
+        }
+        return nil
+    }
+
+    /// Ce qu'il faut lire pour comprendre après coup pourquoi un trajet n'a pas
+    /// démarré. Sans ces chiffres, un rattrapage refusé est indiscernable d'un
+    /// rattrapage jamais tenté.
+    private static func logSummary(
+        of reading: MotionActivityService.DrivingReading, at now: Date
+    ) -> String {
+        let automotive = reading.lastAutomotiveAt.map {
+            let age = Int(now.timeIntervalSince($0))
+            return "automotive \(age)s ago (\(reading.lastAutomotiveWasConfident ? "confident" : "low"))"
+        } ?? "no automotive sample"
+        let exit = reading.leftVehicleAt.map {
+            "left the vehicle \(Int(now.timeIntervalSince($0)))s ago"
+        } ?? "no exit seen"
+        return "\(automotive), \(exit)"
     }
 
     /// Core Motion delivers only changes from the moment monitoring arms, so a
@@ -577,7 +857,17 @@ final class DrivingDetector {
     /// path that catches it — most importantly when a significant location
     /// change has just relaunched the app mid-journey, which is exactly the
     /// case automatic detection exists to cover.
-    private func catchUpWithDrivingAlreadyUnderWay() {
+    ///
+    /// `wake` porte ce que le réveil a mesuré, quand c'en est un ; il vaut
+    /// `nil` quand le rattrapage vient de l'armement de la surveillance.
+    private func catchUpWithDrivingAlreadyUnderWay(
+        triggeredBy trigger: CatchUpTrigger,
+        wokenBy wake: LocationService.BackgroundWake? = nil
+    ) {
+        guard !isCatchingUp else { return }
+        guard isEnabled, isMonitoring, !tripRecorder.isRecording else { return }
+        isCatchingUp = true
+
         var bgTaskId: UIBackgroundTaskIdentifier = .invalid
         bgTaskId = UIApplication.shared.beginBackgroundTask {
             if bgTaskId != .invalid {
@@ -585,9 +875,9 @@ final class DrivingDetector {
                 bgTaskId = .invalid
             }
         }
-        
+
         let taskToComplete = bgTaskId
-        
+
         Task { [weak self] in
             defer {
                 if taskToComplete != .invalid {
@@ -595,12 +885,54 @@ final class DrivingDetector {
                 }
             }
             guard let self else { return }
-            guard await motionActivityService.isAutomotiveNow(lookingBack: Self.recentActivityLookback) else { return }
+            defer { isCatchingUp = false }
+
+            let now = Date()
+            let reading = await motionActivityService.recentDriving(lookingBack: Self.recentActivityLookback)
             // Conditions can have changed while the query was in flight.
             guard isEnabled, isMonitoring, !tripRecorder.isRecording else { return }
-            AppLog.recording.notice("Picking up a drive that was already under way when monitoring armed.")
+
+            let motionVerdict = Self.catchUpVerdict(
+                for: reading, lastDrivingEndedAt: lastDrivingEndedAt, at: now
+            )
+            // La vitesse en second, et sans le veto de Core Motion : quand le
+            // GPS mesure quarante kilomètres-heure, un « je marche » est
+            // simplement faux. `lastDrivingEndedAt` ne s'y applique pas non
+            // plus — il parle d'échantillons périmés, alors qu'une vitesse
+            // parle de maintenant, et repartir aussitôt après s'être garé est
+            // un vrai départ.
+            guard let verdict = motionVerdict ?? wake.flatMap(Self.speedVerdict(for:)) else {
+                if trigger == .backgroundWake || reading.lastAutomotiveAt != nil {
+                    detectionLog.record(
+                        "Catch-up found nothing: \(Self.logSummary(of: reading, at: now))."
+                    )
+                }
+                return
+            }
+
+            let drivingSince: Date
+            switch verdict {
+            case .suspectedAutomotive:
+                // Même règle que `handle(_:)` : un « en voiture » peu sûr est ce
+                // que Core Motion produit au *début* d'une conduite, et sa date
+                // de début est alors la vraie heure de départ — à
+                // `maxBackdating` près.
+                drivingSince = max(
+                    reading.lastAutomotiveAt ?? now, now.addingTimeInterval(-Self.maxBackdating)
+                )
+            case .confirmedAutomotive, .stoppedInsideAVehicle, .measuredSpeed, .impliedSpeed:
+                // Maintenant, et non le début de la conduite : celle-ci peut
+                // durer depuis un quart d'heure dont le GPS éteint n'a pas un
+                // seul point, et un trajet daté de là afficherait une durée que
+                // sa distance ne justifie pas.
+                drivingSince = now
+            }
+
+            detectionLog.record(
+                "Catch-up: \(verdict.logDescription) — \(Self.logSummary(of: reading, at: now))."
+            )
             clearPendingDecision()
-            startProvisionalTrip()
+            startProvisionalTrip(confirmed: verdict.isConfirmed, drivingSince: drivingSince)
         }
     }
 
@@ -612,6 +944,9 @@ final class DrivingDetector {
 
     private func resetState() {
         recordingStartedAt = nil
+        isDrivingConfirmed = false
+        probationTask?.cancel()
+        probationTask = nil
         clearPendingDecision()
         drivingRecheckTask?.cancel()
         drivingRecheckTask = nil
@@ -622,17 +957,37 @@ final class DrivingDetector {
         }
     }
 
+    /// La garde de confiance ne vaut plus pour les deux sens, et c'est tout le
+    /// changement : **un soupçon suffit à allumer le GPS, jamais à l'éteindre.**
+    ///
+    /// C'est la même règle que celle écrite en tête de ce fichier — préférer
+    /// l'erreur qui se rattrape — appliquée au démarrage. Démarrer pour rien se
+    /// répare tout seul : le trajet part en probation et s'efface sans un mot.
+    /// Démarrer trop tard ne se répare pas du tout, les mètres non enregistrés
+    /// n'existant nulle part. À l'autre bout, couper une trace en pleine route
+    /// sur un échantillon peu sûr serait la faute irréversible, donc l'arrêt
+    /// continue d'exiger un signal sûr.
     private func handle(_ activity: CMMotionActivity) {
-        guard activity.confidence != .low else { return }
-
         if activity.automotive {
-            // Driving (again): any pending stop or discard decision is off.
-            clearPendingDecision()
+            // Driving (again): any pending stop or discard decision is off —
+            // mais sur la foi d'un signal sûr seulement. Un soupçon ne doit pas
+            // prolonger un trajet que la fenêtre d'arrêt s'apprête à clore.
+            if activity.confidence != .low {
+                clearPendingDecision()
+            }
+
             if !tripRecorder.isRecording {
-                startProvisionalTrip()
+                startProvisionalTrip(
+                    confirmed: activity.confidence != .low,
+                    drivingSince: Self.tripStart(for: activity)
+                )
+            } else if activity.confidence != .low {
+                confirmDriving()
             }
             return
         }
+
+        guard activity.confidence != .low else { return }
 
         // This detector only ends trips it started itself: a manual recording
         // belongs to the user until they stop it by hand.
@@ -640,6 +995,12 @@ final class DrivingDetector {
 
         noteStop(at: Date(), reason: StopReason(isMovingUnderOwnPower: Self.isMovingUnderOwnPower(activity)))
         evaluatePendingDecision()
+    }
+
+    /// L'heure à laquelle dater un trajet ouvert sur cet échantillon. Voir
+    /// `maxBackdating`.
+    private static func tripStart(for activity: CMMotionActivity) -> Date {
+        max(activity.startDate, Date().addingTimeInterval(-maxBackdating))
     }
 
     /// Ouvre la fenêtre d'arrêt, ou lève son ambiguïté si elle est déjà ouverte.
@@ -657,14 +1018,14 @@ final class DrivingDetector {
     private func noteStop(at date: Date, reason: StopReason) {
         guard let pending = pendingStop else {
             pendingStop = PendingStop(since: date, reason: reason)
-            AppLog.recording.notice(
+            detectionLog.record(
                 "Driving stopped — ending the trip in \(Int(Self.stopWindow(for: reason)))s unless it resumes."
             )
             return
         }
         guard case .ambiguous = pending.reason, case .leftTheVehicle = reason else { return }
         pendingStop = PendingStop(since: pending.since, reason: reason)
-        AppLog.recording.notice("The driver has left the vehicle — shortening the stop window.")
+        detectionLog.record("The driver has left the vehicle — shortening the stop window.")
     }
 
     /// Decides what to do with a trip whose driving activity has stopped.
@@ -694,12 +1055,20 @@ final class DrivingDetector {
             return
         }
 
+        // La conduite a cessé, que le trajet soit gardé ou jeté ensuite : c'est
+        // ici qu'on retient l'heure, et non dans `finalizeTrip`, pour couvrir
+        // les deux issues d'un seul geste. Sans elle, le réveil suivant
+        // retrouverait dans l'historique de Core Motion les échantillons mêmes
+        // qui viennent de clore ce trajet et en rouvrirait un sur une voiture
+        // garée. Voir `lastDrivingEndedAt`.
+        lastDrivingEndedAt = stop.since
+
         // Relue maintenant, et non figée à l'ouverture de la fenêtre : un
         // trajet peut avoir franchi le seuil entre-temps, la conduite ayant
         // repris sans que l'app le voie passer.
         let distance = tripRecorder.currentDistanceMeters
         guard distance >= TripRecorder.minimumAutomaticTripDistance else {
-            AppLog.recording.notice(
+            detectionLog.record(
                 "Discarding an automatic trip: \(Int(distance))m covered, under the \(Int(TripRecorder.minimumAutomaticTripDistance))m floor."
             )
             tripRecorder.discard()
@@ -725,21 +1094,106 @@ final class DrivingDetector {
         pendingStop = nil
     }
 
-    private func startProvisionalTrip() {
+    /// `confirmed` dit si la conduite est établie ou seulement soupçonnée ;
+    /// dans le second cas le trajet part en probation. `drivingSince` date le
+    /// trajet, et n'est pas l'instant de cet appel — voir `maxBackdating`.
+    private func startProvisionalTrip(confirmed: Bool, drivingSince: Date) {
         // Un échantillon de mouvement peut arriver dans l'intervalle entre la
         // perte d'accès et l'arrêt effectif de la surveillance.
         guard hasRecordingAccess else { return }
 
         let vehicle = vehicleService.selectedVehicle(in: modelContext)
-        tripRecorder.start(vehicle: vehicle, source: .automatic)
+        tripRecorder.start(vehicle: vehicle, source: .automatic, startDate: drivingSince)
         // Recording can refuse to start (location authorization lost since
         // monitoring was armed); claiming ownership of a trip that doesn't
         // exist would leave this detector waiting on it forever.
         guard tripRecorder.isRecording else { return }
 
         recordingStartedAt = Date()
+        isDrivingConfirmed = confirmed
         clearPendingDecision()
         armDrivingRecheck()
+
+        if confirmed {
+            detectionLog.record("Driving detected — recording.")
+        } else {
+            detectionLog.record(
+                "Driving suspected — recording on probation for \(Int(Self.probationWindow))s."
+            )
+            armProbation()
+        }
+    }
+
+    /// La conduite est établie : le trajet cesse d'être à l'essai et suivra
+    /// désormais le chemin ordinaire — fenêtre d'arrêt, seuil des 300 m,
+    /// confirmation. Sans effet s'il l'était déjà.
+    private func confirmDriving() {
+        // `ownsTripInProgress` d'abord : un échantillon automobile arrive aussi
+        // pendant un trajet lancé à la main, qui n'appartient pas à ce
+        // détecteur et n'a aucune probation à lever.
+        guard ownsTripInProgress, !isDrivingConfirmed else { return }
+        isDrivingConfirmed = true
+        probationTask?.cancel()
+        probationTask = nil
+        detectionLog.record("The suspected drive is confirmed — keeping the trip.")
+    }
+
+    private func armProbation() {
+        probationTask?.cancel()
+        probationTask = Task { [weak self] in
+            try? await Task.sleep(for: .seconds(Self.probationWindow))
+            guard !Task.isCancelled, let self else { return }
+            endProbation()
+        }
+    }
+
+    /// L'échéance est là : ou bien la trace prouve la conduite, ou bien le
+    /// trajet n'a jamais existé.
+    ///
+    /// La distance est la preuve, et non un nouvel échantillon de Core Motion :
+    /// `recentDriving` écarte les échantillons peu sûrs
+    /// (`MotionActivityService.recentDriving`), donc celui qui a ouvert ce
+    /// trajet-ci n'y figurera jamais. Ce que le GPS a mesuré, lui, est un fait.
+    private func endProbation() {
+        probationTask = nil
+        guard ownsTripInProgress, !isDrivingConfirmed else { return }
+
+        let distance = tripRecorder.currentDistanceMeters
+        let peak = tripRecorder.maxObservedSpeed
+        guard distance < TripRecorder.minimumAutomaticTripDistance else {
+            detectionLog.record(
+                "\(Int(distance))m covered on a suspected drive — that is a drive, keeping the trip."
+            )
+            isDrivingConfirmed = true
+            return
+        }
+
+        // La distance n'est pas la seule preuve, et ce n'est pas la bonne pour
+        // un départ retenu. Sortir d'un parking, attendre un feu de
+        // quatre-vingt-dix secondes puis repartir, c'est cinquante mètres en
+        // deux minutes : les 300 m effaçaient là un trajet parfaitement réel,
+        // et l'effaçaient sans un mot. Une vitesse instantanée, elle, tranche
+        // tout de suite — personne ne marche à trente kilomètres-heure — et il
+        // suffit de l'avoir touchée une fois.
+        //
+        // Le seuil des 300 m reste entier ailleurs : dans
+        // `evaluatePendingDecision` il ne demande pas « est-ce un véhicule ? »
+        // mais « ce trajet vaut-il d'être enregistré ? », et une manœuvre de
+        // stationnement à trente kilomètres-heure reste une manœuvre de
+        // stationnement.
+        guard peak < Self.confirmingSpeed else {
+            detectionLog.record(
+                "Only \(Int(distance))m covered, but \(Int(peak * 3.6))km/h was measured — that is a vehicle, keeping the trip."
+            )
+            isDrivingConfirmed = true
+            return
+        }
+
+        detectionLog.record(
+            "Discarding a suspected drive: \(Int(distance))m and \(Int(peak * 3.6))km/h peak in \(Int(Self.probationWindow))s."
+        )
+        tripRecorder.discard()
+        resetState()
     }
 
     /// Relit l'activité de Core Motion à intervalle régulier tant qu'un trajet
@@ -784,8 +1238,11 @@ final class DrivingDetector {
         guard ownsTripInProgress else { return }
 
         if reading.isAutomotive {
+            // Une lecture d'historique ne porte que des échantillons sûrs :
+            // elle tranche donc aussi la probation, sans attendre son échéance.
+            confirmDriving()
             guard pendingStop != nil else { return }
-            AppLog.recording.notice("Core Motion still reads automotive — cancelling the pending stop.")
+            detectionLog.record("Core Motion still reads automotive — cancelling the pending stop.")
             clearPendingDecision()
             return
         }
@@ -808,7 +1265,7 @@ final class DrivingDetector {
         // nothing to show or confirm, so drop it rather than asking the user
         // about a 0 km trip.
         guard tripRecorder.hasRecordedRoutePoints else {
-            AppLog.recording.notice("Discarding an automatic trip that recorded no GPS point.")
+            detectionLog.record("Discarding an automatic trip that recorded no GPS point.")
             tripRecorder.discard()
             resetState()
             return

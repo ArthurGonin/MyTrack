@@ -18,7 +18,23 @@ final class Trip {
     var startLongitude: Double?
     var endLatitude: Double?
     var endLongitude: Double?
-    var routePoints: [RoutePoint]
+    /// La trace GPS, rangée à part du reste de la ligne.
+    ///
+    /// C'est un bloc unique et non une relation : SwiftData sérialise le
+    /// tableau entier dans un seul attribut. À une mesure par seconde, une
+    /// heure de route pèse plusieurs centaines de kilo-octets, et sans
+    /// `.externalStorage` ce poids voyagerait avec la ligne — donc à chaque
+    /// liste de trajets, chaque rapport, chaque requête qui ne veut que des
+    /// dates et des distances.
+    ///
+    /// L'attribut est une *permission*, pas une obligation : SwiftData tranche
+    /// selon la taille, et sort le bloc dans un fichier de
+    /// `.default_SUPPORT/_EXTERNAL_DATA` seulement au-delà de quelques dizaines
+    /// de kilo-octets. C'est exactement ce qu'on veut — la trace d'un trajet de
+    /// quartier reste dans sa ligne, celle d'une heure d'autoroute en sort —
+    /// mais ça veut dire qu'inspecter ce dossier après un court trajet n'y
+    /// montre rien, et que ce n'est pas la preuve d'une panne.
+    @Attribute(.externalStorage) var routePoints: [RoutePoint]
     var vehicle: Vehicle?
 
     /// Les trajets que celui-ci rassemble, quand il est né d'une fusion — vide

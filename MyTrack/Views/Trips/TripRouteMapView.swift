@@ -18,8 +18,17 @@ struct TripRouteMapView: View {
         let id: Int
         let routePoints: [RoutePoint]
 
-        var coordinates: [CLLocationCoordinate2D] {
-            routePoints.map { CLLocationCoordinate2D(latitude: $0.latitude, longitude: $0.longitude) }
+        /// Converties une fois, à la construction du tronçon. En propriété
+        /// calculée, elles l'étaient à chaque rendu du corps de vue — et une
+        /// trace en porte des centaines.
+        let coordinates: [CLLocationCoordinate2D]
+
+        init(id: Int, routePoints: [RoutePoint]) {
+            self.id = id
+            self.routePoints = routePoints
+            self.coordinates = routePoints.map {
+                CLLocationCoordinate2D(latitude: $0.latitude, longitude: $0.longitude)
+            }
         }
     }
 

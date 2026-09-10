@@ -118,10 +118,62 @@ exercer une fois :
       continu (une mesure par seconde) au lieu d'un point tous les dix mètres, et rien de ce
       qui rend ça possible ne s'exerce au simulateur : ni la suspension de l'app, ni Core
       Motion, ni la session d'activité en arrière-plan. Deux chiffres à lire dans la Console,
-      catégorie `recording` : la ligne « Trip finalized: N GPS point(s) over Ns » — N doit
-      valoir à peu près la durée en secondes, pas une dizaine — et l'absence de « No location
-      delivered for Ns ». La pastille bleue doit rester allumée tout le trajet ; si elle
-      s'éteint, c'est l'arrière-plan qu'il faut regarder, pas le filtre.
+      catégorie `recording` : la ligne « Trip finalized: N GPS point(s) over Ns, M kept » — **N**
+      doit valoir à peu près la durée en secondes, pas une dizaine, et c'est lui seul qui dit si
+      la trace est dense ; **M** est ce qu'il en reste une fois la trace allégée, et se lit comme
+      un rapport à N (trois à dix fois moins), jamais comme un rapport à la durée. Et l'absence
+      de « No location delivered for Ns ». La pastille bleue doit rester allumée tout le trajet ;
+      si elle s'éteint, c'est l'arrière-plan qu'il faut regarder, pas le filtre.
+- [ ] **Le début du trajet, qui est tout l'objet du démarrage sur soupçon.** Le GPS s'allume
+      désormais sur un échantillon « en voiture » que Core Motion donne pour peu sûr, au lieu
+      d'attendre son verdict ferme une à trois minutes plus tard. La mesure du gain est
+      visuelle et n'a pas d'autre juge : comparer le drapeau vert « Départ » sur la carte du
+      trajet au lieu d'où l'on est réellement parti. Avant, il tombait plusieurs centaines de
+      mètres — parfois plusieurs kilomètres sur voie rapide — après le départ.
+- [ ] **Le faux positif, qui doit s'effacer sans un mot.** Marcher ou prendre le bus deux
+      minutes sans conduire : si un trajet s'ouvre (la pastille bleue s'allume), il doit
+      disparaître de lui-même au bout de deux minutes — aucune notification, rien dans la liste
+      des trajets, et dans la Console la ligne « Discarding a suspected drive ». Le pendant à
+      vérifier aussi : un vrai trajet urbain lent ne doit **pas** se faire effacer — il tient
+      désormais soit par les 300 m, soit par une vitesse de 30 km/h touchée une seule fois
+      (`maxObservedSpeed`), ce qui sauve le départ retenu par un feu.
+
+- [ ] **La trace débruitée, et la distance qui baisse avec elle.** Chaque point entre désormais
+      dans la trace ramené à mi-chemin de là où ses deux voisins le placeraient (`TripRecorder.smoothed`),
+      avec un point — une seconde — de retard. Ce n'est pas cosmétique : le bruit du GPS
+      n'allonge pas seulement la trace à l'œil, il **allonge chaque pas**, et la distance
+      enregistrée dépassait la vraie de 8 % en ville ordinaire, de 28 % en rues encaissées
+      (mesuré en simulation, une mesure par seconde, bruit de 3 puis 6 mètres). Après lissage :
+      +0,5 %. **Les nouveaux trajets seront donc plus courts d'environ 7 % que les anciens**, et
+      c'est le chiffre juste qui est le nouveau — mais il faut le savoir avant de comparer deux
+      trajets du même parcours de part et d'autre de ce changement. À vérifier sur un
+      aller-retour connu, dont on connaît le kilométrage au compteur de la voiture.
+
+- [ ] **Le déclenchement lui-même, qui est le seul sujet de la passe qui vient.** Un trajet
+      réel n'avait pas démarré du tout : app en arrière-plan, téléphone en poche, ville lente.
+      Une app suspendue ne reçoit aucun échantillon Core Motion — le chemin permissif de
+      `handle(_:)` ne s'y exécute pas — et tout dépendait d'un unique changement de position
+      significatif, exploité par un rattrapage plus strict que la décision en direct.
+      Le protocole : se garer, mettre l'app en arrière-plan **sans la tuer**, boucle urbaine
+      avec deux arrêts à des feux, téléphone en poche, écran verrouillé. Puis lire le
+      **Journal de détection** dans les réglages (ou la Console, catégorie `recording`).
+      Le seul chiffre qui décide de la suite : **le délai entre le démarrage et la première
+      ligne « Background wake » ou « Left the departure boundary »**. Sous deux minutes, la
+      barrière de départ fait son travail ; au-delà de cinq, ou rien du tout, c'est la
+      fréquence des réveils qu'il faudra reprendre.
+
+- [ ] **Le stationnement, qui ne doit rien rouvrir.** Se garer, rester assis deux minutes dans
+      la voiture, puis descendre et marcher. Aucun nouveau trajet ne doit s'ouvrir : c'est ce
+      que `lastDrivingEndedAt` (persisté dans `UserDefaults`) et `leftVehicleAt` empêchent, et
+      c'est la régression la plus probable de tout ce qui vient d'être écrit — le rattrapage
+      retrouve dans l'historique de Core Motion les échantillons mêmes qui ont clos le trajet.
+      À vérifier aussi vingt minutes de marche, app en arrière-plan : zéro trajet gardé.
+
+- [ ] **Le vélo, le bus et le train, qui vont se déclencher plus souvent.** C'est assumé — un
+      trajet manqué est perdu pour toujours, un trajet de trop coûte un « Non » — mais il faut
+      mesurer la fréquence réelle avant de juger les seuils. Un cycliste rapide franchit les
+      30 km/h qui confirment un trajet en probation : ne pas « corriger » en remontant
+      `confirmingSpeed` à 40, ça réintroduirait le trajet urbain lent qu'on vient de sauver.
 - [ ] **Le popup d'avis, aux deux moments qui l'arment.** Ouvrir le détail d'un trajet, y rester
       plus de cinq secondes, revenir : les étoiles doivent arriver une seconde et demie plus
       tard, sur la liste. Puis, la demande dépensée, vérifier qu'un rapport lu ne la relance

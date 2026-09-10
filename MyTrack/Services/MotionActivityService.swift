@@ -48,7 +48,7 @@ final class MotionActivityService {
     }
 
     /// Ce que Core Motion sait de la conduite récente, réduit à ce qui se
-    /// traverse sans risque : deux valeurs simples.
+    /// traverse sans risque : quelques valeurs simples.
     ///
     /// La requête rend des `CMMotionActivity`, qui sont des objets et non des
     /// valeurs — les faire sortir du bloc de rappel les ferait franchir une
@@ -72,6 +72,57 @@ final class MotionActivityService {
         /// « immobile » ; seul un « je marche » tranche. Ce que
         /// `DrivingDetector` en fait est sa politique à lui, pas celle d'ici.
         let isMovingUnderOwnPower: Bool
+
+        /// La date du dernier échantillon « en voiture » de la fenêtre,
+        /// **toutes confiances confondues** — les `.low` compris.
+        ///
+        /// Les trois valeurs ci-dessus ne regardent que les échantillons sûrs,
+        /// et ne lisent que le dernier d'entre eux. C'est ce qu'il faut pour
+        /// *éteindre* le GPS, et il n'est pas question d'y toucher. Mais le
+        /// même filtre servait aussi à l'*allumer*, et il y jetait justement le
+        /// signal qui compte, pour deux raisons :
+        ///
+        /// - Core Motion annonce « en voiture » à confiance faible pendant la
+        ///   première à la troisième minute d'un trajet. C'est le régime
+        ///   ordinaire d'un départ, pas l'exception, et le chemin de rattrapage
+        ///   n'en voyait donc pas un seul.
+        /// - téléphone dans une poche, en ville, Core Motion intercale des
+        ///   « je marche » et des « je ne bouge plus » entre les « en voiture ».
+        ///   Le dernier échantillon sûr est alors un tirage au sort, et quand
+        ///   il tombe mal, non seulement `isAutomotive` est faux mais
+        ///   `isMovingUnderOwnPower` est vrai.
+        ///
+        /// `handle(_:)`, lui, ouvre un trajet sur un `.low` depuis toujours.
+        /// Deux politiques opposées pour la même question — et c'est la stricte
+        /// qui tournait en arrière-plan, c'est-à-dire au seul endroit où elle
+        /// décide de quelque chose.
+        ///
+        /// `nil` quand la fenêtre ne contient aucun échantillon automobile.
+        let lastAutomotiveAt: Date?
+
+        /// Vrai quand ce dernier échantillon automobile était lui-même sûr.
+        /// Distingue « il croit qu'on roule » de « il savait qu'on roulait ».
+        let lastAutomotiveWasConfident: Bool
+
+        /// La date du premier échantillon **sûr** de déplacement par ses propres
+        /// moyens survenu *après* le dernier automobile.
+        ///
+        /// C'est la seule preuve qu'on ait d'être descendu du véhicule, et donc
+        /// le seul motif de refuser d'ouvrir un trajet sur un soupçon. Un « je
+        /// ne bouge plus » ne prouve rien : c'est un feu rouge autant qu'un
+        /// stationnement — Core Motion marque d'ailleurs les deux à la fois,
+        /// `stationary` et `automotive`, quand on attend au volant. `nil` tant
+        /// que rien ne dit qu'on est sorti.
+        let leftVehicleAt: Date?
+
+        static let nothingKnown = DrivingReading(
+            isAutomotive: false,
+            stoppedAt: nil,
+            isMovingUnderOwnPower: false,
+            lastAutomotiveAt: nil,
+            lastAutomotiveWasConfident: false,
+            leftVehicleAt: nil
+        )
     }
 
     /// Ce que dit l'historique de mouvement des `interval` dernières secondes.
@@ -93,8 +144,7 @@ final class MotionActivityService {
     /// terminée il y a deux minutes ne doit pas ressusciter en trajet auquel il
     /// ne resterait plus aucun changement pour le clore.
     func recentDriving(lookingBack interval: TimeInterval) async -> DrivingReading {
-        let nothingKnown = DrivingReading(isAutomotive: false, stoppedAt: nil, isMovingUnderOwnPower: false)
-        guard isAvailable, isAuthorized else { return nothingKnown }
+        guard isAvailable, isAuthorized else { return .nothingKnown }
         let end = Date()
         let start = end.addingTimeInterval(-interval)
         return await withCheckedContinuation { continuation in
@@ -104,14 +154,56 @@ final class MotionActivityService {
                         "Recent activity query failed: \(error.localizedDescription, privacy: .public)"
                     )
                 }
-                let usable = (activities ?? []).filter { $0.confidence != .low }
+                let all = activities ?? []
+
+                // Première lecture : le soupçon, sur *tous* les échantillons,
+                // `.low` compris — voir `DrivingReading.lastAutomotiveAt`. La
+                // requête les rend du plus ancien au plus récent, donc le
+                // dernier automobile rencontré est bien le dernier dans le
+                // temps.
+                var lastAutomotiveAt: Date?
+                var lastAutomotiveWasConfident = false
+                var leftVehicleAt: Date?
+                for activity in all {
+                    if activity.automotive {
+                        lastAutomotiveAt = activity.startDate
+                        lastAutomotiveWasConfident = activity.confidence != .low
+                        // Ce qui suit un « en voiture » recommence à compter :
+                        // la marche *jusqu'à* la voiture ne dit rien de la fin
+                        // du trajet, et sans cette remise à zéro elle
+                        // interdirait d'ouvrir celui qu'elle précède.
+                        leftVehicleAt = nil
+                        continue
+                    }
+                    guard leftVehicleAt == nil,
+                          activity.confidence != .low,
+                          Self.isMovingUnderOwnPower(activity)
+                    else { continue }
+                    leftVehicleAt = activity.startDate
+                }
+
+                // Seconde lecture : la certitude. Inchangée — c'est elle qui
+                // ferme un trajet, et elle continue d'exiger un signal sûr.
+                let usable = all.filter { $0.confidence != .low }
                 guard let latest = usable.last else {
-                    continuation.resume(returning: nothingKnown)
+                    continuation.resume(returning: DrivingReading(
+                        isAutomotive: false,
+                        stoppedAt: nil,
+                        isMovingUnderOwnPower: false,
+                        lastAutomotiveAt: lastAutomotiveAt,
+                        lastAutomotiveWasConfident: lastAutomotiveWasConfident,
+                        leftVehicleAt: leftVehicleAt
+                    ))
                     return
                 }
                 guard !latest.automotive else {
                     continuation.resume(returning: DrivingReading(
-                        isAutomotive: true, stoppedAt: nil, isMovingUnderOwnPower: false
+                        isAutomotive: true,
+                        stoppedAt: nil,
+                        isMovingUnderOwnPower: false,
+                        lastAutomotiveAt: lastAutomotiveAt,
+                        lastAutomotiveWasConfident: lastAutomotiveWasConfident,
+                        leftVehicleAt: leftVehicleAt
                     ))
                     return
                 }
@@ -128,15 +220,20 @@ final class MotionActivityService {
                 continuation.resume(returning: DrivingReading(
                     isAutomotive: false,
                     stoppedAt: stoppedAt,
-                    isMovingUnderOwnPower: latest.walking || latest.running || latest.cycling
+                    isMovingUnderOwnPower: Self.isMovingUnderOwnPower(latest),
+                    lastAutomotiveAt: lastAutomotiveAt,
+                    lastAutomotiveWasConfident: lastAutomotiveWasConfident,
+                    leftVehicleAt: leftVehicleAt
                 ))
             }
         }
     }
 
-    /// Whether the device reads as driving *right now*. See `recentDriving`.
-    func isAutomotiveNow(lookingBack interval: TimeInterval) async -> Bool {
-        await recentDriving(lookingBack: interval).isAutomotive
+    /// Vrai quand l'échantillon dit que la personne se déplace par ses propres
+    /// moyens. `nonisolated` parce que le bloc de rappel de Core Motion, d'où
+    /// elle est appelée, ne l'est pas non plus.
+    nonisolated private static func isMovingUnderOwnPower(_ activity: CMMotionActivity) -> Bool {
+        activity.walking || activity.running || activity.cycling
     }
 
     func startMonitoring(onUpdate: @escaping (CMMotionActivity) -> Void) {

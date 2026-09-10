@@ -23,10 +23,11 @@ final class AppServices {
     let onboardingService = OnboardingService()
     let reviewPromptService = ReviewPromptService()
     let languageService = LanguageService()
-    let locationService = LocationService()
+    let detectionLog = DetectionLog()
     let motionActivityService = MotionActivityService()
     let vehiclePhotoService = VehiclePhotoService()
     let feedbackService = FeedbackService()
+    let locationService: LocationService
     let vehiclePhotoProcessingService: VehiclePhotoProcessingService
     let reportGenerationService: ReportGenerationService
     let notificationService: NotificationService
@@ -35,6 +36,11 @@ final class AppServices {
     let drivingDetector: DrivingDetector
 
     init(modelContext: ModelContext) {
+        // Le journal d'abord : trois services écrivent dedans, et il se lit au
+        // démarrage — y compris celui d'un processus relancé en arrière-plan,
+        // qui est justement celui dont on veut garder la trace.
+        locationService = LocationService(detectionLog: detectionLog)
+
         // Le détourage survit à l'écran qui l'a lancé, donc il vit ici : la
         // vue de l'appareil photo se ferme à l'instant du déclenchement.
         vehiclePhotoProcessingService = VehiclePhotoProcessingService(
@@ -50,13 +56,16 @@ final class AppServices {
             unitSettingsService: unitSettingsService,
             languageService: languageService
         )
-        tripRecorder = TripRecorder(locationService: locationService, modelContext: modelContext)
+        tripRecorder = TripRecorder(
+            locationService: locationService, detectionLog: detectionLog, modelContext: modelContext
+        )
         drivingDetector = DrivingDetector(
             motionActivityService: motionActivityService,
             tripRecorder: tripRecorder,
             vehicleService: vehicleService,
             notificationService: notificationService,
             locationService: locationService,
+            detectionLog: detectionLog,
             modelContext: modelContext,
             hasRecordingAccess: purchaseService.canRecordTrips
         )
@@ -105,6 +114,9 @@ final class AppServices {
         drivingDetector.disable()
         drivingDetector.resetToDefaults()
         notificationService.cancelAllNotifications()
+        // Le journal dit à quelle heure la détection s'est déclenchée, et donc
+        // quand la personne conduisait. La promesse d'effacement l'emporte.
+        detectionLog.clear()
         onboardingService.resetToDefaults()
         reviewPromptService.resetToDefaults()
         languageService.resetToSystemDefault()
