@@ -19,8 +19,18 @@ import Observation
 final class LanguageService {
     private static let selectedLanguageKey = "selectedLanguage"
 
+    /// Écrit seulement quand la langue change *vraiment*. Le garde n'est pas
+    /// une optimisation : un `Picker` SwiftUI réaffecte sa sélection en se
+    /// montant, avec la valeur qu'il vient d'y lire, et sans lui cette
+    /// réaffectation à l'identique persistait la clé. L'app se retrouvait alors
+    /// avec un choix explicite que personne n'avait fait — celui de l'écran de
+    /// bienvenue, qui porte un menu de langues depuis
+    /// `WelcomeLanguageStepView` — et cessait de suivre la langue de l'iPhone
+    /// si elle changeait ensuite, ce que l'`init` ci-dessous cherche justement
+    /// à préserver. Même famille de bug que dans `resetToSystemDefault()`.
     var language: AppLanguage {
         didSet {
+            guard language != oldValue else { return }
             UserDefaults.standard.set(language.rawValue, forKey: Self.selectedLanguageKey)
         }
     }
@@ -43,14 +53,9 @@ final class LanguageService {
     /// notifications — repartirait dans la langue de l'iPhone plutôt que dans
     /// celle de l'app. Les vues, elles, n'en ont pas besoin : `Text` résout ses
     /// clés à partir de la locale de l'environnement.
-    var bundle: Bundle {
-        guard let path = Bundle.main.path(forResource: language.rawValue, ofType: "lproj"),
-              let bundle = Bundle(path: path)
-        else {
-            return .main
-        }
-        return bundle
-    }
+    /// Le calcul lui-même vit sur `AppLanguage`, l'écran de bienvenue ayant
+    /// besoin du bundle des cinq autres langues en plus de celle-ci.
+    var bundle: Bundle { language.bundle }
 
     init() {
         // Rien n'est écrit tant que l'utilisateur n'a pas choisi lui-même :

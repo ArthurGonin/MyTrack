@@ -33,6 +33,25 @@ enum AppLanguage: String, CaseIterable, Identifiable {
         }
     }
 
+    /// Le bundle qui porte les traductions de cette langue.
+    ///
+    /// `LanguageService` s'en sert pour la langue en cours — c'est ce qui
+    /// permet à ce qui s'écrit hors SwiftUI de suivre la langue de l'app. Mais
+    /// il est ici, sur la langue elle-même, parce que l'écran de bienvenue a
+    /// besoin des *six* à la fois : il fait défiler le mot d'accueil dans
+    /// toutes les langues, quelle que soit celle qui est retenue.
+    ///
+    /// Retombe sur le bundle principal quand le `.lproj` manque — l'app parle
+    /// alors sa langue de développement plutôt que de n'afficher aucun mot.
+    var bundle: Bundle {
+        guard let path = Bundle.main.path(forResource: rawValue, ofType: "lproj"),
+              let bundle = Bundle(path: path)
+        else {
+            return .main
+        }
+        return bundle
+    }
+
     /// La première langue des préférences système que l'app sait parler.
     ///
     /// `preferredLanguages` est une liste ordonnée, pas une seule langue : un
