@@ -16,6 +16,7 @@ struct RecordTripViewModel {
 
     var isRecording: Bool { tripRecorder.isRecording }
     var currentDistanceMeters: Double { tripRecorder.currentDistanceMeters }
+    var routeCoordinates: [CLLocationCoordinate2D] { tripRecorder.currentRouteCoordinates }
     var currentStartDate: Date? { tripRecorder.currentStartDate }
     var isAutoDetectionEnabled: Bool { drivingDetector.isEnabled }
 

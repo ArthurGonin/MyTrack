@@ -709,7 +709,7 @@ struct RecordTripView: View {
                         // lisaient plus petits carte rangée que carte ouverte.
                         .frame(maxHeight: isSheetCollapsed ? .infinity : nil)
                     if !isSheetCollapsed {
-                        LiveTripMapView()
+                        LiveTripMapView(route: viewModel.routeCoordinates)
                             .frame(maxWidth: .infinity, maxHeight: .infinity)
                             .opacity(mapOpacity)
                             // L'arrondi des cartes de l'app (`appCard`), et non

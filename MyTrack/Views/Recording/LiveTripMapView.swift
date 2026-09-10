@@ -19,10 +19,25 @@ import MapKit
 /// est un slot unique déjà pris par `TripRecorder` pendant un enregistrement,
 /// s'y brancher ici casserait l'enregistrement.
 struct LiveTripMapView: View {
+    /// Le parcours déjà enregistré, du départ jusqu'au dernier point. Vide
+    /// pendant les deux premières secondes d'un trajet — le lissage retient un
+    /// point le temps qu'arrive son voisin de droite — et c'est sans
+    /// conséquence : une polyligne demande deux points de toute façon.
+    let route: [CLLocationCoordinate2D]
+
     @State private var cameraPosition: MapCameraPosition = .userLocation(fallback: .automatic)
 
     var body: some View {
         Map(position: $cameraPosition, interactionModes: []) {
+            // Le bleu et l'épaisseur de `TripRouteMapView`, délibérément : c'est
+            // la même trace, vue avant et après la fin du trajet, et elle n'a
+            // pas à changer d'apparence entre les deux. C'est aussi la couleur
+            // du point de position, que MapKit dessine par-dessus les tracés
+            // quel que soit l'ordre de déclaration.
+            if route.count >= 2 {
+                MapPolyline(coordinates: route)
+                    .stroke(.blue, style: StrokeStyle(lineWidth: 4, lineCap: .round, lineJoin: .round))
+            }
             UserAnnotation()
         }
         .mapControls {}
@@ -30,8 +45,12 @@ struct LiveTripMapView: View {
 }
 
 #Preview {
-    LiveTripMapView()
-        .frame(height: 300)
-        .clipShape(.rect(cornerRadius: 22, style: .continuous))
-        .padding()
+    LiveTripMapView(route: [
+        CLLocationCoordinate2D(latitude: 46.5197, longitude: 6.6323),
+        CLLocationCoordinate2D(latitude: 46.5205, longitude: 6.6340),
+        CLLocationCoordinate2D(latitude: 46.5218, longitude: 6.6351),
+    ])
+    .frame(height: 300)
+    .clipShape(.rect(cornerRadius: 22, style: .continuous))
+    .padding()
 }
