@@ -86,7 +86,7 @@ final class AppServices {
             notificationService.cancelReportReadyNotifications()
         }
 
-        tripRecorder.cleanUpOrphanedTrips()
+        tripRecorder.cleanUpOrphanedTrips(requiresConfirmation: drivingDetector.requiresTripConfirmation)
     }
 
     /// Les préférences qui ne sont portées par aucun service et qu'il faut donc

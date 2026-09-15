@@ -239,7 +239,17 @@ final class TripRecorder {
     /// An automatic trip that never covered `minimumAutomaticTripDistance` is
     /// discarded, matching what DrivingDetector would have done live; anything
     /// else (manual, or a real journey) is finalized at its last known point.
-    func cleanUpOrphanedTrips() {
+    ///
+    /// - Parameter requiresConfirmation: ce que la détection automatique fait
+    ///   d'un trajet qu'elle vient de terminer — le laisser attendre une
+    ///   réponse, ou l'enregistrer tel quel (voir
+    ///   `DrivingDetector.requiresTripConfirmation`). Un orphelin n'est jamais
+    ///   passé par `DrivingDetector.finalizeTrip`, et restait donc
+    ///   `.pendingConfirmation` quoi qu'on ait réglé : pour quelqu'un qui a
+    ///   justement demandé qu'on ne lui demande rien, le trajet disparaissait
+    ///   — hors de la liste, hors des totaux, hors des rapports, et sans
+    ///   notification pour le rattraper puisqu'aucune n'a été envoyée.
+    func cleanUpOrphanedTrips(requiresConfirmation: Bool) {
         let descriptor = FetchDescriptor<Trip>(predicate: #Predicate { $0.endDate == nil })
         guard let orphans = try? modelContext.fetch(descriptor) else { return }
 
@@ -256,6 +266,9 @@ final class TripRecorder {
                 trip.endDate = lastPoint.timestamp
                 trip.endLatitude = lastPoint.latitude
                 trip.endLongitude = lastPoint.longitude
+                if trip.source == .automatic, !requiresConfirmation {
+                    trip.confirmationStatus = .confirmed
+                }
             }
         }
         modelContext.saveOrLog()

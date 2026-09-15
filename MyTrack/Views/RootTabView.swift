@@ -60,14 +60,14 @@ struct RootTabView: View {
         // chacun il partirait plusieurs fois pour un seul jalon.
         .reviewPrompt()
         .onAppear {
-            if hasPendingTrips {
-                isPendingReviewPresented = true
-            }
             // A notification tapped on a cold launch is handled by the delegate
             // before this view is ever on screen, so the flags have to be
             // checked here too and not only in onChange.
             openReportsTabIfRequested()
             presentPendingReviewIfRequested()
+            // Puis, notification ou pas : un trajet peut attendre une réponse
+            // sans qu'on soit arrivé par elle.
+            presentPendingReviewIfNeeded()
             // Deliberately a plain Task rather than .task: report generation
             // must not be cancelled by leaving the tab, or a PDF could be
             // written with no matching record ever created for it.
@@ -97,6 +97,15 @@ struct RootTabView: View {
         // onAppear call; generatePeriodicReportsIfDue guards against that.
         .onChange(of: scenePhase) { _, newPhase in
             guard newPhase == .active else { return }
+            // Le retour au premier plan, et non `onAppear` : celui-ci ne se
+            // rejoue pas pour une vue qui n'a jamais quitté l'écran, et une app
+            // seulement endormie en arrière-plan — l'état ordinaire de
+            // celle-ci, qu'iOS réveille pour enregistrer — n'en sort jamais.
+            // Le trajet détecté pendant ce temps posait donc sa notification,
+            // et rouvrir l'app sans y toucher ne demandait rien : il restait en
+            // attente, invisible dans la liste, qui ne montre que les trajets
+            // confirmés.
+            presentPendingReviewIfNeeded()
             Task { await generatePeriodicReportsIfDue() }
             // Motion & Fitness can be granted from the Settings app, which
             // CoreMotion reports to nobody. Coming back is the only moment the
@@ -107,22 +116,59 @@ struct RootTabView: View {
             // moment où elle peut s'en apercevoir.
             Task { await appServices.purchaseService.refreshEntitlement() }
         }
+        // Un trajet qui se termine alors que l'app est sous les yeux. La
+        // notification s'affiche bien en bannière — voir
+        // `NotificationService.willPresent` — mais une bannière que personne ne
+        // touche ne laisse rien derrière elle, et le retour au premier plan
+        // ci-dessus n'a pas lieu puisqu'on n'est jamais parti.
+        //
+        // `isRecording` plutôt qu'un signal du détecteur : il retombe dans
+        // `TripRecorder.finalize`, donc avant que `DrivingDetector.finalizeTrip`
+        // ait décidé du statut du trajet, mais `onChange` ne se joue qu'au tour
+        // de boucle suivant — quand il en a fini. Un trajet manuel, lui, naît
+        // confirmé : la revue ne s'ouvre alors que s'il restait autre chose en
+        // attente, ce qui est justement le moment de le demander.
+        .onChange(of: appServices.tripRecorder.isRecording) { wasRecording, isRecording in
+            guard wasRecording, !isRecording else { return }
+            presentPendingReviewIfNeeded()
+        }
     }
 
-    /// Y a-t-il encore un trajet détecté qui attend une réponse ?
+    /// Y a-t-il encore un trajet *terminé* qui attend une réponse ?
+    ///
+    /// Terminé, c'est-à-dire pourvu d'une date de fin. Un trajet automatique
+    /// naît `.pendingConfirmation` et le reste pendant tout l'enregistrement
+    /// (voir `Trip.init`) : sans cette condition, la revue s'ouvrait en pleine
+    /// route et demandait de confirmer un trajet dont la distance grandissait
+    /// encore sous les boutons.
     ///
     /// Le filtre est en Swift, comme partout ailleurs dans l'app : `#Predicate`
     /// ne sait pas comparer une propriété d'énumération à un cas, et ce n'est
     /// plus une prudence mais une mesure — voir `TripConfirmationStatus`, qui
     /// porte les deux erreurs relevées. Le fetch ramène donc toute la table, ce
     /// qui n'est pas gratuit sur une longue histoire de trajets, mais il n'a
-    /// lieu qu'à l'ouverture de l'app et sur un appui de notification. Un
+    /// lieu qu'aux moments où l'app peut poser la question : lancement, retour
+    /// au premier plan, fin d'un enregistrement, appui sur une notification. Un
     /// `fetchCount` avec prédicat, lui, jetterait — et le `try?` d'à côté
     /// rendrait `0` sans un mot : l'écran de revue ne s'ouvrirait plus jamais.
     private var hasPendingTrips: Bool {
         let descriptor = FetchDescriptor<Trip>()
         return ((try? modelContext.fetch(descriptor)) ?? [])
-            .contains { $0.confirmationStatus == .pendingConfirmation }
+            .contains { $0.confirmationStatus == .pendingConfirmation && !$0.isActive }
+    }
+
+    /// Ouvre la revue s'il y a quelque chose à confirmer, et la referme s'il n'y
+    /// a plus rien.
+    ///
+    /// Une affectation plutôt qu'une garde : remettre `true` sur une feuille
+    /// déjà ouverte ne fait rien, et le `false` de l'autre branche rattrape une
+    /// feuille restée ouverte sur un trajet tranché ailleurs — depuis les
+    /// boutons de la notification, par exemple. Une garde
+    /// `!isPendingReviewPresented`, elle, coincerait l'écran pour de bon le jour
+    /// où la feuille ne s'ouvrirait pas : le drapeau resterait `true` sans rien
+    /// à l'écran, et plus rien ne le remettrait à zéro.
+    private func presentPendingReviewIfNeeded() {
+        isPendingReviewPresented = hasPendingTrips
     }
 
     /// Opens the review screen after the user taps a "did you make this trip?"
@@ -132,7 +178,7 @@ struct RootTabView: View {
     private func presentPendingReviewIfRequested() {
         guard appServices.notificationService.shouldOpenPendingTripsReview else { return }
         appServices.notificationService.shouldOpenPendingTripsReview = false
-        isPendingReviewPresented = hasPendingTrips
+        presentPendingReviewIfNeeded()
     }
 
     /// Brings the user to the Rapports tab after they tap a "your report is

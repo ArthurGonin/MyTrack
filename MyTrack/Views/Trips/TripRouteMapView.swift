@@ -6,6 +6,10 @@
 import SwiftUI
 import MapKit
 
+/// Ne rogne pas ses coins : c'est à qui la pose de le faire, selon la surface
+/// où elle se pose. Elle le faisait, d'un arrondi de dix points, et celui-là
+/// l'emportait sur tout ce qu'on lui demandait au-dehors — même leçon que
+/// `LiveTripMapView`, qui la porte en tête depuis plus longtemps.
 struct TripRouteMapView: View {
     /// Un tronçon tracé d'un seul trait, avec son départ et son arrivée.
     ///
@@ -34,19 +38,27 @@ struct TripRouteMapView: View {
 
     private let segments: [Segment]
 
+    /// Ce que le doigt peut faire de la carte. Tout par défaut : l'écran de
+    /// détail est fait pour qu'on explore le trajet. Rien sur l'écran de
+    /// confirmation, où c'est une vignette qu'on regarde le temps de répondre
+    /// oui ou non — et où une carte qui prend le geste empêcherait la feuille
+    /// de se refermer d'un glissement.
+    private let interactionModes: MapInteractionModes
+
     @Environment(\.locale) private var locale
     @Environment(\.localizationBundle) private var localizationBundle
     @State private var cameraPosition: MapCameraPosition
 
     /// Un trajet ordinaire : une seule trace, un seul départ, une seule arrivée.
-    init(routePoints: [RoutePoint]) {
-        self.init(routeSegments: [routePoints])
+    init(routePoints: [RoutePoint], interactionModes: MapInteractionModes = .all) {
+        self.init(routeSegments: [routePoints], interactionModes: interactionModes)
     }
 
     /// Un trajet fusionné : la trace de chaque composant, dans l'ordre où ils
     /// ont été roulés. Chacun garde son drapeau de départ et son drapeau
     /// d'arrivée, numérotés, pour qu'on voie de quoi le trajet est fait.
-    init(routeSegments: [[RoutePoint]]) {
+    init(routeSegments: [[RoutePoint]], interactionModes: MapInteractionModes = .all) {
+        self.interactionModes = interactionModes
         segments = routeSegments
             // Un composant sans trace GPS ne se dessine pas, et ne doit pas non
             // plus décaler la numérotation de ceux qui en ont une.
@@ -67,7 +79,7 @@ struct TripRouteMapView: View {
                     description: Text("Aucun point GPS n'a été enregistré pour ce trajet.")
                 )
             } else {
-                Map(position: $cameraPosition, interactionModes: .all) {
+                Map(position: $cameraPosition, interactionModes: interactionModes) {
                     ForEach(segments) { segment in
                         let coordinates = segment.coordinates
                         if coordinates.count >= 2 {
@@ -97,7 +109,6 @@ struct TripRouteMapView: View {
                 }
             }
         }
-        .clipShape(.rect(cornerRadius: 10))
     }
 
     /// « Départ » sur un trajet ordinaire, « Départ 2 » sur le deuxième tronçon

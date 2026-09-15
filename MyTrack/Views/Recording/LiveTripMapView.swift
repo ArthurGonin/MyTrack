@@ -32,8 +32,8 @@ struct LiveTripMapView: View {
             // Le bleu et l'épaisseur de `TripRouteMapView`, délibérément : c'est
             // la même trace, vue avant et après la fin du trajet, et elle n'a
             // pas à changer d'apparence entre les deux. C'est aussi la couleur
-            // du point de position, que MapKit dessine par-dessus les tracés
-            // quel que soit l'ordre de déclaration.
+            // du point de position juste en dessous, que MapKit dessine
+            // par-dessus les tracés quel que soit l'ordre de déclaration.
             if route.count >= 2 {
                 MapPolyline(coordinates: route)
                     .stroke(.blue, style: StrokeStyle(lineWidth: 4, lineCap: .round, lineJoin: .round))
@@ -41,6 +41,16 @@ struct LiveTripMapView: View {
             UserAnnotation()
         }
         .mapControls {}
+        // Le bleu de Plans, posé explicitement sur la carte.
+        //
+        // `UserAnnotation` n'a pas de couleur à elle : elle prend la teinte de
+        // l'environnement, et celle de l'app est un noir pur qui devient blanc
+        // pur en thème sombre (voir `Color.onAccent`). Le point de position se
+        // dessinait donc en noir au milieu de sa propre trace bleue — un
+        // accident, et non un choix : c'est le seul élément de l'app qui
+        // appartienne à Plans et non à MyTrack, et il doit rester celui que
+        // tout le monde reconnaît.
+        .tint(.blue)
     }
 }
 

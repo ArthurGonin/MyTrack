@@ -111,6 +111,9 @@ struct TripDetailView: View {
             Section("Itinéraire") {
                 TripRouteMapView(routeSegments: routeSegments)
                     .frame(height: 260)
+                    // L'arrondi que la carte posait elle-même, repris ici
+                    // depuis qu'elle laisse ce soin à qui l'affiche.
+                    .clipShape(.rect(cornerRadius: 10))
                     .listRowInsets(EdgeInsets())
             }
         }
