@@ -246,12 +246,16 @@ exercer une fois :
 
 ## Dette technique
 
-- [ ] **Treize avertissements de concurrence**, et non zéro comme l'affirmaient ce fichier et le
-      CLAUDE.md jusqu'au 6 septembre : onze dans `CameraPreview.swift` (`session` et `output`
-      touchés depuis un contexte non isolé) et deux dans `NotificationService.swift`
-      (`UNUserNotificationCenter` n'est pas `Sendable`). Rien qui bloque une soumission. Ils se
-      cachent parce que l'`xcodebuild` incrémental n'en émet aucun pour un fichier qu'il ne
-      recompile pas : pour les revoir, `touch` ces deux fichiers avant de rebuilder.
+- [x] **Treize avertissements de concurrence**, payés le 15 septembre 2026 : le projet compile
+      désormais sans un seul. Les onze de `CameraPreview.swift` disaient une chose vraie — la
+      session et sa sortie sont menées depuis `queue`, pas depuis le fil principal — que le code
+      ne disait pas : `nonisolated` sur les deux propriétés décrit ce qui se passe déjà, et
+      `configureSession` cesse de traverser l'isolation à chaque ligne. Les deux de
+      `NotificationService.swift` tombaient sur un `UNUserNotificationCenter` que le module
+      n'annote pas `Sendable` alors qu'il est fait pour être appelé de n'importe quel fil :
+      `@preconcurrency import UserNotifications`, ce que le compilateur suggérait lui-même.
+      **Ils se cachent** — l'`xcodebuild` incrémental n'émet rien pour un fichier qu'il ne
+      recompile pas : `touch` avant de rebuilder, sans quoi un build vert ne prouve rien.
 - [ ] **Aucune cible de tests.** `ReportPeriodBoundary`, `TripFormatting`, `Trip+Cost` et
       `VehicleDraft.number(from:)` sont du code pur, sans dépendance système, testables tels
       quels — c'est là que le rapport effort/valeur est le meilleur. `DrivingDetector` vient
@@ -295,8 +299,8 @@ exercer une fois :
   derrière.
 - **Le magasin illisible est mis de côté, pas effacé.** Voir `MyTrackApp.makeContainer`.
 - **`SWIFT_STRICT_CONCURRENCY = complete`** est activé, et c'est ce qui empêche la dette de
-  concurrence de revenir. Le projet n'est pas pour autant à zéro avertissement : voir la dette
-  technique ci-dessus.
+  concurrence de revenir. Le projet est à zéro avertissement depuis le 15 septembre 2026 : tout
+  nouvel avertissement est donc une régression, et se voit.
 - **Le moment de la demande d'avis** est le *retour* d'un écran de satisfaction, jamais l'écran
   lui-même : les étoiles ne doivent pas se poser sur la carte qu'on regarde. Voir
   `ReviewPromptService`.

@@ -31,7 +31,7 @@ import SwiftUI
 final class CameraController {
     /// Ce que l'aperçu affiche. Nue au premier affichage : c'est `start()` qui
     /// la garnit, une fois l'autorisation obtenue.
-    let session = AVCaptureSession()
+    nonisolated let session = AVCaptureSession()
 
     /// Faux tant qu'aucune caméra n'a pu être branchée — un simulateur, ou une
     /// autorisation refusée. L'écran propose alors la photothèque.
@@ -55,7 +55,7 @@ final class CameraController {
     /// bouton dans `VehiclePhotoCaptureView`.
     var isFlashOn = false
 
-    private let output = AVCapturePhotoOutput()
+    nonisolated private let output = AVCapturePhotoOutput()
     /// La session se configure et démarre hors du fil principal : `startRunning`
     /// bloque le temps que la caméra s'ouvre, et l'interface se figerait avec.
     private let queue = DispatchQueue(label: "MyTrack.camera")

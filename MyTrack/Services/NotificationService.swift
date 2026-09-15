@@ -13,7 +13,7 @@
 import Foundation
 import OSLog
 import SwiftData
-import UserNotifications
+@preconcurrency import UserNotifications
 import Observation
 
 @Observable

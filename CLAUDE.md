@@ -37,11 +37,12 @@ ponctuels ou périodiques. L'app entière est payante (abonnement ou achat uniqu
   une `MigrationStage`.
 - Concurrence : `SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor` et
   `SWIFT_STRICT_CONCURRENCY = complete`, en mode langage Swift 5. Tout est donc sur le fil
-  principal par défaut ; ce qui n'y est pas le dit (`nonisolated`). Le neuf s'écrit sans un seul
-  avertissement de concurrence, et c'est à garder ainsi — mais le projet n'est pas à zéro :
-  `CameraPreview.swift` en porte onze et `NotificationService.swift` deux (voir `TODO.md`).
-  L'`xcodebuild` incrémental n'en émet aucun pour un fichier qu'il ne recompile pas, donc un
-  build vert ne prouve rien sur le reste : `touch` le fichier suspect pour savoir.
+  principal par défaut ; ce qui n'y est pas le dit (`nonisolated`). **Le projet compile sans un
+  seul avertissement**, et c'est à garder ainsi. Attention : l'`xcodebuild` incrémental n'en
+  émet aucun pour un fichier qu'il ne recompile pas, donc un build vert ne prouve rien sur le
+  reste — `touch` le fichier suspect pour savoir. Un objet mené par un cadre système hors du fil
+  principal (une session AVFoundation, le centre de notifications) porte `nonisolated` sur sa
+  propriété : c'est la description de ce qui se passe, pas une échappatoire.
 - Achats : StoreKit 2, avec `MyTrack.storekit` pour les essais depuis Xcode (le simulateur en
   ligne de commande ne sait pas appliquer cette configuration).
 - Pas de cible de tests.
