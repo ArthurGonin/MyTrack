@@ -169,6 +169,30 @@ exercer une fois :
       retrouve dans l'historique de Core Motion les échantillons mêmes qui ont clos le trajet.
       À vérifier aussi vingt minutes de marche, app en arrière-plan : zéro trajet gardé.
 
+- [ ] **Le trajet naissant, qui ne doit plus se faire tuer par sa propre relecture.** Départ
+      depuis chez soi, à pied jusqu'à la voiture, téléphone verrouillé en poche. La relecture
+      de Core Motion interrogeait cinq minutes glissantes : pour un trajet qui venait de
+      commencer, elle remontait avant son départ et y trouvait cette marche-là. Comme
+      Core Motion n'annonce « en voiture » qu'en confiance faible pendant les premières
+      minutes, la lecture de certitude n'en contenait aucun, datait l'arrêt d'avant le trajet,
+      et le trajet se faisait clore quatre-vingt-dix secondes après son départ. Dans le
+      **Journal de détection** : aucun « Driving stopped » dans les deux premières minutes,
+      aucun « Trip finalized » avec un seul point sur zéro seconde, et aucune notification
+      pour un trajet de 0 km. Ce sont les trois symptômes, et ils ont la même cause.
+
+- [ ] **Le trajet qui doit se fermer même quand Core Motion dit le contraire.** Se garer et
+      rester dix minutes dans la voiture, téléphone à bord. Core Motion marque « en voiture »
+      et « immobile » à la fois pour une voiture garée dans laquelle on reste assis, et ne dit
+      plus rien du tout d'un téléphone oublié dedans : le trajet ne se fermait alors jamais,
+      le GPS tournait à une mesure par seconde, et la course suivante entrait dans le même
+      trajet — d'un seul tenant, donc insécable. La trace tranche désormais : cinq minutes
+      sans s'éloigner de vingt-cinq mètres, et la conduite est finie. À lire : « The route
+      hasn't moved for 300s », puis « GPS tracking stopped ». La **durée enregistrée doit
+      s'arrêter à l'arrivée**, pas dix minutes plus tard — c'est elle que facture un rapport
+      de frais. Le pendant à ne pas casser : un tunnel long ne doit pas couper le trajet (le
+      GPS s'y tait, et un silence n'est pas une preuve d'immobilité), ni un arrêt de moins de
+      cinq minutes moteur tournant.
+
 - [ ] **Le vélo, le bus et le train, qui vont se déclencher plus souvent.** C'est assumé — un
       trajet manqué est perdu pour toujours, un trajet de trop coûte un « Non » — mais il faut
       mesurer la fréquence réelle avant de juger les seuils. Un cycliste rapide franchit les

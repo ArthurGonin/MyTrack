@@ -60,7 +60,11 @@ final class MotionActivityService {
 
         /// Le moment où la conduite a cessé, quand elle a cessé : l'heure du
         /// premier échantillon non-automobile qui suit le dernier automobile.
-        /// `nil` tant qu'on roule, ou quand la fenêtre ne dit rien.
+        ///
+        /// `nil` tant qu'on roule, quand la fenêtre ne dit rien — et quand elle
+        /// ne contient aucun échantillon automobile. Ce dernier cas rendait
+        /// autrefois le premier échantillon de la fenêtre « faute de mieux » :
+        /// voir plus bas pourquoi ce mieux-là était pire que rien.
         let stoppedAt: Date?
 
         /// Vrai quand le dernier échantillon utilisable dit que la personne se
@@ -208,15 +212,28 @@ final class MotionActivityService {
                     return
                 }
                 // Le premier échantillon non-automobile qui suit le dernier
-                // automobile : c'est là que la conduite s'est arrêtée. Si la
-                // fenêtre ne contient rien d'automobile, elle a commencé après
-                // l'arrêt, et son premier échantillon est le mieux qu'on ait.
-                let stoppedAt: Date
-                if let lastAutomotive = usable.lastIndex(where: { $0.automotive }) {
-                    stoppedAt = usable[usable.index(after: lastAutomotive)].startDate
-                } else {
-                    stoppedAt = usable[0].startDate
-                }
+                // automobile : c'est là que la conduite s'est arrêtée.
+                //
+                // Rien du tout quand la fenêtre ne contient aucun automobile, et
+                // c'est un changement. On rendait alors son premier échantillon,
+                // en supposant une fenêtre qui aurait commencé après l'arrêt. Or
+                // le seul lecteur de cette date — `DrivingDetector.recheckDriving`
+                // — interroge une fenêtre ancrée au *début du trajet en cours*,
+                // c'est-à-dire le cas exactement inverse, et le repli y datait la
+                // fin d'une conduite du moment où l'on marchait encore vers la
+                // voiture : Core Motion n'annonce « en voiture » qu'en confiance
+                // faible pendant les premières minutes (voir `lastAutomotiveAt`),
+                // `usable` n'en contenait donc aucun, et le trajet naissant se
+                // faisait clore sur la marche qui l'avait précédé — trace
+                // tronquée à son propre début, trajet supprimé ou enregistré à
+                // zéro mètre.
+                //
+                // Ne rien rendre est la seule réponse juste : d'ici on ignore sur
+                // quelle période l'appelant interroge, donc ce que son silence
+                // veut dire. Deviner à la place de Core Motion est précisément ce
+                // que son lecteur se refuse à faire.
+                let stoppedAt = usable.lastIndex(where: { $0.automotive })
+                    .map { usable[usable.index(after: $0)].startDate }
                 continuation.resume(returning: DrivingReading(
                     isAutomotive: false,
                     stoppedAt: stoppedAt,

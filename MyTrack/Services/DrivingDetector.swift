@@ -19,6 +19,13 @@
 //  see `StopReason`. GPS keeps running through that window so the route isn't
 //  cut if driving resumes.
 //
+//  Core Motion n'est pas le seul juge de la fin, et il ne peut pas l'être : il
+//  marque « en voiture » et « immobile » à la fois pour une voiture garée dans
+//  laquelle on reste assis, et ne dit plus rien du tout d'un téléphone oublié
+//  dedans. Un trajet ne se fermait alors jamais. La trace enregistrée tranche
+//  donc aussi — voir `stillnessBeforeStop` —, et sa parole est la plus forte
+//  des deux : un capteur qui hésite ne dément pas une distance mesurée.
+//
 //  Core Motion only reports activity *changes*, so no decision may rely on a
 //  further sample arriving: a steady drive can produce a single automotive
 //  sample, and a parked phone left perfectly still produces none at all. Every
@@ -133,6 +140,12 @@ final class DrivingDetector {
     /// et repart donc aussitôt, là où un délai fixe aurait bloqué celui qui
     /// s'arrête cinq minutes à la boulangerie et repart.
     ///
+    /// Vaut aussi pour un trajet clos par la trace, où la date retenue est celle
+    /// du dernier point qui bougeait : on est alors toujours assis dans la
+    /// voiture, et les échantillons de la fenêtre décrivent le stationnement
+    /// qu'on vient d'enregistrer. `automotiveSuspicionMaxAge` les aurait de
+    /// toute façon refusés, ayant plus de cinq minutes.
+    ///
     /// Sur le disque, parce que le trajet et le réveil qui le suit peuvent
     /// appartenir à deux processus différents : iOS tue l'app garée, la relance
     /// au changement de position significatif suivant, et une valeur seulement
@@ -172,13 +185,34 @@ final class DrivingDetector {
         }
     }
 
-    /// L'arrêt en cours d'évaluation : depuis quand, et sur quel signal.
+    /// L'arrêt en cours d'évaluation : depuis quand, sur quel signal, et sur
+    /// quelle force de preuve.
     ///
-    /// Les deux ensemble plutôt que deux propriétés côte à côte : elles sont
+    /// Les trois ensemble plutôt que trois propriétés côte à côte : elles sont
     /// posées et effacées d'un seul geste, et rien ne peut les désynchroniser.
     private struct PendingStop {
         let since: Date
         let reason: StopReason
+
+        /// Vrai quand c'est la trace elle-même qui a établi l'immobilité.
+        ///
+        /// La distinction porte sur *qui a le droit d'annuler cet arrêt*, et
+        /// c'est un axe à part entière — d'où une propriété ici plutôt qu'un
+        /// troisième cas de `StopReason`, qui répond, lui, à « combien de temps
+        /// attendre ». Les deux questions se croisent : un arrêt prouvé par la
+        /// trace *et* confirmé par un « je marche » garde la fenêtre courte.
+        ///
+        /// Un arrêt de Core Motion est un **doute** : il dit « je ne vois plus
+        /// de conduite », et un « en voiture » qui suit le dément. Un arrêt de
+        /// la trace est une **preuve** : le véhicule ne s'est pas éloigné de
+        /// vingt-cinq mètres en cinq minutes, et aucun capteur ne dément une
+        /// mesure. C'est exactement là que Core Motion est le plus faible,
+        /// puisqu'il marque `automotive` **et** `stationary` pour une voiture
+        /// garée dans laquelle on reste assis (voir
+        /// `MotionActivityService.DrivingReading.leftVehicleAt`) : sans cette
+        /// règle, le trajet ne se fermait jamais, le GPS tournait jusqu'à ce
+        /// qu'iOS tue l'app, et la course suivante entrait dans le même trajet.
+        let isProvenByTheRoute: Bool
     }
 
     /// Les deux fenêtres système à enchaîner pour atteindre « Toujours ».
@@ -273,6 +307,42 @@ final class DrivingDetector {
         case .ambiguous: stopWindowStandingStill
         }
     }
+
+    /// Combien de temps la trace doit rester immobile pour qu'on tienne la
+    /// course pour finie, Core Motion dût-il dire le contraire.
+    ///
+    /// Cinq minutes, et non `stopWindowStandingStill` : un passage à niveau, un
+    /// pont levant, un bouchon complètement figé tiennent trois minutes. Cinq
+    /// minutes sans s'être éloigné de vingt-cinq mètres, en revanche, ce n'est
+    /// plus de la circulation.
+    ///
+    /// Ce que coûte une erreur de chaque côté n'est pas symétrique, et c'est ce
+    /// qui fixe la valeur. Conclure à tort coupe un trajet en deux, et deux
+    /// trajets se fusionnent d'un geste — la règle de l'en-tête de ce fichier,
+    /// « cut rather than swallow ». Ne pas conclure du tout laisse le GPS
+    /// tourner à une mesure par seconde pendant des heures, facture le
+    /// stationnement comme de la route, et finit par avaler la course suivante
+    /// dans le même trajet, puisque `catchUpWithDrivingAlreadyUnderWay` sort à
+    /// sa garde tant qu'un trajet est en cours : celui-là, `Trip.separate` ne le
+    /// défait pas.
+    ///
+    /// Et ce n'est pas de la latence pour l'utilisateur : l'arrêt est **daté**
+    /// du dernier point qui bougeait, donc la durée du trajet reste exacte. Les
+    /// cinq minutes ne coûtent que du GPS, et seulement dans le cas où Core
+    /// Motion n'a rien dit — se garer et s'éloigner à pied ferme toujours le
+    /// trajet en quatre-vingt-dix secondes.
+    private static let stillnessBeforeStop: TimeInterval = 300
+
+    /// Le silence du GPS au-delà duquel la trace ne répond plus à la question.
+    ///
+    /// Soixante secondes, parce que c'est exactement la garantie que donne
+    /// `TripRecorder.maxSilenceWhileStandingStill` : un appareil immobile mais
+    /// visible produit un point par minute, forcé. Passé ce délai sans rien, ce
+    /// n'est donc pas la voiture qui s'est arrêtée mais le GPS qui ne voit plus
+    /// — un tunnel, un parking couvert, une session endormie que le chien de
+    /// garde de `LocationService` est en train de relancer. L'absence de points
+    /// n'est pas une preuve d'immobilité, c'est une absence de preuve.
+    private static let maxFixSilenceForStillness: TimeInterval = 60
 
     /// Vrai quand l'échantillon dit que la personne se déplace par ses propres
     /// moyens. Le pendant vivant de `DrivingReading.isMovingUnderOwnPower`,
@@ -973,7 +1043,7 @@ final class DrivingDetector {
             // mais sur la foi d'un signal sûr seulement. Un soupçon ne doit pas
             // prolonger un trajet que la fenêtre d'arrêt s'apprête à clore.
             if activity.confidence != .low {
-                clearPendingDecision()
+                cancelPendingStopOnAutomotive()
             }
 
             if !tripRecorder.isRecording {
@@ -1017,15 +1087,78 @@ final class DrivingDetector {
     /// « en voiture », et il l'annule entièrement.
     private func noteStop(at date: Date, reason: StopReason) {
         guard let pending = pendingStop else {
-            pendingStop = PendingStop(since: date, reason: reason)
+            pendingStop = PendingStop(since: date, reason: reason, isProvenByTheRoute: false)
             detectionLog.record(
                 "Driving stopped — ending the trip in \(Int(Self.stopWindow(for: reason)))s unless it resumes."
             )
             return
         }
         guard case .ambiguous = pending.reason, case .leftTheVehicle = reason else { return }
-        pendingStop = PendingStop(since: pending.since, reason: reason)
+        // La preuve déjà acquise ne se perd pas en raccourcissant la fenêtre.
+        pendingStop = PendingStop(
+            since: pending.since, reason: reason, isProvenByTheRoute: pending.isProvenByTheRoute
+        )
         detectionLog.record("The driver has left the vehicle — shortening the stop window.")
+    }
+
+    /// Depuis combien de temps la trace ne décrit plus qu'un véhicule à l'arrêt.
+    ///
+    /// `nil` quand le GPS s'est tu — voir `maxFixSilenceForStillness`. Et mesurée
+    /// jusqu'au dernier point reçu, jamais jusqu'à maintenant : une minute de
+    /// silence ne compte pas comme une minute d'immobilité.
+    private var routeStillness: TimeInterval? {
+        guard let lastFix = tripRecorder.lastFixAt,
+              let lastMovement = tripRecorder.lastMovementAt,
+              Date().timeIntervalSince(lastFix) <= Self.maxFixSilenceForStillness
+        else { return nil }
+        return lastFix.timeIntervalSince(lastMovement)
+    }
+
+    /// Pose l'arrêt que la trace prouve, ou rend indéfaisable celui qui était
+    /// déjà en attente.
+    ///
+    /// L'heure est celle du dernier point qui bougeait et non celle de cet
+    /// appel : c'est ce qui fait que les cinq minutes d'attente ne coûtent que
+    /// de la latence de détection, et pas cinq minutes de durée facturée. Un
+    /// arrêt déjà en attente garde la sienne — il est forcément plus précoce,
+    /// puisque Core Motion parle avant que l'immobilité soit acquise — et ne
+    /// gagne ici que le droit de ne plus être annulé.
+    private func noteRouteStopIfStandingStill() {
+        guard let stillness = routeStillness, stillness >= Self.stillnessBeforeStop,
+              let movedAt = tripRecorder.lastMovementAt
+        else { return }
+
+        guard let pending = pendingStop else {
+            pendingStop = PendingStop(since: movedAt, reason: .ambiguous, isProvenByTheRoute: true)
+            detectionLog.record(
+                "The route hasn't moved for \(Int(stillness))s — ending the trip where it stopped moving."
+            )
+            return
+        }
+        guard !pending.isProvenByTheRoute else { return }
+        pendingStop = PendingStop(
+            since: pending.since, reason: pending.reason, isProvenByTheRoute: true
+        )
+        detectionLog.record("The route confirms the stop — Core Motion can no longer undo it.")
+    }
+
+    /// Annule l'arrêt en attente parce que Core Motion dit qu'on roule encore —
+    /// et refuse de le faire quand la trace dit le contraire.
+    ///
+    /// Distinct de `clearPendingDecision()`, qui efface sans discuter et que
+    /// seuls les chemins « ce trajet n'existe plus » appellent : ouvrir un
+    /// trajet, en finir un, tout remettre à zéro. Voir
+    /// `PendingStop.isProvenByTheRoute`.
+    private func cancelPendingStopOnAutomotive() {
+        guard let pending = pendingStop else { return }
+        guard !pending.isProvenByTheRoute else {
+            detectionLog.record(
+                "Core Motion reads automotive, but the route hasn't moved — keeping the stop."
+            )
+            return
+        }
+        detectionLog.record("Core Motion still reads automotive — cancelling the pending stop.")
+        clearPendingDecision()
     }
 
     /// Decides what to do with a trip whose driving activity has stopped.
@@ -1224,36 +1357,69 @@ final class DrivingDetector {
     private func recheckDriving() async {
         guard ownsTripInProgress, let startedAt = recordingStartedAt else { return }
 
-        // On remonte jusqu'au début du trajet, et non sur une fenêtre fixe : la
+        // On remonte au début du trajet, et pas d'une seconde de plus. La
         // bascule qu'on cherche a forcément eu lieu après lui, et l'app a pu
-        // rester suspendue longtemps entre-temps. Sur cinq minutes glissantes,
-        // un arrêt vieux d'un quart d'heure sortait de la fenêtre : la lecture
-        // ne trouvait plus rien d'automobile dedans et datait la fin du trajet
-        // du bord de la fenêtre — dix minutes de stationnement comptées comme
-        // de la route. La requête reste bon marché, Core Motion n'enregistrant
-        // que des changements.
-        let lookback = max(Self.recentActivityLookback, Date().timeIntervalSince(startedAt))
+        // rester suspendue longtemps entre-temps — d'où une fenêtre qui s'étire
+        // avec le trajet plutôt que cinq minutes glissantes, où un arrêt vieux
+        // d'un quart d'heure sortait du champ et faisait dater la fin du trajet
+        // du bord de la fenêtre.
+        //
+        // Mais le plancher de `recentActivityLookback` qui la gardait n'apportait
+        // rien et coûtait cher : pour tout trajet de moins de cinq minutes, la
+        // fenêtre remontait **avant** son départ et y trouvait la marche jusqu'à
+        // la voiture. Comme Core Motion n'annonce « en voiture » qu'en confiance
+        // faible pendant la première à la troisième minute, la lecture de
+        // certitude n'en contenait aucun : elle datait l'arrêt d'avant le trajet,
+        // et le rabattement qui suivait le posait sur son début. Le trajet
+        // naissant se faisait alors clore quatre-vingt-dix secondes après son
+        // départ — supprimé en pleine route, ou enregistré à zéro mètre avec une
+        // notification pour le demander.
+        //
+        // `currentStartDate` plutôt que `startedAt` : c'est la date du trajet,
+        // donc l'échantillon qui l'a ouvert est dans la fenêtre — ce dont
+        // `isAutomotive` a besoin — sans qu'elle remonte plus haut.
+        let lookback = Date().timeIntervalSince(tripRecorder.currentStartDate ?? startedAt)
         let reading = await motionActivityService.recentDriving(lookingBack: lookback)
+        let now = Date()
         // Conditions can have changed while the query was in flight.
         guard ownsTripInProgress else { return }
 
-        if reading.isAutomotive {
+        // La trace d'abord, et quand elle parle elle tranche seule : c'est la
+        // seule preuve d'arrêt qu'un « en voiture » ne puisse pas défaire. Voir
+        // `stillnessBeforeStop`.
+        noteRouteStopIfStandingStill()
+        if pendingStop?.isProvenByTheRoute == true {
+            evaluatePendingDecision()
+            return
+        }
+
+        // Et l'échantillon doit décrire maintenant, exactement comme dans
+        // `catchUpVerdict`. Sans cette borne, la même donnée avait deux
+        // politiques opposées : pour *ouvrir* un trajet, un « en voiture » de
+        // quatre minutes « c'est une voiture garée depuis quatre minutes »
+        // (`automotiveSuspicionMaxAge`) ; pour le *garder ouvert*, un « en
+        // voiture » de quatre heures valait preuve de conduite — et levait au
+        // passage la probation d'un trajet qui n'en était pas un.
+        if reading.isAutomotive,
+           now.timeIntervalSince(reading.lastAutomotiveAt ?? now) <= Self.automotiveSuspicionMaxAge {
             // Une lecture d'historique ne porte que des échantillons sûrs :
             // elle tranche donc aussi la probation, sans attendre son échéance.
             confirmDriving()
-            guard pendingStop != nil else { return }
-            detectionLog.record("Core Motion still reads automotive — cancelling the pending stop.")
-            clearPendingDecision()
+            cancelPendingStopOnAutomotive()
             return
         }
 
         // Rien d'exploitable dans la fenêtre : Core Motion n'a rien à dire, et
         // deviner à sa place fermerait un trajet bien vivant.
-        guard let stoppedAt = reading.stoppedAt else { return }
-        // Jamais avant le début du trajet : un arrêt daté d'avant ferait une
-        // durée négative, et `finalize` ne garderait pas un seul point.
+        //
+        // Un arrêt daté d'avant le trajet est ignoré, et non plus rabattu sur son
+        // début. Le rabattement traitait le symptôme nommé ici même — une durée
+        // négative, dont `finalize` n'aurait gardé aucun point — en produisant la
+        // pathologie : il transformait « je ne sais rien de ce trajet » en « ce
+        // trajet s'est terminé à l'instant où il a commencé ».
+        guard let stoppedAt = reading.stoppedAt, stoppedAt > startedAt else { return }
         noteStop(
-            at: max(stoppedAt, recordingStartedAt ?? stoppedAt),
+            at: stoppedAt,
             reason: StopReason(isMovingUnderOwnPower: reading.isMovingUnderOwnPower)
         )
         evaluatePendingDecision()
@@ -1271,7 +1437,12 @@ final class DrivingDetector {
             return
         }
 
-        if let trip = tripRecorder.finalize(endDate: endDate) {
+        // Le plancher est passé à `finalize`, qui l'applique sur la trace une
+        // fois coupée à la fin de conduite — la seule mesure qui décrive le
+        // trajet tel qu'il sera enregistré. Voir `TripRecorder.finalize`.
+        if let trip = tripRecorder.finalize(
+            endDate: endDate, discardingBelow: TripRecorder.minimumAutomaticTripDistance
+        ) {
             if requiresTripConfirmation {
                 notificationService.scheduleTripConfirmationNotification(for: trip)
             } else {

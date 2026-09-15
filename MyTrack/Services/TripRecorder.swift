@@ -43,6 +43,37 @@ final class TripRecorder {
     /// vingt-cinq près ne prouve rien.
     private(set) var maxObservedSpeed: CLLocationSpeed = 0
 
+    /// Quand le GPS a livré pour la dernière fois un point que le filtre de
+    /// qualité a laissé passer — qu'il soit entré dans la trace ou non.
+    ///
+    /// C'est le témoin du *flux*, et il ne sert qu'à une chose : distinguer « la
+    /// voiture ne bouge plus » de « le GPS ne voit plus rien ». Un tunnel, un
+    /// parking couvert, une session que le système a endormie donnent la même
+    /// trace immobile qu'un stationnement, et conclure à l'arrêt là-dessus
+    /// couperait un trajet sous un pont. Voir `DrivingDetector.routeStillness`,
+    /// qui est le seul à lire ces deux dates.
+    private(set) var lastFixAt: Date?
+
+    /// Quand le véhicule s'est éloigné pour la dernière fois d'où il était.
+    /// Voir `stillnessRadius`.
+    private(set) var lastMovementAt: Date?
+
+    /// De combien il faut s'être éloigné de l'ancre pour qu'on la déplace, et
+    /// qu'on dise que quelque chose a bougé.
+    ///
+    /// Vingt-cinq mètres, et une ancre fixe plutôt qu'une comparaison de proche
+    /// en proche. `isStandingStill` compare chaque point au précédent : c'est ce
+    /// qu'il faut pour choisir ce qu'on enregistre, mais pas pour juger cinq
+    /// minutes d'affilée. `maxSilenceWhileStandingStill` force un point par
+    /// minute même à l'arrêt, et la gigue d'un téléphone garé franchit volontiers
+    /// les cinq mètres d'un de ces points au suivant : le compteur d'immobilité
+    /// serait remis à zéro une fois par minute, et n'atteindrait jamais rien.
+    ///
+    /// Depuis une ancre, la gigue tourne autour sans jamais s'en éloigner, tandis
+    /// qu'une voiture qui avance même au pas s'en détache en vingt-cinq secondes.
+    private static let stillnessRadius: CLLocationDistance = 25
+    private var stillnessAnchor: CLLocation?
+
     private var activeTrip: Trip?
 
     /// La dernière position **brute** retenue par les filtres.
@@ -309,6 +340,9 @@ final class TripRecorder {
         consecutiveRejections = 0
         currentDistanceMeters = 0
         maxObservedSpeed = 0
+        lastFixAt = nil
+        lastMovementAt = nil
+        stillnessAnchor = nil
         currentStartDate = trip.startDate
         isRecording = true
     }
@@ -339,8 +373,25 @@ final class TripRecorder {
     /// dans la distance sans l'être dans la durée : trois cents mètres à pied
     /// entre la voiture et le bureau s'ajoutaient à chaque trajet, et un rapport
     /// de frais kilométriques les facturait.
+    /// - Parameter minimumDistance: en deçà de quoi la trace **gardée** ne vaut
+    ///   pas un trajet. Zéro pour le mode manuel, et c'est voulu : l'utilisateur
+    ///   a appuyé sur Démarrer puis sur Arrêter, et un trajet de vingt mètres
+    ///   qu'il a demandé lui appartient. `minimumAutomaticTripDistance` pour la
+    ///   détection, où c'est la seule garde qui porte sur la distance vraiment
+    ///   enregistrée : `DrivingDetector.evaluatePendingDecision` juge, elle, sur
+    ///   le compteur complet, donc *avant* la troncature ci-dessous — les cent
+    ///   mètres à pied entre la voiture et le bureau y comptent encore. Le
+    ///   plancher annoncé de trois cents mètres en valait ainsi cent
+    ///   soixante-quinze de conduite réelle ; il en vaut trois cents.
+    ///
+    ///   C'est aussi le filet du cas dégénéré : quand la fin de conduite est
+    ///   datée si tôt qu'il ne reste plus rien après la coupe, la trace gardée
+    ///   fait zéro mètre. `DrivingDetector.finalizeTrip` a bien une garde contre
+    ///   ça, mais elle est posée avant la troncature et ne voit donc que les
+    ///   points mesurés : un trajet de zéro kilomètre s'enregistrait, et une
+    ///   notification « avez-vous fait ce trajet ? » partait pour lui.
     @discardableResult
-    func finalize(endDate: Date) -> Trip? {
+    func finalize(endDate: Date, discardingBelow minimumDistance: CLLocationDistance = 0) -> Trip? {
         guard let trip = activeTrip else { return nil }
         locationService.stopActiveTracking()
         locationService.onLocationUpdate = nil
@@ -380,8 +431,21 @@ final class TripRecorder {
         // à l'enregistrement (voir `smoothed`), et c'est délibérément l'inverse
         // de la simplification. L'un corrige la mesure et doit donc précéder le
         // calcul, l'autre allège l'affichage et doit donc le suivre.
+        let distance = Self.distance(over: recorded)
+
+        // Et le plancher s'applique ici, sur ce chiffre-là. Voir `minimumDistance`.
+        guard distance >= minimumDistance else {
+            detectionLog.record(
+                "Discarding a finalized trip: \(Int(distance))m left once the route is cut at the stop."
+            )
+            modelContext.delete(trip)
+            modelContext.saveOrLog()
+            resetState()
+            return nil
+        }
+
         trip.endDate = endDate
-        trip.distanceMeters = Self.distance(over: recorded)
+        trip.distanceMeters = distance
         let simplified = RoutePoint.simplified(recorded, tolerance: Self.simplificationTolerance)
         trip.routePoints = simplified
         trip.endLatitude = last.latitude
@@ -445,6 +509,9 @@ final class TripRecorder {
         consecutiveRejections = 0
         currentDistanceMeters = 0
         maxObservedSpeed = 0
+        lastFixAt = nil
+        lastMovementAt = nil
+        stillnessAnchor = nil
         currentStartDate = nil
         isRecording = false
     }
@@ -459,6 +526,19 @@ final class TripRecorder {
         let dopplerFloor = location.speed - location.speedAccuracy
         if location.speed >= 0, location.speedAccuracy >= 0, dopplerFloor <= Self.maxPlausibleSpeed {
             maxObservedSpeed = max(maxObservedSpeed, max(dopplerFloor, 0))
+        }
+
+        // Relevées ici pour la même raison, et elles sont la seule preuve d'arrêt
+        // que Core Motion ne puisse pas démentir : un point écarté de la trace
+        // parce qu'il n'y ajoute rien dit quand même où en est le véhicule.
+        lastFixAt = location.timestamp
+        // Hors du rayon, l'ancre suit. Dedans, elle ne bouge pas — et c'est ce
+        // qui laisse l'immobilité s'accumuler au lieu d'être remise à zéro par
+        // la gigue. Le premier point d'un trajet la pose, faute de référence.
+        let hasMoved = stillnessAnchor.map { $0.distance(from: location) >= Self.stillnessRadius } ?? true
+        if hasMoved {
+            stillnessAnchor = location
+            lastMovementAt = location.timestamp
         }
 
         // Vrai quand on reprend la trace sur un point que le contrôle de
